@@ -6,13 +6,16 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
   const { id } = params;
   const session = await prisma.flowProgress.findUnique({
     where: { id },
-    include: { flow: { include: { steps: true } } },
+    include: { 
+	flow: { include: { steps: true } },
+	answers: true,
+	},
   });
   if (!session) {
     return NextResponse.json({ success: false, message: 'Session not found.' }, { status: 404 });
   }
   const total = session.flow.steps.length;
-  const answered = session.answers ? Object.keys(session.answers).length : 0;
+  const answered = session.answers.length;
   const completed = !!session.completedAt;
   return NextResponse.json({
     success: true,

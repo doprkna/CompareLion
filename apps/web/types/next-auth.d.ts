@@ -4,7 +4,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string
-      orgs: string[]
+      orgs: { id: string; name: string }[]
       memberships?: { org: string }[]
       name?: string | null
       email?: string | null
@@ -14,7 +14,7 @@ declare module "next-auth" {
 
   interface User {
     id: string
-    orgs: string[]
+    orgs: { id: string; name: string }[]
     memberships?: { org: string }[]
     name?: string | null
     email?: string | null

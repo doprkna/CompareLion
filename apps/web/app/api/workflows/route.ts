@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const orgId = session.user.orgs?.[0]?.id
+  const orgId = session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined
   if (!orgId) {
     return NextResponse.json({ error: 'No organization found' }, { status: 400 })
   }
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const { name, trigger, action, keywords, isActive = true } = body
 
-  const orgId = session.user.orgs?.[0]?.id
+  const orgId = session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined
   if (!orgId) {
     return NextResponse.json({ error: 'No organization found' }, { status: 400 })
   }

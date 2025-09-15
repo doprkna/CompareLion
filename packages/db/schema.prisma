@@ -13,7 +13,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String
+  password  String? // made optional for OAuth
   name      String?
   phone     String?
   language  String?
@@ -29,6 +29,7 @@ model User {
   lastLoginAt DateTime?
   lastActiveAt DateTime?
   createdAt DateTime @default(now())
+  image     String?   // optional profile image URL
 
   memberships Membership[]
   createdTasks Task[] @relation("TaskCreator")
@@ -163,6 +164,7 @@ model Question {
   subCategoryId     String?
   subSubCategoryId  String?
   relatedToId       String?
+  metadata          Json?   // optional metadata JSON
   currentVersionId  String?  @unique
   currentVersion    QuestionVersion?    @relation("CurrentVersion", fields: [currentVersionId], references: [id])
   versions          QuestionVersion[]   @relation("AllVersions")
@@ -348,6 +350,14 @@ enum IntegrationType {
   GMAIL
   SLACK
   WEBHOOK
+}
+
+model Version {
+  id        String   @id @default(cuid())
+  name      String   // version name
+  createdAt DateTime @default(now())
+
+  @@map("versions")
 }
 
 

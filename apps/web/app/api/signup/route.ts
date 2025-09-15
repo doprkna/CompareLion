@@ -12,19 +12,33 @@ export async function POST(request: Request) {
   const email = username; // treat username as email
 
   if (!isValidEmail(email)) {
-    return NextResponse.json({ success: false, message: 'Invalid email format.' }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: 'Invalid email format.' },
+      { status: 400 }
+    );
   }
 
   // Check for duplicate email
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return NextResponse.json({ success: false, message: 'Email already registered.' }, { status: 409 });
+    return NextResponse.json(
+      { success: false, message: 'Email already registered.' },
+      { status: 409 }
+    );
   }
 
-  // Hash password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  let hashedPassword: string | null = null;
+  if (password) {
+    hashedPassword = await bcrypt.hash(password, 10);
+  }
 
   // Create user
-  await prisma.user.create({ data: { email, password: hashedPassword } });
+  await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword, // can be null if no password
+    },
+  });
+
   return NextResponse.json({ success: true, message: 'Signup successful.' });
 }

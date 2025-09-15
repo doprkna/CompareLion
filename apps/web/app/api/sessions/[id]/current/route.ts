@@ -14,7 +14,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     return NextResponse.json({ success: false, message: 'Session not found or no current step.' }, { status: 404 });
   }
   const question = await prisma.questionVersion.findUnique({
-    where: { id: session.currentStep.questionVersionId },
+    where: { id: session.currentStep?.questionVersionId },
   });
   return NextResponse.json({
     success: true,

@@ -13,13 +13,27 @@ export async function POST(request: Request) {
   // Find user by email
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return NextResponse.json({ success: false, message: 'Invalid email or password.' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, message: 'Invalid email or password.' },
+      { status: 401 }
+    );
+  }
+
+  // Guard against accounts without password (e.g. OAuth sign-ins)
+  if (!user.password) {
+    return NextResponse.json(
+      { success: false, message: 'This account uses OAuth login. Please sign in with Google or Email link.' },
+      { status: 400 }
+    );
   }
 
   // Compare password hash
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
-    return NextResponse.json({ success: false, message: 'Invalid email or password.' }, { status: 401 });
+    return NextResponse.json(
+      { success: false, message: 'Invalid email or password.' },
+      { status: 401 }
+    );
   }
 
   // Update lastLoginAt and lastActiveAt
@@ -36,10 +50,14 @@ export async function POST(request: Request) {
   );
 
   // Set token as HTTP-only, Secure cookie
-  const response = NextResponse.json({ success: true, message: 'Login successful.' });
+  const response = NextResponse.json({
+    success: true,
+    message: 'Login successful.',
+  });
   response.headers.set(
     'Set-Cookie',
     `token=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=Strict; Secure`
   );
+
   return response;
 }

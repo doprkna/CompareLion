@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 
-function evaluateBranch(branch, answer) {
+function evaluateBranch(branch: any, answer: any) {
   if (branch.if) {
     if (branch.if.equals !== undefined && answer === branch.if.equals) return true;
     if (branch.if.lte !== undefined && answer <= branch.if.lte) return true;
@@ -43,9 +43,9 @@ export async function POST(request: Request, { params }: { params: { id: string 
   let nextStep = null;
   let question = null;
   const branchCondition = session.currentStep.branchCondition;
-  if (branchCondition && branchCondition.branches) {
+  if (branchCondition && (branchCondition as any).branches) {
     let defaultGoto = null;
-    for (const branch of branchCondition.branches) {
+    for (const branch of (branchCondition as any).branches) {
       const result = evaluateBranch(branch, answer);
       if (result === true) {
         nextStepId = branch.goto;

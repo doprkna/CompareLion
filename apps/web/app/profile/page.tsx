@@ -14,6 +14,11 @@ const initialProfile = {
   lastActiveAt: '',
   stats: { totalSessions: 0, totalAnswers: 0, totalTime: 0, lastSessionAnswers: 0, lastSessionTime: 0 },
   sessions: [],
+  funds: '0',
+  diamonds: 0,
+  xp: 0,
+  level: 1,
+  theme: '',
 };
 
 function formatDate(dateStr: string) {
@@ -67,7 +72,7 @@ export default function ProfilePage() {
     fetchProfile();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setProfile((p) => ({ ...p, [name]: value }));
   };

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
   const tasks = await prisma.task.findMany({
     where: {
-      orgId: session.user.orgs?.[0]?.id,
+      orgId: session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined,
       ...(status && { status: status as any }),
       ...(assigneeType && { assigneeType: assigneeType as any }),
     },
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Title is required' }, { status: 400 })
   }
 
-  const orgId = session.user.orgs?.[0]?.id
+  const orgId = session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined
   if (!orgId) {
     return NextResponse.json({ error: 'No organization found' }, { status: 400 })
   }
