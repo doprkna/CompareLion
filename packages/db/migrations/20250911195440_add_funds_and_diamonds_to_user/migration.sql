@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "diamonds" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "funds" DECIMAL(65,30) NOT NULL DEFAULT 0;
