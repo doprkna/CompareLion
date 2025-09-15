@@ -55,7 +55,11 @@ export const authOptions: NextAuthOptions = {
         if (user) {
           session.user.id = user.id
           session.user.orgs =
-            user.memberships?.map((m) => ({ id: m.org.id, name: m.org.name })) || []
+		user.memberships?.map((m: { org: { id: string; name: string } }) => ({
+			id: m.org.id,
+			name: m.org.name,
+		})) || []
+
         }
       }
       return session
