@@ -7,17 +7,26 @@ export async function GET(request: Request) {
   if (!user) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
+
   const flows = await prisma.flowProgress.findMany({
-	where: { userId: user.userId, completedAt: { not: null } },
-	include: { flow: true, answers: true },
-	orderBy: { completedAt: 'desc' },
+    where: { userId: user.userId, completedAt: { not: null } },
+    include: { flow: true, answers: true },
+    orderBy: { completedAt: 'desc' },
   });
-  const history = flows.map(f => ({
-	  flowId: f.flowId,
-	  flowName: f.flow?.name,
-	  startedAt: f.startedAt,
-	  completedAt: f.completedAt,
-	  totalQuestions: f.answers ? f.answers.length : undefined,
+
+  const history = flows.map((f: {
+    flowId: string;
+    flow?: { name?: string };
+    startedAt: Date;
+    completedAt: Date | null;
+    answers?: unknown[];
+  }) => ({
+    flowId: f.flowId,
+    flowName: f.flow?.name,
+    startedAt: f.startedAt,
+    completedAt: f.completedAt,
+    totalQuestions: f.answers ? f.answers.length : undefined,
   }));
+
   return NextResponse.json({ success: true, history });
 }
