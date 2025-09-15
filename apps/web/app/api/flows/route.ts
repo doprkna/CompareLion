@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import type { Prisma } from '@prisma/client';
 
 // Create a new flow with steps and links
 export async function POST(request: Request) {
   const body = await request.json();
   const { name, description, metadata, steps = [], links = [] } = body;
 
-  const result = await prisma.$transaction(async (tx) => {
+  const  result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const flow = await tx.flow.create({
       data: { name, description, metadata },
     });
