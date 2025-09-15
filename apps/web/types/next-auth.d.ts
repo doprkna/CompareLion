@@ -5,6 +5,7 @@ declare module "next-auth" {
     user: {
       id: string
       orgs: string[]
+      memberships?: { org: string }[]
       name?: string | null
       email?: string | null
       image?: string | null
@@ -14,6 +15,7 @@ declare module "next-auth" {
   interface User {
     id: string
     orgs: string[]
+    memberships?: { org: string }[]
     name?: string | null
     email?: string | null
     image?: string | null

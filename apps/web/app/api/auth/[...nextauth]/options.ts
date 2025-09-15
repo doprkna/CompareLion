@@ -1,7 +1,7 @@
-import { NextAuthOptions } from 'next-auth'
-import EmailProvider from 'next-auth/providers/email'
-import GoogleProvider from 'next-auth/providers/google'
-import { prisma } from '@parel/db'
+import { NextAuthOptions } from "next-auth"
+import EmailProvider from "next-auth/providers/email"
+import GoogleProvider from "next-auth/providers/google"
+import { prisma } from "@parel/db"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -22,8 +22,8 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account?.provider === 'email' || account?.provider === 'google') {
+    async signIn({ user, account }) {
+      if (account?.provider === "email" || account?.provider === "google") {
         // Create user if doesn't exist
         const existingUser = await prisma.user.findUnique({
           where: { email: user.email! },
@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true
     },
-    async session({ session, token }) {
+    async session({ session }) {
       if (session.user?.email) {
         const user = await prisma.user.findUnique({
           where: { email: session.user.email },
@@ -54,18 +54,13 @@ export const authOptions: NextAuthOptions = {
 
         if (user) {
           session.user.id = user.id
-          session.user.orgs = user.memberships.map(m => m.org)
+          session.user.orgs = user.memberships?.map((m: { org: string }) => m.org) || []
         }
       }
       return session
     },
   },
   pages: {
-    signIn: '/api/auth/signin',
+    signIn: "/api/auth/signin",
   },
 }
-
-
-
-
-
