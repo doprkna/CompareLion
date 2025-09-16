@@ -11,21 +11,36 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
+  id             String    @id @default(cuid())
+  email          String    @unique
+  password       String
+  name           String?
+  image          String?
+  phone          String?
+  language       String?
+  country        String?
+  dateOfBirth    DateTime?
+  avatarUrl      String?
+  motto          String?
+  theme          String?
+  funds          Decimal   @default(0)
+  diamonds       Int       @default(0)
+  xp             Int       @default(0)
+  level          Int       @default(1)
+  lastLoginAt    DateTime?
+  lastActiveAt   DateTime?
+  createdAt      DateTime  @default(now())
 
-  memberships Membership[]
-  createdTasks Task[] @relation("TaskCreator")
+  memberships    Membership[]
+  createdTasks   Task[]    @relation("TaskCreator")
 
   @@map("users")
 }
 
 model Org {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
+  id          String        @id @default(cuid())
+  name        String
+  createdAt   DateTime      @default(now())
 
   memberships Membership[]
   tasks       Task[]
@@ -39,7 +54,7 @@ model Membership {
   id     String @id @default(cuid())
   userId String
   orgId  String
-  role   String @default("MEMBER") // OWNER, ADMIN, MEMBER
+  role   String @default("MEMBER")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   org  Org  @relation(fields: [orgId], references: [id], onDelete: Cascade)
@@ -55,7 +70,7 @@ model Task {
   title        String
   description  String?
   status       TaskStatus @default(NEW)
-  priority     String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  priority     String    @default("MEDIUM")
   source       TaskSource @default(WEB)
   assigneeType AssigneeType @default(AUTO)
   assigneeId   String?
@@ -63,11 +78,11 @@ model Task {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  org       Org          @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  creator   User         @relation("TaskCreator", fields: [createdById], references: [id])
+  org       Org     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator   User    @relation("TaskCreator", fields: [createdById], references: [id])
   attachments Attachment[]
-  messages  Message[]
-  runs      Run[]
+  messages    Message[]
+  runs        Run[]
 
   @@map("tasks")
 }
@@ -86,11 +101,11 @@ model Attachment {
 }
 
 model Message {
-  id         String      @id @default(cuid())
+  id         String   @id @default(cuid())
   taskId     String
   authorType AuthorType
   text       String
-  createdAt  DateTime    @default(now())
+  createdAt  DateTime @default(now())
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
@@ -98,15 +113,15 @@ model Message {
 }
 
 model Workflow {
-  id       String        @id @default(cuid())
-  orgId    String
-  name     String
-  trigger  WorkflowTrigger
-  action   WorkflowAction
-  keywords String[] // JSON array of keywords
-  isActive Boolean       @default(true)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id        String        @id @default(cuid())
+  orgId     String
+  name      String
+  trigger   WorkflowTrigger
+  action    WorkflowAction
+  keywords  String[]
+  isActive  Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   org  Org  @relation(fields: [orgId], references: [id], onDelete: Cascade)
   runs Run[]
@@ -115,13 +130,13 @@ model Workflow {
 }
 
 model Run {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   taskId     String
   workflowId String?
   status     RunStatus @default(QUEUED)
   logs       Json?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   task     Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
   workflow Workflow? @relation(fields: [workflowId], references: [id])
@@ -129,18 +144,133 @@ model Run {
   @@map("runs")
 }
 
-model Integration {
-  id       String           @id @default(cuid())
-  orgId    String
-  type     IntegrationType
-  config   Json
-  isActive Boolean          @default(true)
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+model Question {
+  id                String             @id @default(cuid())
+  categoryId        String
+  subCategoryId     String?
+  subSubCategoryId  String?
+  relatedToId       String?
+  currentVersionId  String?            @unique
+  currentVersion    QuestionVersion?   @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  versions          QuestionVersion[]  @relation("AllVersions")
+  relatedTo         Question?          @relation("RelatedTo", fields: [relatedToId], references: [id])
+  relatedQuestions  Question[]         @relation("RelatedTo")
 
-  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  @@map("questions")
+}
 
-  @@map("integrations")
+model QuestionVersion {
+  id           String    @id @default(cuid())
+  questionId   String
+  text         String
+  displayText  String
+  type         String
+  options      Json?
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  version      Int
+
+  question    Question          @relation("AllVersions", fields: [questionId], references: [id])
+  tags        QuestionVersionTag[]
+  currentOf   Question?         @relation("CurrentVersion")
+  flowSteps   FlowStep[]
+  answers     Answer[]
+
+  @@unique([questionId, version])
+  @@map("question_versions")
+}
+
+model QuestionTag {
+  id      String                 @id @default(cuid())
+  name    String                 @unique
+  versions QuestionVersionTag[]
+
+  @@map("question_tags")
+}
+
+model QuestionVersionTag {
+  id                String          @id @default(cuid())
+  questionVersionId String
+  tagId             String
+
+  questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id])
+  tag               QuestionTag     @relation(fields: [tagId], references: [id])
+
+  @@unique([questionVersionId, tagId])
+  @@map("question_version_tags")
+}
+
+model FlowStep {
+  id               String      @id @default(cuid())
+  flowId           String
+  questionVersionId String
+  ord              Int
+  section          String?
+  branchCondition  Json?
+  randomGroup      String?
+  isOptional       Boolean     @default(false)
+  metadata         Json?
+
+  flow              Flow           @relation(fields: [flowId], references: [id])
+  questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id])
+  fromLinks         FlowStepLink[]  @relation("FromStep")
+  toLinks           FlowStepLink[]  @relation("ToStep")
+  progresses        FlowProgress[]
+  answers           Answer[]
+
+  @@map("flow_steps")
+}
+
+model FlowStepLink {
+  id         String    @id @default(cuid())
+  fromStepId String
+  toStepId   String
+  condition  Json?
+
+  fromStep FlowStep @relation("FromStep", fields: [fromStepId], references: [id])
+  toStep   FlowStep @relation("ToStep", fields: [toStepId], references: [id])
+
+  @@map("flow_step_links")
+}
+
+model FlowProgress {
+  id            String      @id @default(cuid())
+  userId        String
+  flowId        String
+  currentStepId String?
+  startedAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  completedAt   DateTime?
+
+  user         User         @relation(fields: [userId], references: [id])
+  flow         Flow         @relation(fields: [flowId], references: [id])
+  currentStep  FlowStep?    @relation(fields: [currentStepId], references: [id])
+  answers      Answer[]
+
+  @@map("flow_progress")
+}
+
+model Answer {
+  id                String          @id @default(cuid())
+  sessionId         String
+  stepId            String
+  questionVersionId String
+  value             String
+  createdAt         DateTime        @default(now())
+
+  session           FlowProgress      @relation(fields: [sessionId], references: [id])
+  step              FlowStep          @relation(fields: [stepId], references: [id])
+  questionVersion   QuestionVersion   @relation(fields: [questionVersionId], references: [id])
+
+  @@map("answers")
+}
+
+model Language {
+  id   String @id @default(cuid())
+  code String @unique
+  name String
+
+  @@map("languages")
 }
 
 model Version {

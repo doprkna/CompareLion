@@ -151,7 +151,7 @@ export default function ProfilePage() {
                 {profile.sessions.length === 0 ? (
                   <tr><td colSpan={3} className="text-center text-gray-400 py-2">No sessions yet.</td></tr>
                 ) : (
-                  profile.sessions.map((s: any) => (
+                  profile.sessions.map((s: { id: string; startedAt: string; completedAt: string | null; answers: number; timeSpent: number }) => (
                     <tr key={s.id}>
                       <td className="px-2 py-1 border">{formatDate(s.startedAt)}</td>
                       <td className="px-2 py-1 border">{s.answers}</td>
@@ -262,7 +262,7 @@ export default function ProfilePage() {
         <div className="mt-8">
           <h2 className="text-lg font-bold mb-2">Achievements</h2>
           <div className="grid grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => (
+            {[...Array(8)].map((_: unknown, i: number) => (
               <div key={i} className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-2xl text-gray-400 border-2 border-blue-100">
                 🏆
               </div>

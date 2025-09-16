@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import { getUserFromRequest } from '../_utils';
 import bcrypt from 'bcrypt';
+import type { FlowProgress } from '@prisma/client';
 
 function msToHMS(ms: number) {
   if (!ms || ms < 0) return '0s';
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
   const sessions = await prisma.flowProgress.findMany({ where: { userId: dbUser.id }, orderBy: { startedAt: 'desc' } });
   let totalAnswers = 0;
   let totalTime = 0;
-  const sessionStats = await Promise.all(sessions.map(async (session) => {
+  const sessionStats = await Promise.all(sessions.map(async (session: FlowProgress) => {
     const count = await prisma.answer.count({ where: { sessionId: session.id } });
     totalAnswers += count;
     const start = session.startedAt ? new Date(session.startedAt).getTime() : 0;
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
         lastSessionAnswers: lastSession.answers,
         lastSessionTime: lastSession.timeSpent,
       },
-      sessions: sessionStats.map(s => ({
+      sessions: sessionStats.map((s: { id: string; startedAt: Date; completedAt: Date | null; answers: number; timeSpent: number }) => ({
         id: s.id,
         startedAt: s.startedAt,
         completedAt: s.completedAt,
