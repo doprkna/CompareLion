@@ -355,6 +355,7 @@ enum IntegrationType {
 model Version {
   id        String   @id @default(cuid())
   name      String   // version name
+  value     String
   createdAt DateTime @default(now())
 
   @@map("versions")
