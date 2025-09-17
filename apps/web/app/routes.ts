@@ -13,4 +13,5 @@ export const routes = [
   { path: '/tasks', label: 'Tasks' },
   { path: '/questions', label: 'Questions' },
   { path: '/legal', label: 'Legal' },
+  { path: '/changelog', label: 'Changelog' },
 ];

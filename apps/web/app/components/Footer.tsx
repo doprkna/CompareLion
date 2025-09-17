@@ -5,10 +5,12 @@ export default function Footer() {
   const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
-    fetch('/api/version')
+    fetch('/api/changelog')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.version) setVersion(data.version.name);
+        if (data.success && data.entries?.length) {
+          setVersion(data.entries[0].version);
+        }
       });
   }, []);
 
