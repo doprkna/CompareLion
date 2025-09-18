@@ -8,39 +8,50 @@ export async function GET() {
   try {
     text = await fs.readFile(changelogPath, 'utf-8');
   } catch {
-    return NextResponse.json({ success: false, message: 'CHANGELOG.md not found' }, { status: 404 });
+    return NextResponse.json({ success: false, message: 'Changelog unavailable' }, { status: 200 });
   }
-  const entries: Array<{ version: string; date?: string; added: { text: string; children: string[] }[]; changed: { text: string; children: string[] }[]; fixed: { text: string; children: string[] }[] }> = [];
-  const sections = text.split(/^## \[/m).slice(1);
-  for (const sec of sections) {
-    const headerLine = sec.split('\n')[0];
-    const headerMatch = headerLine.match(/^([^\]]+)\](?: - ([0-9]{4}-[0-9]{2}-[0-9]{2}))?/);
-    if (!headerMatch) continue;
-    const [_, version, date] = headerMatch;
-    const body = sec.substring(headerLine.length);
-    // Parse sections with nested bullets
-    const parseItems = (sectionBody: string) => {
-      const items: { text: string; children: string[] }[] = [];
-      const lines = sectionBody.split('\n');
-      for (const line of lines) {
-        const match = line.match(/^(\s*)- (.+)$/);
-        if (match) {
-          const indent = match[1].length;
-          const textLine = match[2].trim();
-          if (indent === 0) {
-            items.push({ text: textLine, children: [] });
-          } else {
-            const last = items[items.length - 1];
-            if (last) last.children.push(textLine);
+  try {
+    const entries: Array<{ version: string; date?: string; added: { text: string; children: string[] }[]; changed: { text: string; children: string[] }[]; fixed: { text: string; children: string[] }[] }> = [];
+    const lines = text.split(/\r?\n/);
+    let currentEntry: any = null;
+    let currentSection: 'added' | 'changed' | 'fixed' | '' = '';
+    let lastBullet: { text: string; children: string[] } | null = null;
+    for (const raw of lines) {
+      const line = raw;
+      if (line.startsWith('## [')) {
+        const m = line.match(/^## \[([^\]]+)\](?: - (.+))?/);
+        if (m) {
+          const version = m[1];
+          const date = m[2];
+          if (version === 'Unreleased') {
+            currentEntry = null;
+            continue;
           }
+          currentEntry = { version, date, added: [], changed: [], fixed: [] };
+          entries.push(currentEntry);
+          currentSection = '';
+          lastBullet = null;
         }
+      } else if (currentEntry && line.startsWith('### ')) {
+        const sec = line.substr(4).trim().toLowerCase();
+        if (sec === 'added' || sec === 'changed' || sec === 'fixed') {
+          currentSection = sec;
+          lastBullet = null;
+        }
+      } else if (currentEntry && line.startsWith('  - ')) {
+        const child = line.substr(4);
+        if (lastBullet) lastBullet.children.push(child);
+      } else if (currentEntry && currentSection && line.startsWith('- ')) {
+        const textLine = line.substr(2);
+        const bullet = { text: textLine, children: [] };
+        currentEntry[currentSection].push(bullet);
+        lastBullet = bullet;
       }
-      return items;
-    };
-    const added = parseItems(body.match(/### Added\s*([\s\S]*?)(?=(###|$))/)?.[1] || '');
-    const changed = parseItems(body.match(/### Changed\s*([\s\S]*?)(?=(###|$))/)?.[1] || '');
-    const fixed = parseItems(body.match(/### Fixed\s*([\s\S]*?)(?=(###|$))/)?.[1] || '');
-    entries.push({ version, date, added, changed, fixed });
+    }
+    // newest-first
+    const ordered = entries;
+    return NextResponse.json({ success: true, entries: ordered });
+  } catch {
+    return NextResponse.json({ success: false, message: 'Error parsing changelog' }, { status: 200 });
   }
-  return NextResponse.json({ success: true, entries });
 }
