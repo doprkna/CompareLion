@@ -6,11 +6,12 @@ export default function AuthStatus() {
   const [loading, setLoading] = useState(true);
   const [languages, setLanguages] = useState<{ code: string; name: string }[]>([]);
   const [selectedLang, setSelectedLang] = useState('');
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
   useEffect(() => {
     const fetchMe = async () => {
       try {
-        const res = await fetch('/api/me');
+        const res = await fetch(`${base}/api/me`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
@@ -29,7 +30,7 @@ export default function AuthStatus() {
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
-        const res = await fetch('/api/languages');
+        const res = await fetch(`${base}/api/languages`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setLanguages(data.languages || []);

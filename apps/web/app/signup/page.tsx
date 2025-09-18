@@ -1,5 +1,5 @@
 "use client";
-
+const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 import React, { useState } from 'react';
 
 export default function SignupPage() {
@@ -13,10 +13,10 @@ export default function SignupPage() {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch('/api/signup', {
+      const res = await fetch(`${base}/api/signup`, { cache: 'no-store',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username, password }),
       });
       const data = await res.json();
       if (data.success) {

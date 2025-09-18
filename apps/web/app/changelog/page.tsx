@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api';
 
 export default function ChangelogPage() {
   const [entries, setEntries] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/changelog')
-      .then(res => res.json())
+    apiFetch('/api/changelog')
       .then(data => {
         if (data.success) setEntries(data.entries);
       });

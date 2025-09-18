@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
 export default function QuestionsPage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function QuestionsPage() {
     const startSession = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/sessions", {
+        const res = await fetch(`${base}/api/sessions`, { cache: 'no-store',
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId, flowId }),
@@ -50,7 +51,7 @@ export default function QuestionsPage() {
       { stepId: currentStepId, question, selected },
     ]);
     try {
-      const res = await fetch(`/api/sessions/${sessionId}/answer`, {
+      const res = await fetch(`${base}/api/sessions/${sessionId}/answer`, { cache: 'no-store',
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answer: selected }),
@@ -81,7 +82,7 @@ export default function QuestionsPage() {
       { stepId: currentStepId, question, selected: "__SKIP__" },
     ]);
     try {
-      const res = await fetch(`/api/sessions/${sessionId}/answer`, {
+      const res = await fetch(`${base}/api/sessions/${sessionId}/answer`, { cache: 'no-store',
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answer: "__SKIP__" }),

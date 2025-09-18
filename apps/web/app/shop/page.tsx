@@ -5,12 +5,13 @@ export default function ShopPage() {
   const [funds, setFunds] = useState('0');
   const [diamonds, setDiamonds] = useState(0);
   const [loading, setLoading] = useState(true);
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/profile');
+        const res = await fetch(`${base}/api/profile`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setFunds(data.user.funds || '0');

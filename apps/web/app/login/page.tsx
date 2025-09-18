@@ -1,5 +1,5 @@
 "use client";
-
+const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 import React, { useState } from 'react';
 
 export default function LoginPage() {
@@ -14,7 +14,7 @@ export default function LoginPage() {
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch('/api/login', {
+      const res = await fetch(`${base}/api/login`, { cache: 'no-store',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -39,7 +39,7 @@ export default function LoginPage() {
     setLoading(true);
     setMessage('');
     try {
-      await fetch('/api/logout', { method: 'POST' });
+      await fetch(`${base}/api/logout`, { cache: 'no-store', method: 'POST' });
       setLoggedIn(false);
       setMessage('Logged out.');
     } catch (err) {

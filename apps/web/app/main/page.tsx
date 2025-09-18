@@ -1,73 +1,74 @@
-"use client";
+import Link from 'next/link';
+import { apiFetch } from '@/lib/api';
+import AchievementsGrid from '@/components/achievements/AchievementsGrid';
 
-import React, { useEffect, useState } from 'react';
-
-export default function MainPage() {
-  const [changes, setChanges] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  useEffect(() => {
-    fetch('/api/changelog')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.entries?.length) {
-          setChanges(data.entries);
-        } else {
-          setError(true);
-        }
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+export default async function MainPage() {
+  // Fetch user info
+  const meData = await apiFetch('/api/me').catch(() => null);
+  const user = meData?.user;
+  // Fetch latest changelog entry
+  const chData = await apiFetch('/api/changelog').catch(() => null);
+  const latest = chData?.success && chData.entries?.length ? chData.entries[0] : null;
+  // Fetch achievements
+  const achData = await apiFetch('/api/achievements').catch(() => null);
+  const achievements = achData?.success ? achData.achievements.slice(0, 6) : [];
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-8 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4">Main</h1>
-        <p className="text-gray-600 mb-6">This is a placeholder for the main dashboard/home page after login.</p>
-        <div className="border rounded p-4 mb-4">
-          <h2 className="font-semibold mb-2">Latest Changes</h2>
-          {loading ? (
-            <p className="text-sm text-gray-500">Loading...</p>
-          ) : error ? (
-            <p className="text-sm text-red-500">Changelog unavailable</p>
-          ) : changes.length === 0 ? (
-            <p className="text-sm text-gray-500">No changelog found</p>
-          ) : (
-            <>
-              <div className="mb-2 text-sm text-gray-700">
-                <strong>{changes[0].version}</strong>{changes[0].date ? ` - ${changes[0].date}` : ''}
-              </div>
-              {(['added', 'changed', 'fixed'] as const).map((section) => {
-                const items = changes[0][section];
-                if (!items || items.length === 0) return null;
-                return (
-                  <div key={section} className="mb-2">
-                    <h3 className="font-medium capitalize mb-1">{section}</h3>
-                    <ul className="list-disc list-inside text-sm text-gray-700">
-                      {items.map((it: { text: string; children: string[] }, i: number) => (
-                        <li key={i} className="mb-1">
-                          {it.text}
-                          {it.children.length > 0 && (
-                            <ul className="list-circle list-inside ml-4 mt-1">
-                              {it.children.map((child, ci) => (
-                                <li key={ci} className="text-sm text-gray-600 mb-1">{child}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              })}
-              <a href="/changelog" className="text-blue-600 hover:underline text-sm">See all changes</a>
-            </>
-          )}
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Welcome */}
+      <h1 className="text-3xl font-bold mb-4">Hello, {user?.name || user?.email || 'User'} 👋</h1>
+      {/* Latest Changes */}
+      <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <h2 className="text-xl font-semibold mb-2">Latest Changes</h2>
+        {latest ? (
+          <>
+            <div className="mb-2 text-sm text-gray-700">
+              <strong>{latest.version}</strong>{latest.date ? ` - ${latest.date}` : ''}
+            </div>
+            {(['added', 'changed', 'fixed'] as const).map((sec) => {
+              const items = latest[sec];
+              if (!items || items.length === 0) return null;
+              return (
+                <div key={sec} className="mb-2">
+                  <h3 className="font-medium capitalize mb-1">{sec}</h3>
+                  <ul className="list-disc list-inside text-sm text-gray-700">
+                    {items.map((it: { text: string; children: string[] }, i: number) => (
+                      <li key={i} className="mb-1">
+                        {it.text}
+                        {it.children.length > 0 && (
+                          <ul className="list-circle list-inside ml-4 mt-1">
+                            {it.children.map((child, ci) => (
+                              <li key={ci} className="text-sm text-gray-600 mb-1">{child}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+            <Link href="/changelog" className="text-blue-600 hover:underline text-sm">See all changes</Link>
+          </>
+        ) : (
+          <p className="text-gray-500">Changelog unavailable</p>
+        )}
+      </div>
+      {/* Achievements */}
+      <div className="bg-white rounded-2xl shadow p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">My Achievements</h2>
+          <Link href="/achievements" className="text-sm text-blue-600 hover:underline">See all</Link>
         </div>
-        <div className="border rounded p-4">
-          <h2 className="font-semibold mb-2">News</h2>
-          <p className="text-sm text-gray-500">[TODO: News modal/section]</p>
-        </div>
+        <AchievementsGrid achievements={achievements} earnedIds={new Set()} />
+        <p className="text-xs text-gray-500 mt-3">More badges unlock as you play PareL.</p>
+      </div>
+      {/* Quick Links */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Link href="/tasks" className="bg-white p-4 rounded-lg shadow text-center">Tasks</Link>
+        <Link href="/questions" className="bg-white p-4 rounded-lg shadow text-center">Questions</Link>
+        <Link href="/shop" className="bg-white p-4 rounded-lg shadow text-center">Shop</Link>
+        <Link href="/leaderboard" className="bg-white p-4 rounded-lg shadow text-center">Leaderboard</Link>
+        <div className="bg-white p-4 rounded-lg shadow text-center text-gray-500">News (coming soon)</div>
       </div>
     </div>
   );

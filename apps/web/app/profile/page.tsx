@@ -43,12 +43,13 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/profile');
+        const res = await fetch(`${base}/api/profile`, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setProfile({
@@ -82,7 +83,7 @@ export default function ProfilePage() {
     setSaving(true);
     setMessage('');
     try {
-      const res = await fetch('/api/profile', {
+      const res = await fetch(`${base}/api/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile),
