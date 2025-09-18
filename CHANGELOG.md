@@ -3,6 +3,18 @@ All notable changes to this project will be documented here.
 Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).  
 Versioning follows [Semantic Versioning](https://semver.org/).  
 
+## [0.1.1] - 2025-09-18
+(0 features added, 1 change, 1 fix)
+### Added
+
+### Changed
+- Prisma updated to manage Changelog
+
+### Fixed
+- Fixed Changelog db behavior
+
+-------------
+
 ## [0.1.0] - 2025-09-17
 (3 features added, 1 change, 1 fix)
 ### Added
@@ -18,7 +30,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Footer version was hardcoded → now dynamic
 
 ### Fixed
-- [placeholder, when a bug is fixed]
+- use client fix for the pages
 
 -------------
 ## [0.0.1] - 2025-09-16
