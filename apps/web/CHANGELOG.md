@@ -3,6 +3,23 @@ All notable changes to this project will be documented here.
 Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).  
 Versioning follows [Semantic Versioning](https://semver.org/).  
 
+## [0.2.0] - 2025-09-29
+### Added
+- CRUD API + auth
+- BullMQ + Redis jobs
+- DTO serializers
+- Refactor & service for API
+- Testing framework setup
+- Environment Stamp - show if Dev or Prod
+ 
+
+### Changed
+- heavy DB changes for Questions
+- Refactor & service
+  
+### Fixed
+- many small fixes
+
 ## [0.1.3] - 2025-09-19
 ### Added
 - Achievements: award badge after conditions met (first flow, 10 answers)

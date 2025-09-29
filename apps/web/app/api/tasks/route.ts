@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
 import { enqueueRun } from '@/lib/queue'
+import { toTaskDTO, TaskDTO } from '@/lib/dto/taskDTO';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
   const status = searchParams.get('status')
   const assigneeType = searchParams.get('assigneeType')
 
-  const tasks = await prisma.task.findMany({
+  const rawTasks = await prisma.task.findMany({
     where: {
       orgId: session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined,
       ...(status && { status: status as any }),
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
     },
     orderBy: { createdAt: 'desc' },
   })
-
+  const tasks: TaskDTO[] = rawTasks.map(toTaskDTO);
   return NextResponse.json(tasks)
 }
 
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No organization found' }, { status: 400 })
   }
 
-  const task = await prisma.task.create({
+  const rawTask = await prisma.task.create({
     data: {
       orgId,
       createdById: session.user.id,
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
   // Create initial message
   await prisma.message.create({
     data: {
-      taskId: task.id,
+      taskId: rawTask.id,
       authorType: 'USER',
       text: `Created task: ${title}`,
     },
@@ -96,11 +97,12 @@ export async function POST(request: NextRequest) {
     )
 
     if (matchingWorkflow) {
-      await enqueueRun(task.id, matchingWorkflow.id)
+      await enqueueRun(rawTask.id, matchingWorkflow.id)
     }
   }
 
-  return NextResponse.json(task)
+  const task: TaskDTO = toTaskDTO(rawTask);
+  return NextResponse.json(task);
 }
 
 

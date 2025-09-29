@@ -161,98 +161,37 @@ parel-mvp/
 └── package.json          # Root package.json with workspaces
 ```
 
+## Architectural Overview
+
+- **Service Layer & DTOs**: All business logic and Prisma queries live under `apps/web/lib/services/*Service.ts`. API routes call these services and then map results to pure DTOs in `apps/web/lib/dto/*.ts` before returning JSON.
+- **Validation**: Zod schemas are centralized under `apps/web/lib/validation/*.ts`. API routes import and apply these schemas for input validation.
+- **Background Processing**: Implemented with BullMQ + Redis. Queue connection and job definitions reside in `apps/web/lib/queue/*`. Workers are in `apps/web/worker`, consuming jobs and interacting with services.
+- **Testing**: End-to-end smoke tests using Jest + Supertest live in `/tests`. Helper `tests/utils/testServer.ts` mounts route handlers for testing.
+
+## Updated Project Structure
+
+```text
+apps/web/
+├── app/
+│   ├── api/                # Thin API routes: validate → service → DTO → response
+│   └── ...
+├── lib/
+│   ├── services/           # One service per domain (questionService, jobService, etc.)
+│   ├── dto/                # Pure DTO mappers and type aliases
+│   ├── validation/         # Zod schemas for input validation
+│   └── queue/              # BullMQ connection and queue definitions
+├── worker/                 # Queue workers consuming services
+└── tests/                  # Jest + Supertest smoke tests
+```
+
+## Running Tests
+
+```bash
+# From repo root
+pnpm -w run test
+```
+
 ## API Endpoints
 
 ### Tasks
-- `GET /api/tasks` - List tasks with filters
-- `POST /api/tasks` - Create new task
-- `GET /api/tasks/[id]` - Get task details
-- `PATCH /api/tasks/[id]` - Update task
-- `POST /api/tasks/[id]/messages` - Add message to task
-- `POST /api/tasks/[id]/route` - Route task (AUTO/VA)
-
-### Workflows
-- `GET /api/workflows` - List workflows
-- `POST /api/workflows` - Create workflow
-
-## Workflow System
-
-Tasks are automatically routed based on keyword matching:
-
-1. **Keyword Trigger**: Tasks with matching keywords in title/description
-2. **Actions**: GOOGLE_SEARCH, WEB_SCRAPE, DOC_SUMMARY, CUSTOM
-3. **Processing**: Background worker executes actions and updates task status
-
-### Example Workflow
-
-```json
-{
-  "name": "Price Research Workflow",
-  "trigger": "KEYWORD",
-  "action": "GOOGLE_SEARCH",
-  "keywords": ["price", "cost", "pricing"],
-  "isActive": true
-}
-```
-
-## Testing the Flow
-
-1. **Create a task** with "price" in the title
-2. **Set assignee type** to "AUTO"
-3. **Watch** as the task gets automatically processed
-4. **Check** the task status and messages for results
-
-### Sample cURL
-
-```bash
-# Create a task that will auto-route
-curl -X POST http://localhost:3000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Find price for iPhone 15",
-    "description": "Need to research the latest iPhone 15 pricing",
-    "assigneeType": "AUTO"
-  }'
-```
-
-## Development
-
-### Database Commands
-
-```bash
-npm run db:push     # Push schema changes
-npm run db:migrate  # Create migration
-npm run db:seed     # Seed database
-npm run db:studio   # Open Prisma Studio
-```
-
-### Linting and Testing
-
-```bash
-npm run lint        # Lint all packages
-npm run test        # Run tests
-```
-
-## Production Deployment
-
-1. Set up production database and Redis
-2. Configure environment variables
-3. Build the application: `npm run build`
-4. Start services: `npm start`
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details
-
-
-
-
-
+- `

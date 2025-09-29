@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
+import { toWorkflowDTO, WorkflowDTO } from '@/lib/dto/workflowDTO';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -14,12 +15,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'No organization found' }, { status: 400 })
   }
 
-  const workflows = await prisma.workflow.findMany({
+  const rawWorkflows = await prisma.workflow.findMany({
     where: { orgId },
     orderBy: { createdAt: 'desc' },
-  })
-
-  return NextResponse.json(workflows)
+  });
+  const workflows: WorkflowDTO[] = rawWorkflows.map(toWorkflowDTO);
+  return NextResponse.json(workflows);
 }
 
 export async function POST(request: NextRequest) {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No organization found' }, { status: 400 })
   }
 
-  const workflow = await prisma.workflow.create({
+  const rawWorkflow = await prisma.workflow.create({
     data: {
       orgId,
       name,
@@ -46,8 +47,8 @@ export async function POST(request: NextRequest) {
       isActive,
     },
   })
-
-  return NextResponse.json(workflow)
+  const workflow: WorkflowDTO = toWorkflowDTO(rawWorkflow);
+  return NextResponse.json(workflow);
 }
 
 

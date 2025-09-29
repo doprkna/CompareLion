@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import { getUserFromRequest } from '../_utils';
+import { toUserDTO, UserDTO } from '@/lib/dto/userDTO';
 import bcrypt from 'bcrypt';
 import type { FlowProgress } from '@prisma/client';
 
@@ -46,12 +47,12 @@ export async function GET(request: Request) {
     };
   }));
   const lastSession = sessionStats[0] || { answers: 0, timeSpent: 0 };
-  // Return all profile fields and stats
-  const { id, email, name, phone, language, country, dateOfBirth, avatarUrl, motto, createdAt, lastLoginAt, lastActiveAt, theme, funds, diamonds, xp, level } = dbUser;
+  // Build base DTO and then attach stats
+  const baseUser: UserDTO = toUserDTO(dbUser);
   return NextResponse.json({
     success: true,
     user: {
-      id, email, name, phone, language, country, dateOfBirth, avatarUrl, motto, createdAt, lastLoginAt, lastActiveAt, theme, funds: funds?.toString() || '0', diamonds, xp, level,
+      ...baseUser,
       stats: {
         totalSessions: sessions.length,
         totalAnswers,

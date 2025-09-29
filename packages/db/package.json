@@ -11,19 +11,23 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node prisma/seed.ts",
-	"generate": "prisma generate",
+    "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev --name sync_schema",
     "postinstall": "prisma generate",
-	"db:gen": "pnpm --filter @parel/db run generate",
+    "db:gen": "pnpm --filter @parel/db run generate",
     "db:migrate": "pnpm --filter @parel/db run migrate:dev"
   },
   "dependencies": {
     "@prisma/client": "^5.16.1"
   },
   "devDependencies": {
-    "prisma": "^5.16.1"
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "express": "^5.1.0",
+    "jest": "^30.2.0",
+    "prisma": "^5.16.1",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.4"
   }
 }
-
-
-

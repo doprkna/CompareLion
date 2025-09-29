@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { routes } from './routes';
 import AuthStatus from './components/AuthStatus';
 import Footer from './components/Footer';
+import EnvStamp from '../components/EnvStamp';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -37,6 +38,7 @@ export default function RootLayout({
           </div>
         </nav>
         <Providers>{children}</Providers>
+        <EnvStamp />
         <Footer />
       </body>
     </html>
