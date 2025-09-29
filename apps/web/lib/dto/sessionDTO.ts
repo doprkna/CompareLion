@@ -1,4 +1,4 @@
-import type { FlowProgress as PrismaFlowProgress } from '@parel/db/src/client';
+import type { FlowProgress as PrismaFlowProgress } from '@parel/db';
 
 export function toSessionDTO(s: PrismaFlowProgress): {
   id: string;

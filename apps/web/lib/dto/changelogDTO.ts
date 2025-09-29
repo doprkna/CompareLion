@@ -1,16 +1,15 @@
-import type { Changelog as PrismaChangelog } from '@parel/db/src/client';
-
-export function toChangelogDTO(c: PrismaChangelog): {
+// DTO for changelog entries parsed from CHANGELOG.md
+export function toChangelogDTO(c: any): {
   id: string;
   version: string;
   changes: { type: string; text: string }[];
   releasedAt: Date;
 } {
   return {
-    id: c.id,
+    id: c.version,
     version: c.version,
-    changes: c.changes as { type: string; text: string }[],
-    releasedAt: c.createdAt,
+    changes: c.changes,
+    releasedAt: new Date(),
   };
 }
 

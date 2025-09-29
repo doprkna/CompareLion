@@ -2,7 +2,8 @@ export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { questionGenQueue } from '@/lib/queue/questionGenQueue';
-import { prisma } from '@parel/db/src/client';
+import { startJob } from '@/lib/services/jobService';
+import { toJobDTO, JobDTO } from '@/lib/dto/jobDTO';
 import { requireSession } from '@/lib/auth/requireSession';
 import { JobStartSchema } from '@/lib/validation/job';
 
@@ -17,15 +18,9 @@ export async function POST(req: NextRequest, { params }: { params: { ssscId: str
   const { runVersion } = parsed.data;
   const ssscId = parseInt(params.ssscId, 10);
 
-  // Create JobLog
-  const jobLog = await prisma.jobLog.create({
-    data: {
-      ssscId,
-      runVersion,
-      status: 'queued',
-      idempotencyKey: `${ssscId}:${runVersion}`,
-    },
-  });
+  // Create JobLog via service
+  const jobLogRaw = await startJob(ssscId, runVersion);
+  const jobLog: JobDTO = toJobDTO(jobLogRaw);
   const jobId = `${ssscId}:${runVersion}`;
 
   // Enqueue job, handle Redis down
@@ -34,6 +29,5 @@ export async function POST(req: NextRequest, { params }: { params: { ssscId: str
   } catch (e) {
     return NextResponse.json({ error: 'redis_unavailable' }, { status: 500 });
   }
-
-  return NextResponse.json({ jobLogId: jobLog.id, jobId });
+  return NextResponse.json({ success: true, jobLog, jobId });
 }

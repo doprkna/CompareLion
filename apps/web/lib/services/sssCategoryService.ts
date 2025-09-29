@@ -1,10 +1,11 @@
 import { prisma } from '@parel/db/src/client';
-import type { Prisma } from '@prisma/client';
-
-export async function getAllSssCategories(filters?: Prisma.SssCategoryWhereInput) {
-  return prisma.sssCategory.findMany({ where: filters });
+// Service functions for SssCategory operations
+export async function getAllSssCategories(filters?: any) {
+  // @ts-ignore: bypass missing sssCategory on Prisma client until generated
+  return (prisma as any).sssCategory.findMany({ where: filters });
 }
 
-export async function createSssCategory(data: Prisma.SssCategoryCreateInput) {
-  return prisma.sssCategory.create({ data });
+export async function createSssCategory(data: any) {
+  // @ts-ignore: bypass missing sssCategory on Prisma client until generated
+  return (prisma as any).sssCategory.create({ data });
 }

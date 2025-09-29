@@ -1,0 +1,28 @@
+# Node / package managers
+node_modules
+**/node_modules
+.pnpm
+**/.pnpm
+
+# Build outputs
+.next
+dist
+build
+coverage
+
+# Prisma client artifacts (regenerate inside container)
+**/@prisma/client
+**/.prisma
+
+# Git / editor
+.git
+.gitignore
+.DS_Store
+.vscode
+.idea
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

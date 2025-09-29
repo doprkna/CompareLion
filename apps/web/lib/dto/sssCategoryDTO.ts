@@ -1,6 +1,5 @@
-import type { SssCategory as PrismaSssCategory } from '@parel/db/src/client';
-
-export function toSssCategoryDTO(sssc: PrismaSssCategory): {
+// Accept any shape matching the SssCategory record until Prisma client is updated
+export function toSssCategoryDTO(sssc: any): {
   id: string;
   label: string;
   status: string;

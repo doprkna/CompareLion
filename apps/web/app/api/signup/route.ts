@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import bcrypt from 'bcrypt';
+import { SignupSchema } from '@/lib/validation/auth';
 
 function isValidEmail(email: string) {
   // Simple regex for email validation
@@ -8,15 +9,16 @@ function isValidEmail(email: string) {
 }
 
 export async function POST(request: Request) {
-  const { username, password } = await request.json();
-  const email = username; // treat username as email
-
-  if (!isValidEmail(email)) {
-    return NextResponse.json(
-      { success: false, message: 'Invalid email format.' },
-      { status: 400 }
-    );
+  const body = await request.json();
+  const parsed = SignupSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, errors: parsed.error.format() }, { status: 400 });
   }
+  const { username: email, password } = parsed.data;
+
+  // treat username as email
+
+  // Email format validated by Zod schema
 
   // Check for duplicate email
   const existing = await prisma.user.findUnique({ where: { email } });
@@ -27,10 +29,7 @@ export async function POST(request: Request) {
     );
   }
 
-  let hashedPassword: string | null = null;
-  if (password) {
-    hashedPassword = await bcrypt.hash(password, 10);
-  }
+  const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
   // Create user
   await prisma.user.create({

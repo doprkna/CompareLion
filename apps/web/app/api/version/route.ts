@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
+import { getLatestVersion } from '@/lib/services/versionService';
 import { toVersionDTO, VersionDTO } from '@/lib/dto/versionDTO';
 
 export async function GET() {
@@ -7,10 +7,8 @@ export async function GET() {
     return NextResponse.json({ success: true, version: 'dev' });
   }
 
-  const v = await prisma.version.findFirst();
-  if (!v) {
-    return NextResponse.json({ success: true, version: null });
-  }
-  const versionDTO: VersionDTO = toVersionDTO(v);
-  return NextResponse.json({ success: true, version: versionDTO });
+  const v = await getLatestVersion();
+  if (!v) return NextResponse.json({ success: true, version: null });
+  const version: VersionDTO = toVersionDTO(v);
+  return NextResponse.json({ success: true, version });
 }

@@ -1,18 +1,18 @@
-import type { Achievement as PrismaAchievement } from '@parel/db/src/client';
+import type { Achievement as StaticAchievement } from '@/types/achievement';
 
-export function toAchievementDTO(a: PrismaAchievement): {
+export function toAchievementDTO(a: StaticAchievement): {
   id: string;
   code: string;
   label: string;
-  description: string | null;
+  description: string;
   earnedAt: Date | null;
 } {
   return {
     id: a.id,
-    code: a.code,
-    label: a.label,
-    description: a.description ?? null,
-    earnedAt: a.earnedAt ?? null,
+    code: a.id,
+    label: a.title,
+    description: a.description,
+    earnedAt: null,
   };
 }
 

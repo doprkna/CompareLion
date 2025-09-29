@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { Achievement } from '@/types/achievement';
 import { ACHIEVEMENTS } from '@/data/achievements';
+import { toAchievementDTO, AchievementDTO } from '@/lib/dto/achievementDTO';
 
 export async function GET() {
-  return NextResponse.json({ success: true, achievements: ACHIEVEMENTS }, { status: 200 });
+  const dto: AchievementDTO[] = ACHIEVEMENTS.map(toAchievementDTO);
+  return NextResponse.json({ success: true, achievements: dto }, { status: 200 });
 }

@@ -1,4 +1,4 @@
-import type { User as PrismaUser } from '@parel/db/src/client';
+import type { User as PrismaUser } from '@prisma/client';
 
 export function toAuthDTO(user: PrismaUser, token: string): {
   token: string;

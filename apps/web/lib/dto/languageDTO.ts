@@ -1,4 +1,4 @@
-import type { Language as PrismaLanguage } from '@parel/db/src/client';
+import type { Language as PrismaLanguage } from '@parel/db';
 
 export function toLanguageDTO(lang: PrismaLanguage): {
   code: string;

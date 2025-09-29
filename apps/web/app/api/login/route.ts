@@ -2,13 +2,18 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { LoginSchema } from '@/lib/validation/auth';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 const JWT_EXPIRES_IN = '7d';
 
 export async function POST(request: Request) {
-  const { username, password } = await request.json();
-  const email = username;
+  const body = await request.json();
+  const parsed = LoginSchema.safeParse({ email: body.username, password: body.password });
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, errors: parsed.error.format() }, { status: 400 });
+  }
+  const { email, password } = parsed.data;
 
   // Find user by email
   const user = await prisma.user.findUnique({ where: { email } });

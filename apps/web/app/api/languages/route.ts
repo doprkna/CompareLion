@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
+import { getAllLanguages } from '@/lib/services/languageService';
 import { toLanguageDTO, LanguageDTO } from '@/lib/dto/languageDTO';
 
 export async function GET() {
@@ -7,7 +7,8 @@ export async function GET() {
     return NextResponse.json({ success: true, languages: [] });
   }
 
-  const raw = await prisma.language.findMany();
+  // Fetch via service layer
+  const raw = await getAllLanguages();
   const languages: LanguageDTO[] = raw.map(toLanguageDTO);
   return NextResponse.json({ success: true, languages });
 }

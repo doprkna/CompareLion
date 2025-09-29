@@ -6,7 +6,7 @@ export const QuestionTextSchema = z.object({
 });
 
 export const QuestionCreateSchema = z.object({
-  ssscId: z.number().int(),
+  ssscId: z.string(),
   format: z.enum(["WYR", "HYE"]),
   responseType: z.enum(["Y/N", "Select", "Open", "Range", "?"]),
   outcome: z.enum(["Continue", "Jump"]),
@@ -20,4 +20,6 @@ export const QuestionCreateSchema = z.object({
   texts: z.array(QuestionTextSchema).optional(),
 });
 
-export const QuestionUpdateSchema = QuestionCreateSchema.partial();
+export const QuestionUpdateSchema = QuestionCreateSchema.partial().extend({
+  id: z.string().min(1),
+});

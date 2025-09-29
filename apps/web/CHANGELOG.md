@@ -15,10 +15,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - heavy DB changes for Questions
+ - new tables for questions hierarchy
 - Refactor & service
   
 ### Fixed
-- many small fixes
+- many db fixes
 
 ## [0.1.3] - 2025-09-19
 ### Added

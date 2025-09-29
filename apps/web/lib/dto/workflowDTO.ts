@@ -1,4 +1,4 @@
-import type { Workflow as PrismaWorkflow } from '@parel/db/src/client';
+import type { Workflow as PrismaWorkflow } from '@parel/db';
 
 export function toWorkflowDTO(w: PrismaWorkflow): {
   id: string;

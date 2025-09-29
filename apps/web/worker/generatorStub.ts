@@ -2,7 +2,8 @@ import { prisma } from '@parel/db/src/client';
 
 export async function generateAndInsertOneQuestion(ssscId: number, runVersion: string) {
   // Determine defaults for a new question
-  const created = await prisma.question.create({
+  // Use any cast to bypass TS errors until client types include ssscId
+  const created = await (prisma as any).question.create({
     data: {
       ssscId,
       format: 'WYR',

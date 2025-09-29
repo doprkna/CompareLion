@@ -1,4 +1,4 @@
-import type { Version as PrismaVersion } from '@parel/db/src/client';
+import type { Version as PrismaVersion } from '@parel/db';
 
 export function toVersionDTO(ver: PrismaVersion): {
   id: string;

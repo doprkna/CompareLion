@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
 import { getUserFromRequest } from '../_utils';
 import { toUserDTO, UserDTO } from '@/lib/dto/userDTO';
 import bcrypt from 'bcrypt';
-import type { FlowProgress } from '@prisma/client';
+import { getUserProfile, updateUserProfile } from '@/lib/services/userService';
 
 function msToHMS(ms: number) {
   if (!ms || ms < 0) return '0s';
@@ -23,7 +22,7 @@ export async function GET(request: Request) {
   if (!user) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
-  const dbUser = await prisma.user.findUnique({ where: { id: user.userId } });
+  const dbUser = await getUserProfile(user.userId);
   if (!dbUser) {
     return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
   }
@@ -31,7 +30,7 @@ export async function GET(request: Request) {
   const sessions = await prisma.flowProgress.findMany({ where: { userId: dbUser.id }, orderBy: { startedAt: 'desc' } });
   let totalAnswers = 0;
   let totalTime = 0;
-  const sessionStats = await Promise.all(sessions.map(async (session: FlowProgress) => {
+  const sessionStats = await Promise.all(sessions.map(async (session: any) => {
     const count = await prisma.answer.count({ where: { sessionId: session.id } });
     totalAnswers += count;
     const start = session.startedAt ? new Date(session.startedAt).getTime() : 0;
@@ -95,6 +94,6 @@ export async function PATCH(request: Request) {
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ success: false, message: 'No changes provided' }, { status: 400 });
   }
-  await prisma.user.update({ where: { id: user.userId }, data });
+  await updateUserProfile(user.userId, data);
   return NextResponse.json({ success: true, message: 'Profile updated' });
 }

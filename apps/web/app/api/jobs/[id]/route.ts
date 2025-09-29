@@ -1,18 +1,18 @@
 export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
+import { getJobLog } from '@/lib/services/jobService';
+import { toJobDTO, JobDTO } from '@/lib/dto/jobDTO';
 import { requireSession } from '@/lib/auth/requireSession';
-import { toJobDTO } from '@/lib/dto/jobDTO';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await requireSession(req);
   if (session instanceof NextResponse) return session;
 
-  const jobLogRaw = await prisma.jobLog.findUnique({ where: { id: params.id } });
+  const jobLogRaw = await getJobLog(params.id);
   if (!jobLogRaw) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
-  const dto = toJobDTO(jobLogRaw);
-  return NextResponse.json(dto);
+  const jobLog: JobDTO = toJobDTO(jobLogRaw);
+  return NextResponse.json({ success: true, jobLog });
 }

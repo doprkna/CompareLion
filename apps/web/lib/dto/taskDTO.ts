@@ -1,4 +1,4 @@
-import type { Task as PrismaTask } from '@parel/db/src/client';
+import type { Task as PrismaTask } from '@parel/db';
 
 export function toTaskDTO(t: PrismaTask): {
   id: string;

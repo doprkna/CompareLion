@@ -1,4 +1,4 @@
-import type { User as PrismaUser } from '@parel/db/src/client';
+import type { User as PrismaUser } from '@parel/db';
 
 export function toUserDTO(user: PrismaUser): {
   id: string;

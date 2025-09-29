@@ -1,9 +1,9 @@
-import { Queue, QueueEvents, JobOptions } from 'bullmq';
+import { Queue, QueueEvents, JobsOptions } from 'bullmq';
 import { connection } from './connection';
 
 const queueName = 'question-gen';
 
-const defaultOpts: JobOptions = {
+const defaultOpts: JobsOptions = {
   removeOnComplete: true,
   removeOnFail: 100,
 };

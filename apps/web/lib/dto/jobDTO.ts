@@ -1,6 +1,5 @@
-import type { JobLog as PrismaJobLog } from '@parel/db/src/client';
-
-export function toJobDTO(job: PrismaJobLog): {
+// Using `any` here until Prisma client is regenerated to include `JobLog`
+export function toJobDTO(job: any): {
   id: string;
   ssscId: string;
   status: string;
@@ -13,10 +12,10 @@ export function toJobDTO(job: PrismaJobLog): {
     id: job.id.toString(),
     ssscId: job.ssscId?.toString() || '',
     status: job.status,
-    error: job.error ?? null,
+    error: job.error || null,
     createdAt: job.createdAt,
-    startedAt: job.startedAt ?? null,
-    finishedAt: job.finishedAt ?? null,
+    startedAt: job.startedAt || null,
+    finishedAt: job.finishedAt || null,
   };
 }
 
