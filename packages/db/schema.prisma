@@ -2,7 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
+  engineType    = "library"
 }
 
 datasource db {
@@ -11,9 +13,9 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String? // made optional for OAuth
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash  String? // made optional for OAuth
   name      String?
   phone     String?
   language  String?
@@ -21,7 +23,7 @@ model User {
   dateOfBirth DateTime?
   avatarUrl String?
   motto     String?
-  theme     String?
+  theme     String? @default("light")
   funds     Decimal  @default(0)
   diamonds  Int      @default(0)
   xp        Int      @default(0)
@@ -30,9 +32,26 @@ model User {
   lastActiveAt DateTime?
   createdAt DateTime @default(now())
   image     String?   // optional profile image URL
+  streakCount    Int      @default(0)
+  lastAnsweredAt DateTime?
 
   memberships Membership[]
   createdTasks Task[] @relation("TaskCreator")
+  userQuestions UserQuestion[]
+  // Stats for leaderboard
+  score             Int     @default(0)
+  questionsAnswered Int     @default(0)
+  questionsCreated  Int     @default(0)
+
+  // relation to groups
+  userGroups        UserGroup[]
+  // Shop entitlements
+  entitlements      Entitlement[]
+  purchases         Purchase[]
+  subscriptions     Subscription[]
+  wallet            Wallet?
+  userProfile       UserProfile?
+  userBadges        UserBadge[]
 
   @@map("users")
 }
@@ -159,6 +178,18 @@ model Integration {
 }
 
 model Question {
+  // Core fields for QA questions
+  text            String
+  normalizedText  String?          @db.Text
+  difficulty      String?          // "easy" | "medium" | "hard"
+  source          QuestionSource  @default(ai)
+  approved        Boolean         @default(false)
+  reviewNotes     String?
+  createdByUserId String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  // Existing relational fields
   id                String              @id @default(cuid())
   categoryId        String
   subCategoryId     String?
@@ -171,7 +202,11 @@ model Question {
 
   relatedTo         Question?           @relation("RelatedTo", fields: [relatedToId], references: [id])
   relatedQuestions  Question[]          @relation("RelatedTo")
+  ssscId            String
+  sssc              SssCategory         @relation("SsscQuestions", fields: [ssscId], references: [id])
+  userQuestions     UserQuestion[]
 
+  @@index([ssscId, approved])
   @@map("questions")
 }
 
@@ -359,6 +394,252 @@ model Version {
   createdAt DateTime @default(now())
 
   @@map("versions")
+}
+
+// Models for hierarchical categories
+model Category {
+  id            String         @id @default(cuid())
+  name          String
+  subCategories SubCategory[]
+}
+
+model SubCategory {
+  id          String         @id @default(cuid())
+  name        String
+  categoryId  String
+  category    Category       @relation(fields: [categoryId], references: [id])
+  subSubs     SubSubCategory[]
+}
+
+model SubSubCategory {
+  id            String         @id @default(cuid())
+  name          String
+  subCategoryId String
+  subCategory   SubCategory    @relation(fields: [subCategoryId], references: [id])
+  sssCategories SssCategory[]
+}
+
+model SssCategory {
+  id               String   @id @default(cuid())
+  name             String
+  subSubCategoryId String
+  subSubCategory   SubSubCategory @relation(fields: [subSubCategoryId], references: [id])
+
+  // Generation status for AI seeding
+  status      String   @default("pending") // pending|generating|done|failed
+  generatedAt DateTime?
+  error       String?
+
+  // Optional fields for metadata
+  review          String?
+  finalText       String?
+  responseType    String?
+  outcome         String?
+  multiplication  Int?
+  difficulty      String?
+  ageCategory     String?
+  gender          String?
+  author          String?
+  wildcard        String?
+
+  // Questions under this leaf
+  questions Question[] @relation("SsscQuestions")
+}
+
+// Add source enum for questions
+enum QuestionSource {
+  ai
+  user
+  import
+}
+
+// Track per-user question status
+model UserQuestion {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  status     String   @default("answered") // answered|skipped|hidden
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([userId, questionId])
+}
+
+// Add Group and UserGroup models
+model Group {
+  id      String     @id @default(cuid())
+  name    String     @unique
+  members UserGroup[]
+}
+
+model UserGroup {
+  id      String   @id @default(cuid())
+  userId  String
+  groupId String
+
+  user    User     @relation(fields: [userId], references: [id])
+  group   Group    @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+  @@index([groupId])
+}
+
+// Wallet for user balances
+model Wallet {
+  id            String        @id @default(cuid())
+  userId        String        @unique
+  tenantId      String
+  user          User          @relation(fields: [userId], references: [id])
+  funds         Decimal       @default(0)
+  diamonds      Int           @default(0)
+  ledgerEntries LedgerEntry[]
+  @@index([tenantId])
+}
+
+enum Currency {
+  FUNDS
+  DIAMONDS
+}
+
+enum LedgerKind {
+  CREDIT
+  DEBIT
+}
+
+model LedgerEntry {
+  id        String      @id @default(cuid())
+  walletId  String
+  tenantId  String
+  wallet    Wallet      @relation(fields: [walletId], references: [id])
+  kind      LedgerKind
+  amount    Int         // positive or negative
+  currency  Currency    // FUNDS or DIAMONDS
+  refType   String      // e.g., "purchase", "admin_adjustment", "subscription_drip"
+  refId     String?
+  note      String?
+  createdAt DateTime    @default(now())
+  @@index([tenantId])
+}
+
+model Product {
+  id           String            @id @default(cuid())
+  slug         String            @unique
+  title        String
+  description  String?
+  kind         ProductKind
+  payload      Json
+  active       Boolean           @default(true)
+  prices       Price[]
+  entitlements Entitlement[]
+  purchases    Purchase[]
+  avatarEquip      UserProfile[] @relation("avatarEquip")
+  backgroundEquip  UserProfile[] @relation("backgroundEquip")
+  skinEquip        UserProfile[] @relation("skinEquip")
+  createdAt    DateTime          @default(now())
+}
+
+enum ProductKind {
+  CURRENCY_PACK
+  COSMETIC
+}
+
+model Price {
+  id            String    @id @default(cuid())
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id])
+  stripePriceId String?
+  currencyCode  String    // "USD", "EUR", etc.
+  unitAmount    Int       // minor units (cents)
+  active        Boolean   @default(true)
+
+  @@index([productId])
+}
+
+model Purchase {
+  id         String         @id @default(cuid())
+  userId     String
+  tenantId   String
+  user       User           @relation(fields: [userId], references: [id])
+  productId  String
+  product    Product        @relation(fields: [productId], references: [id])
+  quantity   Int            @default(1)
+  totalMinor Int            // charged amount in minor units
+  status     PurchaseStatus @default(SUCCEEDED)
+  extRef     String?        // external payment/session ID
+  createdAt  DateTime       @default(now())
+  @@index([tenantId])
+}
+
+enum PurchaseStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model Entitlement {
+  id        String    @id @default(cuid())
+  userId    String
+  tenantId  String
+  user      User      @relation(fields: [userId], references: [id])
+  productId String
+  product   Product   @relation(fields: [productId], references: [id])
+  meta      Json?
+  createdAt DateTime  @default(now())
+  @@index([tenantId])
+}
+
+model Subscription {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  stripeSubId      String    @unique
+  plan             String
+  status           String
+  currentPeriodEnd DateTime
+  perks            Json      // e.g., { monthlyDiamonds: 300 }
+  createdAt        DateTime  @default(now())
+}
+
+// Profiles storing user equip settings
+model UserProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id])
+  equippedAvatarId     String?
+  equippedAvatar       Product? @relation("avatarEquip", fields: [equippedAvatarId], references: [id])
+  equippedBackgroundId String?
+  equippedBackground   Product? @relation("backgroundEquip", fields: [equippedBackgroundId], references: [id])
+  equippedSkinId       String?
+  equippedSkin         Product? @relation("skinEquip", fields: [equippedSkinId], references: [id])
+  updatedAt            DateTime @updatedAt
+}
+
+model Badge {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  description String
+  icon        String    // emoji or icon identifier
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  createdAt DateTime @default(now())
+  
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, badgeId])
 }
 
 

@@ -19,10 +19,13 @@ export default function ChangelogPage() {
         {!entries.length ? (
           <p>Loading...</p>
         ) : (
-          entries.map((e, idx) => (
-            <div key={idx} className="mb-6">
-              <h2 className="text-xl font-semibold mb-1">{e.version} {e.date ? `- ${e.date}` : ''}</h2>
-              {['added','changed','fixed'].map((section) => {
+        entries.map((e, idx) => (
+          <details key={e.version} open={idx === 0} className="mb-6">
+            <summary className="cursor-pointer font-semibold text-xl">
+              {e.version} {e.date ? `- ${e.date}` : ''}
+            </summary>
+            <div className="mt-2 ml-4">
+              {['added', 'changed', 'fixed'].map((section) => {
                 const items = e[section as 'added' | 'changed' | 'fixed'];
                 if (!items.length) return null;
                 return (
@@ -46,7 +49,8 @@ export default function ChangelogPage() {
                 );
               })}
             </div>
-          ))
+          </details>
+        ))
         )}
       </div>
     </div>

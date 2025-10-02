@@ -105,7 +105,7 @@ export default function ProfilePage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white p-8 rounded shadow">
         <h1 className="text-2xl font-bold mb-4">Profile</h1>
-        {/* Stats */}
+        {/* User Stats */}
         <div className="mb-6 grid grid-cols-2 gap-4 text-sm text-gray-700">
           <div>
             <span className="font-semibold">Last login:</span><br />
@@ -134,6 +134,18 @@ export default function ProfilePage() {
           <div>
             <span className="font-semibold">Last session answers:</span><br />
             {profile.stats.lastSessionAnswers}
+          </div>
+          <div>
+            <span className="font-semibold">Streak:</span><br />
+            {profile.streakCount}
+          </div>
+          <div>
+            <span className="font-semibold">Today Answered:</span><br />
+            {profile.today?.answered ?? 0}
+          </div>
+          <div>
+            <span className="font-semibold">Today Skipped:</span><br />
+            {profile.today?.skipped ?? 0}
           </div>
         </div>
         {/* Session history table */}

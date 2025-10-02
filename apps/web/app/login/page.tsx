@@ -1,34 +1,36 @@
 "use client";
 const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setError('');
     try {
-      const res = await fetch(`${base}/api/login`, { cache: 'no-store',
+      const res = await fetch(`${base}/api/auth/login`, { cache: 'no-store',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email: username, password }),
       });
       const data = await res.json();
-      if (data.success) {
-        setMessage('Login successful!');
-        setLoggedIn(true);
-      } else {
-        setMessage(data.message || 'Login failed.');
+      if (!res.ok) {
+        setError(data.error || 'Login failed');
         setLoggedIn(false);
+        return;
       }
+      // on success, redirect
+      router.push('/main');
     } catch (err) {
-      setMessage('An error occurred.');
+      setError('An error occurred');
       setLoggedIn(false);
     } finally {
       setLoading(false);
@@ -37,20 +39,26 @@ export default function LoginPage() {
 
   const handleLogout = async () => {
     setLoading(true);
-    setMessage('');
+    setError('');
     try {
       await fetch(`${base}/api/logout`, { cache: 'no-store', method: 'POST' });
       setLoggedIn(false);
-      setMessage('Logged out.');
+      setError('Logged out.');
     } catch (err) {
-      setMessage('Logout failed.');
+      setError('Logout failed.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
-    setMessage('Password reset feature coming soon!');
+    setError('Password reset feature coming soon!');
+  };
+
+  // clear error on input change
+  const handleChange = (setter: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setter(e.target.value);
+    setError('');
   };
 
   return (
@@ -72,7 +80,7 @@ export default function LoginPage() {
           <>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input
                   type="text"
                   id="username"
@@ -80,7 +88,7 @@ export default function LoginPage() {
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   autoComplete="username"
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={handleChange(setUsername)}
                   required
                 />
               </div>
@@ -93,7 +101,7 @@ export default function LoginPage() {
                   className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   autoComplete="current-password"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={handleChange(setPassword)}
                   required
                 />
               </div>
@@ -105,6 +113,7 @@ export default function LoginPage() {
                 {loading ? 'Logging in...' : 'Login'}
               </button>
             </form>
+            {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
             <button
               className="w-full mt-4 bg-gray-100 text-blue-700 py-2 rounded hover:bg-gray-200 transition font-semibold border border-blue-200"
               onClick={handleForgotPassword}
@@ -114,7 +123,7 @@ export default function LoginPage() {
             </button>
           </>
         )}
-        {message && <p className="mt-4 text-center text-sm text-gray-700">{message}</p>}
+        {loggedIn && <p className="mt-4 text-center text-sm text-green-700">You are logged in!</p>}
       </div>
     </div>
   );

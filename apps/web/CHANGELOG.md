@@ -1,7 +1,80 @@
 # Changelog
 All notable changes to this project will be documented here.  
 Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).  
-Versioning follows [Semantic Versioning](https://semver.org/).  
+Versioning follows [Semantic Versioning](https://semver.org/).
+
+---
+
+⚠️ **Update Rules (read carefully, Cursor!)**
+- Do **not** edit or reformat past entries.  
+- Always **prepend** new version blocks at the top.  
+- Use this structure only:
+
+[x.y.z] - YYYY-MM-DD
+Added
+
+- ...
+
+Changed
+
+- ...
+
+Fixed
+
+- ...
+
+- If a section is empty → omit the heading.  
+- Preserve indentation and nested bullets exactly as shown in older entries.  
+- Never collapse or “clean up” history.  
+
+
+## [0.3.0] - 2025-10-01
+### Added
+- UI-first Shop v1
+ - Embeded Stripe and created Shop items
+ - Shop page layout
+ - Tabs: Currency | Cosmetics | My Items | Subscription.
+ - Header: balances + buttons.
+ - Schema, infrastructure, API etc.
+ - Tailwind + shadcn/ui + lucide-react + next-themes are set up.
+ - Security & sanity checks
+ - Entitlements API
+- Equip System
+- Subscription mock + drip
+- Dark/Light theme
+- Bootstrap content factory for questions:
+  - Prep the seed list
+  - Batch generator job
+  - UI for supervision
+  - Flow to end-users
+  - Control scaling
+  - Safety checks
+- User auth via Next.js API routes (signup/login) with JWT cookies
+- `authUser` middleware for protected endpoints
+- Flow runner end-to-end integration test (happy path)
+- Seed script for demo data:
+  - 10 dummy users (`demo@example.com` + 9 test accounts, all with `password123`)
+  - Demo category tree (`Demo Category > Demo SubCategory > Demo SubSub > Demo Leaf`)
+  - 3 demo questions under Demo Leaf
+- Leaderboard groundwork:
+  - `score`, `questionsAnswered`, `questionsCreated` fields in User
+  - `Group` + `UserGroup` models for future group leaderboards
+- Flow service increments user score + answered count on each answer
+- Error handling for Login
+
+### Changed
+- User model updated with `passwordHash`, `theme`, and streak fields
+- Flow endpoints now require authenticated user
+- `answerQuestion` logic transactional with difficulty-based scoring
+- Prisma migrations reset into a new `init` baseline for clean schema alignment
+
+### Fixed
+- Initial login/signup flow working (test user can access flow)
+- Login UI now actually posts to `/api/auth/login` and sets cookie
+- Windows EPERM error on Prisma DLL resolved by regenerating client
+- Migration drift (`SssCategory` missing) resolved by reset
+- Seed script fixed (imports PrismaClient, disconnects on exit)
+
 
 ## [0.2.0] - 2025-09-29
 ### Added
@@ -12,7 +85,6 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Testing framework setup
 - Environment Stamp - show if Dev or Prod
  
-
 ### Changed
 - heavy DB changes for Questions
  - new tables for questions hierarchy

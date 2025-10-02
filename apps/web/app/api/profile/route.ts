@@ -48,10 +48,19 @@ export async function GET(request: Request) {
   const lastSession = sessionStats[0] || { answers: 0, timeSpent: 0 };
   // Build base DTO and then attach stats
   const baseUser: UserDTO = toUserDTO(dbUser);
+  // Compute today's answered/skipped
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const [answeredToday, skippedToday] = await Promise.all([
+    prisma.userQuestion.count({ where: { userId: dbUser.id, status: 'answered', updatedAt: { gte: todayStart } } }),
+    prisma.userQuestion.count({ where: { userId: dbUser.id, status: 'skipped', updatedAt: { gte: todayStart } } }),
+  ]);
   return NextResponse.json({
     success: true,
     user: {
       ...baseUser,
+      streakCount: dbUser.streakCount,
+      today: { answered: answeredToday, skipped: skippedToday },
       stats: {
         totalSessions: sessions.length,
         totalAnswers,
