@@ -34,6 +34,7 @@ model User {
   image     String?   // optional profile image URL
   streakCount    Int      @default(0)
   lastAnsweredAt DateTime?
+  emailVerifiedAt DateTime?
 
   memberships Membership[]
   createdTasks Task[] @relation("TaskCreator")
@@ -52,7 +53,12 @@ model User {
   wallet            Wallet?
   userProfile       UserProfile?
   userBadges        UserBadge[]
+  passwordResets    PasswordReset[]
+  emailVerifies     EmailVerify[]
+  newsletterOptIn   Boolean @default(false)
+  auditLogs         AuditLog[]
 
+  @@index([emailVerifiedAt])
   @@map("users")
 }
 
@@ -497,6 +503,7 @@ model Wallet {
   diamonds      Int           @default(0)
   ledgerEntries LedgerEntry[]
   @@index([tenantId])
+  @@unique([userId, tenantId])
 }
 
 enum Currency {
@@ -522,6 +529,7 @@ model LedgerEntry {
   note      String?
   createdAt DateTime    @default(now())
   @@index([tenantId])
+  @@index([walletId, createdAt])
 }
 
 model Product {
@@ -531,6 +539,7 @@ model Product {
   description  String?
   kind         ProductKind
   payload      Json
+  stackable    Boolean           @default(false) // whether entitlements can stack
   active       Boolean           @default(true)
   prices       Price[]
   entitlements Entitlement[]
@@ -571,6 +580,7 @@ model Purchase {
   extRef     String?        // external payment/session ID
   createdAt  DateTime       @default(now())
   @@index([tenantId])
+  @@index([userId, createdAt])
 }
 
 enum PurchaseStatus {
@@ -590,6 +600,7 @@ model Entitlement {
   meta      Json?
   createdAt DateTime  @default(now())
   @@index([tenantId])
+  @@unique([userId, productId]) // Note: This enforces uniqueness for non-stackable products
 }
 
 model Subscription {
@@ -640,6 +651,56 @@ model UserBadge {
   badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
   
   @@unique([userId, badgeId])
+}
+
+model FailedLoginAttempt {
+  id        String   @id @default(cuid())
+  ipAddress String
+  email     String
+  createdAt DateTime @default(now())
+  
+  @@index([ipAddress, createdAt])
+  @@index([email, createdAt])
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model EmailVerify {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?  // Optional - may be null for anonymous actions
+  ip        String
+  action    String
+  meta      Json?    // Additional metadata as JSON
+  createdAt DateTime @default(now())
+  
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([createdAt])
+  @@map("audit_logs")
 }
 
 

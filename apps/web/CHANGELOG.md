@@ -28,7 +28,45 @@ Fixed
 - Never collapse or “clean up” history.  
 
 
-## [0.3.0] - 2025-10-01
+## [0.4.0] - 2025-10-03
+### Added
+- Profile Dropdown Menu + Lockout Logic + hCaptcha Integration, UI Component
+- Authentication overhaul
+ - Secure signup/login with Argon2id hashing and session cookies.
+ - Email verification + password reset flows with token links.
+ - Basic profile edit (password, newsletter toggle).
+- Email system
+ - Transactional emails: welcome, verification, password reset, purchase confirmations.
+ - Newsletter opt-in/out stored in profile, stubbed provider sync.
+- Character page
+ - Stats, Equipment system, Inventory, Attributes, Portrait
+- New Roadmap Page
+- Email Utility with Resend
+- Health Check API Updates
+ - Sentry Integration Added
+ - Enhanced Error Context
+### Changed
+- Security
+ - Rate limiting for signup/login with lockout after repeated failures.
+ - Optional hCaptcha on excessive signup attempts.
+ - Minimal audit log with admin viewer for critical events.
+- Profile page update 
+- Health & observability
+ - /api/health endpoint with DB + Stripe checks and git version.
+ - Sentry (or equivalent) integration for error capture.
+ - Request IDs added to logs + responses.
+- Database & scaling
+ - Proper indices on Users, Wallet, Ledger, Purchase, Entitlement.
+ - Wallet balance updates wrapped in DB transaction with row locks.
+ - Paginated API list endpoints for stability.
+- Testing
+ - Vitest unit/API tests for auth + wallet purchase.
+ - Playwright E2E: signup → verify email → login → shop purchase → entitlement.
+ - CI workflow runs tests on every PR.
+### Fixed
+- Changelog readability improved with prose + dark:prose-invert classes for dark mode.
+
+## [0.3.0] - 2025-10-02
 ### Added
 - UI-first Shop v1
  - Embeded Stripe and created Shop items

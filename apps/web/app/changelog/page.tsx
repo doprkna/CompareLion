@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { ChangelogProse } from '@/components/ui/prose';
 
 export default function ChangelogPage() {
   const [entries, setEntries] = useState<any[]>([]);
@@ -24,7 +25,7 @@ export default function ChangelogPage() {
             <summary className="cursor-pointer font-semibold text-xl">
               {e.version} {e.date ? `- ${e.date}` : ''}
             </summary>
-            <div className="mt-2 ml-4">
+            <ChangelogProse>
               {['added', 'changed', 'fixed'].map((section) => {
                 const items = e[section as 'added' | 'changed' | 'fixed'];
                 if (!items.length) return null;
@@ -38,7 +39,7 @@ export default function ChangelogPage() {
                           {it.children.length > 0 && (
                             <ul className="list-circle list-inside ml-4 mt-1">
                               {it.children.map((child, ci) => (
-                                <li key={ci} className="text-sm text-gray-600">{child}</li>
+                                <li key={ci} className="text-sm">{child}</li>
                               ))}
                             </ul>
                           )}
@@ -48,7 +49,7 @@ export default function ChangelogPage() {
                   </div>
                 );
               })}
-            </div>
+            </ChangelogProse>
           </details>
         ))
         )}

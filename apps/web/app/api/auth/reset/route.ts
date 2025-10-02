@@ -1,0 +1,87 @@
+export const runtime = 'nodejs';
+
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { hashPassword } from '@/lib/auth/password';
+import { isTokenExpired } from '@/lib/auth/tokens';
+import { z } from 'zod';
+
+const ResetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token is required'),
+  newPassword: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password too long')
+    .regex(/^(?=.*[A-Za-z])(?=.*\d).+$/, 'Password must contain at least one letter and one number'),
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    
+    // Validate input
+    const validationResult = ResetPasswordSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid input data' },
+        { status: 400 }
+      );
+    }
+
+    const { token, newPassword } = validationResult.data;
+
+    // Find the reset record
+    const resetRecord = await prisma.passwordReset.findUnique({
+      where: { token },
+      include: { user: { select: { id: true, email: true } } }
+    });
+
+    if (!resetRecord) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired reset token' },
+        { status: 400 }
+      );
+    }
+
+    // Check if token is expired
+    if (isTokenExpired(resetRecord.expiresAt)) {
+      // Clean up expired token
+      await prisma.passwordReset.delete({
+        where: { id: resetRecord.id }
+      });
+      
+      return NextResponse.json(
+        { success: false, error: 'Reset token has expired' },
+        { status: 400 }
+      );
+    }
+
+    // Hash the new password
+    const hashedPassword = await hashPassword(newPassword);
+
+    // Update password and delete reset token in transaction
+    await prisma.$transaction(async (tx) => {
+      // Update user's password
+      await tx.user.update({
+        where: { id: resetRecord.userId },
+        data: { passwordHash: hashedPassword }
+      });
+
+      // Delete the reset token
+      await tx.passwordReset.delete({
+        where: { id: resetRecord.id }
+      });
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Password reset successfully' 
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to reset password' },
+      { status: 500 }
+    );
+  }
+}

@@ -43,12 +43,18 @@ function parseChangelog(md: string): Changelog {
 }
 
 async function main() {
-  const mdPath = path.join(__dirname, '..', 'apps', 'web', 'CHANGELOG.md');
-  const outPath = path.join(__dirname, '..', 'changelog.json');
-  const md = fs.readFileSync(mdPath, 'utf-8');
-  const data = parseChangelog(md);
-  fs.writeFileSync(outPath, JSON.stringify(data, null, 2));
-  console.log(`Wrote changelog.json with ${data.length} entries`);
+  // Automatic changelog generation disabled - manual changelog management
+  console.log('Automatic changelog generation is disabled.');
+  console.log('Changelog is now managed manually.');
+  console.log('To re-enable, uncomment the code below and run this script manually.');
+  
+  // DISABLED: Automatic changelog parsing and generation
+  // const mdPath = path.join(__dirname, '..', 'apps', 'web', 'CHANGELOG.md');
+  // const outPath = path.join(__dirname, '..', 'changelog.json');
+  // const md = fs.readFileSync(mdPath, 'utf-8');
+  // const data = parseChangelog(md);
+  // fs.writeFileSync(outPath, JSON.stringify(data, null, 2));
+  // console.log(`Wrote changelog.json with ${data.length} entries`);
 }
 
 main().catch(err => {
