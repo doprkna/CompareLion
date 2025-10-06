@@ -23,14 +23,22 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Login failed');
+        // Show specific error message from backend in development
+        const errorMessage = process.env.NODE_ENV === 'development' 
+          ? (data.error || data.message || 'Login failed')
+          : 'Invalid credentials';
+        setError(errorMessage);
         setLoggedIn(false);
         return;
       }
       // on success, redirect
       router.push('/main');
     } catch (err) {
-      setError('An error occurred');
+      // Show specific error in development, generic in production
+      const errorMessage = process.env.NODE_ENV === 'development' 
+        ? `Network error: ${err instanceof Error ? err.message : 'Unknown error'}`
+        : 'An error occurred';
+      setError(errorMessage);
       setLoggedIn(false);
     } finally {
       setLoading(false);

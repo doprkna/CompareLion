@@ -34,10 +34,10 @@ export function ProseExample() {
           <blockquote>
             This is a blockquote with some important information.
           </blockquote>
-          <pre><code>// This is a code block
+          <pre><code>{`// This is a code block
 function example() {
   return "Hello, World!";
-}</code></pre>
+}`}</code></pre>
         </Prose>
       </section>
 
@@ -76,16 +76,16 @@ function example() {
           
           <h2>Usage</h2>
           <p>Here's a simple example of how to use our components:</p>
-          <pre><code>import { Prose } from '@parel/web/components/ui/prose';
+          <pre><code>{`import { Prose } from '@parel/web/components/ui/prose';
 
 function MyComponent() {
   return (
-    &lt;Prose&gt;
-      &lt;h1&gt;Hello World&lt;/h1&gt;
-      &lt;p&gt;This is some content.&lt;/p&gt;
-    &lt;/Prose&gt;
+    <Prose>
+      <h1>Hello World</h1>
+      <p>This is some content.</p>
+    </Prose>
   );
-}</code></pre>
+}`}</code></pre>
           
           <h2>Configuration</h2>
           <p>You can configure the prose component with various options:</p>

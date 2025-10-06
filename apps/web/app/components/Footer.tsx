@@ -5,12 +5,22 @@ export default function Footer() {
   const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
-    fetch('/api/changelog')
+    fetch('/api/version')
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.entries?.length) {
-          setVersion(data.entries[0].version);
+        if (data.success && data.version) {
+          setVersion(data.version.number || data.version);
         }
+      })
+      .catch(() => {
+        // Fallback to changelog if version API fails
+        fetch('/api/changelog')
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && data.entries?.length) {
+              setVersion(data.entries[0].version);
+            }
+          });
       });
   }, []);
 

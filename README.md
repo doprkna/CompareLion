@@ -71,52 +71,75 @@ A web app that routes small personal/work tasks to either automation or a human 
 - **UI**: Tailwind CSS + shadcn/ui
 - **Infrastructure**: Docker Compose
 
+## Project Structure
+
+This is a **monorepo** with the following structure:
+
+```
+parel-mvp/
+├── apps/
+│   ├── web/          # Next.js application (main app)
+│   └── worker/       # Background worker
+├── packages/
+│   └── db/           # Shared database package
+└── scripts/          # Build and setup scripts
+```
+
+**Important:**
+- **Working Directory**: All development commands should be run from the **project root** (`parel-mvp/`)
+- **Environment File**: Use `/apps/web/.env` for Next.js app configuration
+- **Package Manager**: This project uses **pnpm** for workspace management
+
 ## Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
 - Docker and Docker Compose
-- npm or yarn
+- pnpm (install with `npm install -g pnpm`)
 
 ### 1. Clone and Install
 
 ```bash
 git clone <repository-url>
 cd parel-mvp
-npm install
+pnpm install
 ```
 
 ### 2. Environment Setup
 
 ```bash
-cp env.example .env
+# Copy the environment template to the Next.js app directory
+cp apps/web/.env.example apps/web/.env
 ```
 
-Edit `.env` with your configuration:
+Edit `apps/web/.env` with your configuration. See `apps/web/.env.example` for a complete template.
 
-```env
-# Database
-DATABASE_URL="postgresql://parel:parel@localhost:5432/parel"
+#### **Required Environment Variables**
 
-# Redis
-REDIS_URL="redis://localhost:6379"
+| Variable | Description | Required | Example |
+|----------|-------------|----------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | ✅ | `postgresql://user:pass@localhost:5432/parel` |
+| `REDIS_URL` | Redis connection string | ✅ | `redis://localhost:6379` |
+| `NEXTAUTH_URL` | Base URL for authentication | ✅ | `http://localhost:3000` |
+| `NEXTAUTH_SECRET` | Secret for NextAuth.js | ✅ | `your-secret-key-here` |
+| `JWT_SECRET` | Secret for JWT tokens | ✅ | `your-jwt-secret-key-here` |
 
-# NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
+#### **Optional Environment Variables**
 
-# Email (for magic links)
-EMAIL_SERVER_HOST="smtp.gmail.com"
-EMAIL_SERVER_PORT=587
-EMAIL_SERVER_USER="your-email@gmail.com"
-EMAIL_SERVER_PASSWORD="your-app-password"
-EMAIL_FROM="noreply@parel.com"
-
-# Google OAuth
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `RESEND_API_KEY` | Email service API key | - |
+| `APP_MAIL_FROM` | From email address | `noreply@example.com` |
+| `STRIPE_SECRET_KEY` | Stripe secret key | - |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook secret | - |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis URL | - |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis token | - |
+| `SENTRY_DSN` | Sentry error tracking | - |
+| `NEXT_PUBLIC_SENTRY_DSN` | Public Sentry DSN | - |
+| `HCAPTCHA_SECRET` | hCaptcha secret key | - |
+| `NEXT_PUBLIC_HCAPTCHA_SITE_KEY` | hCaptcha site key | - |
+| `ADMIN_EMAILS` | Comma-separated admin emails | - |
 
 ### 3. Start Infrastructure
 
@@ -137,13 +160,73 @@ npm run db:seed
 ### 5. Start Development
 
 ```bash
-# Start both web app and worker
-npm run dev
+# Start both web app and worker (from project root)
+pnpm run dev
 
-# Or start individually:
-npm run dev:web    # Next.js app on http://localhost:3000
-npm run dev:worker # BullMQ worker
+# Or start individual services:
+pnpm run dev:web      # Next.js app only (http://localhost:3000)
+pnpm run dev:worker   # Worker only
 ```
+
+## Development Commands
+
+All commands should be run from the **project root** (`parel-mvp/`):
+
+```bash
+# Development
+pnpm run dev              # Start all services
+pnpm run dev:web          # Next.js app only
+pnpm run dev:worker       # Worker only
+
+# Database
+pnpm run db:push          # Push schema changes
+pnpm run db:seed          # Seed with demo data
+pnpm run db:studio        # Open Prisma Studio
+
+# Testing
+pnpm run test             # Run tests
+pnpm run test:e2e         # Run E2E tests
+pnpm run typecheck        # TypeScript check
+
+# Building
+pnpm run build            # Build for production
+pnpm run generate:prisma  # Generate Prisma client
+```
+
+## Deployment
+
+### Vercel Deployment
+
+1. **Connect your repository** to Vercel
+2. **Set environment variables** in Vercel dashboard:
+   - Go to Project Settings → Environment Variables
+   - Add all required variables from the table above
+   - Use production values (e.g., production database URL, real API keys)
+
+3. **Required Vercel Environment Variables:**
+   ```bash
+   DATABASE_URL=postgresql://user:pass@host:5432/db
+   REDIS_URL=redis://host:6379
+   NEXTAUTH_URL=https://your-domain.vercel.app
+   NEXTAUTH_SECRET=your-production-secret
+   JWT_SECRET=your-production-jwt-secret
+   ```
+
+4. **Deploy:**
+   ```bash
+   # Vercel will automatically deploy on git push
+   git push origin main
+   ```
+
+### Environment File Priority
+
+Next.js loads environment variables in this order:
+1. `process.env` (system environment)
+2. `.env.local` (highest priority, gitignored)
+3. `.env.development` / `.env.production` (environment-specific)
+4. `.env` (lowest priority)
+
+**For production:** Use Vercel environment variables instead of `.env` files.
 
 ## Project Structure
 

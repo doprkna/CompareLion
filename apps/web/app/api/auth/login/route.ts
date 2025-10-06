@@ -2,7 +2,8 @@ export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyPassword } from '@/lib/auth/password';
+import { verifyPassword, hashPassword } from '@/lib/auth/password';
+import bcrypt from 'bcrypt';
 import { LoginSchema } from '@/lib/validation/auth';
 import { createSession, setSessionCookie } from '@/lib/auth/session';
 import { checkRateLimit, recordFailedAttempt, clearAllFailedAttempts } from '@/lib/auth/rateLimit';
@@ -109,8 +110,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify password
-    const isValidPassword = await verifyPassword(user.passwordHash, password);
+    // Verify password - try Argon2id first, then bcrypt for backward compatibility
+    let isValidPassword = false;
+    let needsRehash = false;
+    
+    try {
+      // Try Argon2id verification first
+      isValidPassword = await verifyPassword(user.passwordHash, password);
+    } catch (argonError) {
+      console.log(`[${requestId}] Argon2id verification failed, trying bcrypt:`, argonError);
+      
+      // If Argon2id fails, try bcrypt for backward compatibility
+      try {
+        isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        if (isValidPassword) {
+          needsRehash = true; // Mark for rehashing with Argon2id
+          console.log(`[${requestId}] Password verified with bcrypt, will rehash with Argon2id`);
+        }
+      } catch (bcryptError) {
+        console.error(`[${requestId}] Both Argon2id and bcrypt verification failed:`, { argonError, bcryptError });
+        isValidPassword = false;
+      }
+    }
     
     if (!isValidPassword) {
       // Record failed attempt
@@ -139,11 +160,33 @@ export async function POST(req: NextRequest) {
     // Clear failed attempts on successful login
     await clearAllFailedAttempts(ip);
 
-    // Update last login time
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() }
-    });
+    // Rehash password with Argon2id if it was verified with bcrypt
+    if (needsRehash) {
+      try {
+        const newHash = await hashPassword(password);
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { 
+            password: newHash,
+            lastLoginAt: new Date()
+          }
+        });
+        console.log(`[${requestId}] Password successfully rehashed with Argon2id for user ${email}`);
+      } catch (rehashError) {
+        console.error(`[${requestId}] Failed to rehash password:`, rehashError);
+        // Continue with login even if rehashing fails
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() }
+        });
+      }
+    } else {
+      // Update last login time only
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date() }
+      });
+    }
 
     // Create session and set cookie
     const token = await createSession({
@@ -170,7 +213,7 @@ export async function POST(req: NextRequest) {
       requestId
     }, 200, requestId);
   } catch (error) {
-    console.error('Login error:', error);
+    console.error(`[${requestId}] Login error:`, error);
     
     // Capture error with Sentry
     captureError(error as Error, {
@@ -179,8 +222,13 @@ export async function POST(req: NextRequest) {
       extra: { requestId }
     });
     
+    // Provide more specific error in development
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      : 'Login failed';
+    
     return createResponseWithRequestId(
-      { success: false, error: 'Login failed', requestId },
+      { success: false, error: errorMessage, requestId },
       500,
       requestId
     );

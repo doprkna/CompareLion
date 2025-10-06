@@ -20,7 +20,7 @@ export function Prose({
   return (
     <div 
       className={cn(
-        "prose prose-neutral dark:prose-invert",
+        "prose prose-slate dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:text-gray-700 dark:prose-li:text-gray-300",
         `max-w-${maxWidth}`,
         className
       )}

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
 
 /**
- * Generate a unique request ID
+ * Generate a unique request ID using Web Crypto API (Edge Runtime compatible)
  */
 export function generateRequestId(): string {
-  return crypto.randomBytes(16).toString('hex');
+  // Use Web Crypto API for Edge Runtime compatibility
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 /**

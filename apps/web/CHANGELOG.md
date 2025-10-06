@@ -28,6 +28,29 @@ Fixed
 - Never collapse or “clean up” history.  
 
 
+## [0.4.1] - 2025-10-06
+### Added
+- 
+### Changed
+- Changelog Updates
+ - API with fallback
+### Fixed
+- Login fixes
+ - Argon2id password hashing with bcrypt fallback
+ - Automatic password rehashing
+ - Specific error messages in development
+ - Proper error logging and debugging
+ - Session cookie management
+- Environmenal files fixes
+ - Removed Duplicates files, cleaned debug files
+ - Updated Readme with project structure
+ - Created Env Template
+- Build fixes and simplification
+- Changelog Issues
+ - fallback Added
+ - errors handling
+ - color visibility Fixed
+
 ## [0.4.0] - 2025-10-03
 ### Added
 - Profile Dropdown Menu + Lockout Logic + hCaptcha Integration, UI Component
