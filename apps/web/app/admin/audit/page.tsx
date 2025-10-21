@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { getApiUrl } from '@/lib/apiBase';
 
 interface AuditLog {
   id: string;
@@ -48,8 +49,6 @@ export default function AdminAuditPage() {
     userId: '',
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-
   const fetchAuditLogs = async (resetOffset = false) => {
     setLoading(true);
     setError(null);
@@ -63,7 +62,7 @@ export default function AdminAuditPage() {
         ...(filters.userId && { userId: filters.userId }),
       });
 
-      const response = await fetch(`${baseUrl}/api/admin/audit?${params}`, {
+      const response = await fetch(getApiUrl(`/api/admin/audit?${params}`), {
         credentials: 'include',
       });
 

@@ -1,0 +1,41 @@
+[Unit]
+Description=PareL Web Application
+After=network.target postgresql.service redis.service
+Wants=postgresql.service redis.service
+
+[Service]
+Type=simple
+User=parel
+WorkingDirectory=/opt/parel
+ExecStart=/usr/bin/pnpm start
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=parel-web
+
+# Resource limits
+LimitNOFILE=65536
+MemoryLimit=2G
+
+# Environment
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/parel/.env
+
+# Graceful shutdown
+TimeoutStopSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,285 @@
+{
+  "version": "0.8.14",
+  "tiers": {
+    "basic": {
+      "name": "Creator",
+      "badge": "🎨",
+      "color": "#8b5cf6",
+      "revenueShare": 10,
+      "maxFlows": 5,
+      "requirements": {
+        "level": 10,
+        "verified": true
+      }
+    },
+    "verified": {
+      "name": "Verified Creator",
+      "badge": "✅",
+      "color": "#10b981",
+      "revenueShare": 15,
+      "maxFlows": null,
+      "requirements": {
+        "followers": 50,
+        "publishedFlows": 5,
+        "avgRating": 4.0
+      }
+    },
+    "premium": {
+      "name": "Premium Creator",
+      "badge": "⭐",
+      "color": "#f59e0b",
+      "revenueShare": 20,
+      "maxFlows": null,
+      "goldPerPlay": 5,
+      "requirements": {
+        "followers": 500,
+        "publishedFlows": 20,
+        "avgRating": 4.5,
+        "totalPlays": 10000
+      }
+    },
+    "partner": {
+      "name": "Partner Creator",
+      "badge": "💎",
+      "color": "#06b6d4",
+      "revenueShare": 30,
+      "maxFlows": null,
+      "goldPerPlay": 10,
+      "diamondBonus": 1,
+      "instantPublish": true,
+      "requirements": {
+        "followers": 2000,
+        "publishedFlows": 50,
+        "avgRating": 4.8,
+        "totalPlays": 100000
+      }
+    }
+  },
+  "flowCategories": [
+    {
+      "id": "knowledge",
+      "name": "Knowledge",
+      "icon": "📚",
+      "description": "Educational and informational content"
+    },
+    {
+      "id": "creativity",
+      "name": "Creativity",
+      "icon": "🎨",
+      "description": "Creative thinking and imagination"
+    },
+    {
+      "id": "personality",
+      "name": "Personality",
+      "icon": "🎭",
+      "description": "Self-discovery and personality tests"
+    },
+    {
+      "id": "fun",
+      "name": "Fun",
+      "icon": "🎉",
+      "description": "Entertainment and humor"
+    }
+  ],
+  "difficulties": {
+    "easy": {
+      "name": "Easy",
+      "icon": "🟢",
+      "color": "#10b981",
+      "xpMultiplier": 1.0
+    },
+    "medium": {
+      "name": "Medium",
+      "icon": "🟡",
+      "color": "#f59e0b",
+      "xpMultiplier": 1.5
+    },
+    "hard": {
+      "name": "Hard",
+      "icon": "🟠",
+      "color": "#ef4444",
+      "xpMultiplier": 2.0
+    },
+    "expert": {
+      "name": "Expert",
+      "icon": "🔴",
+      "color": "#dc2626",
+      "xpMultiplier": 3.0
+    }
+  },
+  "flowStatuses": {
+    "draft": {
+      "name": "Draft",
+      "icon": "📝",
+      "color": "#64748b",
+      "description": "Work in progress"
+    },
+    "pending_review": {
+      "name": "Pending Review",
+      "icon": "⏳",
+      "color": "#f59e0b",
+      "description": "Awaiting approval"
+    },
+    "approved": {
+      "name": "Approved",
+      "icon": "✅",
+      "color": "#10b981",
+      "description": "Ready to publish"
+    },
+    "rejected": {
+      "name": "Rejected",
+      "icon": "❌",
+      "color": "#ef4444",
+      "description": "Not approved"
+    },
+    "published": {
+      "name": "Published",
+      "icon": "🌟",
+      "color": "#8b5cf6",
+      "description": "Live and available"
+    }
+  },
+  "rewardTypes": {
+    "xp_share": {
+      "name": "XP Share",
+      "icon": "✨",
+      "description": "Revenue share from flow plays"
+    },
+    "gold_bonus": {
+      "name": "Gold Bonus",
+      "icon": "💰",
+      "description": "Fixed gold per play"
+    },
+    "milestone_bonus": {
+      "name": "Milestone Bonus",
+      "icon": "🎯",
+      "description": "Achievement bonuses"
+    }
+  },
+  "milestones": [
+    {
+      "type": "first_flow",
+      "name": "First Flow Published",
+      "icon": "🎉",
+      "reward": {
+        "xp": 500,
+        "gold": 1000
+      }
+    },
+    {
+      "type": "100_plays",
+      "name": "100 Total Plays",
+      "icon": "🔥",
+      "reward": {
+        "gold": 2000
+      }
+    },
+    {
+      "type": "1000_plays",
+      "name": "1,000 Total Plays",
+      "icon": "⭐",
+      "reward": {
+        "gold": 5000,
+        "diamonds": 50
+      }
+    },
+    {
+      "type": "10000_plays",
+      "name": "10,000 Total Plays",
+      "icon": "💎",
+      "reward": {
+        "gold": 10000,
+        "diamonds": 100
+      }
+    },
+    {
+      "type": "100_followers",
+      "name": "100 Followers",
+      "icon": "👥",
+      "reward": {
+        "gold": 3000
+      }
+    },
+    {
+      "type": "1000_followers",
+      "name": "1,000 Followers",
+      "icon": "🌟",
+      "reward": {
+        "gold": 10000,
+        "diamonds": 100
+      }
+    }
+  ],
+  "editor": {
+    "maxQuestions": 50,
+    "minQuestions": 3,
+    "maxTitleLength": 100,
+    "maxDescriptionLength": 500,
+    "allowedTags": 20,
+    "questionTypes": [
+      "multiple_choice",
+      "true_false",
+      "slider",
+      "open_ended"
+    ]
+  },
+  "reviewGuidelines": {
+    "autoApprove": {
+      "enabled": false,
+      "requirements": [
+        "Partner tier",
+        "No previous rejections"
+      ]
+    },
+    "aiReview": {
+      "enabled": true,
+      "checks": [
+        "inappropriate_content",
+        "spam",
+        "quality_score"
+      ]
+    },
+    "manualReview": {
+      "required": true,
+      "reviewTimeGoal": "24 hours"
+    }
+  },
+  "showcaseFeed": {
+    "sections": [
+      {
+        "id": "trending",
+        "name": "Trending Now",
+        "icon": "🔥",
+        "sortBy": "playCount_7d"
+      },
+      {
+        "id": "new",
+        "name": "New Releases",
+        "icon": "🆕",
+        "sortBy": "publishedAt"
+      },
+      {
+        "id": "top_rated",
+        "name": "Top Rated",
+        "icon": "⭐",
+        "sortBy": "avgRating"
+      },
+      {
+        "id": "featured",
+        "name": "Featured",
+        "icon": "💎",
+        "filter": "isFeatured"
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+

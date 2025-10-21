@@ -124,7 +124,7 @@ temp/
 # OS generated files
 Thumbs.db
 
-
-
-
+# Prisma generated files
+**/.prisma/
+**/node_modules/.prisma/
 

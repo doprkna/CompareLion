@@ -11,7 +11,19 @@ The core value is giving people perspective on themselves through comparison —
 ## Feature Progress & Versioning (2025-09)
 
 ### Authentication
-- Email + password signup and login (with validation, duplicate checks, and bcrypt password hashing)
+- Multiple authentication methods via NextAuth.js:
+  - Email + password (credentials) with argon2id hashing
+  - Email magic links (requires SMTP configuration)
+  - Google OAuth (requires client ID/secret)
+  - Facebook, Twitter OAuth placeholders (ready for activation)
+- Database sessions via PrismaAdapter
+  - Account linking for OAuth providers
+  - Session persistence across page refreshes
+  - Automatic session cleanup
+- Password security:
+  - Argon2id hashing for new passwords
+  - Bcrypt compatibility for legacy accounts
+  - Auto-upgrade from bcrypt to argon2id on login
 - JWT-based session management with secure HTTP-only cookies
 - Logout endpoint and UI
 - Global logged-in state indicator in navigation
@@ -129,6 +141,7 @@ Edit `apps/web/.env` with your configuration. See `apps/web/.env.example` for a 
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `NEXT_PUBLIC_BASE_URL` | API base URL for client-side fetch calls | Auto-detected |
 | `RESEND_API_KEY` | Email service API key | - |
 | `APP_MAIL_FROM` | From email address | `noreply@example.com` |
 | `STRIPE_SECRET_KEY` | Stripe secret key | - |
@@ -140,6 +153,13 @@ Edit `apps/web/.env` with your configuration. See `apps/web/.env.example` for a 
 | `HCAPTCHA_SECRET` | hCaptcha secret key | - |
 | `NEXT_PUBLIC_HCAPTCHA_SITE_KEY` | hCaptcha site key | - |
 | `ADMIN_EMAILS` | Comma-separated admin emails | - |
+
+> **Note on `NEXT_PUBLIC_BASE_URL`**: This variable is automatically detected and doesn't need to be set manually in most cases. The app uses smart defaults:
+> - In production: Uses the Vercel deployment URL
+> - In development (client): Uses relative URLs (empty string)
+> - In development (server): Uses `http://localhost:3000`
+>
+> Only set this if you need to override the default behavior.
 
 ### 3. Start Infrastructure
 
@@ -250,6 +270,10 @@ parel-mvp/
 - **Validation**: Zod schemas are centralized under `apps/web/lib/validation/*.ts`. API routes import and apply these schemas for input validation.
 - **Background Processing**: Implemented with BullMQ + Redis. Queue connection and job definitions reside in `apps/web/lib/queue/*`. Workers are in `apps/web/worker`, consuming jobs and interacting with services.
 - **Testing**: End-to-end smoke tests using Jest + Supertest live in `/tests`. Helper `tests/utils/testServer.ts` mounts route handlers for testing.
+- **API Utilities**: Smart API URL handling with automatic environment detection:
+  - `apps/web/lib/apiBase.ts` provides utilities for building API URLs that work in both development and production
+  - No hardcoded `localhost` URLs - all API calls use the `getApiUrl()` helper
+  - Automatic fallbacks for different environments (client, server, production)
 
 ## Updated Project Structure
 

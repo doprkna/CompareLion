@@ -1,0 +1,134 @@
+{
+  "version": "0.8.8",
+  "collections": [
+    {
+      "collectionId": "courage_set",
+      "name": "Path of Courage",
+      "theme": "Courage",
+      "icon": "🦁",
+      "color": "#dc2626",
+      "achievementCodes": [
+        "first_challenge",
+        "challenge_streak_7",
+        "duel_winner",
+        "hard_question_master"
+      ]
+    },
+    {
+      "collectionId": "wisdom_set",
+      "name": "Circle of Wisdom",
+      "theme": "Wisdom",
+      "icon": "🦉",
+      "color": "#7c3aed",
+      "achievementCodes": [
+        "scholar",
+        "flow_master",
+        "knowledge_archetype",
+        "quiz_perfect"
+      ]
+    },
+    {
+      "collectionId": "chaos_set",
+      "name": "Embrace of Chaos",
+      "theme": "Chaos",
+      "icon": "🌀",
+      "color": "#8b5cf6",
+      "achievementCodes": [
+        "random_master",
+        "wildcard_winner",
+        "chaos_archetype",
+        "surprise_achievement"
+      ]
+    },
+    {
+      "collectionId": "balance_set",
+      "name": "Harmony of Balance",
+      "theme": "Balance",
+      "icon": "⚖️",
+      "color": "#14b8a6",
+      "achievementCodes": [
+        "polymath",
+        "karma_neutral",
+        "balanced_stats",
+        "diplomat"
+      ]
+    },
+    {
+      "collectionId": "spring_2025",
+      "name": "Spring Awakening",
+      "theme": "Seasonal",
+      "icon": "🌸",
+      "color": "#ec4899",
+      "seasonType": "spring",
+      "achievementCodes": [
+        "spring_login",
+        "sakura_theme",
+        "spring_event_complete",
+        "nature_lover"
+      ]
+    },
+    {
+      "collectionId": "winter_2025",
+      "name": "Winter's Grasp",
+      "theme": "Seasonal",
+      "icon": "❄️",
+      "color": "#0ea5e9",
+      "seasonType": "winter",
+      "achievementCodes": [
+        "winter_login",
+        "frozen_theme",
+        "winter_event_complete",
+        "ice_master"
+      ]
+    }
+  ],
+  "rewards": {
+    "courage_set": {
+      "title": "The Courageous",
+      "xp": 500,
+      "gold": 1000,
+      "aura": "courage_flame"
+    },
+    "wisdom_set": {
+      "title": "The Sage",
+      "xp": 750,
+      "gold": 1500,
+      "theme": "ancient_wisdom"
+    },
+    "chaos_set": {
+      "title": "Agent of Chaos",
+      "xp": 1000,
+      "diamonds": 100,
+      "aura": "chaos_swirl",
+      "theme": "chaotic_void"
+    },
+    "balance_set": {
+      "title": "The Balanced One",
+      "xp": 800,
+      "gold": 2000,
+      "aura": "balance_aura"
+    },
+    "spring_2025": {
+      "title": "Spring Herald",
+      "xp": 500,
+      "gold": 800,
+      "theme": "sakura"
+    },
+    "winter_2025": {
+      "title": "Frost Walker",
+      "xp": 600,
+      "gold": 1000,
+      "theme": "winter"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

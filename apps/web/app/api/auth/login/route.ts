@@ -2,8 +2,7 @@ export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyPassword, hashPassword } from '@/lib/auth/password';
-import bcrypt from 'bcrypt';
+import { verifyPassword, hashPassword, isBcryptHash } from '@/lib/auth/password';
 import { LoginSchema } from '@/lib/validation/auth';
 import { createSession, setSessionCookie } from '@/lib/auth/session';
 import { checkRateLimit, recordFailedAttempt, clearAllFailedAttempts } from '@/lib/auth/rateLimit';
@@ -11,6 +10,7 @@ import { verifyHCaptcha, shouldVerifyHCaptcha, extractHCaptchaToken } from '@/li
 import { logAuditEvent, extractIpFromRequest } from '@/lib/services/auditService';
 import { getRequestId, createResponseWithRequestId } from '@/lib/utils/requestId';
 import { captureError, createErrorContextFromRequest } from '@/lib/utils/errorTracking';
+import { securityConfig } from '@/lib/config/security';
 
 export async function POST(req: NextRequest) {
   const requestId = getRequestId(req);
@@ -28,17 +28,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email, password, hcaptchaToken } = validationResult.data;
+    const { email, password, hcaptchaToken, captcha } = validationResult.data;
     const ip = extractIpFromRequest(req);
     
-    // Verify hCaptcha if required
+    // Verify hCaptcha if required (with demo bypass support)
     if (shouldVerifyHCaptcha(req)) {
-      const captchaToken = hcaptchaToken || extractHCaptchaToken(req);
-      if (!captchaToken) {
+      const captchaToken = captcha || hcaptchaToken || extractHCaptchaToken(req);
+      
+      // Allow demo bypass token in dev/demo mode
+      const isDemoBypass = captchaToken === 'demo-bypass-token' && securityConfig.demoBypass;
+      
+      if (!captchaToken && !isDemoBypass) {
         return createResponseWithRequestId(
           { 
             success: false, 
             error: 'Please complete the security verification.',
+            requiresCaptcha: true,
             requestId
           },
           400,
@@ -46,17 +51,23 @@ export async function POST(req: NextRequest) {
         );
       }
       
-      const captchaResult = await verifyHCaptcha(captchaToken, ip);
-      if (!captchaResult.success) {
-        return createResponseWithRequestId(
-          { 
-            success: false, 
-            error: 'Security verification failed. Please try again.',
+      // Skip verification if demo bypass
+      if (!isDemoBypass) {
+        const captchaResult = await verifyHCaptcha(captchaToken, ip);
+        if (!captchaResult.success) {
+          return createResponseWithRequestId(
+            { 
+              success: false, 
+              error: 'Security verification failed. Please try again.',
+              requiresCaptcha: true,
+              requestId
+            },
+            400,
             requestId
-          },
-          400,
-          requestId
-        );
+          );
+        }
+      } else {
+        console.log(`[${requestId}] Demo bypass enabled - skipping captcha verification`);
       }
     }
     
@@ -110,28 +121,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify password - try Argon2id first, then bcrypt for backward compatibility
-    let isValidPassword = false;
-    let needsRehash = false;
+    // Verify password with unified helper (supports both bcrypt and argon2id)
+    const isValidPassword = await verifyPassword(user.passwordHash, password);
     
-    try {
-      // Try Argon2id verification first
-      isValidPassword = await verifyPassword(user.passwordHash, password);
-    } catch (argonError) {
-      console.log(`[${requestId}] Argon2id verification failed, trying bcrypt:`, argonError);
-      
-      // If Argon2id fails, try bcrypt for backward compatibility
-      try {
-        isValidPassword = await bcrypt.compare(password, user.passwordHash);
-        if (isValidPassword) {
-          needsRehash = true; // Mark for rehashing with Argon2id
-          console.log(`[${requestId}] Password verified with bcrypt, will rehash with Argon2id`);
-        }
-      } catch (bcryptError) {
-        console.error(`[${requestId}] Both Argon2id and bcrypt verification failed:`, { argonError, bcryptError });
-        isValidPassword = false;
-      }
-    }
+    // Check if password is using legacy bcrypt hash (needs upgrade)
+    const needsRehash = isValidPassword && isBcryptHash(user.passwordHash);
     
     if (!isValidPassword) {
       // Record failed attempt
@@ -160,18 +154,18 @@ export async function POST(req: NextRequest) {
     // Clear failed attempts on successful login
     await clearAllFailedAttempts(ip);
 
-    // Rehash password with Argon2id if it was verified with bcrypt
+    // Auto-upgrade bcrypt hashes to argon2id on successful login
     if (needsRehash) {
       try {
         const newHash = await hashPassword(password);
         await prisma.user.update({
           where: { id: user.id },
           data: { 
-            password: newHash,
+            passwordHash: newHash,
             lastLoginAt: new Date()
           }
         });
-        console.log(`[${requestId}] Password successfully rehashed with Argon2id for user ${email}`);
+        console.log(`[${requestId}] ✅ Upgraded bcrypt → argon2id for user ${email}`);
       } catch (rehashError) {
         console.error(`[${requestId}] Failed to rehash password:`, rehashError);
         // Continue with login even if rehashing fails

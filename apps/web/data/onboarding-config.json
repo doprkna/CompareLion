@@ -1,0 +1,224 @@
+{
+  "version": "0.10.3",
+  "welcomeOverlay": {
+    "title": "Welcome to PareL! 🎉",
+    "subtitle": "Your Gamified Learning Adventure",
+    "sections": [
+      {
+        "icon": "📊",
+        "title": "Dashboard",
+        "description": "Track XP, level, and achievements"
+      },
+      {
+        "icon": "🌊",
+        "title": "Flows & Challenges",
+        "description": "Answer questions and compete with friends"
+      },
+      {
+        "icon": "👤",
+        "title": "Profile",
+        "description": "Customize your character and stats"
+      }
+    ],
+    "ctaText": "Let's Go!",
+    "skipText": "Skip for now"
+  },
+  "gettingStarted": {
+    "title": "Getting Started",
+    "steps": [
+      {
+        "number": 1,
+        "icon": "💬",
+        "action": "Answer a Question",
+        "description": "Earn your first XP",
+        "reward": "+10 XP"
+      },
+      {
+        "number": 2,
+        "icon": "⇄",
+        "action": "Compare Profiles",
+        "description": "See how you stack up",
+        "reward": "+10 XP"
+      },
+      {
+        "number": 3,
+        "icon": "⚔️",
+        "action": "Send a Challenge",
+        "description": "Test a friend",
+        "reward": "+30 XP"
+      }
+    ],
+    "totalReward": "+50 XP Total",
+    "completionBonus": "Unlock 'Pioneer' badge"
+  },
+  "tutorialQuest": {
+    "questId": "tutorial_journey",
+    "name": "First Steps",
+    "description": "Complete your introduction to PareL",
+    "steps": [
+      {
+        "step": 1,
+        "title": "Explore Your Profile",
+        "description": "Visit your profile page",
+        "target": "/profile",
+        "xp": 10
+      },
+      {
+        "step": 2,
+        "title": "Answer Your First Question",
+        "description": "Complete a flow",
+        "target": "/flow",
+        "xp": 20
+      },
+      {
+        "step": 3,
+        "title": "Connect with Others",
+        "description": "Send message or challenge",
+        "target": "/friends",
+        "xp": 20
+      }
+    ],
+    "totalReward": 50,
+    "badge": "pioneer",
+    "autoStart": true
+  },
+  "tooltips": [
+    {
+      "id": "xp_bar",
+      "page": "/main",
+      "element": "xp-progress",
+      "title": "XP Progress",
+      "text": "Earn XP to level up and unlock new features",
+      "position": "bottom",
+      "priority": 10
+    },
+    {
+      "id": "faction_selector",
+      "page": "/main",
+      "element": "faction-widget",
+      "title": "Join a Faction",
+      "text": "Choose your moral alignment for bonuses and special abilities",
+      "position": "right",
+      "priority": 5
+    },
+    {
+      "id": "daily_quests",
+      "page": "/main",
+      "element": "quest-board",
+      "title": "Daily Quests",
+      "text": "Complete daily challenges for rewards",
+      "position": "left",
+      "priority": 8
+    },
+    {
+      "id": "compare_button",
+      "page": "/profile",
+      "element": "compare-btn",
+      "title": "Compare Stats",
+      "text": "See how your stats compare to other players",
+      "position": "top",
+      "priority": 7
+    },
+    {
+      "id": "hero_stats",
+      "page": "/profile",
+      "element": "hero-stats",
+      "title": "Hero Stats",
+      "text": "Develop your character across 5 dimensions",
+      "position": "right",
+      "priority": 6
+    },
+    {
+      "id": "archetype_badge",
+      "page": "/profile",
+      "element": "archetype",
+      "title": "Your Archetype",
+      "text": "Your playstyle determines your archetype",
+      "position": "bottom",
+      "priority": 6
+    }
+  ],
+  "feedbackTypes": {
+    "bug": {
+      "name": "Bug Report",
+      "icon": "🐛",
+      "color": "#ef4444",
+      "priority": "high"
+    },
+    "suggestion": {
+      "name": "Feature Suggestion",
+      "icon": "💡",
+      "color": "#8b5cf6",
+      "priority": "normal"
+    },
+    "question": {
+      "name": "Question",
+      "icon": "❓",
+      "color": "#3b82f6",
+      "priority": "normal"
+    },
+    "praise": {
+      "name": "Praise",
+      "icon": "❤️",
+      "color": "#10b981",
+      "priority": "low"
+    }
+  },
+  "feedbackCategories": [
+    {
+      "id": "ui",
+      "name": "User Interface",
+      "icon": "🎨"
+    },
+    {
+      "id": "gameplay",
+      "name": "Gameplay",
+      "icon": "🎮"
+    },
+    {
+      "id": "performance",
+      "name": "Performance",
+      "icon": "⚡"
+    },
+    {
+      "id": "feature",
+      "name": "Feature Request",
+      "icon": "✨"
+    },
+    {
+      "id": "social",
+      "name": "Social Features",
+      "icon": "👥"
+    },
+    {
+      "id": "other",
+      "name": "Other",
+      "icon": "📝"
+    }
+  ],
+  "feedbackIntegration": {
+    "discord": {
+      "enabled": false,
+      "webhookUrl": "PLACEHOLDER_DISCORD_WEBHOOK",
+      "channel": "#feedback"
+    },
+    "email": {
+      "enabled": false,
+      "adminEmail": "admin@parel.app"
+    },
+    "database": {
+      "enabled": true,
+      "notifyAdmins": true
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

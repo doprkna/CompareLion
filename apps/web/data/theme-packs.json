@@ -1,0 +1,94 @@
+{
+  "version": "0.8.7",
+  "themePacks": [
+    {
+      "themeId": "default",
+      "name": "Classic",
+      "description": "The timeless default theme",
+      "type": "default",
+      "rarity": "common",
+      "emoji": "⚪"
+    },
+    {
+      "themeId": "sakura",
+      "name": "Sakura Dreams",
+      "description": "Cherry blossoms in full bloom",
+      "type": "seasonal",
+      "rarity": "epic",
+      "emoji": "🌸",
+      "seasonType": "spring"
+    },
+    {
+      "themeId": "cyber",
+      "name": "Cyber Neon",
+      "description": "Electric future aesthetic",
+      "type": "premium",
+      "rarity": "legendary",
+      "emoji": "🌐",
+      "vipOnly": true
+    },
+    {
+      "themeId": "forest",
+      "name": "Enchanted Forest",
+      "description": "Deep woods mystique",
+      "type": "seasonal",
+      "rarity": "rare",
+      "emoji": "🌲",
+      "seasonType": "summer"
+    },
+    {
+      "themeId": "lava",
+      "name": "Molten Core",
+      "description": "Burning with intensity",
+      "type": "premium",
+      "rarity": "epic",
+      "emoji": "🔥"
+    },
+    {
+      "themeId": "winter",
+      "name": "Frozen Tundra",
+      "description": "Eternal winter wonderland",
+      "type": "seasonal",
+      "rarity": "epic",
+      "emoji": "❄️",
+      "seasonType": "winter"
+    }
+  ],
+  "particleTypes": {
+    "sakura": {
+      "shape": "petal",
+      "behavior": "drift-down",
+      "rotation": true
+    },
+    "snow": {
+      "shape": "flake",
+      "behavior": "fall",
+      "rotation": true
+    },
+    "stars": {
+      "shape": "star",
+      "behavior": "twinkle",
+      "rotation": false
+    },
+    "embers": {
+      "shape": "dot",
+      "behavior": "rise-fade",
+      "rotation": false
+    },
+    "leaves": {
+      "shape": "leaf",
+      "behavior": "swirl",
+      "rotation": true
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

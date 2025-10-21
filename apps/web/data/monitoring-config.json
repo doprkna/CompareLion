@@ -1,0 +1,238 @@
+{
+  "version": "0.8.12",
+  "metrics": {
+    "api_latency": {
+      "name": "API Latency",
+      "description": "Response time for API endpoints",
+      "unit": "ms",
+      "icon": "⚡",
+      "color": "#10b981",
+      "thresholds": {
+        "excellent": 100,
+        "good": 500,
+        "acceptable": 1000,
+        "slow": 2000,
+        "critical": 5000
+      }
+    },
+    "event_throughput": {
+      "name": "Event Throughput",
+      "description": "Events processed per second",
+      "unit": "events/s",
+      "icon": "📊",
+      "color": "#3b82f6",
+      "thresholds": {
+        "low": 10,
+        "normal": 50,
+        "high": 100,
+        "peak": 500
+      }
+    },
+    "error_rate": {
+      "name": "Error Rate",
+      "description": "Percentage of failed requests",
+      "unit": "%",
+      "icon": "⚠️",
+      "color": "#ef4444",
+      "thresholds": {
+        "excellent": 0.1,
+        "good": 1,
+        "acceptable": 5,
+        "warning": 10,
+        "critical": 20
+      }
+    },
+    "db_connections": {
+      "name": "Database Connections",
+      "description": "Active database connections",
+      "unit": "connections",
+      "icon": "🗄️",
+      "color": "#8b5cf6",
+      "thresholds": {
+        "low": 10,
+        "normal": 50,
+        "high": 100,
+        "max": 200
+      }
+    }
+  },
+  "healthChecks": {
+    "database": {
+      "name": "Database",
+      "description": "PostgreSQL connection and query performance",
+      "icon": "🗄️",
+      "criticalityLevel": "critical",
+      "timeoutMs": 5000
+    },
+    "redis": {
+      "name": "Redis Cache",
+      "description": "Redis connection and latency",
+      "icon": "💾",
+      "criticalityLevel": "high",
+      "timeoutMs": 3000
+    },
+    "sessions": {
+      "name": "User Sessions",
+      "description": "Active sessions and authentication",
+      "icon": "👥",
+      "criticalityLevel": "medium",
+      "timeoutMs": 5000
+    },
+    "jobs": {
+      "name": "Job Queues",
+      "description": "BullMQ queue health and processing",
+      "icon": "🔄",
+      "criticalityLevel": "high",
+      "timeoutMs": 5000
+    },
+    "storage": {
+      "name": "File Storage",
+      "description": "Disk space and file system",
+      "icon": "💿",
+      "criticalityLevel": "medium",
+      "timeoutMs": 3000
+    }
+  },
+  "autoHeal": {
+    "stale_sessions": {
+      "name": "Stale Sessions",
+      "description": "Clean sessions older than 30 days",
+      "icon": "🧹",
+      "schedule": "0 */6 * * *",
+      "enabled": true
+    },
+    "orphaned_jobs": {
+      "name": "Orphaned Jobs",
+      "description": "Reset jobs stuck in processing > 1 hour",
+      "icon": "🔄",
+      "schedule": "0 */6 * * *",
+      "enabled": true
+    },
+    "expired_cache": {
+      "name": "Expired Cache",
+      "description": "Clear expired cache entries",
+      "icon": "🗑️",
+      "schedule": "0 0 * * *",
+      "enabled": true
+    },
+    "zombie_connections": {
+      "name": "Zombie Connections",
+      "description": "Close idle database connections",
+      "icon": "⚰️",
+      "schedule": "0 */12 * * *",
+      "enabled": true
+    }
+  },
+  "alerts": {
+    "severityLevels": {
+      "info": {
+        "name": "Info",
+        "color": "#3b82f6",
+        "icon": "ℹ️",
+        "notifyAdmins": false
+      },
+      "warning": {
+        "name": "Warning",
+        "color": "#f59e0b",
+        "icon": "⚠️",
+        "notifyAdmins": false
+      },
+      "error": {
+        "name": "Error",
+        "color": "#ef4444",
+        "icon": "❌",
+        "notifyAdmins": true
+      },
+      "critical": {
+        "name": "Critical",
+        "color": "#dc2626",
+        "icon": "🚨",
+        "notifyAdmins": true
+      }
+    },
+    "rules": [
+      {
+        "id": "high_error_rate",
+        "condition": "error_rate > 10",
+        "severity": "warning",
+        "message": "Error rate exceeds 10%"
+      },
+      {
+        "id": "critical_error_rate",
+        "condition": "error_rate > 20",
+        "severity": "critical",
+        "message": "Critical: Error rate exceeds 20%"
+      },
+      {
+        "id": "slow_api",
+        "condition": "api_latency > 2000",
+        "severity": "warning",
+        "message": "API response time exceeds 2 seconds"
+      },
+      {
+        "id": "database_down",
+        "condition": "database.status === 'unhealthy'",
+        "severity": "critical",
+        "message": "Database connection failed"
+      },
+      {
+        "id": "queue_stalled",
+        "condition": "jobs.stalledCount > 100",
+        "severity": "error",
+        "message": "High number of stalled jobs"
+      }
+    ]
+  },
+  "dashboardLayout": {
+    "sections": [
+      {
+        "id": "overview",
+        "name": "System Overview",
+        "widgets": [
+          "health_status",
+          "api_latency_chart",
+          "event_throughput_chart",
+          "error_rate_chart"
+        ]
+      },
+      {
+        "id": "health",
+        "name": "Health Checks",
+        "widgets": [
+          "database_status",
+          "redis_status",
+          "jobs_status",
+          "sessions_status"
+        ]
+      },
+      {
+        "id": "autoheal",
+        "name": "Auto-Heal",
+        "widgets": [
+          "recent_heal_logs",
+          "heal_schedule",
+          "manual_heal_triggers"
+        ]
+      },
+      {
+        "id": "alerts",
+        "name": "Active Alerts",
+        "widgets": [
+          "critical_alerts",
+          "recent_errors",
+          "alert_history"
+        ]
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+

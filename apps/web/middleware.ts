@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { getToken } from 'next-auth/jwt';
 import { 
   checkLoginRateLimit, 
   checkSignupRateLimit, 
@@ -15,6 +16,14 @@ const SECRET = process.env.JWT_SECRET || 'dev-secret';
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const requestId = getRequestId(req);
+
+  // Auth Routing: Redirect authenticated users from landing to main
+  if (pathname === '/') {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    if (token) {
+      return NextResponse.redirect(new URL('/main', req.url));
+    }
+  }
 
   // Rate limiting for auth endpoints
   if (pathname === '/api/auth/login') {
@@ -96,26 +105,20 @@ export async function middleware(req: NextRequest) {
     return addRequestIdToResponse(response, requestId);
   }
 
-  // Read JWT from 'session' cookie
-  const token = req.cookies.get("session")?.value
-  if (!token) {
-    const response = NextResponse.next();
-    return addRequestIdToResponse(response, requestId);
+  // Use NextAuth's getToken to get the session
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (token) {
+    // attach user info to request headers (available to API routes)
+    const res = NextResponse.next();
+    res.headers.set("x-user-id", String(token.sub || token.id))
+    res.headers.set("x-user-email", String(token.email))
+    return addRequestIdToResponse(res, requestId);
   }
 
-  try {
-    const decoded = jwt.verify(token, SECRET)
-    // attach decoded user to request headers (available to API routes)
-    const res = NextResponse.next()
-    res.headers.set("x-user-id", String((decoded as any).sub))
-    res.headers.set("x-user-email", String((decoded as any).email))
-    return addRequestIdToResponse(res, requestId);
-  } catch {
-    const response = NextResponse.next();
-    return addRequestIdToResponse(response, requestId);
-  }
+  const response = NextResponse.next();
+  return addRequestIdToResponse(response, requestId);
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ['/api/:path*', '/'],
 };

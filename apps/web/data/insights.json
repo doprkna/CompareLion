@@ -1,0 +1,100 @@
+{
+  "templates": [
+    {
+      "id": "creative_high",
+      "condition": { "creativity": { "min": 70 } },
+      "title": "Creative Visionary",
+      "description": "Your comparison pattern suggests you're {creativity}% creative. You approach problems with unique perspectives.",
+      "emoji": "🎨",
+      "color": "purple"
+    },
+    {
+      "id": "social_high",
+      "condition": { "social": { "min": 70 } },
+      "title": "Social Connector",
+      "description": "You're {social}% socially engaged. Your interactions show strong community building.",
+      "emoji": "💬",
+      "color": "green"
+    },
+    {
+      "id": "knowledge_high",
+      "condition": { "knowledge": { "min": 70 } },
+      "title": "Knowledge Seeker",
+      "description": "Analysis shows {knowledge}% curiosity in learning. You value understanding over quick answers.",
+      "emoji": "📚",
+      "color": "blue"
+    },
+    {
+      "id": "balanced_all",
+      "condition": { "balance": true },
+      "title": "Harmonious Explorer",
+      "description": "Your stats show remarkable balance. You're equally creative ({creativity}%), social ({social}%), and curious ({knowledge}%).",
+      "emoji": "⚖️",
+      "color": "yellow"
+    },
+    {
+      "id": "streak_master",
+      "condition": { "streakDays": { "min": 7 } },
+      "title": "Dedicated Practitioner",
+      "description": "Your {streakDays}-day streak reveals strong commitment. Consistency is your superpower.",
+      "emoji": "🔥",
+      "color": "orange"
+    },
+    {
+      "id": "challenge_lover",
+      "condition": { "challengesCompleted": { "min": 10 } },
+      "title": "Bold Risk-Taker",
+      "description": "You've completed {challengesCompleted} challenges. You thrive when pushed outside your comfort zone.",
+      "emoji": "⚔️",
+      "color": "red"
+    },
+    {
+      "id": "helper",
+      "condition": { "karma": { "min": 20 } },
+      "title": "Community Pillar",
+      "description": "Your karma ({karma}) reflects genuine helpfulness. Others trust your judgment.",
+      "emoji": "🤝",
+      "color": "green"
+    },
+    {
+      "id": "prestige_high",
+      "condition": { "prestige": { "min": 50 } },
+      "title": "Respected Leader",
+      "description": "Prestige score of {prestige} places you among the top performers. Your achievements speak volumes.",
+      "emoji": "👑",
+      "color": "gold"
+    },
+    {
+      "id": "night_owl",
+      "condition": { "mostActiveHour": { "min": 22 } },
+      "title": "Night Owl",
+      "description": "You're most active after {mostActiveHour}:00. Late-night contemplation fuels your insights.",
+      "emoji": "🌙",
+      "color": "indigo"
+    },
+    {
+      "id": "early_bird",
+      "condition": { "mostActiveHour": { "max": 8 } },
+      "title": "Early Riser",
+      "description": "Morning hours ({mostActiveHour}:00) are your peak. You start days with intention.",
+      "emoji": "🌅",
+      "color": "orange"
+    }
+  ],
+  "fallback": {
+    "title": "Emerging Pattern",
+    "description": "We're still learning your unique style. Complete more activities for personalized insights!",
+    "emoji": "✨",
+    "color": "gray"
+  }
+}
+
+
+
+
+
+
+
+
+
+

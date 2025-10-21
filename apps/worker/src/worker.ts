@@ -2,7 +2,9 @@ import { Worker, Job } from 'bullmq'
 import IORedis from 'ioredis'
 import { prisma } from '@parel/db'
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379')
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
+  maxRetriesPerRequest: null,
+})
 
 interface RunJobData {
   taskId: string

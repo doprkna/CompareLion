@@ -1,19 +1,30 @@
 "use client";
-const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { getApiUrl } from '@/lib/apiBase';
 
 export default function SignupPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/main');
+    }
+  }, [status, session, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
     try {
-      const res = await fetch(`${base}/api/signup`, { cache: 'no-store',
+      const res = await fetch(getApiUrl('/api/signup'), { cache: 'no-store',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username, password }),

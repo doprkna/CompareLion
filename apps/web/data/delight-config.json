@@ -1,0 +1,222 @@
+{
+  "version": "0.10.4",
+  "soundEffects": {
+    "ui": [
+      {
+        "event": "button_click",
+        "file": "/sfx/ui/click.mp3",
+        "volume": 0.3
+      },
+      {
+        "event": "button_hover",
+        "file": "/sfx/ui/hover.mp3",
+        "volume": 0.2
+      },
+      {
+        "event": "modal_open",
+        "file": "/sfx/ui/modal_open.mp3",
+        "volume": 0.4
+      },
+      {
+        "event": "purchase",
+        "file": "/sfx/ui/purchase.mp3",
+        "volume": 0.5
+      },
+      {
+        "event": "gold_gain",
+        "file": "/sfx/ui/coins.mp3",
+        "volume": 0.4
+      },
+      {
+        "event": "message_received",
+        "file": "/sfx/ui/message.mp3",
+        "volume": 0.5
+      }
+    ],
+    "achievement": [
+      {
+        "event": "level_up",
+        "file": "/sfx/achievement/level_up.mp3",
+        "volume": 0.7
+      },
+      {
+        "event": "achievement_unlock",
+        "file": "/sfx/achievement/unlock.mp3",
+        "volume": 0.6
+      },
+      {
+        "event": "badge_earned",
+        "file": "/sfx/achievement/badge.mp3",
+        "volume": 0.6
+      },
+      {
+        "event": "collection_complete",
+        "file": "/sfx/achievement/collection.mp3",
+        "volume": 0.7
+      },
+      {
+        "event": "challenge_complete",
+        "file": "/sfx/achievement/challenge.mp3",
+        "volume": 0.6
+      }
+    ],
+    "combat": [
+      {
+        "event": "attack",
+        "file": "/sfx/combat/attack.mp3",
+        "volume": 0.5
+      },
+      {
+        "event": "critical_hit",
+        "file": "/sfx/combat/critical.mp3",
+        "volume": 0.7
+      },
+      {
+        "event": "threat_defeated",
+        "file": "/sfx/combat/victory.mp3",
+        "volume": 0.8
+      },
+      {
+        "event": "duel_win",
+        "file": "/sfx/combat/duel_win.mp3",
+        "volume": 0.7
+      }
+    ]
+  },
+  "ambientThemes": [
+    {
+      "id": "lofi",
+      "name": "Lo-Fi Beats",
+      "file": "/sfx/ambient/lofi.mp3",
+      "volume": 0.3,
+      "description": "Chill study vibes"
+    },
+    {
+      "id": "fantasy",
+      "name": "Fantasy Realm",
+      "file": "/sfx/ambient/fantasy.mp3",
+      "volume": 0.3,
+      "description": "Epic adventure music"
+    },
+    {
+      "id": "nature",
+      "name": "Nature Sounds",
+      "file": "/sfx/ambient/nature.mp3",
+      "volume": 0.3,
+      "description": "Peaceful forest ambience"
+    },
+    {
+      "id": "cyberpunk",
+      "name": "Cyberpunk",
+      "file": "/sfx/ambient/cyberpunk.mp3",
+      "volume": 0.3,
+      "description": "Futuristic synth waves"
+    }
+  ],
+  "animations": {
+    "buttonPress": {
+      "type": "scale",
+      "from": 1,
+      "to": 0.95,
+      "duration": 100,
+      "spring": {
+        "stiffness": 400,
+        "damping": 17
+      }
+    },
+    "buttonBounce": {
+      "type": "bounce",
+      "scale": [1, 0.9, 1.1, 1],
+      "y": [0, 2, -2, 0],
+      "duration": 400
+    },
+    "xpBarShimmer": {
+      "type": "shimmer",
+      "duration": 3000,
+      "repeat": "infinite",
+      "gradient": "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)"
+    },
+    "avatarGlow": {
+      "type": "glow",
+      "duration": 2000,
+      "repeat": "infinite",
+      "boxShadow": [
+        "0 0 10px var(--glow-color)",
+        "0 0 30px var(--glow-color)",
+        "0 0 10px var(--glow-color)"
+      ]
+    },
+    "prestigeGain": {
+      "type": "pulse",
+      "duration": 1500,
+      "opacity": [0, 1, 0],
+      "scale": [0.8, 1.2, 0.8]
+    },
+    "cardHover": {
+      "type": "lift",
+      "y": -4,
+      "boxShadow": "0 8px 24px rgba(0,0,0,0.2)",
+      "spring": {
+        "stiffness": 400,
+        "damping": 17
+      }
+    },
+    "confetti": {
+      "type": "burst",
+      "particleCount": 50,
+      "spread": 70,
+      "origin": {
+        "y": 0.6
+      }
+    }
+  },
+  "visualEffects": {
+    "xpBarShimmer": {
+      "enabled": true,
+      "gradient": "linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.4), transparent)",
+      "animation": "shimmer 3s linear infinite"
+    },
+    "prestigeGlow": {
+      "enabled": true,
+      "color": "#f59e0b",
+      "blur": 20,
+      "spread": 4
+    },
+    "factionBorder": {
+      "enabled": true,
+      "width": 3,
+      "animated": true,
+      "glowIntensity": 0.6
+    },
+    "levelUpFlash": {
+      "enabled": true,
+      "color": "#8b5cf6",
+      "duration": 1000
+    }
+  },
+  "settings": {
+    "defaults": {
+      "soundEnabled": true,
+      "soundVolume": 0.5,
+      "animationsEnabled": true,
+      "reducedMotion": false,
+      "particleEffects": true,
+      "ambientMusicEnabled": false
+    },
+    "accessibility": {
+      "respectPrefersReducedMotion": true,
+      "highContrastMode": false,
+      "largeText": false
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

@@ -2,15 +2,25 @@
   "name": "@parel/db",
   "private": true,
   "version": "0.0.1",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "require": "./index.ts",
+      "default": "./index.ts"
+    },
+    "./src/client": "./src/client.ts"
+  },
   "prisma": {
-    "schema": "schema.prisma"
+    "schema": "schema.prisma",
+    "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "node prisma/seed.ts",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "seed": "tsx prisma/seed.ts",
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev --name sync_schema",
     "postinstall": "prisma generate",
@@ -18,9 +28,11 @@
     "db:migrate": "pnpm --filter @parel/db run migrate:dev"
   },
   "dependencies": {
-    "@prisma/client": "^5.16.1"
+    "@prisma/client": "^5.16.1",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/supertest": "^6.0.3",
@@ -28,6 +40,7 @@
     "jest": "^30.2.0",
     "prisma": "^5.16.1",
     "supertest": "^7.1.4",
-    "ts-jest": "^29.4.4"
+    "ts-jest": "^29.4.4",
+    "tsx": "^4.20.5"
   }
 }

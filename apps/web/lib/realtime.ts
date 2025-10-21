@@ -1,0 +1,173 @@
+/**
+ * Real-Time Event System
+ * 
+ * Hybrid Redis pub/sub + local event bus for distributed real-time updates.
+ * Automatically falls back to local-only mode if Redis is unavailable.
+ * 
+ * Architecture:
+ * - Local: Node.js EventEmitter (in-process)
+ * - Global: Redis pub/sub (cross-process/server)
+ * - Fallback: Graceful degradation to local-only
+ */
+
+import { eventBus } from "@/lib/eventBus";
+import Redis from "ioredis";
+
+const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const CHANNEL_NAME = "parel-events";
+
+// Redis clients (pub/sub require separate connections)
+let redisPublisher: Redis | null = null;
+let redisSubscriber: Redis | null = null;
+let redisConnected = false;
+
+/**
+ * Initialize Redis pub/sub
+ * Gracefully handles connection failures
+ */
+function initializeRedis() {
+  if (typeof window !== "undefined") {
+    // Client-side: Redis not available
+    return;
+  }
+
+  try {
+    // Publisher client
+    redisPublisher = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        if (times > 3) {
+          console.warn("⚠️ Redis connection failed, using local event bus only");
+          return null;
+        }
+        return Math.min(times * 100, 2000);
+      },
+    });
+
+    // Subscriber client (separate connection required)
+    redisSubscriber = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      retryStrategy: (times) => {
+        if (times > 3) {
+          console.warn("⚠️ Redis subscriber failed, using local event bus only");
+          return null;
+        }
+        return Math.min(times * 100, 2000);
+      },
+    });
+
+    // Subscribe to event channel
+    redisSubscriber.subscribe(CHANNEL_NAME, (err) => {
+      if (err) {
+        console.error("❌ Failed to subscribe to Redis channel:", err);
+        redisConnected = false;
+      } else {
+        console.log("📡 Subscribed to Redis channel:", CHANNEL_NAME);
+        redisConnected = true;
+      }
+    });
+
+    // Handle incoming Redis messages
+    redisSubscriber.on("message", (channel, message) => {
+      if (channel !== CHANNEL_NAME) return;
+
+      try {
+        const { event, payload } = JSON.parse(message);
+        console.log(`[Redis→Local] ${event}:`, payload);
+        
+        // Emit to local event bus
+        eventBus.emit(event, payload);
+      } catch (err) {
+        console.error("❌ Redis event parse error:", err);
+      }
+    });
+
+    // Connection events
+    redisPublisher.on("connect", () => {
+      console.log("✅ Redis publisher connected");
+      redisConnected = true;
+    });
+
+    redisPublisher.on("error", (err) => {
+      console.warn("⚠️ Redis publisher error:", err.message);
+      redisConnected = false;
+    });
+
+    redisSubscriber.on("connect", () => {
+      console.log("✅ Redis subscriber connected");
+    });
+
+    redisSubscriber.on("error", (err) => {
+      console.warn("⚠️ Redis subscriber error:", err.message);
+      redisConnected = false;
+    });
+
+  } catch (err) {
+    console.warn("⚠️ Redis initialization failed, using local event bus only:", err);
+    redisPublisher = null;
+    redisSubscriber = null;
+    redisConnected = false;
+  }
+}
+
+// Initialize on module load (server-side only)
+initializeRedis();
+
+/**
+ * Publish an event to both local and Redis
+ * 
+ * @param event Event name
+ * @param payload Event data
+ */
+export async function publishEvent(event: string, payload: any) {
+  // Always emit locally first (immediate)
+  eventBus.emit(event, payload);
+
+  // Attempt Redis pub/sub (global)
+  if (redisPublisher && redisConnected) {
+    try {
+      const message = JSON.stringify({ event, payload });
+      await redisPublisher.publish(CHANNEL_NAME, message);
+      console.log(`[Local→Redis] ${event}:`, payload);
+    } catch (err) {
+      console.warn("⚠️ Redis publish failed (falling back to local only):", err);
+    }
+  }
+}
+
+/**
+ * Check if Redis is available
+ */
+export function isRedisConnected(): boolean {
+  return redisConnected;
+}
+
+/**
+ * Graceful shutdown
+ */
+export async function disconnectRedis() {
+  if (redisPublisher) {
+    await redisPublisher.quit();
+  }
+  if (redisSubscriber) {
+    await redisSubscriber.quit();
+  }
+  redisConnected = false;
+  console.log("👋 Redis disconnected");
+}
+
+// Cleanup on process exit
+if (typeof process !== "undefined") {
+  process.on("SIGTERM", disconnectRedis);
+  process.on("SIGINT", disconnectRedis);
+}
+
+
+
+
+
+
+
+
+
+

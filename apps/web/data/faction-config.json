@@ -1,0 +1,247 @@
+{
+  "version": "0.10.0",
+  "factions": [
+    {
+      "factionId": "light",
+      "name": "Light",
+      "title": "The Luminous Order",
+      "emblem": "☀️",
+      "colors": {
+        "primary": "#f59e0b",
+        "secondary": "#fef3c7",
+        "glow": "0 0 20px rgba(245, 158, 11, 0.6)"
+      },
+      "motto": "Lux in Tenebris",
+      "mottoTranslation": "Light in Darkness"
+    },
+    {
+      "factionId": "shadow",
+      "name": "Shadow",
+      "title": "Children of Shadow",
+      "emblem": "🌙",
+      "colors": {
+        "primary": "#8b5cf6",
+        "secondary": "#ddd6fe",
+        "glow": "0 0 20px rgba(139, 92, 246, 0.6)"
+      },
+      "motto": "Scientia Tenebrae",
+      "mottoTranslation": "Knowledge of Shadows"
+    },
+    {
+      "factionId": "balance",
+      "name": "Balance",
+      "title": "The Equilibrium",
+      "emblem": "⚖️",
+      "colors": {
+        "primary": "#10b981",
+        "secondary": "#d1fae5",
+        "glow": "0 0 20px rgba(16, 185, 129, 0.6)"
+      },
+      "motto": "In Medio Virtus",
+      "mottoTranslation": "Virtue in the Middle"
+    },
+    {
+      "factionId": "chaos",
+      "name": "Chaos",
+      "title": "Agents of Entropy",
+      "emblem": "🌀",
+      "colors": {
+        "primary": "#ec4899",
+        "secondary": "#fce7f3",
+        "glow": "0 0 20px rgba(236, 72, 153, 0.6)"
+      },
+      "motto": "Ex Nihilo Omnia",
+      "mottoTranslation": "From Nothing, Everything"
+    }
+  ],
+  "switchPenalties": {
+    "option_a": {
+      "name": "Prestige Penalty",
+      "type": "prestige",
+      "amount": -10,
+      "unit": "%",
+      "cooldown": 7,
+      "description": "Lose 10% prestige, 7-day cooldown"
+    },
+    "option_b": {
+      "name": "Gold Fee",
+      "type": "gold",
+      "amount": 500,
+      "cooldown": 7,
+      "description": "Pay 500 gold, 7-day cooldown"
+    },
+    "option_c": {
+      "name": "Renounce Quest",
+      "type": "quest",
+      "questId": "faction_renounce",
+      "cooldown": 14,
+      "description": "Complete renouncement quest, 14-day cooldown"
+    }
+  },
+  "bonuses": {
+    "light": {
+      "xp": 5,
+      "description": "+5% XP when helping others",
+      "karma": 20,
+      "karmaDescription": "+20% karma from good actions"
+    },
+    "shadow": {
+      "gold": 10,
+      "description": "+10% gold from all sources"
+    },
+    "balance": {
+      "xp": 3,
+      "gold": 3,
+      "description": "+3% XP and gold"
+    },
+    "chaos": {
+      "variance": 200,
+      "description": "Random rewards (0-200% variance)"
+    }
+  },
+  "specialAbilities": {
+    "light": {
+      "name": "Radiant Shield",
+      "description": "Reduce all penalties by 25%",
+      "icon": "🛡️"
+    },
+    "shadow": {
+      "name": "Dark Arts",
+      "description": "Unlock forbidden flows and challenges",
+      "icon": "🔮"
+    },
+    "balance": {
+      "name": "Perfect Harmony",
+      "description": "Bonus when all stats balanced",
+      "icon": "⚖️"
+    },
+    "chaos": {
+      "name": "Wild Card",
+      "description": "Random bonus rewards (massive variance)",
+      "icon": "🎲"
+    }
+  },
+  "governance": {
+    "councilSize": 5,
+    "votingSystems": {
+      "equal": {
+        "name": "One Person, One Vote",
+        "description": "Every member has equal voting power"
+      },
+      "karma_based": {
+        "name": "Karma-Weighted",
+        "description": "Voting power = karma / 10"
+      },
+      "prestige_based": {
+        "name": "Prestige-Weighted",
+        "description": "Voting power = prestige / 10"
+      }
+    },
+    "proposalTypes": {
+      "council_election": {
+        "name": "Council Election",
+        "description": "Elect faction council members",
+        "duration": 168,
+        "minVotes": 10
+      },
+      "policy_change": {
+        "name": "Policy Change",
+        "description": "Modify faction rules or bonuses",
+        "duration": 72,
+        "minVotes": 20
+      },
+      "alliance": {
+        "name": "Alliance Proposal",
+        "description": "Form alliance with another faction",
+        "duration": 48,
+        "minVotes": 30
+      },
+      "war_declaration": {
+        "name": "War Declaration",
+        "description": "Declare war on rival faction",
+        "duration": 96,
+        "minVotes": 50
+      }
+    }
+  },
+  "visualEffects": {
+    "avatarBorder": {
+      "width": 3,
+      "style": "solid",
+      "animated": true
+    },
+    "profileGlow": {
+      "blur": 20,
+      "spread": 4,
+      "animated": true
+    },
+    "namePlate": {
+      "showEmblem": true,
+      "showMotto": false,
+      "style": "inline"
+    }
+  },
+  "dailyBonuses": {
+    "light": {
+      "name": "Dawn's Blessing",
+      "xp": 50,
+      "description": "Daily XP bonus for spreading hope"
+    },
+    "shadow": {
+      "name": "Midnight Knowledge",
+      "gold": 100,
+      "description": "Daily gold for pursuing secrets"
+    },
+    "balance": {
+      "name": "Harmonious Day",
+      "xp": 30,
+      "gold": 30,
+      "description": "Balanced daily bonus"
+    },
+    "chaos": {
+      "name": "Entropy's Gift",
+      "random": true,
+      "description": "Random daily reward (0-500 XP or gold)"
+    }
+  },
+  "statistics": {
+    "globalDistribution": {
+      "enabled": true,
+      "updateFrequency": "1h"
+    },
+    "leaderboard": {
+      "categories": [
+        {
+          "id": "total_xp",
+          "name": "Total XP",
+          "sortBy": "totalXp"
+        },
+        {
+          "id": "avg_karma",
+          "name": "Average Karma",
+          "sortBy": "avgKarma"
+        },
+        {
+          "id": "avg_prestige",
+          "name": "Average Prestige",
+          "sortBy": "avgPrestige"
+        },
+        {
+          "id": "member_count",
+          "name": "Member Count",
+          "sortBy": "memberCount"
+        }
+      ]
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

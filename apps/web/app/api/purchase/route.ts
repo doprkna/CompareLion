@@ -1,153 +1,120 @@
-export const runtime = 'nodejs';
-
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { getAuthedUser } from '@/lib/server/auth';
-import { updateWalletWithLock } from '@/lib/utils/walletTransactions';
-import { z } from 'zod';
-
-const PurchaseSchema = z.object({
-  productId: z.string().min(1),
-  quantity: z.number().int().min(1).max(100),
-});
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/options";
+import { prisma } from "@/lib/db";
+import { publishEvent } from "@/lib/realtime";
+import { logPurchase } from "@/lib/activity";
+import { notify } from "@/lib/notify";
 
 export async function POST(req: NextRequest) {
   try {
-    const { id: userId } = getAuthedUser(req);
-    const body = await req.json();
+    const session = await getServerSession(authOptions);
     
-    // Validate input
-    const validationResult = PurchaseSchema.safeParse(body);
-    if (!validationResult.success) {
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, funds: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const { itemId } = await req.json();
+
+    if (!itemId) {
+      return NextResponse.json({ error: "itemId required" }, { status: 400 });
+    }
+
+    // Get item details
+    const item = await prisma.item.findUnique({
+      where: { id: itemId },
+    });
+
+    if (!item) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    // Calculate price (same logic as shop API)
+    let price = 0;
+    const rarityPrices: Record<string, number> = {
+      common: 10,
+      uncommon: 25,
+      rare: 50,
+      epic: 100,
+      legendary: 500,
+    };
+    price = rarityPrices[item.rarity] || 10;
+    if (item.power) price += item.power * 2;
+    if (item.defense) price += item.defense * 3;
+
+    // Check if user has enough funds
+    const userFunds = Number(user.funds);
+    if (userFunds < price) {
       return NextResponse.json(
-        { success: false, error: 'Invalid purchase data' },
+        { error: "Insufficient funds", required: price, available: userFunds },
         { status: 400 }
       );
     }
 
-    const { productId, quantity } = validationResult.data;
+    // Deduct funds
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { funds: { decrement: price } },
+    });
 
-    // Get product details
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: {
-        prices: true,
+    // Add item to inventory
+    await prisma.inventoryItem.upsert({
+      where: {
+        userId_itemId: {
+          userId: user.id,
+          itemId: item.id,
+        },
+      },
+      update: {
+        quantity: { increment: 1 },
+      },
+      create: {
+        userId: user.id,
+        itemId: item.id,
+        quantity: 1,
+        equipped: false,
       },
     });
 
-    if (!product || !product.active) {
-      return NextResponse.json(
-        { success: false, error: 'Product not found or inactive' },
-        { status: 404 }
-      );
-    }
+    // Log activity
+    await logPurchase(user.id, item.name, price, "funds");
 
-    // Get the price for the default currency (assuming USD)
-    const price = product.prices.find(p => p.currency === 'usd');
-    if (!price) {
-      return NextResponse.json(
-        { success: false, error: 'Product pricing not available' },
-        { status: 400 }
-      );
-    }
+    // Create notification
+    await notify(
+      user.id,
+      "purchase",
+      `Purchased ${item.name}`,
+      `Spent ${price} gold`
+    );
 
-    const totalAmount = price.amountMinor * quantity;
-
-    // Check if user already has this product (for non-stackable items)
-    if (!product.stackable) {
-      const existingEntitlement = await prisma.entitlement.findUnique({
-        where: {
-          userId_productId: {
-            userId,
-            productId,
-          },
-        },
-      });
-
-      if (existingEntitlement) {
-        return NextResponse.json(
-          { success: false, error: 'You already own this product' },
-          { status: 400 }
-        );
-      }
-    }
-
-    // Update wallet with lock to prevent race conditions
-    const walletUpdate = await updateWalletWithLock({
-      userId,
-      tenantId: 'default',
-      fundsDelta: -totalAmount,
-      refType: 'purchase',
-      refId: `purchase_${Date.now()}`,
-      note: `Purchase: ${product.title} (${quantity}x)`,
-    });
-
-    if (!walletUpdate.success) {
-      return NextResponse.json(
-        { success: false, error: walletUpdate.error || 'Insufficient funds' },
-        { status: 400 }
-      );
-    }
-
-    // Create purchase record and entitlement in a transaction
-    const result = await prisma.$transaction(async (tx) => {
-      // Create purchase record
-      const purchase = await tx.purchase.create({
-        data: {
-          userId,
-          tenantId: 'default',
-          productId,
-          quantity,
-          totalMinor: totalAmount,
-          status: 'SUCCEEDED',
-        },
-      });
-
-      // Create entitlement(s)
-      const entitlements = [];
-      for (let i = 0; i < quantity; i++) {
-        const entitlement = await tx.entitlement.create({
-          data: {
-            userId,
-            tenantId: 'default',
-            productId,
-            meta: {
-              purchaseId: purchase.id,
-              quantity: quantity,
-              purchasedAt: new Date().toISOString(),
-            },
-          },
-        });
-        entitlements.push(entitlement);
-      }
-
-      return { purchase, entitlements };
+    // Publish event
+    await publishEvent("purchase:complete", {
+      userId: user.id,
+      itemId: item.id,
+      itemName: item.name,
+      price,
+      newBalance: userFunds - price,
     });
 
     return NextResponse.json({
       success: true,
-      purchase: {
-        id: result.purchase.id,
-        productId: result.purchase.productId,
-        quantity: result.purchase.quantity,
-        totalAmount,
-        status: result.purchase.status,
-        createdAt: result.purchase.createdAt.toISOString(),
-      },
-      entitlements: result.entitlements.map(e => ({
-        id: e.id,
-        productId: e.productId,
-        createdAt: e.createdAt.toISOString(),
-      })),
-      wallet: {
-        funds: walletUpdate.newBalance.funds,
-        diamonds: walletUpdate.newBalance.diamonds,
-      },
+      item,
+      price,
+      newBalance: userFunds - price,
     });
   } catch (error) {
-    console.error('Purchase error:', error);
+    console.error("[API] Error processing purchase:", error);
     return NextResponse.json(
-      { success: false, error: 'Purchase failed' },
+      { error: "Failed to process purchase" },
       { status: 500 }
     );
   }

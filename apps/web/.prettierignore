@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Cache
+.turbo
+.cache
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Database
+prisma/generated
+
+# Config
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Others
+.DS_Store
+*.tsbuildinfo
+
+
+
+
+
+
+
+
+
+

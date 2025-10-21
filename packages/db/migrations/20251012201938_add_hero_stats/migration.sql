@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "archetype" TEXT DEFAULT 'Adventurer',
+ADD COLUMN     "statCreativity" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "statHealth" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "statKnowledge" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "statSleep" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "statSocial" INTEGER NOT NULL DEFAULT 0;

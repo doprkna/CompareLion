@@ -1,11 +1,12 @@
 import { NextRequest } from 'next/server';
+import { securityConfig } from '@/lib/config/security';
 
 // hCaptcha configuration
 const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '10000000-ffff-ffff-ffff-000000000001'; // Test key
-const HCAPTCHA_SECRET_KEY = process.env.HCAPTCHA_SECRET_KEY || '0x0000000000000000000000000000000000000000'; // Test secret
+const HCAPTCHA_SECRET_KEY = process.env.HCAPTCHA_SECRET || '0x0000000000000000000000000000000000000000'; // Test secret
 
-// For now, this middleware always passes - stub ready to flip to real later
-const HCAPTCHA_BYPASS = process.env.HCAPTCHA_BYPASS === 'true' || true; // Default to bypass
+// Use security config for bypass logic
+const HCAPTCHA_BYPASS = securityConfig.demoBypass || !securityConfig.captchaEnabled;
 
 export interface HCaptchaResult {
   success: boolean;

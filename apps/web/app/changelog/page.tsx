@@ -1,81 +1,68 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { apiFetch } from '@/lib/api';
-import { ChangelogProse } from '@/components/ui/prose';
+import { useEffect, useState } from "react";
+import { ChangelogSkeleton } from "@/components/LoadingSkeletons";
 
 export default function ChangelogPage() {
   const [entries, setEntries] = useState<any[]>([]);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiFetch('/api/changelog')
-      .then(data => {
-        console.log('Changelog API response:', data); // Debug log
-        if (data.success) {
-          setEntries(data.entries || []);
-        } else {
-          setError(data.error || 'Failed to load changelog');
-        }
-      })
-      .catch(err => {
-        console.error('Changelog fetch error:', err);
-        setError('Failed to load changelog');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetch("/api/changelog")
+      .then((r) => r.json())
+      .then((data) => setEntries(data.entries || []))
+      .catch(() => setError("Failed to load changelog"))
+      .finally(() => setLoading(false));
   }, []);
 
+  if (loading) {
+    return <ChangelogSkeleton />;
+  }
+
+  if (error) {
+    return <div className="text-red-600 font-medium p-4">Error: {error}</div>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4 text-gray-900">Changelog</h1>
-        
-        {loading ? (
-          <p className="text-gray-600">Loading...</p>
-        ) : error ? (
-          <div className="text-red-600">
-            <p>Error: {error}</p>
-            <p className="text-sm mt-2">Please try refreshing the page.</p>
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      {/* Lock indicator in dev mode */}
+      {process.env.NODE_ENV !== "production" && (
+        <div className="mb-4 text-xs text-yellow-700 dark:text-yellow-400 border border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+          <div className="flex items-center space-x-2">
+            <span>🔒</span>
+            <span className="font-semibold">Changelog Protection Active</span>
           </div>
-        ) : entries.length === 0 ? (
-          <p className="text-gray-600">No changelog entries found.</p>
-        ) : (
-          entries.map((e, idx) => (
-            <details key={e.version} open={idx === 0} className="mb-6">
-              <summary className="cursor-pointer font-semibold text-xl text-gray-900 hover:text-blue-600">
-                {e.version} {e.date ? `- ${e.date}` : ''}
-              </summary>
-              <ChangelogProse>
-                {['added', 'changed', 'fixed'].map((section) => {
-                  const items = e[section as 'added' | 'changed' | 'fixed'];
-                  if (!items || !items.length) return null;
-                  return (
-                    <div key={section} className="mt-2">
-                      <h3 className="font-medium capitalize text-gray-800">{section}</h3>
-                      <ul className="list-disc list-inside text-gray-700">
-                        {items.map((it: { text: string; children: string[] }, i: number) => (
-                          <li key={i} className="mb-1">
-                            {it.text}
-                            {it.children && it.children.length > 0 && (
-                              <ul className="list-circle list-inside ml-4 mt-1 text-gray-600">
-                                {it.children.map((child, ci) => (
-                                  <li key={ci} className="text-sm">{child}</li>
-                                ))}
-                              </ul>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
-              </ChangelogProse>
-            </details>
-          ))
-        )}
-      </div>
+          <p className="mt-1 text-yellow-600 dark:text-yellow-500">
+            Historical entries are locked and cannot be edited automatically.
+            Only new versions can be prepended.
+          </p>
+        </div>
+      )}
+      
+      {entries.map((entry, i) => (
+        <details key={entry.version} open={i === 0} className="rounded-xl border p-4">
+          <summary className="cursor-pointer text-lg font-semibold text-foreground">
+            {entry.version === "Unreleased"
+              ? "Unreleased"
+              : `${entry.version} — ${entry.date ?? ""}`}
+          </summary>
+
+          <div className="mt-4 space-y-4">
+            {Object.entries(entry.sections).map(([title, items]: [string, any]) => (
+              <section key={title}>
+                <h4 className="font-semibold mb-1 text-foreground">{title}</h4>
+                <ul className="list-disc pl-6 space-y-1 text-foreground">
+                  {items.map((line: string, idx: number) => (
+                    <li key={idx} className="whitespace-pre-line leading-relaxed">
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </details>
+      ))}
     </div>
   );
 }

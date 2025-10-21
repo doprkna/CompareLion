@@ -1,0 +1,43 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "logout": "Logout",
+    "signup": "Sign Up",
+    "profile": "Profile",
+    "settings": "Settings",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "shop": "Shop",
+    "leaderboard": "Leaderboard",
+    "friends": "Friends",
+    "groups": "Groups",
+    "admin": "Admin"
+  },
+  "footer": {
+    "copyright": "© 2025 PareL. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
+  }
+}
+
+
+
+
+
+
+
+
+
+

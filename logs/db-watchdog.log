@@ -1,0 +1,35 @@
+[2025-10-17 15:09:10] Auto-repair triggered
+[2025-10-17 15:09:15] Auto-repair failed: Command failed: pnpm db:seed
+PrismaClientInitializationError: 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\doprk\parel-mvp\packages\db\seed.ts:268:23
+
+  265 const demoPasswordHash = await bcrypt.hash("demo", 10);
+  266 
+  267 // Create admin and demo users first
+→ 268 await prisma.user.upsert(
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:9
+   | 
+ 8 |   provider = "postgresql"
+ 9 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at $n.handleRequestError (C:\Users\doprk\parel-mvp\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client\runtime\library.js:121:7615)
+    at $n.handleAndLogRequestError (C:\Users\doprk\parel-mvp\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\Users\doprk\parel-mvp\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\Users\doprk\parel-mvp\node_modules\.pnpm\@prisma+client@5.22.0_prisma@5.22.0\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async main (C:\Users\doprk\parel-mvp\packages\db\seed.ts:268:5) {
+  clientVersion: '5.22.0',
+  errorCode: undefined
+}
+
+[2025-10-17 15:10:41] Auto-repair triggered
+[2025-10-17 15:10:52] Auto-repair completed. 62 records. Version v0.12.6
+[2025-10-17 15:12:37] Auto-repair triggered
+[2025-10-17 15:12:48] Auto-repair completed. 88 records. Version v0.12.6
+[2025-10-17 15:15:11] Auto-repair triggered
+[2025-10-17 15:15:23] Auto-repair completed. 114 records. Version v0.12.6
+[2025-10-17 15:32:55] Auto-repair triggered
+[2025-10-17 15:33:10] Auto-repair completed. 140 records. Version v0.12.6

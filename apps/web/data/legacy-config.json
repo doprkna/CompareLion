@@ -1,0 +1,277 @@
+{
+  "version": "0.10.2",
+  "cycleSettings": {
+    "defaultDuration": 90,
+    "minDuration": 30,
+    "maxDuration": 180,
+    "resetWarningDays": 7
+  },
+  "ascensionPaths": {
+    "ascend": {
+      "name": "Ascendance",
+      "icon": "⬆️",
+      "color": "#f59e0b",
+      "description": "Carry forward your power and wisdom",
+      "bonuses": [
+        {
+          "type": "prestige_carry",
+          "value": 20,
+          "unit": "%"
+        },
+        {
+          "type": "legacy_title",
+          "description": "Keep one title as 'Legacy'"
+        },
+        {
+          "type": "artifact",
+          "description": "Unlock permanent artifact"
+        },
+        {
+          "type": "npc_memory",
+          "description": "NPCs remember you"
+        }
+      ],
+      "penalties": [
+        {
+          "type": "xp_reduction",
+          "value": -10,
+          "unit": "%",
+          "duration": "first_10_levels"
+        }
+      ]
+    },
+    "descend": {
+      "name": "Descendance",
+      "icon": "⬇️",
+      "color": "#8b5cf6",
+      "description": "Embrace rebirth with new possibilities",
+      "bonuses": [
+        {
+          "type": "xp_boost",
+          "value": 25,
+          "unit": "%",
+          "duration": "first_10_levels"
+        },
+        {
+          "type": "mutation",
+          "description": "Random new trait/ability"
+        },
+        {
+          "type": "hidden_archetype",
+          "description": "Access to secret archetypes"
+        },
+        {
+          "type": "fresh_start_bonus",
+          "value": 1000,
+          "unit": "xp"
+        }
+      ],
+      "penalties": [
+        {
+          "type": "prestige_loss",
+          "value": 100,
+          "unit": "%"
+        }
+      ]
+    },
+    "neutral": {
+      "name": "Neutral Reset",
+      "icon": "↔️",
+      "color": "#10b981",
+      "description": "Balanced approach to new cycle",
+      "bonuses": [
+        {
+          "type": "prestige_carry",
+          "value": 10,
+          "unit": "%"
+        },
+        {
+          "type": "xp_boost",
+          "value": 10,
+          "unit": "%",
+          "duration": "permanent"
+        },
+        {
+          "type": "artifact_choice",
+          "description": "Choose one artifact to keep"
+        }
+      ],
+      "penalties": []
+    }
+  },
+  "mutations": [
+    {
+      "id": "double_xp_knowledge",
+      "name": "Scholar's Mind",
+      "icon": "📚",
+      "rarity": "rare"
+    },
+    {
+      "id": "chaos_affinity",
+      "name": "Chaos Touched",
+      "icon": "🌀",
+      "rarity": "epic"
+    },
+    {
+      "id": "golden_touch",
+      "name": "Midas' Blessing",
+      "icon": "💰",
+      "rarity": "legendary"
+    },
+    {
+      "id": "swift_learner",
+      "name": "Prodigy",
+      "icon": "⚡",
+      "rarity": "epic"
+    },
+    {
+      "id": "social_butterfly",
+      "name": "Charismatic Aura",
+      "icon": "💬",
+      "rarity": "common"
+    }
+  ],
+  "legacyArtifacts": [
+    {
+      "id": "eternal_flame",
+      "name": "Eternal Flame Aura",
+      "type": "aura",
+      "requirement": "survive_age_of_darkness"
+    },
+    {
+      "id": "cosmic_crown",
+      "name": "Cosmic Crown",
+      "type": "cosmetic",
+      "requirement": "trigger_cosmic_harmony"
+    },
+    {
+      "id": "void_walker_theme",
+      "name": "Void Walker Theme",
+      "type": "theme",
+      "requirement": "abyss_layer_50"
+    },
+    {
+      "id": "timeless_sage",
+      "name": "Timeless Sage",
+      "type": "title",
+      "requirement": "ascend_3_times"
+    }
+  ],
+  "abyssMode": {
+    "enabled": false,
+    "description": "Infinite difficulty endgame mode",
+    "unlockRequirement": {
+      "level": 50,
+      "prestige": 100,
+      "completedCycles": 1
+    },
+    "mechanics": {
+      "layerScaling": {
+        "healthMultiplier": 1.15,
+        "defenseIncrease": 2,
+        "rewardMultiplier": 1.10
+      },
+      "tokenEconomy": {
+        "tokensPerLayer": 10,
+        "tokenExchange": {
+          "100": "rare_artifact",
+          "500": "legendary_artifact",
+          "1000": "abyss_title"
+        }
+      },
+      "leaderboard": {
+        "enabled": true,
+        "categories": ["max_layer", "total_clears", "fastest_clear"]
+      }
+    }
+  },
+  "historicalArchive": {
+    "sections": [
+      {
+        "id": "cycle_summary",
+        "name": "Cycle Summary",
+        "data": [
+          "Cycle name and duration",
+          "Dominant world force",
+          "Major events",
+          "Threats defeated"
+        ]
+      },
+      {
+        "id": "top_players",
+        "name": "Hall of Legends",
+        "data": [
+          "Top 10 by XP",
+          "Top 10 by Karma",
+          "Top 10 by Prestige"
+        ]
+      },
+      {
+        "id": "faction_standings",
+        "name": "Faction Glory",
+        "data": [
+          "Winning faction",
+          "Territory control",
+          "Major victories"
+        ]
+      },
+      {
+        "id": "world_state",
+        "name": "Final World State",
+        "data": [
+          "Hope, Chaos, Creativity, Knowledge, Harmony",
+          "Final alignment",
+          "Triggered events"
+        ]
+      }
+    ]
+  },
+  "unlockables": {
+    "newFactions": [
+      {
+        "id": "void",
+        "name": "Void",
+        "unlockCondition": "Cycle ends in Age of Darkness"
+      },
+      {
+        "id": "cosmic",
+        "name": "Cosmic",
+        "unlockCondition": "Cycle achieves Perfect Harmony"
+      }
+    ],
+    "newResources": [
+      {
+        "id": "void_nexus",
+        "name": "Void Nexus",
+        "unlockCondition": "Defeat 10+ catastrophic threats in cycle"
+      },
+      {
+        "id": "dream_spring",
+        "name": "Dream Spring",
+        "unlockCondition": "Hope > 80 for 30 consecutive days"
+      }
+    ],
+    "newEnvironments": [
+      {
+        "id": "shattered_realm",
+        "name": "Shattered Realm",
+        "unlockCondition": "Chaos Rift escapes"
+      },
+      {
+        "id": "golden_age",
+        "name": "Golden Age",
+        "unlockCondition": "Maintain Age of Light for full cycle"
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+

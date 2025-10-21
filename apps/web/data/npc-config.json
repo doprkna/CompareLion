@@ -1,0 +1,299 @@
+{
+  "version": "0.9.3",
+  "npcs": [
+    {
+      "npcId": "mentor_sage",
+      "name": "Athena",
+      "title": "The Wise Mentor",
+      "avatar": "🦉",
+      "archetype": "mentor",
+      "alignment": "lawful_good",
+      "color": "#8b5cf6"
+    },
+    {
+      "npcId": "trickster_loki",
+      "name": "Loki",
+      "title": "Chaos Incarnate",
+      "avatar": "🎭",
+      "archetype": "trickster",
+      "alignment": "chaotic_neutral",
+      "color": "#ec4899"
+    },
+    {
+      "npcId": "sage_oracle",
+      "name": "Oracle",
+      "title": "The Seer",
+      "avatar": "🔮",
+      "archetype": "sage",
+      "alignment": "true_neutral",
+      "color": "#06b6d4"
+    },
+    {
+      "npcId": "rebel_spark",
+      "name": "Spark",
+      "title": "The Revolutionary",
+      "avatar": "⚡",
+      "archetype": "rebel",
+      "alignment": "chaotic_good",
+      "color": "#f59e0b"
+    },
+    {
+      "npcId": "guardian_stone",
+      "name": "Stone",
+      "title": "The Steadfast Guardian",
+      "avatar": "🛡️",
+      "archetype": "guardian",
+      "alignment": "lawful_neutral",
+      "color": "#64748b"
+    },
+    {
+      "npcId": "jester_folly",
+      "name": "Folly",
+      "title": "The Mad Jester",
+      "avatar": "🃏",
+      "archetype": "jester",
+      "alignment": "chaotic_chaotic",
+      "color": "#10b981"
+    }
+  ],
+  "interactionTypes": {
+    "greeting": {
+      "name": "Greeting",
+      "icon": "👋",
+      "description": "Initial encounter"
+    },
+    "quest_offer": {
+      "name": "Quest Offer",
+      "icon": "📜",
+      "description": "NPC offers a challenge"
+    },
+    "advice": {
+      "name": "Advice",
+      "icon": "💡",
+      "description": "NPC gives guidance"
+    },
+    "challenge": {
+      "name": "Challenge",
+      "icon": "⚔️",
+      "description": "NPC issues a test"
+    },
+    "dialogue": {
+      "name": "Dialogue",
+      "icon": "💬",
+      "description": "Freeform conversation"
+    },
+    "farewell": {
+      "name": "Farewell",
+      "icon": "👋",
+      "description": "Ending encounter"
+    }
+  },
+  "memoryTypes": {
+    "user_preference": {
+      "name": "User Preference",
+      "description": "What the user likes/dislikes",
+      "expiryDays": null,
+      "importance": 7
+    },
+    "past_choice": {
+      "name": "Past Choice",
+      "description": "Significant decision the user made",
+      "expiryDays": 90,
+      "importance": 8
+    },
+    "relationship_status": {
+      "name": "Relationship",
+      "description": "How user feels about this NPC",
+      "expiryDays": null,
+      "importance": 9
+    },
+    "quest_history": {
+      "name": "Quest History",
+      "description": "Quests completed or failed",
+      "expiryDays": 30,
+      "importance": 6
+    }
+  },
+  "alignments": {
+    "lawful_good": {
+      "name": "Lawful Good",
+      "description": "Honorable and compassionate",
+      "icon": "⚖️"
+    },
+    "neutral_good": {
+      "name": "Neutral Good",
+      "description": "Kind without rigid rules",
+      "icon": "🕊️"
+    },
+    "chaotic_good": {
+      "name": "Chaotic Good",
+      "description": "Free-spirited and benevolent",
+      "icon": "🔥"
+    },
+    "lawful_neutral": {
+      "name": "Lawful Neutral",
+      "description": "Orderly and impartial",
+      "icon": "📏"
+    },
+    "true_neutral": {
+      "name": "True Neutral",
+      "description": "Balanced and unbiased",
+      "icon": "⚖️"
+    },
+    "chaotic_neutral": {
+      "name": "Chaotic Neutral",
+      "description": "Unpredictable and free",
+      "icon": "🌀"
+    },
+    "lawful_evil": {
+      "name": "Lawful Evil",
+      "description": "Methodical and ruthless",
+      "icon": "⚔️"
+    },
+    "neutral_evil": {
+      "name": "Neutral Evil",
+      "description": "Self-serving and amoral",
+      "icon": "💀"
+    },
+    "chaotic_evil": {
+      "name": "Chaotic Evil",
+      "description": "Destructive and malevolent",
+      "icon": "🔥"
+    },
+    "chaotic_chaotic": {
+      "name": "Chaotic Chaotic",
+      "description": "Pure unpredictability",
+      "icon": "🎲"
+    }
+  },
+  "dialogueTriggers": {
+    "random": {
+      "name": "Random Encounter",
+      "probability": 0.1,
+      "cooldown": 3600
+    },
+    "karma_based": {
+      "name": "Karma Trigger",
+      "conditions": [
+        {
+          "type": "high_karma",
+          "threshold": 50,
+          "npcs": ["mentor_sage", "guardian_stone"]
+        },
+        {
+          "type": "low_karma",
+          "threshold": -50,
+          "npcs": ["trickster_loki", "jester_folly"]
+        }
+      ]
+    },
+    "archetype_based": {
+      "name": "Archetype Match",
+      "conditions": [
+        {
+          "archetype": "The Scholar",
+          "npcs": ["mentor_sage", "sage_oracle"]
+        },
+        {
+          "archetype": "The Bard",
+          "npcs": ["trickster_loki", "jester_folly"]
+        },
+        {
+          "archetype": "The Warrior",
+          "npcs": ["guardian_stone", "rebel_spark"]
+        }
+      ]
+    },
+    "quest_related": {
+      "name": "Quest Progress",
+      "conditions": [
+        {
+          "quest": "complete",
+          "npcs": ["mentor_sage"]
+        },
+        {
+          "quest": "failed",
+          "npcs": ["trickster_loki", "jester_folly"]
+        }
+      ]
+    }
+  },
+  "dialogueCategories": {
+    "advice": {
+      "name": "Advice",
+      "icon": "💡",
+      "examples": [
+        "Guidance on archetype development",
+        "Tips for improving stats",
+        "Suggestions for next challenge"
+      ]
+    },
+    "challenge": {
+      "name": "Challenge",
+      "icon": "⚔️",
+      "examples": [
+        "Moral dilemma questions",
+        "Skill tests",
+        "Personal growth challenges"
+      ]
+    },
+    "story": {
+      "name": "Story",
+      "icon": "📖",
+      "examples": [
+        "NPC backstory reveals",
+        "World lore",
+        "Player journey reflection"
+      ]
+    },
+    "quest": {
+      "name": "Quest",
+      "icon": "📜",
+      "examples": [
+        "Special challenge offers",
+        "Multi-step missions",
+        "Hidden achievement hints"
+      ]
+    }
+  },
+  "llmIntegration": {
+    "enabled": false,
+    "model": "gpt-4",
+    "systemPrompts": {
+      "mentor": "You are Athena, a wise mentor who guides users through thoughtful questions. You remember their past choices and offer personalized wisdom.",
+      "trickster": "You are Loki, a mischievous trickster who speaks in riddles. You love testing creativity and wit through unexpected challenges.",
+      "sage": "You are Oracle, a mystical seer who sees patterns in user behavior. You speak cryptically but offer profound insights.",
+      "rebel": "You are Spark, a revolutionary who inspires bold action. You challenge norms and encourage users to break free from limitations.",
+      "guardian": "You are Stone, a steadfast guardian who values discipline. You test resolve and reward consistency and dedication.",
+      "jester": "You are Folly, a mad jester who finds humor in everything. You give absurd but insightful challenges and laugh at all outcomes."
+    },
+    "contextWindow": 10,
+    "temperature": 0.8,
+    "maxTokens": 150
+  },
+  "rewards": {
+    "quest_completion": {
+      "xp": [100, 250, 500],
+      "gold": [200, 500, 1000],
+      "items": ["rare_item", "epic_item"]
+    },
+    "advice_followed": {
+      "xp": 50,
+      "karma": 5
+    },
+    "challenge_accepted": {
+      "xp": 75,
+      "prestige": 2
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

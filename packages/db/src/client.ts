@@ -1,12 +1,22 @@
 import { PrismaClient } from '@prisma/client';
 
-// pgbouncer-compatible configuration
-const prisma = new PrismaClient({
-  // Logging configuration
-  log: process.env.NODE_ENV === 'development' 
-    ? ['query', 'info', 'warn', 'error']
-    : ['warn', 'error'],
-});
+// Prevent multiple instances in development (Next.js hot reload)
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+
+// Create or reuse Prisma client
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    // Logging configuration
+    log: process.env.NODE_ENV === 'development' 
+      ? ['query', 'error', 'warn']
+      : ['error'],
+  });
+
+// Store in global to prevent multiple instances in development
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
 // Graceful shutdown
 process.on('beforeExit', async () => {
@@ -23,5 +33,4 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
-export { prisma };
 export default prisma;

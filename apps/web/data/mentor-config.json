@@ -1,0 +1,223 @@
+{
+  "version": "0.9.5",
+  "mentorTones": {
+    "supportive": {
+      "name": "Supportive",
+      "avatar": "🤗",
+      "description": "Encouraging and nurturing",
+      "style": {
+        "greeting": "Hey there! Great to see you again 😊",
+        "praise": "You're doing amazing!",
+        "suggestion": "Have you considered trying...?",
+        "concern": "I noticed you might need some support with..."
+      }
+    },
+    "challenging": {
+      "name": "Challenging",
+      "avatar": "💪",
+      "description": "Direct and growth-focused",
+      "style": {
+        "greeting": "Ready to level up?",
+        "praise": "Good. But you can do better.",
+        "suggestion": "You need to work on...",
+        "concern": "This weakness is holding you back:"
+      }
+    },
+    "philosophical": {
+      "name": "Philosophical",
+      "avatar": "🧙",
+      "description": "Thoughtful and introspective",
+      "style": {
+        "greeting": "Greetings, seeker. Let us reflect together.",
+        "praise": "Your journey shows wisdom beyond mere numbers.",
+        "suggestion": "Consider the deeper meaning of...",
+        "concern": "I sense an imbalance in your path..."
+      }
+    },
+    "casual": {
+      "name": "Casual",
+      "avatar": "😎",
+      "description": "Friendly and relaxed",
+      "style": {
+        "greeting": "What's up! 👋",
+        "praise": "Yo, that was sick! 🔥",
+        "suggestion": "Maybe give this a shot:",
+        "concern": "Heads up, looks like..."
+      }
+    }
+  },
+  "logTypes": {
+    "weekly_summary": {
+      "name": "Weekly Summary",
+      "icon": "📊",
+      "description": "Overview of week's activity and growth"
+    },
+    "suggestion": {
+      "name": "Suggestion",
+      "icon": "💡",
+      "description": "Personalized recommendation"
+    },
+    "reflection": {
+      "name": "Reflection",
+      "icon": "💭",
+      "description": "Prompt for self-reflection"
+    },
+    "milestone": {
+      "name": "Milestone",
+      "icon": "🎉",
+      "description": "Celebration of achievement"
+    },
+    "warning": {
+      "name": "Warning",
+      "icon": "⚠️",
+      "description": "Alert about concerning pattern"
+    }
+  },
+  "promptCategories": {
+    "self_reflection": {
+      "name": "Self Reflection",
+      "icon": "💭",
+      "description": "Questions about self-awareness"
+    },
+    "goal_setting": {
+      "name": "Goal Setting",
+      "icon": "🎯",
+      "description": "Planning future growth"
+    },
+    "gratitude": {
+      "name": "Gratitude",
+      "icon": "🙏",
+      "description": "Appreciating positive moments"
+    },
+    "challenge": {
+      "name": "Challenge Analysis",
+      "icon": "⚔️",
+      "description": "Working through obstacles"
+    }
+  },
+  "weeklySummaryTemplate": {
+    "sections": [
+      {
+        "id": "overview",
+        "title": "This Week's Journey",
+        "content": "You gained {xp} XP and completed {flows} flows. Your focus was on {dominantTrait}."
+      },
+      {
+        "id": "highlights",
+        "title": "Highlights",
+        "items": [
+          "Unlocked {achievementCount} achievements",
+          "Made {socialCount} meaningful connections",
+          "Showed strength in {topStat}"
+        ]
+      },
+      {
+        "id": "growth_areas",
+        "title": "Areas for Growth",
+        "items": [
+          "Consider developing {weakStat}",
+          "Try exploring {suggestedCategory} flows"
+        ]
+      },
+      {
+        "id": "suggestions",
+        "title": "This Week's Suggestions",
+        "items": [
+          "Complete the {flowName} flow",
+          "Try a {challengeType} challenge",
+          "Connect with {recommendedUser}"
+        ]
+      }
+    ]
+  },
+  "reflectionAnalysis": {
+    "sentimentCategories": [
+      "very_positive",
+      "positive",
+      "neutral",
+      "negative",
+      "very_negative"
+    ],
+    "themes": [
+      "growth",
+      "struggle",
+      "achievement",
+      "social",
+      "learning",
+      "creativity",
+      "balance",
+      "frustration",
+      "joy",
+      "curiosity"
+    ],
+    "insightTemplates": [
+      "Your reflection shows a strong focus on {theme}. This aligns well with your {archetype} archetype.",
+      "I notice you're {sentiment} about {topic}. This suggests...",
+      "The pattern in your reflections indicates growth in {area}."
+    ]
+  },
+  "recommendations": {
+    "flowMatching": {
+      "growth_area_creativity": [
+        "artistic_expression_flow",
+        "creative_problem_solving"
+      ],
+      "growth_area_knowledge": [
+        "trivia_master_flow",
+        "deep_dive_learning"
+      ],
+      "growth_area_social": [
+        "communication_skills",
+        "empathy_building"
+      ]
+    },
+    "achievementHints": {
+      "near_completion": "You're {percentage}% complete with {collectionName}. Just {remaining} more!",
+      "hidden_achievement": "Try {action} to unlock a hidden achievement",
+      "milestone_approaching": "Only {amount} XP until your next milestone!"
+    }
+  },
+  "reminderSchedules": {
+    "daily": {
+      "frequency": "24h",
+      "bestTime": "09:00"
+    },
+    "weekly": {
+      "frequency": "7d",
+      "bestTime": "Monday 09:00"
+    },
+    "biweekly": {
+      "frequency": "14d",
+      "bestTime": "Monday 09:00"
+    },
+    "monthly": {
+      "frequency": "30d",
+      "bestTime": "1st of month 09:00"
+    }
+  },
+  "journaling": {
+    "enabled": false,
+    "features": [
+      "Daily reflection prompts",
+      "Mood tracking",
+      "AI-powered insights",
+      "Pattern detection",
+      "Private by default"
+    ],
+    "prompts": {
+      "morning": "What are you hoping to achieve today?",
+      "evening": "What did you learn or accomplish today?",
+      "weekly": "Looking back at this week, what stands out to you?"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

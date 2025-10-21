@@ -1,0 +1,248 @@
+{
+  "version": "0.8.13",
+  "defaults": {
+    "maxMembers": 50,
+    "minLevel": 1,
+    "isPublic": true,
+    "requireApproval": false,
+    "emblem": "🏰",
+    "color": "#8b5cf6"
+  },
+  "roles": {
+    "leader": {
+      "name": "Leader",
+      "permissions": [
+        "invite",
+        "kick",
+        "promote",
+        "demote",
+        "edit_settings",
+        "manage_upgrades",
+        "disband"
+      ],
+      "icon": "👑",
+      "color": "#f59e0b"
+    },
+    "officer": {
+      "name": "Officer",
+      "permissions": [
+        "invite",
+        "kick_member",
+        "approve_requests"
+      ],
+      "icon": "⭐",
+      "color": "#8b5cf6"
+    },
+    "member": {
+      "name": "Member",
+      "permissions": [
+        "contribute",
+        "chat",
+        "leave"
+      ],
+      "icon": "👤",
+      "color": "#64748b"
+    }
+  },
+  "upgrades": [
+    {
+      "type": "xp_boost",
+      "name": "XP Amplifier",
+      "description": "Boost XP gains for all members",
+      "icon": "✨",
+      "maxLevel": 5,
+      "costs": [1000, 2500, 5000, 10000, 20000],
+      "boosts": ["5%", "10%", "15%", "20%", "25%"]
+    },
+    {
+      "type": "gold_boost",
+      "name": "Golden Treasury",
+      "description": "Boost gold gains for all members",
+      "icon": "💰",
+      "maxLevel": 5,
+      "costs": [800, 2000, 4000, 8000, 16000],
+      "boosts": ["5%", "10%", "15%", "20%", "25%"]
+    },
+    {
+      "type": "member_slots",
+      "name": "Hall Expansion",
+      "description": "Increase maximum member capacity",
+      "icon": "🏛️",
+      "maxLevel": 3,
+      "costs": [5000, 15000, 30000],
+      "capacities": [60, 75, 100]
+    },
+    {
+      "type": "cosmetic_banner",
+      "name": "Legendary Banner",
+      "description": "Unlock exclusive clan banner",
+      "icon": "🚩",
+      "maxLevel": 1,
+      "costs": [10000]
+    }
+  ],
+  "weeklyRewards": {
+    "bronze": {
+      "minXp": 0,
+      "maxXp": 9999,
+      "icon": "🥉",
+      "color": "#cd7f32",
+      "gold": 500
+    },
+    "silver": {
+      "minXp": 10000,
+      "maxXp": 24999,
+      "icon": "🥈",
+      "color": "#c0c0c0",
+      "gold": 1000
+    },
+    "gold": {
+      "minXp": 25000,
+      "maxXp": 49999,
+      "icon": "🥇",
+      "color": "#ffd700",
+      "gold": 2000,
+      "diamonds": 25
+    },
+    "platinum": {
+      "minXp": 50000,
+      "maxXp": 99999,
+      "icon": "💎",
+      "color": "#e5e4e2",
+      "gold": 3000,
+      "diamonds": 50
+    },
+    "diamond": {
+      "minXp": 100000,
+      "maxXp": 999999999,
+      "icon": "💠",
+      "color": "#b9f2ff",
+      "gold": 5000,
+      "diamonds": 100
+    }
+  },
+  "activityTypes": {
+    "member_joined": {
+      "message": "{userName} joined the clan",
+      "icon": "👋",
+      "color": "#10b981"
+    },
+    "member_left": {
+      "message": "{userName} left the clan",
+      "icon": "👋",
+      "color": "#64748b"
+    },
+    "member_kicked": {
+      "message": "{userName} was removed from the clan",
+      "icon": "🚫",
+      "color": "#ef4444"
+    },
+    "xp_milestone": {
+      "message": "Clan reached {milestone} total XP!",
+      "icon": "🎯",
+      "color": "#f59e0b"
+    },
+    "level_up": {
+      "message": "Clan leveled up to level {level}!",
+      "icon": "⬆️",
+      "color": "#8b5cf6"
+    },
+    "upgrade_purchased": {
+      "message": "Purchased {upgradeName} (Level {level})",
+      "icon": "🛒",
+      "color": "#3b82f6"
+    },
+    "weekly_reward": {
+      "message": "Earned {tier} chest with {gold} gold!",
+      "icon": "🎁",
+      "color": "#ec4899"
+    },
+    "promotion": {
+      "message": "{userName} was promoted to {role}",
+      "icon": "⬆️",
+      "color": "#10b981"
+    },
+    "demotion": {
+      "message": "{userName} was demoted to {role}",
+      "icon": "⬇️",
+      "color": "#f59e0b"
+    }
+  },
+  "emblems": [
+    "🏰", "⚔️", "🛡️", "🦁", "🐉", "🦅", "🐺", "🔥",
+    "⚡", "🌙", "☀️", "💎", "👑", "🎯", "🌟", "💀"
+  ],
+  "colors": [
+    "#8b5cf6",
+    "#ef4444",
+    "#3b82f6",
+    "#10b981",
+    "#f59e0b",
+    "#ec4899",
+    "#06b6d4",
+    "#64748b"
+  ],
+  "levelProgression": {
+    "xpFormula": "level^2 * 1000",
+    "milestones": [
+      {
+        "level": 5,
+        "reward": "Unlock clan chat customization"
+      },
+      {
+        "level": 10,
+        "reward": "Unlock first upgrade slot"
+      },
+      {
+        "level": 15,
+        "reward": "Unlock second upgrade slot"
+      },
+      {
+        "level": 20,
+        "reward": "Unlock third upgrade slot"
+      },
+      {
+        "level": 25,
+        "reward": "Max member capacity +10"
+      }
+    ]
+  },
+  "leaderboard": {
+    "categories": [
+      {
+        "id": "weekly_xp",
+        "name": "Weekly XP",
+        "description": "Most XP earned this week",
+        "icon": "📊"
+      },
+      {
+        "id": "total_xp",
+        "name": "Total XP",
+        "description": "All-time XP accumulated",
+        "icon": "🏆"
+      },
+      {
+        "id": "level",
+        "name": "Clan Level",
+        "description": "Highest clan level",
+        "icon": "⬆️"
+      },
+      {
+        "id": "members",
+        "name": "Member Count",
+        "description": "Most active members",
+        "icon": "👥"
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+

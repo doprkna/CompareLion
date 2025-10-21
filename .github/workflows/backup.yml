@@ -1,0 +1,138 @@
+name: Database Backup
+
+on:
+  schedule:
+    # Daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Allow manual trigger
+
+jobs:
+  backup:
+    name: Backup Database
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      
+      - name: Create backup
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          BACKUP_FILE="parel_backup_${TIMESTAMP}.sql"
+          
+          echo "Creating backup: $BACKUP_FILE"
+          
+          pg_dump ${{ secrets.PRODUCTION_DATABASE_URL }} \
+            --no-owner \
+            --no-acl \
+            --clean \
+            --if-exists \
+            > $BACKUP_FILE
+          
+          echo "Compressing backup..."
+          gzip $BACKUP_FILE
+          
+          echo "BACKUP_FILE=${BACKUP_FILE}.gz" >> $GITHUB_ENV
+          echo "TIMESTAMP=${TIMESTAMP}" >> $GITHUB_ENV
+      
+      - name: Upload to S3
+        if: env.AWS_ACCESS_KEY_ID != ''
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BACKUP_BUCKET }}
+        run: |
+          aws s3 cp ${{ env.BACKUP_FILE }} \
+            s3://${S3_BUCKET}/backups/database/${{ env.BACKUP_FILE }} \
+            --storage-class STANDARD_IA
+          
+          echo "✅ Uploaded to S3"
+      
+      - name: Upload to Supabase Storage (Alternative)
+        if: env.SUPABASE_URL != ''
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          # Upload using Supabase API
+          curl -X POST "${SUPABASE_URL}/storage/v1/object/backups/database/${{ env.BACKUP_FILE }}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            -H "Content-Type: application/gzip" \
+            --data-binary @${{ env.BACKUP_FILE }}
+          
+          echo "✅ Uploaded to Supabase Storage"
+      
+      - name: Clean up old backups (keep last 30 days)
+        if: env.AWS_ACCESS_KEY_ID != ''
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BACKUP_BUCKET }}
+        run: |
+          CUTOFF_DATE=$(date -d '30 days ago' +%Y%m%d)
+          
+          aws s3 ls s3://${S3_BUCKET}/backups/database/ | while read -r line; do
+            FILE=$(echo $line | awk '{print $4}')
+            DATE=$(echo $FILE | grep -oP '\d{8}' | head -1)
+            
+            if [ ! -z "$DATE" ] && [ "$DATE" -lt "$CUTOFF_DATE" ]; then
+              echo "Deleting old backup: $FILE"
+              aws s3 rm s3://${S3_BUCKET}/backups/database/$FILE
+            fi
+          done
+      
+      - name: Send backup success notification
+        if: success()
+        run: |
+          BACKUP_SIZE=$(du -h ${{ env.BACKUP_FILE }} | cut -f1)
+          
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "✅ Database Backup Complete",
+                "description": "Daily backup completed successfully",
+                "color": 5763719,
+                "fields": [
+                  {"name": "Timestamp", "value": "${{ env.TIMESTAMP }}", "inline": true},
+                  {"name": "Size", "value": "'"$BACKUP_SIZE"'", "inline": true},
+                  {"name": "Storage", "value": "S3/Supabase", "inline": true}
+                ],
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+              }]
+            }'
+      
+      - name: Send backup failure notification
+        if: failure()
+        run: |
+          curl -X POST ${{ secrets.DISCORD_WEBHOOK_URL }} \
+            -H "Content-Type: application/json" \
+            -d '{
+              "embeds": [{
+                "title": "❌ Database Backup Failed",
+                "description": "Daily backup encountered an error",
+                "color": 15158332,
+                "fields": [
+                  {"name": "Timestamp", "value": "${{ env.TIMESTAMP }}", "inline": true},
+                  {"name": "Workflow", "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "inline": false}
+                ],
+                "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%S.000Z)'"
+              }]
+            }'
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,191 @@
+{
+  "version": "0.8.10",
+  "strategies": [
+    {
+      "key": "user_summary",
+      "name": "User Summary",
+      "description": "User profile, XP, gold, achievements",
+      "ttlSeconds": 60,
+      "strategy": "hybrid",
+      "invalidateOn": [
+        "xp:update",
+        "achievement:unlock",
+        "purchase:complete",
+        "level:up"
+      ]
+    },
+    {
+      "key": "leaderboard",
+      "name": "Leaderboard",
+      "description": "Top users by XP",
+      "ttlSeconds": 120,
+      "strategy": "redis",
+      "invalidateOn": [
+        "xp:update",
+        "level:up"
+      ]
+    },
+    {
+      "key": "shop_items",
+      "name": "Shop Items",
+      "description": "Available shop inventory",
+      "ttlSeconds": 300,
+      "strategy": "redis",
+      "invalidateOn": [
+        "shop:restock",
+        "item:featured"
+      ]
+    },
+    {
+      "key": "cosmetics",
+      "name": "Cosmetics Catalog",
+      "description": "Avatar parts, themes, auras",
+      "ttlSeconds": 300,
+      "strategy": "hybrid",
+      "invalidateOn": [
+        "cosmetic:added",
+        "cosmetic:featured"
+      ]
+    },
+    {
+      "key": "achievements",
+      "name": "Achievement Catalog",
+      "description": "All available achievements",
+      "ttlSeconds": 180,
+      "strategy": "memory",
+      "invalidateOn": [
+        "achievement:added"
+      ]
+    },
+    {
+      "key": "themes",
+      "name": "Theme Packs",
+      "description": "Available profile themes",
+      "ttlSeconds": 240,
+      "strategy": "memory",
+      "invalidateOn": [
+        "theme:added",
+        "theme:seasonal"
+      ]
+    },
+    {
+      "key": "feed",
+      "name": "Global Feed",
+      "description": "Activity feed items",
+      "ttlSeconds": 30,
+      "strategy": "redis",
+      "invalidateOn": [
+        "feed:new",
+        "activity:new"
+      ]
+    },
+    {
+      "key": "notifications",
+      "name": "User Notifications",
+      "description": "Unread notifications",
+      "ttlSeconds": 15,
+      "strategy": "redis",
+      "invalidateOn": [
+        "notification:new",
+        "notification:read"
+      ]
+    },
+    {
+      "key": "presence",
+      "name": "Online Presence",
+      "description": "Who's online",
+      "ttlSeconds": 10,
+      "strategy": "redis",
+      "invalidateOn": [
+        "presence:update"
+      ]
+    },
+    {
+      "key": "stats",
+      "name": "Global Stats",
+      "description": "Platform statistics",
+      "ttlSeconds": 90,
+      "strategy": "hybrid",
+      "invalidateOn": [
+        "user:signup",
+        "message:sent"
+      ]
+    }
+  ],
+  "ttlRanges": {
+    "realtime": {
+      "min": 5,
+      "max": 15,
+      "description": "For rapidly changing data (presence, typing)"
+    },
+    "frequent": {
+      "min": 30,
+      "max": 60,
+      "description": "For frequently updated data (feed, notifications)"
+    },
+    "moderate": {
+      "min": 60,
+      "max": 180,
+      "description": "For moderately stable data (user summary, achievements)"
+    },
+    "stable": {
+      "min": 180,
+      "max": 600,
+      "description": "For rarely changing data (shop, themes, cosmetics)"
+    }
+  },
+  "invalidationPatterns": {
+    "user_data": [
+      "user:{userId}:*"
+    ],
+    "shop_data": [
+      "shop:*",
+      "cosmetics:*"
+    ],
+    "social_data": [
+      "feed:*",
+      "leaderboard:*"
+    ],
+    "notifications": [
+      "notifications:{userId}:*"
+    ]
+  },
+  "middleware": {
+    "cacheHeaders": {
+      "public": [
+        "shop_items",
+        "cosmetics",
+        "achievements",
+        "themes"
+      ],
+      "private": [
+        "user_summary",
+        "notifications",
+        "presence"
+      ],
+      "no-store": [
+        "admin:*",
+        "auth:*"
+      ]
+    },
+    "cdnCache": {
+      "enabled": true,
+      "paths": [
+        "/api/shop/*",
+        "/api/cosmetics/*",
+        "/api/achievements/*"
+      ],
+      "maxAge": 300
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

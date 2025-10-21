@@ -27,6 +27,7 @@ export const LoginSchema = z.object({
     .string()
     .min(1, 'Password is required'),
   hcaptchaToken: z.string().optional(), // Optional hCaptcha token for rate-limited logins
+  captcha: z.string().optional(), // Optional captcha token (alternative field name)
 });
 
 export type SignupInput = z.infer<typeof SignupSchema>;

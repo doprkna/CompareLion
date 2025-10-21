@@ -1,19 +1,44 @@
-// This file is auto-generated. Edit the script, not this file directly.
+/**
+ * Route Configuration
+ * 
+ * Note: Main navigation is now handled by NavLinks component.
+ * This file is kept for backwards compatibility and programmatic routing.
+ */
+
+// Core user routes
+export const coreRoutes = [
+  { path: '/main', label: 'Home' },
+  { path: '/flow-demo', label: 'Play' },
+  { path: '/friends', label: 'Social' },
+  { path: '/profile', label: 'Profile' },
+];
+
+// Info routes
+export const infoRoutes = [
+  { path: '/info/faq', label: 'FAQ' },
+  { path: '/info/contact', label: 'Contact' },
+  { path: '/info/terms', label: 'Terms of Service' },
+  { path: '/info/privacy', label: 'Privacy Policy' },
+];
+
+// Admin routes
+export const adminRoutes = [
+  { path: '/reports', label: 'Reports' },
+  { path: '/admin', label: 'Admin Panel' },
+];
+
+// All routes (for backwards compatibility)
 export const routes = [
   { path: '/', label: 'Landing' },
   { path: '/login', label: 'Login' },
   { path: '/signup', label: 'Sign Up' },
-  { path: '/main', label: 'Main' },
-  { path: '/profile', label: 'Profile' },
-  { path: '/character', label: 'Character' },
-  { path: '/quiz', label: 'Quiz' },
+  ...coreRoutes,
+  { path: '/activity', label: 'Activity' },
   { path: '/leaderboard', label: 'Leaderboard' },
-  { path: '/friends', label: 'Friends/Group' },
   { path: '/shop', label: 'Shop' },
-  { path: '/subscribe', label: 'Subscribe' },
   { path: '/tasks', label: 'Tasks' },
   { path: '/questions', label: 'Questions' },
-  { path: '/roadmap', label: 'Roadmap' },
-  { path: '/legal', label: 'Legal' },
+  ...infoRoutes,
+  ...adminRoutes,
   { path: '/changelog', label: 'Changelog' },
 ];

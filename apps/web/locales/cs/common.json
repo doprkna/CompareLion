@@ -1,0 +1,43 @@
+{
+  "common": {
+    "welcome": "Vítejte",
+    "login": "Přihlášení",
+    "logout": "Odhlásit se",
+    "signup": "Registrace",
+    "profile": "Profil",
+    "settings": "Nastavení",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "close": "Zavřít",
+    "loading": "Načítání...",
+    "error": "Chyba",
+    "success": "Úspěch"
+  },
+  "nav": {
+    "home": "Domů",
+    "dashboard": "Nástěnka",
+    "shop": "Obchod",
+    "leaderboard": "Žebříček",
+    "friends": "Přátelé",
+    "groups": "Skupiny",
+    "admin": "Administrace"
+  },
+  "footer": {
+    "copyright": "© 2025 PareL. Všechna práva vyhrazena.",
+    "privacy": "Zásady ochrany osobních údajů",
+    "terms": "Podmínky služby",
+    "contact": "Kontaktujte nás"
+  }
+}
+
+
+
+
+
+
+
+
+
+

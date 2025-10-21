@@ -1,0 +1,243 @@
+{
+  "version": "0.9.2",
+  "tiers": {
+    "bronze": {
+      "name": "Bronze",
+      "icon": "🥉",
+      "color": "#cd7f32",
+      "minPrestige": 0,
+      "maxPrestige": 19
+    },
+    "silver": {
+      "name": "Silver",
+      "icon": "🥈",
+      "color": "#c0c0c0",
+      "minPrestige": 20,
+      "maxPrestige": 39
+    },
+    "gold": {
+      "name": "Gold",
+      "icon": "🥇",
+      "color": "#ffd700",
+      "minPrestige": 40,
+      "maxPrestige": 59
+    },
+    "platinum": {
+      "name": "Platinum",
+      "icon": "💎",
+      "color": "#e5e4e2",
+      "minPrestige": 60,
+      "maxPrestige": 79
+    },
+    "diamond": {
+      "name": "Diamond",
+      "icon": "💠",
+      "color": "#b9f2ff",
+      "minPrestige": 80
+    }
+  },
+  "offerTemplates": [
+    {
+      "offerId": "coffee_discount_20",
+      "name": "Coffee Shop 20% Off",
+      "description": "Enjoy 20% off your next coffee purchase",
+      "type": "discount",
+      "category": "food",
+      "partnerName": "Local Coffee Co.",
+      "value": "20% off",
+      "minPrestige": 20,
+      "minLevel": 10,
+      "expiryDays": 30
+    },
+    {
+      "offerId": "merch_tshirt_parel",
+      "name": "PareL Signature T-Shirt",
+      "description": "Limited edition PareL branded t-shirt",
+      "type": "merchandise",
+      "category": "merchandise",
+      "partnerName": "PareL Official",
+      "value": "Free t-shirt",
+      "minPrestige": 40,
+      "requiredBadges": ["social_butterfly", "flow_master"],
+      "totalStock": 100,
+      "maxPerUser": 1,
+      "expiryDays": 60
+    },
+    {
+      "offerId": "course_premium_access",
+      "name": "Premium Course Access",
+      "description": "3-month premium access to partner courses",
+      "type": "service",
+      "category": "education",
+      "partnerName": "LearnHub",
+      "value": "3-month subscription ($99 value)",
+      "minPrestige": 60,
+      "minLevel": 25,
+      "requiredTitles": ["The Sage"],
+      "totalStock": 50,
+      "expiryDays": 90
+    },
+    {
+      "offerId": "nft_achievement_proof",
+      "name": "Achievement NFT Certificate",
+      "description": "Mint your achievements as blockchain NFTs",
+      "type": "digital",
+      "category": "tech",
+      "partnerName": "PareL NFT",
+      "value": "NFT Certificate",
+      "minPrestige": 80,
+      "nftEnabled": true,
+      "expiryDays": 365
+    },
+    {
+      "offerId": "workshop_vip_ticket",
+      "name": "VIP Workshop Ticket",
+      "description": "Exclusive access to creator workshop",
+      "type": "experience",
+      "category": "entertainment",
+      "partnerName": "PareL Events",
+      "value": "VIP ticket ($200 value)",
+      "minPrestige": 70,
+      "minLevel": 30,
+      "requiredTitles": ["Partner Creator"],
+      "totalStock": 20,
+      "maxPerUser": 1,
+      "expiryDays": 14
+    }
+  ],
+  "redemptionStatuses": {
+    "claimed": {
+      "name": "Claimed",
+      "icon": "📝",
+      "color": "#f59e0b",
+      "description": "Reward claimed, pending use"
+    },
+    "verified": {
+      "name": "Verified",
+      "icon": "✅",
+      "color": "#10b981",
+      "description": "Code verified by partner"
+    },
+    "redeemed": {
+      "name": "Redeemed",
+      "icon": "🎁",
+      "color": "#8b5cf6",
+      "description": "Reward fully redeemed"
+    },
+    "expired": {
+      "name": "Expired",
+      "icon": "⏰",
+      "color": "#64748b",
+      "description": "Redemption code expired"
+    },
+    "cancelled": {
+      "name": "Cancelled",
+      "icon": "❌",
+      "color": "#ef4444",
+      "description": "Redemption cancelled"
+    }
+  },
+  "proofTypes": {
+    "photo": {
+      "name": "Photo Proof",
+      "icon": "📸",
+      "description": "Upload photo of redeemed item/experience"
+    },
+    "receipt": {
+      "name": "Receipt",
+      "icon": "🧾",
+      "description": "Upload purchase receipt"
+    },
+    "blockchain_tx": {
+      "name": "Blockchain Transaction",
+      "icon": "⛓️",
+      "description": "NFT minting transaction hash"
+    },
+    "partner_confirmation": {
+      "name": "Partner Confirmation",
+      "icon": "✉️",
+      "description": "Confirmation from partner system"
+    }
+  },
+  "nft": {
+    "enabled": false,
+    "network": "polygon",
+    "contractAddress": "0x0000000000000000000000000000000000000000",
+    "metadata": {
+      "name": "PareL Achievement Certificate",
+      "description": "Proof of achievement from PareL platform",
+      "image": "https://parel.app/nft/{tokenId}.png",
+      "attributes": [
+        {
+          "trait_type": "Achievement",
+          "value": "{achievementName}"
+        },
+        {
+          "trait_type": "Prestige Level",
+          "value": "{prestigeScore}"
+        },
+        {
+          "trait_type": "Date Earned",
+          "value": "{timestamp}"
+        }
+      ]
+    }
+  },
+  "verification": {
+    "codeFormat": "XXXX-XXXXXXXXX-XXXXXXXX",
+    "expirationDays": 30,
+    "reminderDays": [7, 3, 1],
+    "qrCodeSize": 300,
+    "qrCodeFormat": "png"
+  },
+  "adminTools": {
+    "actions": [
+      {
+        "id": "create_offer",
+        "name": "Create Offer",
+        "icon": "➕",
+        "description": "Add new reward offer"
+      },
+      {
+        "id": "edit_offer",
+        "name": "Edit Offer",
+        "icon": "✏️",
+        "description": "Modify existing offer"
+      },
+      {
+        "id": "disable_offer",
+        "name": "Disable Offer",
+        "icon": "🚫",
+        "description": "Temporarily disable offer"
+      },
+      {
+        "id": "verify_redemption",
+        "name": "Verify Redemption",
+        "icon": "✅",
+        "description": "Manually verify partner redemption"
+      },
+      {
+        "id": "refund_redemption",
+        "name": "Refund Redemption",
+        "icon": "↩️",
+        "description": "Cancel and refund redemption"
+      },
+      {
+        "id": "view_stats",
+        "name": "View Statistics",
+        "icon": "📊",
+        "description": "View redemption analytics"
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+

@@ -6,17 +6,30 @@
     "apps/*",
     "packages/*"
   ],
+  "prisma": {
+    "schema": "packages/db/schema.prisma"
+  },
   "scripts": {
+    "prisma:generate": "prisma generate --schema=packages/db/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema=packages/db/schema.prisma",
+    "prisma:db:pull": "prisma db pull --schema=packages/db/schema.prisma",
     "generate:prisma": "node scripts/gen-prisma.js",
     "dev": "concurrently \"pnpm run dev:web\" \"pnpm run dev:worker\"",
     "dev:web": "cd apps/web && pnpm run dev",
     "dev:worker": "cd apps/worker && pnpm run dev",
     "build": "pnpm run generate:prisma && pnpm run build:web",
     "build:web": "cd apps/web && pnpm run build",
-    "db:push": "cd packages/db && pnpm exec prisma db push",
+    "db:push": "pnpm --filter @parel/db prisma db push",
     "db:migrate": "cd packages/db && pnpm run prisma:migrate",
-    "db:seed": "cd packages/db && pnpm run prisma:seed",
+    "db:seed": "tsx packages/db/seed.ts",
+    "db:reset-seed": "pnpm db:push && pnpm db:seed",
     "db:studio": "cd packages/db && pnpm exec prisma studio",
+    "watchdog": "tsx scripts/db-watchdog.ts",
+    "watchdog:ci": "tsx scripts/ci-watchdog.ts",
+    "dev:watchdog": "pnpm watchdog && pnpm dev",
+    "dev:web:watchdog": "pnpm watchdog && pnpm dev:web",
+    "gen:questions": "cd apps/web && pnpm run gen:questions",
+    "check:changelog": "node scripts/check-changelog.js",
     "lint": "pnpm run lint:web && pnpm run lint:worker",
     "lint:web": "cd apps/web && pnpm run lint",
     "lint:worker": "cd apps/worker && pnpm run lint",
@@ -30,6 +43,7 @@
     "prepare": "husky install"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.3.0",
     "@playwright/test": "^1.55.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/supertest": "^6.0.3",
@@ -43,6 +57,7 @@
     "lint-staged": "^15.2.0",
     "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.9.2",
     "vitest": "^1.6.1"
   },
@@ -55,6 +70,7 @@
     "jsonwebtoken": "^9.0.2",
     "lru-cache": "^11.2.2",
     "next-themes": "^0.4.6",
+    "p-limit": "^7.1.1",
     "resend": "^6.1.2",
     "stripe": "^19.0.0"
   }

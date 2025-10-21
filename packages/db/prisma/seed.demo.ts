@@ -1,57 +1,82 @@
-import { prisma } from './client';
-import { hash } from 'bcryptjs';
+import { PrismaClient } from "@prisma/client";
+import { hash } from "bcryptjs";
 
-async function main() {
-  // 1. Demo user
-  const email = 'demo@example.com';
-  const password = 'password123';
-  const passwordHash = await hash(password, 10);
+const prisma = new PrismaClient();
 
-  const user = await prisma.user.upsert({
-    where: { email },
-    update: {},
-    create: { email, passwordHash, theme: 'light' },
-  });
-  console.log(`Demo user ready: ${email} / ${password}`);
+async function seedDemo() {
+  console.log('🌱 Seeding demo data...');
 
-  // 2. Demo category tree
-  const category = await prisma.category.upsert({
-    where: { name: 'Demo Category' },
-    update: {},
-    create: { name: 'Demo Category' },
-  });
+  // 1. Create demo users
+  const users = [];
+  const names = ['Alex', 'Jordan', 'Sam', 'Casey', 'Morgan', 'Taylor', 'Riley', 'Avery', 'Quinn', 'Parker'];
+  
+  for (let i = 0; i < names.length; i++) {
+    const email = `demo${i + 1}@example.com`;
+    const passwordHash = await hash("password123", 10);
+    
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: {
+        name: names[i],
+        xp: 5000 - (i * 450),
+        level: Math.max(1, 10 - i),
+        funds: 1000 - (i * 90),
+        diamonds: Math.max(5, 50 - (i * 5)),
+        score: 5000 - (i * 450),
+        questionsAnswered: Math.max(10, 100 - (i * 10)),
+      },
+      create: {
+        email,
+        passwordHash,
+        name: names[i],
+        xp: 5000 - (i * 450),
+        level: Math.max(1, 10 - i),
+        funds: 1000 - (i * 90),
+        diamonds: Math.max(5, 50 - (i * 5)),
+        score: 5000 - (i * 450),
+        questionsAnswered: Math.max(10, 100 - (i * 10)),
+        theme: 'dark',
+        emailVerified: new Date(),
+        emailVerifiedAt: new Date(),
+      },
+    });
+    users.push(user);
+  }
+  console.log(`✅ Created/updated ${users.length} demo users`);
 
-  const subCategory = await prisma.subCategory.upsert({
-    where: { name: 'Demo SubCategory' },
-    update: {},
-    create: { name: 'Demo SubCategory', categoryId: category.id },
-  });
+  // 2. Create demo messages
+  await prisma.message.deleteMany();
+  
+  // Create messages using user IDs
+  if (users.length >= 4) {
+    const messageData = [
+      { from: 0, to: 1, text: 'Hey! Want to compare scores on the latest flow?' },
+      { from: 1, to: 0, text: 'Sure! You're leading right now 🏆' },
+      { from: 2, to: 0, text: 'Thanks for the help with that tricky question!' },
+      { from: 0, to: 2, text: 'No problem! Let me know if you need more tips.' },
+      { from: 3, to: 0, text: 'Nice progress on the leaderboard! Keep it up.' },
+    ];
 
-  const subSubCategory = await prisma.subSubCategory.upsert({
-    where: { name: 'Demo SubSub' },
-    update: {},
-    create: { name: 'Demo SubSub', subCategoryId: subCategory.id },
-  });
+    for (const msg of messageData) {
+      await prisma.message.create({
+        data: {
+          senderId: users[msg.from].id,
+          receiverId: users[msg.to].id,
+          content: msg.text,
+        },
+      });
+    }
+    console.log('✅ Created demo messages');
+  }
 
-  const sssc = await prisma.sssCategory.upsert({
-    where: { name: 'Demo Leaf' },
-    update: {},
-    create: { name: 'Demo Leaf', subSubCategoryId: subSubCategory.id },
-  });
-
-  // 3. Demo questions
-  await prisma.question.createMany({
-    data: [
-      { text: 'What is 2 + 2?', ssscId: sssc.id, difficulty: 'easy' },
-      { text: 'Name the capital of France.', ssscId: sssc.id, difficulty: 'easy' },
-      { text: 'Explain the difference between HTTP and HTTPS.', ssscId: sssc.id, difficulty: 'medium' },
-    ],
-    skipDuplicates: true,
-  });
-
-  console.log('Demo questions inserted under Demo Leaf');
+  console.log('✅ Demo data seeding complete!');
 }
 
-main()
-  .catch(e => { console.error(e); process.exit(1); })
-  .finally(async () => { await prisma.$disconnect(); });
+seedDemo()
+  .catch((e) => {
+    console.error('❌ Demo seed failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

@@ -1,0 +1,205 @@
+{
+  "version": "0.8.11",
+  "queues": [
+    {
+      "name": "xp_updates",
+      "category": "high_priority",
+      "icon": "✨",
+      "color": "#f59e0b"
+    },
+    {
+      "name": "messages",
+      "category": "high_priority",
+      "icon": "💬",
+      "color": "#10b981"
+    },
+    {
+      "name": "notifications",
+      "category": "high_priority",
+      "icon": "🔔",
+      "color": "#3b82f6"
+    },
+    {
+      "name": "achievements",
+      "category": "high_priority",
+      "icon": "🏆",
+      "color": "#8b5cf6"
+    },
+    {
+      "name": "ai_generation",
+      "category": "medium_priority",
+      "icon": "🤖",
+      "color": "#ec4899"
+    },
+    {
+      "name": "email",
+      "category": "medium_priority",
+      "icon": "📧",
+      "color": "#06b6d4"
+    },
+    {
+      "name": "cache_invalidation",
+      "category": "medium_priority",
+      "icon": "🗑️",
+      "color": "#6366f1"
+    },
+    {
+      "name": "analytics",
+      "category": "low_priority",
+      "icon": "📊",
+      "color": "#64748b"
+    },
+    {
+      "name": "metrics",
+      "category": "low_priority",
+      "icon": "📈",
+      "color": "#78716c"
+    },
+    {
+      "name": "cleanup",
+      "category": "low_priority",
+      "icon": "🧹",
+      "color": "#71717a"
+    }
+  ],
+  "healthThresholds": {
+    "healthy": {
+      "failureRate": 5,
+      "stalledJobs": 10,
+      "avgProcessTime": 1000,
+      "color": "#10b981",
+      "emoji": "✅"
+    },
+    "warning": {
+      "failureRate": 15,
+      "stalledJobs": 50,
+      "avgProcessTime": 5000,
+      "color": "#f59e0b",
+      "emoji": "⚠️"
+    },
+    "critical": {
+      "failureRate": 30,
+      "stalledJobs": 100,
+      "avgProcessTime": 10000,
+      "color": "#ef4444",
+      "emoji": "🚨"
+    }
+  },
+  "metrics": {
+    "realtime": [
+      {
+        "key": "processed_per_sec",
+        "name": "Processed/sec",
+        "unit": "jobs/s",
+        "format": "decimal"
+      },
+      {
+        "key": "active_workers",
+        "name": "Active Workers",
+        "unit": "workers",
+        "format": "integer"
+      },
+      {
+        "key": "waiting_jobs",
+        "name": "Waiting",
+        "unit": "jobs",
+        "format": "integer"
+      },
+      {
+        "key": "failed_jobs",
+        "name": "Failed",
+        "unit": "jobs",
+        "format": "integer"
+      }
+    ],
+    "aggregated": [
+      {
+        "key": "total_processed",
+        "name": "Total Processed",
+        "unit": "jobs",
+        "format": "integer"
+      },
+      {
+        "key": "success_rate",
+        "name": "Success Rate",
+        "unit": "%",
+        "format": "percentage"
+      },
+      {
+        "key": "avg_process_time",
+        "name": "Avg Process Time",
+        "unit": "ms",
+        "format": "duration"
+      },
+      {
+        "key": "retry_rate",
+        "name": "Retry Rate",
+        "unit": "%",
+        "format": "percentage"
+      }
+    ]
+  },
+  "alerts": {
+    "high_failure_rate": {
+      "threshold": 20,
+      "severity": "warning",
+      "message": "Queue failure rate exceeds 20%"
+    },
+    "critical_failure_rate": {
+      "threshold": 50,
+      "severity": "critical",
+      "message": "Queue failure rate critical - immediate action required"
+    },
+    "stalled_jobs": {
+      "threshold": 100,
+      "severity": "warning",
+      "message": "High number of stalled jobs detected"
+    },
+    "slow_processing": {
+      "threshold": 10000,
+      "severity": "info",
+      "message": "Average processing time exceeds 10 seconds"
+    },
+    "queue_paused": {
+      "severity": "critical",
+      "message": "Queue is paused - no jobs are being processed"
+    }
+  },
+  "actions": {
+    "retry_failed": {
+      "name": "Retry Failed Jobs",
+      "icon": "🔄",
+      "description": "Retry all failed jobs in this queue"
+    },
+    "clear_completed": {
+      "name": "Clear Completed",
+      "icon": "🗑️",
+      "description": "Remove completed jobs from queue"
+    },
+    "pause_queue": {
+      "name": "Pause Queue",
+      "icon": "⏸️",
+      "description": "Temporarily pause job processing"
+    },
+    "resume_queue": {
+      "name": "Resume Queue",
+      "icon": "▶️",
+      "description": "Resume job processing"
+    },
+    "adjust_concurrency": {
+      "name": "Adjust Concurrency",
+      "icon": "⚙️",
+      "description": "Change number of concurrent workers"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

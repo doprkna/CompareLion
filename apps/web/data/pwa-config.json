@@ -1,0 +1,170 @@
+{
+  "version": "0.9.0",
+  "serviceWorker": {
+    "scope": "/",
+    "cacheName": "parel-v0.9.0",
+    "cacheStrategies": {
+      "static": {
+        "strategy": "CacheFirst",
+        "patterns": [
+          "/_next/static/.*",
+          "/icons/.*",
+          "/images/.*",
+          "/fonts/.*"
+        ],
+        "maxAge": 2592000
+      },
+      "api": {
+        "strategy": "NetworkFirst",
+        "patterns": [
+          "/api/.*"
+        ],
+        "maxAge": 300
+      },
+      "pages": {
+        "strategy": "StaleWhileRevalidate",
+        "patterns": [
+          "/main",
+          "/profile",
+          "/feed",
+          "/friends"
+        ],
+        "maxAge": 3600
+      }
+    },
+    "offlinePages": [
+      "/offline"
+    ]
+  },
+  "pushNotifications": {
+    "vapidPublicKey": "PLACEHOLDER_VAPID_PUBLIC_KEY",
+    "types": {
+      "duel": {
+        "enabled": true,
+        "priority": "high",
+        "requireInteraction": true
+      },
+      "message": {
+        "enabled": true,
+        "priority": "normal",
+        "requireInteraction": false
+      },
+      "event": {
+        "enabled": true,
+        "priority": "high",
+        "requireInteraction": true
+      },
+      "achievement": {
+        "enabled": true,
+        "priority": "low",
+        "requireInteraction": false
+      },
+      "clan": {
+        "enabled": true,
+        "priority": "normal",
+        "requireInteraction": false
+      }
+    },
+    "permissions": {
+      "requestOnLogin": false,
+      "requestOnFirstAction": true,
+      "showRationale": true
+    }
+  },
+  "backgroundSync": {
+    "enabled": true,
+    "syncTag": "sync-offline-actions",
+    "maxRetries": 3,
+    "retryDelay": 60000,
+    "actions": [
+      "answer",
+      "message",
+      "challenge_response",
+      "purchase"
+    ]
+  },
+  "installPrompt": {
+    "showAfterVisits": 3,
+    "showAfterDays": 2,
+    "dismissibleForDays": 7,
+    "platforms": {
+      "ios": {
+        "enabled": true,
+        "message": "Install PareL for the best experience!"
+      },
+      "android": {
+        "enabled": true,
+        "message": "Add PareL to your home screen"
+      },
+      "desktop": {
+        "enabled": true,
+        "message": "Install PareL app for quick access"
+      }
+    }
+  },
+  "mobile": {
+    "touchOptimization": {
+      "minTapSize": 44,
+      "tapDebounce": 300,
+      "swipeThreshold": 50
+    },
+    "gestures": {
+      "swipeLeft": {
+        "enabled": true,
+        "action": "navigate_back"
+      },
+      "swipeRight": {
+        "enabled": true,
+        "action": "open_menu"
+      },
+      "pullToRefresh": {
+        "enabled": true,
+        "threshold": 80
+      }
+    },
+    "viewport": {
+      "width": "device-width",
+      "initialScale": 1,
+      "maximumScale": 1,
+      "userScalable": false
+    },
+    "bottomNav": {
+      "enabled": true,
+      "items": [
+        { "icon": "🏠", "label": "Home", "path": "/main" },
+        { "icon": "🌊", "label": "Play", "path": "/flow" },
+        { "icon": "💬", "label": "Social", "path": "/friends" },
+        { "icon": "👤", "label": "Profile", "path": "/profile" }
+      ]
+    }
+  },
+  "performance": {
+    "preloadPages": [
+      "/main",
+      "/flow",
+      "/profile"
+    ],
+    "prefetchData": [
+      "/api/user/summary",
+      "/api/notifications"
+    ],
+    "lazyLoadImages": true,
+    "optimizeAssets": true
+  },
+  "analytics": {
+    "trackInstalls": true,
+    "trackUninstalls": true,
+    "trackOfflineUsage": true,
+    "trackPushEngagement": true
+  }
+}
+
+
+
+
+
+
+
+
+
+

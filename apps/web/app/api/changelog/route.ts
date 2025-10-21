@@ -1,76 +1,68 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { CHANGELOG_RULES, validateChangelogIntegrity } from '@/lib/changelogConfig';
 
 interface ChangelogEntry {
   version: string;
   date: string;
-  added: Array<{ text: string; children: string[] }>;
-  changed: Array<{ text: string; children: string[] }>;
-  fixed: Array<{ text: string; children: string[] }>;
+  sections: Record<string, string[]>;
 }
 
-function parseChangelog(content: string): ChangelogEntry[] {
-  const entries: ChangelogEntry[] = [];
-  const lines = content.split('\n');
+/**
+ * Parse CHANGELOG.md and return structured entries
+ * - Handles nested bullets properly
+ * - Filters out "Unreleased" in production
+ * - Returns newest entries first
+ */
+function parseChangelog(md: string): ChangelogEntry[] {
+  // Split by ## [ to get version blocks
+  const blocks = md.split(/^##\s+\[/gm).slice(1);
   
-  let currentEntry: ChangelogEntry | null = null;
-  let currentSection: 'added' | 'changed' | 'fixed' | null = null;
-  let currentItem: { text: string; children: string[] } | null = null;
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+  const entries = blocks.map(block => {
+    const [headerLine, ...rest] = block.split("\n");
+    const [versionPart, datePart] = headerLine.split("] - ");
+    const version = versionPart.replace(/[\[\]]/g, "").trim();
+    const date = datePart ? datePart.trim() : "";
     
-    // Match version headers like "## [0.4.1] - 2025-10-06"
-    const versionMatch = line.match(/^## \[([^\]]+)\](?:\s*-\s*(\d{4}-\d{2}-\d{2}))?/);
-    if (versionMatch) {
-      if (currentEntry) {
-        entries.push(currentEntry);
-      }
-      currentEntry = {
-        version: versionMatch[1],
-        date: versionMatch[2] || '',
-        added: [],
-        changed: [],
-        fixed: []
-      };
-      currentSection = null;
-      currentItem = null;
-      continue;
-    }
+    const body = rest.join("\n");
+    const sections: Record<string, string[]> = {};
+    let current: string | null = null;
     
-    // Match section headers like "### Added", "### Changed", "### Fixed"
-    const sectionMatch = line.match(/^### (Added|Changed|Fixed)$/i);
-    if (sectionMatch && currentEntry) {
-      currentSection = sectionMatch[1].toLowerCase() as 'added' | 'changed' | 'fixed';
-      currentItem = null;
-      continue;
-    }
-    
-    // Match list items starting with "-"
-    if (line.startsWith('-') && currentEntry && currentSection) {
-      const text = line.substring(1).trim();
-      if (text) {
-        currentItem = { text, children: [] };
-        currentEntry[currentSection].push(currentItem);
-      }
-      continue;
-    }
-    
-    // Match sub-items (indented with spaces)
-    if (line.startsWith(' ') && currentItem) {
-      const text = line.trim();
-      if (text.startsWith('-')) {
-        currentItem.children.push(text.substring(1).trim());
+    for (const line of body.split("\n")) {
+      const h3 = line.match(/^###\s+(.*)/);
+      if (h3) {
+        current = h3[1].trim();
+        sections[current] = [];
+      } else if (line.startsWith("- ") && current) {
+        sections[current].push(line.substring(2));
+      } else if (/^\s+- /.test(line) && current && sections[current].length > 0) {
+        // nested bullet
+        const last = sections[current].pop() || "";
+        sections[current].push(last + "\n  " + line.trim().substring(2));
       }
     }
-  }
-  
-  if (currentEntry) {
-    entries.push(currentEntry);
-  }
-  
-  return entries;
+    
+    return { version, date, sections };
+  }).filter(e => Object.keys(e.sections).length > 0);
+
+  // Filter out "Unreleased" in production
+  const showUnreleased = 
+    process.env.NEXT_PUBLIC_SHOW_UNRELEASED === 'true' || 
+    process.env.NODE_ENV !== 'production';
+
+  const released = entries.filter(e => e.version.toLowerCase() !== 'unreleased');
+  const unreleased = entries.filter(e => e.version.toLowerCase() === 'unreleased');
+
+  // Sort released versions by date (newest first)
+  released.sort((a, b) => {
+    const dateA = new Date(a.date || '1970-01-01').getTime();
+    const dateB = new Date(b.date || '1970-01-01').getTime();
+    return dateB - dateA;
+  });
+
+  // Return released versions first (newest first), then unreleased if showing
+  return [...released, ...(showUnreleased ? unreleased : [])];
 }
 
 export async function GET() {
@@ -88,30 +80,77 @@ export async function GET() {
     
     for (const changelogPath of possiblePaths) {
       try {
-        content = fs.readFileSync(changelogPath, 'utf-8');
-        found = true;
-        break;
+        if (fs.existsSync(changelogPath)) {
+          content = fs.readFileSync(changelogPath, 'utf-8');
+          found = true;
+          console.log(`Changelog loaded from: ${changelogPath}`);
+          break;
+        }
       } catch (err) {
         // Continue to next path
       }
     }
     
     if (!found) {
-      throw new Error('Changelog file not found in any expected location');
+      console.error('Changelog file not found in any of:', possiblePaths);
+      return NextResponse.json({ 
+        success: false, 
+        entries: [],
+        error: 'Changelog file not found'
+      }, { status: 404 });
+    }
+    
+    // Debug logging
+    console.log("🪶 CHANGELOG RAW LENGTH:", content.length);
+    console.log("🪶 SAMPLE:", content.slice(0, 500));
+    
+    // 🧠 Changelog integrity validation
+    if (CHANGELOG_RULES.ENFORCE_LOCK && content.includes(CHANGELOG_RULES.LOCK_COMMENT)) {
+      const integrity = validateChangelogIntegrity(content);
+      
+      // Log warnings
+      if (integrity.warnings.length > 0) {
+        console.warn('⚠️  Changelog warnings:');
+        integrity.warnings.forEach(w => console.warn(`   - ${w}`));
+      }
+      
+      // Return error if integrity check fails
+      if (!integrity.valid) {
+        console.error('❌ Changelog integrity check failed:');
+        integrity.errors.forEach(e => console.error(`   - ${e}`));
+        
+        return NextResponse.json({
+          success: false,
+          entries: [],
+          error: 'Changelog integrity check failed',
+          details: integrity.errors,
+        }, { status: 400 });
+      }
+      
+      console.log('✅ Changelog integrity check passed');
     }
     
     const entries = parseChangelog(content);
     
-    return NextResponse.json({ 
+    console.log("🪶 PARSED BLOCKS:", entries.map(e => e.version));
+    
+    const response = NextResponse.json({ 
       success: true, 
-      entries: entries.reverse() // Show newest first
+      entries
     });
+    
+    // Add cache-busting headers
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    
+    return response;
   } catch (error) {
     console.error('Error parsing changelog:', error);
     return NextResponse.json({ 
       success: false, 
       entries: [],
-      error: 'Failed to parse changelog'
-    });
+      error: error instanceof Error ? error.message : 'Failed to parse changelog'
+    }, { status: 500 });
   }
 }

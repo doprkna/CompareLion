@@ -1,0 +1,249 @@
+{
+  "version": "0.8.15",
+  "eventTypes": {
+    "answer_truths": {
+      "name": "Truth Questions",
+      "icon": "💬",
+      "color": "#3b82f6",
+      "description": "Answer truth questions"
+    },
+    "complete_challenges": {
+      "name": "Challenges",
+      "icon": "⚡",
+      "color": "#f59e0b",
+      "description": "Complete dare challenges"
+    },
+    "earn_xp": {
+      "name": "XP Earning",
+      "icon": "✨",
+      "color": "#8b5cf6",
+      "description": "Earn experience points"
+    },
+    "social_activity": {
+      "name": "Social Activity",
+      "icon": "💬",
+      "color": "#10b981",
+      "description": "Messages and friend interactions"
+    },
+    "flow_completions": {
+      "name": "Flow Completions",
+      "icon": "🌊",
+      "color": "#06b6d4",
+      "description": "Complete question flows"
+    }
+  },
+  "goalTypes": {
+    "collective": {
+      "name": "Collective Goal",
+      "description": "Everyone contributes to a shared target",
+      "icon": "🤝"
+    },
+    "individual_threshold": {
+      "name": "Individual Threshold",
+      "description": "Each participant must reach a personal goal",
+      "icon": "🎯"
+    }
+  },
+  "templates": [
+    {
+      "id": "truth_rush",
+      "name": "Truth Rush",
+      "description": "Answer 1,000 truth questions as a community!",
+      "icon": "💬",
+      "targetCount": 1000,
+      "duration": 24
+    },
+    {
+      "id": "challenge_storm",
+      "name": "Challenge Storm",
+      "description": "Complete 500 challenges together!",
+      "icon": "⚡",
+      "targetCount": 500,
+      "duration": 24
+    },
+    {
+      "id": "xp_frenzy",
+      "name": "XP Frenzy",
+      "description": "Community earns 50,000 XP in 12 hours!",
+      "icon": "✨",
+      "targetCount": 50000,
+      "duration": 12
+    },
+    {
+      "id": "social_surge",
+      "name": "Social Surge",
+      "description": "Send 2,000 messages and make 100 new friends!",
+      "icon": "💬",
+      "targetCount": 2000,
+      "duration": 48
+    },
+    {
+      "id": "flow_marathon",
+      "name": "Flow Marathon",
+      "description": "Complete 1,500 flows as a community!",
+      "icon": "🌊",
+      "targetCount": 1500,
+      "duration": 36
+    }
+  ],
+  "rewardTypes": {
+    "badge": {
+      "name": "Badge",
+      "icon": "🏆",
+      "description": "Exclusive achievement badge"
+    },
+    "aura": {
+      "name": "Aura",
+      "icon": "✨",
+      "description": "Avatar aura effect"
+    },
+    "gold": {
+      "name": "Gold",
+      "icon": "💰",
+      "description": "In-game currency"
+    },
+    "diamonds": {
+      "name": "Diamonds",
+      "icon": "💎",
+      "description": "Premium currency"
+    },
+    "xp": {
+      "name": "Experience",
+      "icon": "⭐",
+      "description": "Bonus experience points"
+    },
+    "title": {
+      "name": "Title",
+      "icon": "👑",
+      "description": "Exclusive player title"
+    },
+    "theme": {
+      "name": "Theme",
+      "icon": "🎨",
+      "description": "Profile theme unlock"
+    }
+  },
+  "progressVisualizations": {
+    "gauge": {
+      "type": "circular",
+      "colors": {
+        "0-25": "#ef4444",
+        "25-50": "#f59e0b",
+        "50-75": "#10b981",
+        "75-100": "#8b5cf6"
+      }
+    },
+    "worldMap": {
+      "type": "geographic",
+      "pulseEffect": true,
+      "participantMarkers": true
+    },
+    "progressBar": {
+      "type": "linear",
+      "animated": true,
+      "showMilestones": true
+    }
+  },
+  "milestones": {
+    "25": {
+      "label": "Quarter Way!",
+      "icon": "🎯",
+      "bonus": "Keep going!"
+    },
+    "50": {
+      "label": "Halfway There!",
+      "icon": "🔥",
+      "bonus": "+50 XP bonus unlocked"
+    },
+    "75": {
+      "label": "Almost Done!",
+      "icon": "⭐",
+      "bonus": "+100 XP bonus unlocked"
+    },
+    "100": {
+      "label": "Goal Reached!",
+      "icon": "🎉",
+      "bonus": "Full rewards unlocked"
+    }
+  },
+  "statuses": {
+    "scheduled": {
+      "name": "Scheduled",
+      "icon": "📅",
+      "color": "#64748b",
+      "description": "Event scheduled to start"
+    },
+    "active": {
+      "name": "Active",
+      "icon": "🔴",
+      "color": "#ef4444",
+      "description": "Event currently running"
+    },
+    "completed": {
+      "name": "Completed",
+      "icon": "✅",
+      "color": "#10b981",
+      "description": "Event finished"
+    },
+    "cancelled": {
+      "name": "Cancelled",
+      "icon": "❌",
+      "color": "#64748b",
+      "description": "Event was cancelled"
+    }
+  },
+  "leaderboard": {
+    "topContributors": {
+      "limit": 10,
+      "rewards": {
+        "1": {
+          "title": "Event Champion",
+          "gold": 2000,
+          "diamonds": 50
+        },
+        "2": {
+          "title": "Event Runner-Up",
+          "gold": 1500,
+          "diamonds": 30
+        },
+        "3": {
+          "title": "Event Bronze",
+          "gold": 1000,
+          "diamonds": 20
+        },
+        "4-10": {
+          "gold": 500,
+          "diamonds": 10
+        }
+      }
+    }
+  },
+  "notifications": {
+    "event_started": {
+      "title": "🎉 {eventName} has started!",
+      "body": "Join the community and help reach the goal!"
+    },
+    "milestone_reached": {
+      "title": "🎯 {milestone}% complete!",
+      "body": "Keep going, we're almost there!"
+    },
+    "goal_reached": {
+      "title": "🎉 Goal reached!",
+      "body": "Rewards are being distributed!"
+    },
+    "event_ended": {
+      "title": "⏰ {eventName} has ended",
+      "body": "Check results and claim your rewards!"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+

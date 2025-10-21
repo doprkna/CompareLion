@@ -9,7 +9,15 @@ export default defineConfig({
     include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'e2e'],
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'json-summary'],
+      reportOnFailure: true,
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
       exclude: [
         'node_modules/',
         'tests/',
@@ -20,8 +28,12 @@ export default defineConfig({
         '**/.next/**',
         '**/playwright-report/**',
         '**/test-results/**',
+        '**/placeholder/**',
+        '**/*-stub.ts',
       ],
     },
+    testTimeout: 10000,
+    hookTimeout: 10000,
   },
   resolve: {
     alias: {

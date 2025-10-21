@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "windows"]
@@ -13,64 +10,155 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  email          String   @unique
-  passwordHash  String? // made optional for OAuth
-  name      String?
-  phone     String?
-  language  String?
-  country   String?
-  dateOfBirth DateTime?
-  avatarUrl String?
-  motto     String?
-  theme     String? @default("light")
-  funds     Decimal  @default(0)
-  diamonds  Int      @default(0)
-  xp        Int      @default(0)
-  level     Int      @default(1)
-  lastLoginAt DateTime?
-  lastActiveAt DateTime?
-  createdAt DateTime @default(now())
-  image     String?   // optional profile image URL
-  streakCount    Int      @default(0)
-  lastAnsweredAt DateTime?
-  emailVerifiedAt DateTime?
-
-  memberships Membership[]
-  createdTasks Task[] @relation("TaskCreator")
-  userQuestions UserQuestion[]
-  // Stats for leaderboard
-  score             Int     @default(0)
-  questionsAnswered Int     @default(0)
-  questionsCreated  Int     @default(0)
-
-  // relation to groups
-  userGroups        UserGroup[]
-  // Shop entitlements
-  entitlements      Entitlement[]
-  purchases         Purchase[]
-  subscriptions     Subscription[]
-  wallet            Wallet?
-  userProfile       UserProfile?
-  userBadges        UserBadge[]
-  passwordResets    PasswordReset[]
-  emailVerifies     EmailVerify[]
-  newsletterOptIn   Boolean @default(false)
-  auditLogs         AuditLog[]
+  id                   String                         @id @default(cuid())
+  email                String                         @unique
+  passwordHash         String?
+  name                 String?
+  phone                String?
+  language             String?
+  country              String?
+  dateOfBirth          DateTime?
+  avatarUrl            String?
+  motto                String?
+  theme                String?                        @default("light")
+  funds                Decimal                        @default(0)
+  diamonds             Int                            @default(0)
+  xp                   Int                            @default(0)
+  level                Int                            @default(1)
+  lastLoginAt          DateTime?
+  lastActiveAt         DateTime?
+  createdAt            DateTime                       @default(now())
+  image                String?
+  streakCount          Int                            @default(0)
+  lastAnsweredAt       DateTime?
+  score                Int                            @default(0)
+  questionsAnswered    Int                            @default(0)
+  questionsCreated     Int                            @default(0)
+  emailVerified        DateTime?
+  emailVerifiedAt      DateTime?
+  newsletterOptIn      Boolean                        @default(false)
+  role                 UserRole                       @default(USER)
+  archetype            String?                        @default("Adventurer")
+  statCreativity       Int                            @default(0)
+  statHealth           Int                            @default(0)
+  statKnowledge        Int                            @default(0)
+  statSleep            Int                            @default(0)
+  statSocial           Int                            @default(0)
+  allowPublicCompare   Boolean                        @default(true)
+  badgeType            String?                        @default("none")
+  karmaScore           Int                            @default(0)
+  prestigeScore        Int                            @default(0)
+  showBadges           Boolean                        @default(true)
+  emailVerifies        EmailVerify[]
+  entitlements         Entitlement[]
+  passwordResets       PasswordReset[]
+  purchases            Purchase[]
+  subscriptions        Subscription[]
+  userBadges           UserBadge[]
+  userGroups           UserGroup[]
+  userProfile          UserProfile?
+  userQuestions        UserQuestion[]
+  wallet               Wallet?
+  accounts             Account[]
+  actionLogs           ActionLog[]
+  activities           Activity[]
+  auditLogs            AuditLog[]
+  betaInvitesCreated   BetaInvite[]                   @relation("BetaInvitesCreated")
+  betaUser             BetaUser?
+  blocksReceived       BlockedUser[]                  @relation("BlocksReceived")
+  blocksCreated        BlockedUser[]                  @relation("BlocksCreated")
+  challengesInitiated  Challenge[]                    @relation("ChallengeInitiator")
+  challengesReceived   Challenge[]                    @relation("ChallengeReceiver")
+  clan                 ClanMember?
+  coopMemberships      CoopMember[]
+  craftingLogs         CraftingLog[]
+  followingCreators    CreatorFollower[]              @relation("UserFollowing")
+  creatorProfile       CreatorProfile?
+  creatorWallet        CreatorWallet?
+  dailyQuizCompletions DailyQuizCompletion[]
+  dailySummaries       DailySummary[]
+  spectatedDuels       DuelSpectator[]
+  duelsInitiated       Duel[]                         @relation("DuelInitiator")
+  duelsReceived        Duel[]                         @relation("DuelReceiver")
+  creatorEngagements   EngagementMetric[]             @relation("CreatorEngagements")
+  userEngagements      EngagementMetric[]             @relation("UserEngagements")
+  eventLogs            EventLog[]                     @relation("EventLogs")
+  factionChanges       FactionChangeLog[]
+  factionMembership    FactionMember?
+  factionVotes         FactionVote[]
+  feedbackMoods        FeedbackMood[]
+  feedbackSubmissions  FeedbackSubmission[]
+  friendOf             Friend[]                       @relation("FriendOf")
+  friends              Friend[]                       @relation("UserFriends")
+  feedItems            GlobalFeedItem[]
+  groupMemberships     GroupMember[]
+  inventoryItems       InventoryItem[]
+  languagePreference   LanguagePreference?
+  legacyRecords        LegacyRecord[]
+  marketListings       MarketListing[]
+  memberships          Membership[]
+  mentorLogs           MentorLog[]
+  mentorProfile        MentorProfile?
+  receivedMessages     Message[]                      @relation("ReceivedMessages")
+  sentMessages         Message[]                      @relation("SentMessages")
+  miniEventProgress    MiniEventProgress[]
+  moderationPerformed  ModerationAction[]             @relation("ModerationActionsPerformed")
+  moderationActions    ModerationAction[]
+  narrativeQuests      NarrativeQuest[]
+  notifications        Notification[]
+  npcInteractions      NpcInteraction[]
+  offlineActions       OfflineAction[]
+  onboardingProgress   OnboardingProgress?
+  paymentLogs          PaymentLog[]
+  playerQuotes         PlayerQuote[]
+  presence             Presence?
+  ownedThemes          ProfileTheme[]
+  pushSubscriptions    PushSubscription[]
+  questCompletions     QuestCompletion[]
+  reactions            Reaction[]
+  referralsReceived    Referral?                      @relation("ReferralsReceived")
+  referralsSent        Referral[]                     @relation("ReferralsSent")
+  reflectionEntries    ReflectionEntry[]
+  reportsReceived      Report[]                       @relation("ReportsReceived")
+  reportsSubmitted     Report[]                       @relation("ReportsSubmitted")
+  reportsResolved      Report[]                       @relation("ReportsResolved")
+  reputationScore      ReputationScore?
+  returnBonuses        ReturnBonus[]
+  rewardCalendars      RewardCalendar[]
+  rewardRedemptions    RewardRedemption[]
+  sessions             Session[]
+  createdTasks         Task[]                         @relation("TaskCreator")
+  taxTransactions      TaxTransaction[]
+  threatBattles        ThreatBattle[]
+  completedCollections UserAchievementCollection[]
+  userAchievements     UserAchievement[]
+  archetypeHistory     UserArchetypeHistory[]
+  ownedAvatarItems     UserAvatarItem[]
+  avatar               UserAvatar?
+  energy               UserEnergy?
+  insights             UserInsight[]
+  legacyBonuses        UserLegacyBonus[]
+  userPreferences      UserPreferences?
+  flowResponses        UserResponse[]
+  userStreak           UserStreak?
+  premiumSubscriptions UserSubscription[]
+  themeSettings        UserThemeSettings?
+  userTimeZone         UserTimeZone?
+  weeklyParticipations WeeklyChallengeParticipation[]
 
   @@index([emailVerifiedAt])
+  @@index([role])
   @@map("users")
 }
 
 model Org {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-
-  memberships Membership[]
-  tasks       Task[]
-  workflows   Workflow[]
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
   integrations Integration[]
+  memberships  Membership[]
+  tasks        Task[]
+  workflows    Workflow[]
 
   @@map("orgs")
 }
@@ -79,35 +167,33 @@ model Membership {
   id     String @id @default(cuid())
   userId String
   orgId  String
-  role   String @default("MEMBER") // OWNER, ADMIN, MEMBER
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  org  Org  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  role   String @default("MEMBER")
+  org    Org    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, orgId])
   @@map("memberships")
 }
 
 model Task {
-  id           String    @id @default(cuid())
+  id           String        @id @default(cuid())
   orgId        String
   createdById  String
   title        String
   description  String?
-  status       TaskStatus @default(NEW)
-  priority     String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
-  source       TaskSource @default(WEB)
-  assigneeType AssigneeType @default(AUTO)
+  status       TaskStatus    @default(NEW)
+  priority     String        @default("MEDIUM")
+  source       TaskSource    @default(WEB)
+  assigneeType AssigneeType  @default(AUTO)
   assigneeId   String?
   dueAt        DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  org       Org          @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  creator   User         @relation("TaskCreator", fields: [createdById], references: [id])
-  attachments Attachment[]
-  messages  Message[]
-  runs      Run[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  attachments  Attachment[]
+  runs         Run[]
+  messages     TaskMessage[]
+  creator      User          @relation("TaskCreator", fields: [createdById], references: [id])
+  org          Org           @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@map("tasks")
 }
@@ -119,227 +205,3584 @@ model Attachment {
   url      String
   mimeType String
   size     Int
-
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@map("attachments")
 }
 
-model Message {
-  id         String      @id @default(cuid())
+model TaskMessage {
+  id         String     @id @default(cuid())
   taskId     String
   authorType AuthorType
   text       String
-  createdAt  DateTime    @default(now())
+  createdAt  DateTime   @default(now())
+  task       Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-
-  @@map("messages")
+  @@map("task_messages")
 }
 
 model Workflow {
-  id       String        @id @default(cuid())
-  orgId    String
-  name     String
-  trigger  WorkflowTrigger
-  action   WorkflowAction
-  keywords String[] // JSON array of keywords
-  isActive Boolean       @default(true)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-
-  org  Org  @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  runs Run[]
+  id        String          @id @default(cuid())
+  orgId     String
+  name      String
+  trigger   WorkflowTrigger
+  action    WorkflowAction
+  keywords  String[]
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  runs      Run[]
+  org       Org             @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@map("workflows")
 }
 
 model Run {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   taskId     String
   workflowId String?
   status     RunStatus @default(QUEUED)
   logs       Json?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  task     Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  workflow Workflow? @relation(fields: [workflowId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  task       Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
 
   @@map("runs")
 }
 
 model Integration {
-  id       String           @id @default(cuid())
-  orgId    String
-  type     IntegrationType
-  config   Json
-  isActive Boolean          @default(true)
+  id        String          @id @default(cuid())
+  orgId     String
+  type      IntegrationType
+  config    Json
+  isActive  Boolean         @default(true)
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-
-  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  org       Org             @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@map("integrations")
 }
 
 model Question {
-  // Core fields for QA questions
-  text            String
-  normalizedText  String?          @db.Text
-  difficulty      String?          // "easy" | "medium" | "hard"
-  source          QuestionSource  @default(ai)
-  approved        Boolean         @default(false)
-  reviewNotes     String?
-  createdByUserId String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  // Existing relational fields
-  id                String              @id @default(cuid())
-  categoryId        String
-  subCategoryId     String?
-  subSubCategoryId  String?
-  relatedToId       String?
-  metadata          Json?   // optional metadata JSON
-  currentVersionId  String?  @unique
-  currentVersion    QuestionVersion?    @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  versions          QuestionVersion[]   @relation("AllVersions")
-
-  relatedTo         Question?           @relation("RelatedTo", fields: [relatedToId], references: [id])
-  relatedQuestions  Question[]          @relation("RelatedTo")
-  ssscId            String
-  sssc              SssCategory         @relation("SsscQuestions", fields: [ssscId], references: [id])
-  userQuestions     UserQuestion[]
+  text             String
+  normalizedText   String?
+  difficulty       String?
+  source           QuestionSource    @default(ai)
+  approved         Boolean           @default(false)
+  reviewNotes      String?
+  createdByUserId  String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  id               String            @id @default(cuid())
+  categoryId       String
+  subCategoryId    String?
+  subSubCategoryId String?
+  relatedToId      String?
+  metadata         Json?
+  currentVersionId String?           @unique
+  ssscId           String
+  userQuestions    UserQuestion[]
+  versions         QuestionVersion[] @relation("AllVersions")
+  currentVersion   QuestionVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  relatedTo        Question?         @relation("RelatedTo", fields: [relatedToId], references: [id])
+  relatedQuestions Question[]        @relation("RelatedTo")
+  sssc             SssCategory       @relation("SsscQuestions", fields: [ssscId], references: [id])
 
   @@index([ssscId, approved])
   @@map("questions")
 }
 
 model QuestionVersion {
-  id          String    @id @default(cuid())
+  id          String               @id @default(cuid())
   questionId  String
   text        String
   displayText String
   type        String
   options     Json?
   metadata    Json?
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime             @default(now())
   version     Int
-
-  question    Question  @relation("AllVersions", fields: [questionId], references: [id])
-  tags        QuestionVersionTag[]
-  currentOf   Question? @relation("CurrentVersion")
-  flowSteps   FlowStep[]
   answers     Answer[]
+  flowSteps   FlowStep[]
+  tags        QuestionVersionTag[]
+  question    Question             @relation("AllVersions", fields: [questionId], references: [id])
+  currentOf   Question?            @relation("CurrentVersion")
 
   @@unique([questionId, version])
   @@map("question_versions")
 }
 
 model QuestionTag {
-  id    String  @id @default(cuid())
-  name  String  @unique
-
+  id       String               @id @default(cuid())
+  name     String               @unique
   versions QuestionVersionTag[]
 
   @@map("question_tags")
 }
 
 model QuestionVersionTag {
-  id                String           @id @default(cuid())
+  id                String          @id @default(cuid())
   questionVersionId String
   tagId             String
-
-  questionVersion   QuestionVersion  @relation(fields: [questionVersionId], references: [id])
-  tag               QuestionTag      @relation(fields: [tagId], references: [id])
+  questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id])
+  tag               QuestionTag     @relation(fields: [tagId], references: [id])
 
   @@unique([questionVersionId, tagId])
   @@map("question_version_tags")
 }
 
-model Flow {
+model FlowQuestion {
+  id         String               @id @default(cuid())
+  categoryId String?
+  locale     String               @default("en")
+  text       String
+  type       QuestionType         @default(SINGLE_CHOICE)
+  isActive   Boolean              @default(true)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+  options    FlowQuestionOption[]
+  category   SssCategory?         @relation("FlowQuestions", fields: [categoryId], references: [id])
+  responses  UserResponse[]
+
+  @@index([categoryId, isActive])
+  @@index([locale, isActive])
+  @@map("flow_questions")
+}
+
+model FlowQuestionOption {
+  id         String       @id @default(cuid())
+  questionId String
+  label      String
+  value      String
+  order      Int          @default(0)
+  question   FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+  @@map("flow_question_options")
+}
+
+model UserResponse {
+  id          String       @id @default(cuid())
+  userId      String
+  questionId  String
+  optionIds   String[]     @default([]) // for single or multi-select
+  numericVal  Float?                     // for range/number
+  textVal     String?                    // for open/free text
+  skipped     Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  question    FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId])
+  @@index([questionId])
+  @@map("user_responses")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  content    String
+  isRead     Boolean  @default(false)
+  receiverId String
+  senderId   String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+  @@map("messages")
+}
+
+model ActionLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("action_logs")
+}
+
+model Achievement {
+  id                String                        @id @default(cuid())
+  code              String                        @unique
+  title             String
+  description       String
+  icon              String?
+  xpReward          Int                           @default(50)
+  createdAt         DateTime                      @default(now())
+  collectionMembers AchievementCollectionMember[]
+  userAchievements  UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id               String      @id @default(cuid())
+  userId           String
+  achievementId    String
+  earnedAt         DateTime    @default(now())
+  animationShownAt DateTime?
+  achievement      Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@map("user_achievements")
+}
+
+model EventLog {
+  id             String   @id @default(cuid())
+  userId         String
+  type           String
+  title          String
+  description    String?
+  metadata       Json?
+  visibility     String   @default("public")
+  reactionsCount Int      @default(0)
+  createdAt      DateTime @default(now())
+  user           User     @relation("EventLogs", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type, createdAt])
+  @@index([visibility, createdAt])
+  @@index([reactionsCount, createdAt])
+  @@map("event_logs")
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  title       String
+  description String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([type])
+  @@map("activities")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model Presence {
+  userId     String   @id
+  status     String   @default("offline")
+  lastActive DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("presence")
+}
+
+model Item {
+  id              String          @id @default(cuid())
+  name            String
+  type            String
+  rarity          String          @default("common")
+  description     String?
+  power           Int?
+  defense         Int?
+  effect          String?
+  bonus           String?
+  icon            String?
+  createdAt       DateTime        @default(now())
+  availableUntil  DateTime?
+  cosmeticSubtype String?
+  cosmeticType    String?
+  diamondPrice    Int?
+  eventCurrency   String?
+  eventPrice      Int?
+  goldPrice       Int?
+  isFeatured      Boolean         @default(false)
+  isLimited       Boolean         @default(false)
+  isShopItem      Boolean         @default(false)
+  visualConfig    Json?
+  culturalItems   CulturalItem[]
+  dynamicPrice    DynamicPrice?
+  inventoryItems  InventoryItem[]
+
+  @@index([type, rarity])
+  @@index([cosmeticType, cosmeticSubtype])
+  @@index([isShopItem, isFeatured])
+  @@map("items")
+}
+
+model InventoryItem {
+  id        String   @id @default(cuid())
+  userId    String
+  itemId    String
+  quantity  Int      @default(1)
+  equipped  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@map("inventory_items")
+}
+
+model Friend {
+  id         String    @id @default(cuid())
+  userId     String
+  friendId   String
+  status     String    @default("pending")
+  createdAt  DateTime  @default(now())
+  acceptedAt DateTime?
+  friend     User      @relation("FriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+  user       User      @relation("UserFriends", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@index([userId, status])
+  @@index([friendId, status])
+  @@map("friends")
+}
+
+model Reaction {
+  id         String   @id @default(cuid())
+  userId     String
+  targetType String
+  targetId   String
+  emoji      String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+  @@map("reactions")
+}
+
+model Duel {
+  id             String    @id @default(cuid())
+  initiatorId    String
+  receiverId     String
+  categoryId     String?
+  status         String    @default("pending")
+  initiatorScore Int       @default(0)
+  receiverScore  Int       @default(0)
+  winnerId       String?
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  completedAt    DateTime?
+  initiator      User      @relation("DuelInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  receiver       User      @relation("DuelReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([initiatorId, status])
+  @@index([receiverId, status])
+  @@index([status, expiresAt])
+  @@map("duels")
+}
+
+model Challenge {
+  id          String    @id @default(cuid())
+  initiatorId String
+  receiverId  String
+  type        String    @default("random")
+  categoryId  String?
+  status      String    @default("pending")
+  message     String?
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+  completedAt DateTime?
+  prompt      String?
+  response    String?
+  rewardKarma Int       @default(5)
+  rewardXp    Int       @default(25)
+  initiator   User      @relation("ChallengeInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  receiver    User      @relation("ChallengeReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([initiatorId, status])
+  @@index([receiverId, status])
+  @@index([status, createdAt])
+  @@map("challenges")
+}
+
+model GlobalEvent {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  emoji       String?  @default("🎉")
+  type        String
+  bonusType   String
+  bonusValue  Int
+  targetScope String?
+  startAt     DateTime
+  endAt       DateTime
+  active      Boolean  @default(true)
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([active, startAt, endAt])
+  @@index([startAt, endAt])
+  @@map("global_events")
+}
+
+model WeeklyChallenge {
+  id               String                         @id @default(cuid())
+  weekNumber       Int
+  year             Int
+  type             String                         @default("global")
+  prompt           String
+  dareVariant      String?
+  truthVariant     String?
+  generationSource String                         @default("ai")
+  trendingTopics   Json?
+  rewardXp         Int                            @default(100)
+  rewardKarma      Int                            @default(10)
+  participantCount Int                            @default(0)
+  status           String                         @default("draft")
+  publishedAt      DateTime?
+  createdAt        DateTime                       @default(now())
+  participations   WeeklyChallengeParticipation[]
+
+  @@unique([weekNumber, year])
+  @@index([status, publishedAt])
+  @@map("weekly_challenges")
+}
+
+model WeeklyChallengeParticipation {
+  id          String          @id @default(cuid())
+  userId      String
+  challengeId String
+  response    String
+  submitted   Boolean         @default(false)
+  submittedAt DateTime?
+  rewardXp    Int             @default(0)
+  rewardKarma Int             @default(0)
+  challenge   WeeklyChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, challengeId])
+  @@index([challengeId, submitted])
+  @@map("weekly_challenge_participations")
+}
+
+model UserInsight {
+  id          String   @id @default(cuid())
+  userId      String
+  templateId  String
+  title       String
+  description String
+  emoji       String
+  color       String
+  metrics     Json
+  generatedAt DateTime @default(now())
+  expiresAt   DateTime
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, generatedAt])
+  @@index([expiresAt])
+  @@map("user_insights")
+}
+
+model DailyQuest {
+  id          String            @id @default(cuid())
+  date        DateTime          @default(now())
+  type        String
+  title       String
+  objective   String
+  targetCount Int               @default(1)
+  rewardXp    Int               @default(50)
+  rewardGold  Int               @default(25)
+  rewardItem  String?
+  dropChance  Int               @default(0)
+  expiresAt   DateTime
+  createdAt   DateTime          @default(now())
+  completions QuestCompletion[]
+
+  @@index([date, expiresAt])
+  @@map("daily_quests")
+}
+
+model QuestCompletion {
+  id          String     @id @default(cuid())
+  userId      String
+  questId     String
+  progress    Int        @default(0)
+  completed   Boolean    @default(false)
+  itemDropped String?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+  quest       DailyQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId])
+  @@index([userId, completed])
+  @@map("quest_completions")
+}
+
+model MarketListing {
+  id       String    @id @default(cuid())
+  sellerId String
+  itemId   String
+  price    Int
+  currency String    @default("gold")
+  status   String    @default("active")
+  listedAt DateTime  @default(now())
+  soldAt   DateTime?
+  buyerId  String?
+  seller   User      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@index([status, listedAt])
+  @@index([sellerId])
+  @@map("market_listings")
+}
+
+model GlobalPool {
+  id            String   @id @default(cuid())
+  poolType      String   @unique @default("market_tax")
+  goldAmount    Int      @default(0)
+  diamondAmount Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@map("global_pool")
+}
+
+model CraftingRecipe {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  inputItemIds  String[]
+  outputItemId  String
+  goldCost      Int      @default(0)
+  requiresToken Boolean  @default(false)
+  rarityBoost   Int      @default(0)
+  successRate   Int      @default(95)
+  craftingTime  Int      @default(0)
+  unlockLevel   Int      @default(1)
+  createdAt     DateTime @default(now())
+
+  @@index([unlockLevel])
+  @@map("crafting_recipes")
+}
+
+model CraftingLog {
+  id             String   @id @default(cuid())
+  userId         String
+  recipeId       String?
+  inputItems     Json
+  outputItem     Json?
+  success        Boolean
+  goldSpent      Int
+  rarityAchieved String?
+  statVariance   Json?
+  craftedAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, craftedAt])
+  @@map("crafting_logs")
+}
+
+model DailyQuiz {
+  id              String                @id @default(cuid())
+  date            DateTime              @unique @default(now())
+  questionIds     String[]
+  rewardXp        Int                   @default(50)
+  rewardHearts    Int                   @default(1)
+  completions     Int                   @default(0)
+  createdAt       DateTime              @default(now())
+  userCompletions DailyQuizCompletion[]
+
+  @@index([date])
+  @@map("daily_quizzes")
+}
+
+model DailyQuizCompletion {
+  id          String    @id @default(cuid())
+  userId      String
+  quizId      String
+  score       Int
+  completedAt DateTime  @default(now())
+  quiz        DailyQuiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, quizId])
+  @@index([userId])
+  @@index([quizId])
+  @@map("daily_quiz_completions")
+}
+
+model UserEnergy {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  hearts      Int      @default(5)
+  maxHearts   Int      @default(5)
+  lastRegenAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_energy")
+}
+
+model GlobalFeedItem {
+  id             String   @id @default(cuid())
+  type           String
+  title          String
+  description    String?
+  userId         String
+  metadata       Json?
+  reactionsCount Int      @default(0)
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([reactionsCount, createdAt])
+  @@index([userId])
+  @@map("global_feed_items")
+}
+
+model ProfileTheme {
+  id         String   @id @default(cuid())
+  userId     String
+  themeId    String
+  isActive   Boolean  @default(false)
+  unlockedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, themeId])
+  @@index([userId])
+  @@map("profile_themes")
+}
+
+model WorldChronicle {
+  id              String          @id @default(cuid())
+  seasonNumber    Int             @unique
+  seasonName      String
+  startDate       DateTime
+  endDate         DateTime
+  title           String
+  summary         String
+  fullChronicle   String
+  totalPlayers    Int             @default(0)
+  totalXpEarned   BigInt          @default(0)
+  totalChallenges Int             @default(0)
+  totalMessages   Int             @default(0)
+  topFaction      String?
+  topPlayer       String?
+  topGroup        String?
+  worldStateStart Json?
+  worldStateEnd   Json?
+  generatedBy     String          @default("ai")
+  generatedAt     DateTime?
+  isPublished     Boolean         @default(false)
+  publishedAt     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  quotes          PlayerQuote[]
+  summaries       SeasonSummary[]
+
+  @@index([seasonNumber])
+  @@index([isPublished])
+  @@map("world_chronicles")
+}
+
+model SeasonSummary {
+  id          String         @id @default(cuid())
+  chronicleId String
+  category    String
+  title       String
+  content     String
+  highlights  Json?
+  stats       Json?
+  order       Int            @default(0)
+  createdAt   DateTime       @default(now())
+  chronicle   WorldChronicle @relation(fields: [chronicleId], references: [id], onDelete: Cascade)
+
+  @@index([chronicleId, category])
+  @@map("season_summaries")
+}
+
+model PlayerQuote {
+  id          String         @id @default(cuid())
+  chronicleId String
+  userId      String
+  quote       String
+  context     String?
+  sourceType  String?
+  sourceId    String?
+  isFeatured  Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  chronicle   WorldChronicle @relation(fields: [chronicleId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([chronicleId, isFeatured])
+  @@map("player_quotes")
+}
+
+model NarrativeQuest {
+  id          String             @id @default(cuid())
+  userId      String
+  title       String
+  intro       String
+  context     Json?
+  generatedBy String             @default("ai")
+  aiModel     String?
+  prompt      String?
+  status      String             @default("active")
+  completedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  choices     NarrativeChoice[]
+  outcomes    NarrativeOutcome[]
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([status])
+  @@map("narrative_quests")
+}
+
+model NarrativeChoice {
+  id             String         @id @default(cuid())
+  questId        String
+  step           Int            @default(1)
+  prompt         String
+  option1        String
+  option2        String
+  option3        String?
+  option1Effect  Json?
+  option2Effect  Json?
+  option3Effect  Json?
+  selectedOption Int?
+  selectedAt     DateTime?
+  createdAt      DateTime       @default(now())
+  quest          NarrativeQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@index([questId, step])
+  @@map("narrative_choices")
+}
+
+model NarrativeOutcome {
+  id             String         @id @default(cuid())
+  questId        String
+  conclusion     String
+  karmaChange    Int            @default(0)
+  prestigeChange Int            @default(0)
+  xpReward       Int            @default(0)
+  goldReward     Int            @default(0)
+  archetypeShift Json?
+  itemsGranted   String[]
+  createdAt      DateTime       @default(now())
+  quest          NarrativeQuest @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@index([questId])
+  @@map("narrative_outcomes")
+}
+
+model LoreEra {
   id          String      @id @default(cuid())
+  name        String      @unique
+  displayName String
+  description String?
+  order       Int         @unique
+  startYear   Int?
+  endYear     Int?
+  isActive    Boolean     @default(false)
+  isCurrent   Boolean     @default(false)
+  icon        String?
+  color       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  loreEntries LoreEntry[]
+
+  @@index([order])
+  @@map("lore_eras")
+}
+
+model LoreEntry {
+  id                String    @id @default(cuid())
+  title             String
+  slug              String    @unique
+  summary           String
+  content           String
+  eraId             String?
+  author            String?
+  publishedAt       DateTime?
+  category          String?
+  importance        Int       @default(1)
+  relatedFactions   String[]
+  relatedEvents     String[]
+  relatedCharacters String[]
+  isPublished       Boolean   @default(false)
+  isSecret          Boolean   @default(false)
+  viewCount         Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  era               LoreEra?  @relation(fields: [eraId], references: [id])
+  tags              LoreTag[]
+
+  @@index([slug])
+  @@index([eraId])
+  @@index([category])
+  @@index([isPublished])
+  @@map("lore_entries")
+}
+
+model LoreTag {
+  id        String    @id @default(cuid())
+  entryId   String
+  tag       String
+  createdAt DateTime  @default(now())
+  entry     LoreEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@unique([entryId, tag])
+  @@index([tag])
+  @@map("lore_tags")
+}
+
+model UserTimeZone {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  timezone      String
+  utcOffset     Int
+  detectedFrom  String?
+  localMidnight DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([timezone])
+  @@map("user_timezones")
+}
+
+model RegionSchedule {
+  id                String    @id @default(cuid())
+  region            String    @unique
+  timezone          String
+  dailyResetOffset  Int       @default(0)
+  quizResetOffset   Int       @default(0)
+  energyResetOffset Int       @default(0)
+  nextDailyReset    DateTime?
+  nextQuizReset     DateTime?
+  nextEnergyReset   DateTime?
+  updatedAt         DateTime  @updatedAt
+
+  @@map("region_schedules")
+}
+
+model RegionalEvent {
+  id          String   @id @default(cuid())
   name        String
   description String?
-  createdAt   DateTime    @default(now())
-  metadata    Json?
+  region      String
+  country     String?
+  startDate   DateTime
+  endDate     DateTime
+  timezone    String?
+  eventType   String
+  theme       String?
+  rewardXp    Int      @default(0)
+  rewardGold  Int      @default(0)
+  rewardItems Json?
+  isActive    Boolean  @default(false)
+  isRecurring Boolean  @default(false)
+  recurrence  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  steps       FlowStep[]
+  @@index([region, isActive])
+  @@index([startDate, endDate])
+  @@map("regional_events")
+}
+
+model RegionConfig {
+  id                     String   @id @default(cuid())
+  region                 String   @unique
+  timezone               String
+  locale                 String
+  hasRegionalLeaderboard Boolean  @default(false)
+  preferredThemes        Json?
+  displayName            String
+  flagEmoji              String?
+  updatedAt              DateTime @updatedAt
+
+  @@map("region_configs")
+}
+
+model CulturalItem {
+  id              String   @id @default(cuid())
+  itemId          String
+  region          String
+  culture         String?
+  eventType       String?
+  eventName       String?
+  isSeasonalOnly  Boolean  @default(false)
+  availableMonths Int[]
+  createdAt       DateTime @default(now())
+  item            Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([region])
+  @@index([eventType])
+  @@map("cultural_items")
+}
+
+model LanguagePreference {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  locale         String   @default("en")
+  fallbackLocale String?  @default("en")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("language_preferences")
+}
+
+model TranslationKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  namespace String?
+  en        String?
+  cs        String?
+  de        String?
+  fr        String?
+  es        String?
+  jp        String?
+  context   String?
+  isMissing Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([namespace])
+  @@index([isMissing])
+  @@map("translation_keys")
+}
+
+model EconomyStat {
+  id                 String   @id @default(cuid())
+  date               DateTime @unique @db.Date
+  totalGold          BigInt   @default(0)
+  totalDiamonds      BigInt   @default(0)
+  totalXp            BigInt   @default(0)
+  goldCreated        BigInt   @default(0)
+  goldDestroyed      BigInt   @default(0)
+  diamondsCreated    BigInt   @default(0)
+  diamondsDestroyed  BigInt   @default(0)
+  marketTransactions Int      @default(0)
+  marketVolume       BigInt   @default(0)
+  craftingVolume     Int      @default(0)
+  inflationRate      Float    @default(0.0)
+  createdAt          DateTime @default(now())
+
+  @@index([date])
+  @@map("economy_stats")
+}
+
+model Treasury {
+  id                String   @id @default(cuid())
+  gold              BigInt   @default(0)
+  diamonds          BigInt   @default(0)
+  taxCollected      BigInt   @default(0)
+  donationsReceived BigInt   @default(0)
+  eventsSpent       BigInt   @default(0)
+  projectsSpent     BigInt   @default(0)
+  lifetimeCollected BigInt   @default(0)
+  lifetimeSpent     BigInt   @default(0)
+  updatedAt         DateTime @updatedAt
+
+  @@map("treasury")
+}
+
+model DynamicPrice {
+  id             String    @id @default(cuid())
+  itemId         String    @unique
+  basePrice      Int
+  currentPrice   Int
+  demand         Float     @default(1.0)
+  supply         Float     @default(1.0)
+  purchaseVolume Int       @default(0)
+  craftingVolume Int       @default(0)
+  lastAdjustedAt DateTime?
+  priceHistory   Json?
+  updatedAt      DateTime  @updatedAt
+  item           Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@map("dynamic_prices")
+}
+
+model TaxTransaction {
+  id         String   @id @default(cuid())
+  sourceType String
+  sourceId   String?
+  amount     BigInt
+  taxAmount  BigInt
+  taxRate    Float    @default(0.05)
+  currency   String
+  userId     String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([sourceType])
+  @@index([createdAt])
+  @@map("tax_transactions")
+}
+
+model CreatorWallet {
+  id              String               @id @default(cuid())
+  userId          String               @unique
+  pendingBalance  Int                  @default(0)
+  paidBalance     Int                  @default(0)
+  totalEarned     Int                  @default(0)
+  stripeAccountId String?              @unique
+  lastPayoutAt    DateTime?
+  nextPayoutAt    DateTime?
+  isActive        Boolean              @default(true)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  transactions    CreatorTransaction[]
+  user            User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("creator_wallets")
+}
+
+model CreatorTransaction {
+  id               String        @id @default(cuid())
+  walletId         String
+  type             String
+  amount           Int
+  sourceType       String?
+  sourceId         String?
+  payoutPoolId     String?
+  stripeTransferId String?
+  description      String?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  wallet           CreatorWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId, type])
+  @@index([createdAt])
+  @@map("creator_transactions")
+}
+
+model PayoutPool {
+  id                String    @id @default(cuid())
+  weekStart         DateTime  @db.Date
+  weekEnd           DateTime  @db.Date
+  totalPool         Int       @default(0)
+  fromSubscriptions Int       @default(0)
+  fromCosmetics     Int       @default(0)
+  fromDonations     Int       @default(0)
+  totalDistributed  Int       @default(0)
+  totalCreators     Int       @default(0)
+  status            String    @default("pending")
+  calculatedAt      DateTime?
+  distributedAt     DateTime?
+  createdAt         DateTime  @default(now())
+
+  @@unique([weekStart, weekEnd])
+  @@index([status])
+  @@map("payout_pools")
+}
+
+model EngagementMetric {
+  id          String   @id @default(cuid())
+  contentType String
+  contentId   String
+  creatorId   String
+  userId      String?
+  type        String
+  value       Float    @default(1.0)
+  weekStart   DateTime @db.Date
+  fingerprint String?
+  createdAt   DateTime @default(now())
+  creator     User     @relation("CreatorEngagements", fields: [creatorId], references: [id], onDelete: Cascade)
+  user        User?    @relation("UserEngagements", fields: [userId], references: [id])
+
+  @@unique([contentType, contentId, userId, type])
+  @@index([creatorId, weekStart])
+  @@index([contentType, contentId])
+  @@index([weekStart])
+  @@map("engagement_metrics")
+}
+
+model SubscriptionPlan {
+  id              String             @id @default(cuid())
+  name            String             @unique
+  displayName     String
+  description     String?
+  price           Int
+  currency        String             @default("USD")
+  interval        String
+  stripeProductId String?            @unique
+  stripePriceId   String?            @unique
+  xpMultiplier    Float              @default(1.0)
+  features        Json
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  subscriptions   UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id                   String           @id @default(cuid())
+  userId               String
+  planId               String
+  stripeSubscriptionId String?          @unique
+  stripeCustomerId     String?
+  status               String           @default("active")
+  startedAt            DateTime         @default(now())
+  renewsAt             DateTime?
+  cancelledAt          DateTime?
+  expiresAt            DateTime?
+  trialEndsAt          DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  payments             PaymentLog[]
+  plan                 SubscriptionPlan @relation(fields: [planId], references: [id])
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([stripeSubscriptionId])
+  @@map("user_subscriptions")
+}
+
+model PaymentLog {
+  id                    String            @id @default(cuid())
+  subscriptionId        String?
+  userId                String
+  amount                Int
+  currency              String            @default("USD")
+  status                String
+  stripePaymentIntentId String?           @unique
+  stripeChargeId        String?
+  description           String?
+  metadata              Json?
+  failureReason         String?
+  refundedAt            DateTime?
+  createdAt             DateTime          @default(now())
+  subscription          UserSubscription? @relation(fields: [subscriptionId], references: [id])
+  user                  User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([subscriptionId])
+  @@index([stripePaymentIntentId])
+  @@map("payment_logs")
+}
+
+model Report {
+  id             String    @id @default(cuid())
+  reporterId     String
+  reportedUserId String?
+  contentType    String?
+  contentId      String?
+  reason         String
+  description    String?
+  status         String    @default("pending")
+  priority       String    @default("normal")
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  resolution     String?
+  createdAt      DateTime  @default(now())
+  reportedUser   User?     @relation("ReportsReceived", fields: [reportedUserId], references: [id])
+  reporter       User      @relation("ReportsSubmitted", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolver       User?     @relation("ReportsResolved", fields: [resolvedBy], references: [id])
+
+  @@index([reportedUserId, status])
+  @@index([status, priority])
+  @@index([createdAt])
+  @@map("reports")
+}
+
+model ReputationScore {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  score               Float    @default(100.0)
+  reportsReceived     Int      @default(0)
+  reportsDismissed    Int      @default(0)
+  positiveReactions   Int      @default(0)
+  negativeReactions   Int      @default(0)
+  challengesCompleted Int      @default(0)
+  helpfulVotes        Int      @default(0)
+  trustLevel          String   @default("neutral")
+  isRestricted        Boolean  @default(false)
+  canMessage          Boolean  @default(true)
+  canChallenge        Boolean  @default(true)
+  canPost             Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([score])
+  @@index([trustLevel])
+  @@map("reputation_scores")
+}
+
+model ModerationAction {
+  id          String    @id @default(cuid())
+  userId      String
+  moderatorId String
+  actionType  String
+  reason      String
+  duration    Int?
+  reportId    String?
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+  revokedBy   String?
+  isPublic    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  moderator   User      @relation("ModerationActionsPerformed", fields: [moderatorId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@index([moderatorId])
+  @@index([actionType])
+  @@index([expiresAt])
+  @@map("moderation_actions")
+}
+
+model BlockedUser {
+  id            String   @id @default(cuid())
+  userId        String
+  blockedUserId String
+  reason        String?
+  createdAt     DateTime @default(now())
+  blockedUser   User     @relation("BlocksReceived", fields: [blockedUserId], references: [id], onDelete: Cascade)
+  user          User     @relation("BlocksCreated", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, blockedUserId])
+  @@index([userId])
+  @@index([blockedUserId])
+  @@map("blocked_users")
+}
+
+model ContentReview {
+  id          String    @id @default(cuid())
+  contentType String
+  contentId   String
+  content     String
+  flagged     Boolean   @default(false)
+  confidence  Float?
+  categories  String[]
+  reviewed    Boolean   @default(false)
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  approved    Boolean?
+  createdAt   DateTime  @default(now())
+
+  @@unique([contentType, contentId])
+  @@index([flagged, reviewed])
+  @@index([createdAt])
+  @@map("content_reviews")
+}
+
+model UserStreak {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastLoginAt     DateTime?
+  lastQuizAt      DateTime?
+  lastDuelAt      DateTime?
+  lastChallengeAt DateTime?
+  loginStreak     Int       @default(0)
+  quizStreak      Int       @default(0)
+  duelStreak      Int       @default(0)
+  totalDaysActive Int       @default(0)
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_streaks")
+}
+
+model RewardCalendar {
+  id           String    @id @default(cuid())
+  userId       String
+  calendarType String
+  day          Int
+  rewardType   String
+  rewardAmount Int?
+  rewardItemId String?
+  claimed      Boolean   @default(false)
+  claimedAt    DateTime?
+  cycleStart   DateTime
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, calendarType, day, cycleStart])
+  @@index([userId, claimed])
+  @@index([cycleStart])
+  @@map("reward_calendars")
+}
+
+model ReturnBonus {
+  id           String    @id @default(cuid())
+  userId       String
+  inactiveDays Int
+  xpBonus      Int       @default(0)
+  goldBonus    Int       @default(0)
+  diamondBonus Int       @default(0)
+  granted      Boolean   @default(false)
+  grantedAt    DateTime?
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, granted])
+  @@index([expiresAt])
+  @@map("return_bonuses")
+}
+
+model FeedbackMood {
+  id        String   @id @default(cuid())
+  userId    String
+  emoji     String
+  rating    Int
+  context   String?
+  sessionId String?
+  comment   String?
+  sentiment Float?
+  analyzed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([context])
+  @@map("feedback_moods")
+}
+
+model DailySummary {
+  id                 String    @id @default(cuid())
+  userId             String
+  date               DateTime  @db.Date
+  questionsAnswered  Int       @default(0)
+  challengesSent     Int       @default(0)
+  challengesReceived Int       @default(0)
+  xpEarned           Int       @default(0)
+  sessionCount       Int       @default(0)
+  totalSessionTime   Int       @default(0)
+  averageMood        Float?
+  viewed             Boolean   @default(false)
+  viewedAt           DateTime?
+  createdAt          DateTime  @default(now())
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_summaries")
+}
+
+model BetaInvite {
+  id             String     @id @default(cuid())
+  code           String     @unique
+  creatorId      String?
+  maxUses        Int        @default(1)
+  usedCount      Int        @default(0)
+  rewardsGranted Boolean    @default(false)
+  isActive       Boolean    @default(true)
+  expiresAt      DateTime?
+  source         String?
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  createdAt      DateTime   @default(now())
+  creator        User?      @relation("BetaInvitesCreated", fields: [creatorId], references: [id])
+  referrals      Referral[]
+
+  @@index([code])
+  @@index([creatorId])
+  @@index([isActive])
+  @@map("beta_invites")
+}
+
+model Referral {
+  id               String     @id @default(cuid())
+  referrerId       String
+  referredId       String     @unique
+  inviteId         String
+  xpRewarded       Int        @default(50)
+  diamondsRewarded Int        @default(1)
+  rewardsGranted   Boolean    @default(false)
+  status           String     @default("pending")
+  createdAt        DateTime   @default(now())
+  rewardedAt       DateTime?
+  invite           BetaInvite @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  referred         User       @relation("ReferralsReceived", fields: [referredId], references: [id], onDelete: Cascade)
+  referrer         User       @relation("ReferralsSent", fields: [referrerId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId])
+  @@index([status])
+  @@map("referrals")
+}
+
+model BetaUser {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  inviteCode         String?
+  wave               Int?
+  firstLoginAt       DateTime?
+  lastActiveAt       DateTime?
+  onboardingComplete Boolean   @default(false)
+  referralsSent      Int       @default(0)
+  referralsAccepted  Int       @default(0)
+  joinedAt           DateTime  @default(now())
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([wave])
+  @@index([joinedAt])
+  @@map("beta_users")
+}
+
+model TelemetryEvent {
+  id        String   @id @default(cuid())
+  type      String
+  page      String?
+  action    String?
+  duration  Int?
+  metadata  Json?
+  userAgent String?
+  platform  String?
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("telemetry_events")
+}
+
+model TelemetryAggregate {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  type        String
+  count       Int      @default(0)
+  avgDuration Float?
+  p50Duration Float?
+  p95Duration Float?
+  p99Duration Float?
+  errorRate   Float?
+  context     String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([date, type, context])
+  @@index([date, type])
+  @@map("telemetry_aggregates")
+}
+
+model UserPreferences {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  soundEnabled        Boolean  @default(true)
+  soundVolume         Float    @default(0.5)
+  levelUpSound        Boolean  @default(true)
+  purchaseSound       Boolean  @default(true)
+  challengeSound      Boolean  @default(true)
+  notificationSound   Boolean  @default(true)
+  ambientMusicEnabled Boolean  @default(false)
+  ambientTheme        String?
+  animationsEnabled   Boolean  @default(true)
+  reducedMotion       Boolean  @default(false)
+  particleEffects     Boolean  @default(true)
+  backgroundAnimation Boolean  @default(true)
+  transitionSpeed     String   @default("normal")
+  glowEffects         Boolean  @default(true)
+  shimmerEffects      Boolean  @default(true)
+  confettiEnabled     Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model SoundAsset {
+  id            String   @id @default(cuid())
+  assetId       String   @unique
+  name          String
+  description   String?
+  filePath      String
+  fileSize      Int?
+  duration      Float?
+  category      String
+  eventType     String
+  defaultVolume Float    @default(0.5)
+  loop          Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([category, isActive])
+  @@map("sound_assets")
+}
+
+model OnboardingProgress {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  sawWelcomeOverlay  Boolean   @default(false)
+  sawDashboard       Boolean   @default(false)
+  completedAnswer    Boolean   @default(false)
+  completedCompare   Boolean   @default(false)
+  completedChallenge Boolean   @default(false)
+  completedTutorial  Boolean   @default(false)
+  tutorialStarted    Boolean   @default(false)
+  tutorialStep       Int       @default(0)
+  tutorialCompleted  Boolean   @default(false)
+  tutorialReward     Boolean   @default(false)
+  tooltipsSeen       String[]
+  showTooltips       Boolean   @default(true)
+  skipOnboarding     Boolean   @default(false)
+  startedAt          DateTime  @default(now())
+  completedAt        DateTime?
+  lastStepAt         DateTime  @default(now())
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_progress")
+}
+
+model FeedbackSubmission {
+  id          String    @id @default(cuid())
+  userId      String
+  type        String
+  category    String?
+  title       String
+  description String
+  page        String?
+  userAgent   String?
+  screenshot  String?
+  priority    String    @default("normal")
+  status      String    @default("pending")
+  adminNotes  String?
+  respondedAt DateTime?
+  respondedBy String?
+  submittedAt DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, submittedAt])
+  @@index([type, status])
+  @@map("feedback_submissions")
+}
+
+model TooltipDefinition {
+  id           String   @id @default(cuid())
+  tooltipId    String   @unique
+  title        String
+  description  String
+  icon         String?
+  page         String
+  elementId    String?
+  position     String   @default("bottom")
+  showOnce     Boolean  @default(true)
+  priority     Int      @default(5)
+  delayMs      Int      @default(0)
+  minLevel     Int      @default(0)
+  maxLevel     Int      @default(999)
+  requiresFlag String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@index([page, isActive])
+  @@map("tooltip_definitions")
+}
+
+model WorldCycle {
+  id                   String         @id @default(cuid())
+  cycleNumber          Int            @unique
+  cycleName            String
+  startDate            DateTime
+  endDate              DateTime?
+  duration             Int
+  finalHope            Float?
+  finalChaos           Float?
+  finalCreativity      Float?
+  finalKnowledge       Float?
+  finalHarmony         Float?
+  dominantForce        String?
+  totalPlayers         Int            @default(0)
+  totalXp              Int            @default(0)
+  threatsDefeated      Int            @default(0)
+  eventsCompleted      Int            @default(0)
+  topPlayerId          String?
+  topFactionId         String?
+  topClanId            String?
+  unlockedFactions     String[]
+  unlockedResources    String[]
+  unlockedEnvironments String[]
+  status               String         @default("active")
+  legacyRecords        LegacyRecord[]
+
+  @@index([cycleNumber, status])
+  @@map("world_cycles")
+}
+
+model LegacyRecord {
+  id              String     @id @default(cuid())
+  cycleId         String
+  userId          String
+  finalLevel      Int
+  finalXp         Int
+  finalGold       Int
+  finalDiamonds   Int
+  finalPrestige   Int
+  finalKarma      Int
+  xpRank          Int?
+  karmaRank       Int?
+  prestigeRank    Int?
+  achievements    String[]
+  titles          String[]
+  badges          String[]
+  ascensionChoice String
+  playTime        Int
+  majorEvents     Json?
+  archivedAt      DateTime   @default(now())
+  cycle           WorldCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([cycleId, userId])
+  @@index([userId])
+  @@map("legacy_records")
+}
+
+model UserLegacyBonus {
+  id             String    @id @default(cuid())
+  userId         String
+  bonusType      String
+  prestigeCarry  Int?
+  legacyTitle    String?
+  xpBoostPercent Float?
+  mutation       String?
+  artifactId     String?
+  artifactType   String?
+  earnedInCycle  Int
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime?
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@map("user_legacy_bonuses")
+}
+
+model AbyssProgress {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  currentLayer    Int       @default(0)
+  maxLayer        Int       @default(0)
+  totalClears     Int       @default(0)
+  layerMultiplier Float     @default(1.0)
+  abyssTokens     Int       @default(0)
+  abyssArtifacts  String[]
+  isActive        Boolean   @default(false)
+  lastClear       DateTime?
+
+  @@map("abyss_progress")
+}
+
+model WorldThreat {
+  id               String         @id @default(cuid())
+  threatId         String         @unique
+  name             String
+  title            String
+  description      String
+  loreText         String?
+  avatar           String
+  type             String
+  difficulty       String
+  maxHealth        Int
+  currentHealth    Int
+  defense          Int
+  threatLevel      Int
+  spawnedBy        String
+  triggerMetrics   Json?
+  region           String?
+  controlledBy     String?
+  status           String         @default("active")
+  totalDamage      Int            @default(0)
+  attackCount      Int            @default(0)
+  participantCount Int            @default(0)
+  xpReward         Int
+  goldReward       Int
+  specialReward    Json?
+  spawnedAt        DateTime       @default(now())
+  expiresAt        DateTime?
+  defeatedAt       DateTime?
+  isPostedToFeed   Boolean        @default(false)
+  battles          ThreatBattle[]
+
+  @@index([status, spawnedAt])
+  @@index([difficulty, status])
+  @@map("world_threats")
+}
+
+model ThreatBattle {
+  id               String      @id @default(cuid())
+  threatId         String
+  userId           String?
+  factionId        String?
+  attackType       String
+  damageDealt      Int
+  isCritical       Boolean     @default(false)
+  attackerLevel    Int
+  attackerPrestige Int
+  randomFactor     Float
+  xpGained         Int         @default(0)
+  goldGained       Int         @default(0)
+  rewardClaimed    Boolean     @default(false)
+  attackedAt       DateTime    @default(now())
+  threat           WorldThreat @relation(fields: [threatId], references: [id], onDelete: Cascade)
+  user             User?       @relation(fields: [userId], references: [id])
+
+  @@index([threatId, attackedAt])
+  @@index([userId])
+  @@index([factionId])
+  @@map("threat_battles")
+}
+
+model FactionTerritory {
+  id              String    @id @default(cuid())
+  territoryId     String    @unique
+  name            String
+  description     String?
+  region          String
+  mapPosition     Json?
+  controlledBy    String?
+  controlStrength Int       @default(0)
+  xpBonus         Float     @default(0.0)
+  goldBonus       Float     @default(0.0)
+  resourceType    String?
+  isContested     Boolean   @default(false)
+  contestStarted  DateTime?
+  lastCaptured    DateTime?
+  captureCount    Int       @default(0)
+
+  @@index([region, controlledBy])
+  @@index([isContested])
+  @@map("faction_territories")
+}
+
+model TerritoryContest {
+  id              String    @id @default(cuid())
+  territoryId     String
+  attackerFaction String
+  defenderFaction String?
+  attackerScore   Int       @default(0)
+  defenderScore   Int       @default(0)
+  startTime       DateTime  @default(now())
+  endTime         DateTime
+  status          String    @default("active")
+  winnerId        String?
+  completedAt     DateTime?
+
+  @@index([territoryId, status])
+  @@map("territory_contests")
+}
+
+model Faction {
+  id              String          @id @default(cuid())
+  factionId       String          @unique
+  name            String
+  title           String
+  description     String
+  color           String
+  secondaryColor  String
+  emblem          String
+  pattern         String?
+  glowEffect      String?
+  moralAxis       String
+  orderAxis       String
+  philosophy      String
+  xpBonus         Float           @default(0.0)
+  goldBonus       Float           @default(0.0)
+  karmaMultiplier Float           @default(1.0)
+  specialAbility  String?
+  memberCount     Int             @default(0)
+  totalXp         Int             @default(0)
+  avgKarma        Float           @default(0.0)
+  avgPrestige     Float           @default(0.0)
+  hasCouncil      Boolean         @default(false)
+  councilSize     Int             @default(5)
+  votingPower     String          @default("karma_based")
+  lore            String?
+  motto           String?
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  members         FactionMember[]
+  votes           FactionVote[]
+
+  @@index([isActive, memberCount])
+  @@map("factions")
+}
+
+model FactionMember {
+  id               String    @id @default(cuid())
+  factionId        String
+  userId           String    @unique
+  role             String    @default("member")
+  rank             Int       @default(0)
+  title            String?
+  xpContributed    Int       @default(0)
+  karmaContributed Int       @default(0)
+  reputation       Int       @default(0)
+  loyaltyScore     Int       @default(50)
+  joinedAt         DateTime  @default(now())
+  lastActive       DateTime  @default(now())
+  canSwitchAt      DateTime?
+  switchCount      Int       @default(0)
+  faction          Faction   @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([factionId, role])
+  @@index([userId])
+  @@map("faction_members")
+}
+
+model FactionChangeLog {
+  id             String   @id @default(cuid())
+  userId         String
+  fromFactionId  String?
+  toFactionId    String?
+  changeType     String
+  reason         String?
+  penaltyType    String?
+  penaltyAmount  Int?
+  questCompleted Boolean?
+  changedAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, changedAt])
+  @@map("faction_change_logs")
+}
+
+model FactionVote {
+  id          String   @id @default(cuid())
+  factionId   String
+  userId      String
+  voteType    String
+  proposalId  String
+  vote        String
+  votingPower Int
+  comment     String?
+  votedAt     DateTime @default(now())
+  faction     Faction  @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, userId])
+  @@index([factionId, voteType])
+  @@map("faction_votes")
+}
+
+model FactionProposal {
+  id           String    @id @default(cuid())
+  proposalId   String    @unique
+  factionId    String?
+  title        String
+  description  String
+  proposalType String
+  status       String    @default("active")
+  votesFor     Int       @default(0)
+  votesAgainst Int       @default(0)
+  votesAbstain Int       @default(0)
+  startTime    DateTime  @default(now())
+  endTime      DateTime
+  result       String?
+  executedAt   DateTime?
+  createdBy    String
+  createdAt    DateTime  @default(now())
+
+  @@index([factionId, status])
+  @@index([status, endTime])
+  @@map("faction_proposals")
+}
+
+model MentorProfile {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  mentorName         String    @default("Sage")
+  mentorAvatar       String    @default("🧙")
+  mentorTone         String    @default("supportive")
+  preferredTopics    String[]
+  communicationStyle String    @default("balanced")
+  reminderFrequency  String    @default("weekly")
+  lastAnalyzedAt     DateTime?
+  currentFocus       String?
+  growthAreas        String[]
+  strengths          String[]
+  isEnabled          Boolean   @default(true)
+  journalingEnabled  Boolean   @default(false)
+  reflectionPrompts  Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("mentor_profiles")
+}
+
+model MentorLog {
+  id          String    @id @default(cuid())
+  userId      String
+  logType     String
+  title       String
+  message     String
+  category    String?
+  timeframe   String?
+  metrics     Json?
+  suggestions String[]
+  flowLinks   String[]
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  userRating  Int?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([logType, createdAt])
+  @@map("mentor_logs")
+}
+
+model InsightPrompt {
+  id                String   @id @default(cuid())
+  promptId          String   @unique
+  category          String
+  question          String
+  subtext           String?
+  icon              String   @default("💭")
+  archetypes        String[]
+  minLevel          Int      @default(1)
+  karmaRange        Json?
+  expectedWordCount Int?
+  tags              String[]
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@index([category, isActive])
+  @@map("insight_prompts")
+}
+
+model ReflectionEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  promptId   String?
+  title      String?
+  content    String
+  mood       String?
+  aiInsights String?
+  themes     String[]
+  sentiment  String?
+  isPrivate  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("reflection_entries")
+}
+
+model WorldState {
+  id               String          @id @default(cuid())
+  timestamp        DateTime        @unique @default(now())
+  hope             Float           @default(50.0)
+  chaos            Float           @default(50.0)
+  creativity       Float           @default(50.0)
+  knowledge        Float           @default(50.0)
+  harmony          Float           @default(50.0)
+  overallAlignment String          @default("balanced")
+  dominantForce    String?
+  totalPlayers     Int             @default(0)
+  activeEvents     Int             @default(0)
+  dayNumber        Int             @default(1)
+  hopeChange       Float           @default(0.0)
+  chaosChange      Float           @default(0.0)
+  creativityChange Float           @default(0.0)
+  knowledgeChange  Float           @default(0.0)
+  harmonyChange    Float           @default(0.0)
+  variables        WorldVariable[]
+
+  @@index([timestamp])
+  @@map("world_states")
+}
+
+model WorldVariable {
+  id           String     @id @default(cuid())
+  stateId      String
+  variableName String
+  value        Float
+  category     String?
+  state        WorldState @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  @@unique([stateId, variableName])
+  @@index([stateId])
+  @@map("world_variables")
+}
+
+model WorldEvent {
+  id                String    @id @default(cuid())
+  eventId           String    @unique
+  name              String
+  description       String
+  loreText          String?
+  triggerType       String
+  triggerConditions Json
+  variableImpacts   Json
+  duration          Int?
+  status            String    @default("pending")
+  triggeredAt       DateTime  @default(now())
+  startsAt          DateTime?
+  endsAt            DateTime?
+  completedAt       DateTime?
+  participantCount  Int       @default(0)
+  requiredActions   Int?
+  currentProgress   Int       @default(0)
+  rewards           Json?
+  isPostedToFeed    Boolean   @default(false)
+
+  @@index([status, triggeredAt])
+  @@index([triggerType])
+  @@map("world_events")
+}
+
+model WorldContribution {
+  id                String   @id @default(cuid())
+  userId            String
+  date              DateTime @default(now())
+  hopePoints        Float    @default(0.0)
+  chaosPoints       Float    @default(0.0)
+  creativityPoints  Float    @default(0.0)
+  knowledgePoints   Float    @default(0.0)
+  harmonyPoints     Float    @default(0.0)
+  fromAnswers       Int      @default(0)
+  fromChallenges    Int      @default(0)
+  fromFlows         Int      @default(0)
+  fromSocialActions Int      @default(0)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@map("world_contributions")
+}
+
+model NpcProfile {
+  id             String           @id @default(cuid())
+  npcId          String           @unique
+  name           String
+  title          String?
+  avatar         String
+  archetype      String
+  personality    Json
+  alignment      String
+  karmaAffinity  Int              @default(0)
+  archetypeMatch String[]
+  greetings      Json
+  farewells      Json
+  quirks         String[]
+  canGiveQuests  Boolean          @default(true)
+  canGiveRewards Boolean          @default(true)
+  canGiveAdvice  Boolean          @default(true)
+  isActive       Boolean          @default(true)
+  appearanceRate Float            @default(1.0)
+  minLevel       Int              @default(1)
+  backstory      String?
+  voice          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  interactions   NpcInteraction[]
+  memories       NpcMemory[]
+
+  @@index([archetype, isActive])
+  @@index([isActive, appearanceRate])
+  @@map("npc_profiles")
+}
+
+model NpcInteraction {
+  id              String     @id @default(cuid())
+  npcId           String
+  userId          String
+  interactionType String
+  userArchetype   String?
+  userKarma       Int?
+  userPrestige    Int?
+  npcMessage      String
+  userResponse    String?
+  sentiment       String?
+  questOffered    String?
+  rewardGiven     Json?
+  adviceGiven     String?
+  duration        Int?
+  createdAt       DateTime   @default(now())
+  npc             NpcProfile @relation(fields: [npcId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([npcId, createdAt])
+  @@map("npc_interactions")
+}
+
+model NpcMemory {
+  id           String     @id @default(cuid())
+  npcId        String
+  userId       String
+  memoryType   String
+  key          String
+  value        Json
+  importance   Int        @default(1)
+  lastAccessed DateTime   @default(now())
+  accessCount  Int        @default(0)
+  createdAt    DateTime   @default(now())
+  expiresAt    DateTime?
+  npc          NpcProfile @relation(fields: [npcId], references: [id], onDelete: Cascade)
+
+  @@unique([npcId, userId, key])
+  @@index([npcId, userId])
+  @@index([expiresAt])
+  @@map("npc_memories")
+}
+
+model NpcDialogueTree {
+  id          String   @id @default(cuid())
+  npcId       String
+  treeId      String   @unique
+  name        String
+  description String?
+  triggerType String
+  conditions  Json
+  nodes       Json
+  category    String?
+  priority    Int      @default(5)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([npcId, isActive])
+  @@map("npc_dialogue_trees")
+}
+
+model RewardOffer {
+  id             String             @id @default(cuid())
+  offerId        String             @unique
+  name           String
+  description    String
+  type           String
+  partnerId      String?
+  partnerName    String
+  partnerLogo    String?
+  minPrestige    Int                @default(0)
+  minLevel       Int                @default(1)
+  requiredBadges String[]
+  requiredTitles String[]
+  value          String
+  rewardCode     String?
+  qrCodeUrl      String?
+  externalUrl    String?
+  totalStock     Int?
+  remainingStock Int?
+  maxPerUser     Int                @default(1)
+  isActive       Boolean            @default(true)
+  startsAt       DateTime?
+  expiresAt      DateTime?
+  category       String?
+  imageUrl       String?
+  termsUrl       String?
+  nftEnabled     Boolean            @default(false)
+  nftContract    String?
+  nftMetadata    Json?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  redemptions    RewardRedemption[]
+
+  @@index([isActive, startsAt, expiresAt])
+  @@index([type, category])
+  @@index([minPrestige, minLevel])
+  @@map("reward_offers")
+}
+
+model RewardRedemption {
+  id               String      @id @default(cuid())
+  offerId          String
+  userId           String
+  redemptionCode   String      @unique
+  qrCode           String?
+  status           String      @default("claimed")
+  verificationCode String?
+  verifiedAt       DateTime?
+  verifiedBy       String?
+  redeemedAt       DateTime?
+  expiresAt        DateTime
+  nftMinted        Boolean     @default(false)
+  nftTokenId       String?
+  nftTxHash        String?
+  metadata         Json?
+  notes            String?
+  createdAt        DateTime    @default(now())
+  offer            RewardOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([offerId, status])
+  @@index([redemptionCode])
+  @@index([expiresAt])
+  @@map("reward_redemptions")
+}
+
+model RewardProof {
+  id           String    @id @default(cuid())
+  redemptionId String    @unique
+  proofType    String
+  proofData    Json
+  uploadedAt   DateTime  @default(now())
+  verifiedAt   DateTime?
+  isVerified   Boolean   @default(false)
+
+  @@index([redemptionId])
+  @@map("reward_proofs")
+}
+
+model PartnerApp {
+  id               String          @id @default(cuid())
+  name             String
+  description      String?
+  website          String?
+  contactEmail     String
+  clientId         String          @unique
+  clientSecret     String
+  status           String          @default("pending")
+  tier             String          @default("free")
+  rateLimit        Int             @default(1000)
+  dailyLimit       Int             @default(10000)
+  webhookUrl       String?
+  webhookSecret    String?
+  webhookEvents    String[]
+  canEmbed         Boolean         @default(true)
+  canAccessData    Boolean         @default(false)
+  canCreateContent Boolean         @default(false)
+  logoUrl          String?
+  industry         String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  lastUsedAt       DateTime?
+  apiKeys          PartnerApiKey[]
+  stats            PartnerStats[]
+
+  @@index([status, tier])
+  @@index([clientId])
+  @@map("partner_apps")
+}
+
+model PartnerApiKey {
+  id         String     @id @default(cuid())
+  partnerId  String
+  keyHash    String
+  keyPreview String
+  name       String?
+  scopes     String[]
+  isActive   Boolean    @default(true)
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+  usageCount Int        @default(0)
+  createdAt  DateTime   @default(now())
+  revokedAt  DateTime?
+  partner    PartnerApp @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId, isActive])
+  @@index([keyHash])
+  @@map("partner_api_keys")
+}
+
+model PartnerStats {
+  id              String     @id @default(cuid())
+  partnerId       String
+  date            DateTime   @default(now())
+  totalRequests   Int        @default(0)
+  successRequests Int        @default(0)
+  failedRequests  Int        @default(0)
+  rateLimitHits   Int        @default(0)
+  embedViews      Int        @default(0)
+  embedClicks     Int        @default(0)
+  embedResponses  Int        @default(0)
+  questionsServed Int        @default(0)
+  answersReceived Int        @default(0)
+  uniqueUsers     Int        @default(0)
+  avgResponseTime Float?
+  errorRate       Float?
+  partner         PartnerApp @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@unique([partnerId, date])
+  @@index([partnerId, date])
+  @@map("partner_stats")
+}
+
+model PartnerWebhook {
+  id          String    @id @default(cuid())
+  partnerId   String
+  eventType   String
+  payload     Json
+  signature   String
+  status      String    @default("pending")
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(3)
+  deliveredAt DateTime?
+  failedAt    DateTime?
+  error       String?
+  nextRetryAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([partnerId, status])
+  @@index([status, nextRetryAt])
+  @@map("partner_webhooks")
+}
+
+model PushSubscription {
+  id         String   @id @default(cuid())
+  userId     String
+  endpoint   String   @unique
+  keys       Json
+  userAgent  String?
+  deviceType String?
+  isEnabled  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  lastUsed   DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isEnabled])
+  @@map("push_subscriptions")
+}
+
+model OfflineAction {
+  id         String    @id @default(cuid())
+  userId     String
+  actionType String
+  payload    Json
+  status     String    @default("pending")
+  retryCount Int       @default(0)
+  createdAt  DateTime  @default(now())
+  syncedAt   DateTime?
+  error      String?
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@map("offline_actions")
+}
+
+model PWAMetrics {
+  id             String   @id @default(cuid())
+  date           DateTime @unique @default(now())
+  installCount   Int      @default(0)
+  uninstallCount Int      @default(0)
+  activeInstalls Int      @default(0)
+  mobileUsers    Int      @default(0)
+  tabletUsers    Int      @default(0)
+  desktopUsers   Int      @default(0)
+  pushSent       Int      @default(0)
+  pushDelivered  Int      @default(0)
+  pushClicked    Int      @default(0)
+  offlineActions Int      @default(0)
+  syncedActions  Int      @default(0)
+  failedActions  Int      @default(0)
+  avgLoadTime    Float?
+  cacheHitRate   Float?
+
+  @@index([date])
+  @@map("pwa_metrics")
+}
+
+model MiniEvent {
+  id               String              @id @default(cuid())
+  eventId          String              @unique
+  name             String
+  description      String
+  icon             String              @default("🎯")
+  eventType        String
+  goalType         String
+  targetCount      Int
+  currentProgress  Int                 @default(0)
+  duration         Int
+  startTime        DateTime
+  endTime          DateTime
+  rewards          Json
+  status           String              @default("scheduled")
+  participantCount Int                 @default(0)
+  isSuccessful     Boolean?
+  completedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  progress         MiniEventProgress[]
+
+  @@index([status, startTime, endTime])
+  @@index([eventType, status])
+  @@map("mini_events")
+}
+
+model MiniEventProgress {
+  id             String    @id @default(cuid())
+  eventId        String
+  userId         String
+  contribution   Int       @default(0)
+  lastUpdate     DateTime  @default(now())
+  rewardsClaimed Boolean   @default(false)
+  claimedAt      DateTime?
+  event          MiniEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([eventId, contribution])
+  @@index([userId])
+  @@map("mini_event_progress")
+}
+
+model MiniEventReward {
+  id          String   @id @default(cuid())
+  eventId     String
+  userId      String
+  rewardType  String
+  rewardId    String?
+  amount      Int?
+  description String
+  awardedAt   DateTime @default(now())
+
+  @@index([eventId, userId])
+  @@index([userId, awardedAt])
+  @@map("mini_event_rewards")
+}
+
+model CreatorProfile {
+  id              String            @id @default(cuid())
+  userId          String            @unique
+  displayName     String
+  bio             String?
+  avatar          String?
+  bannerImage     String?
+  isVerified      Boolean           @default(false)
+  badge           String            @default("🎨")
+  tier            String            @default("basic")
+  totalFlows      Int               @default(0)
+  totalEngagement Int               @default(0)
+  totalEarnings   Int               @default(0)
+  followerCount   Int               @default(0)
+  revenueShare    Float             @default(0.10)
+  goldPerPlay     Int               @default(0)
+  isActive        Boolean           @default(true)
+  allowComments   Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  flows           CreatorFlow[]
+  followers       CreatorFollower[]
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewards         CreatorReward[]
+
+  @@index([isVerified, isActive])
+  @@index([totalEngagement, followerCount])
+  @@map("creator_profiles")
+}
+
+model CreatorFlow {
+  id              String         @id @default(cuid())
+  creatorId       String
+  title           String
+  description     String?
+  coverImage      String?
+  difficulty      String         @default("medium")
+  category        String
+  tags            String[]
+  questions       Json
+  questionCount   Int            @default(0)
+  status          String         @default("draft")
+  approvedBy      String?
+  approvedAt      DateTime?
+  publishedAt     DateTime?
+  rejectionReason String?
+  playCount       Int            @default(0)
+  completionCount Int            @default(0)
+  avgRating       Float?
+  ratingCount     Int            @default(0)
+  xpReward        Int            @default(50)
+  goldReward      Int            @default(0)
+  isFeatured      Boolean        @default(false)
+  isPremium       Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  creator         CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId, status])
+  @@index([status, publishedAt])
+  @@index([category, difficulty])
+  @@index([isFeatured, playCount])
+  @@map("creator_flows")
+}
+
+model CreatorFollower {
+  id         String         @id @default(cuid())
+  creatorId  String
+  userId     String
+  followedAt DateTime       @default(now())
+  creator    CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  user       User           @relation("UserFollowing", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([creatorId, userId])
+  @@index([creatorId])
+  @@index([userId])
+  @@map("creator_followers")
+}
+
+model CreatorReward {
+  id          String         @id @default(cuid())
+  creatorId   String
+  flowId      String?
+  type        String
+  amount      Int
+  source      String
+  description String
+  earnedAt    DateTime       @default(now())
+  creator     CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId, earnedAt])
+  @@map("creator_rewards")
+}
+
+model Clan {
+  id                String         @id @default(cuid())
+  name              String         @unique
+  tag               String         @unique
+  description       String?
+  emblem            String         @default("🏰")
+  color             String         @default("#8b5cf6")
+  leaderId          String
+  totalXp           Int            @default(0)
+  weeklyXp          Int            @default(0)
+  clanGold          Int            @default(0)
+  level             Int            @default(1)
+  memberCount       Int            @default(0)
+  maxMembers        Int            @default(50)
+  isPublic          Boolean        @default(true)
+  requireApproval   Boolean        @default(false)
+  minLevel          Int            @default(1)
+  lastXpReset       DateTime       @default(now())
+  totalChestsEarned Int            @default(0)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  activities        ClanActivity[]
+  members           ClanMember[]
+  upgrades          ClanUpgrade[]
+
+  @@index([totalXp, weeklyXp])
+  @@index([isPublic, requireApproval])
+  @@map("clans")
+}
+
+model ClanMember {
+  id                  String   @id @default(cuid())
+  clanId              String
+  userId              String   @unique
+  role                String   @default("member")
+  xpContributed       Int      @default(0)
+  weeklyXpContributed Int      @default(0)
+  goldContributed     Int      @default(0)
+  rank                Int      @default(0)
+  title               String?
+  joinedAt            DateTime @default(now())
+  lastActive          DateTime @default(now())
+  clan                Clan     @relation(fields: [clanId], references: [id], onDelete: Cascade)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([clanId, userId])
+  @@index([clanId, role])
+  @@index([userId])
+  @@map("clan_members")
+}
+
+model ClanUpgrade {
+  id          String    @id @default(cuid())
+  clanId      String
+  upgradeType String
+  name        String
+  level       Int       @default(1)
+  maxLevel    Int       @default(5)
+  boostAmount Float?
+  duration    Int?
+  purchasedAt DateTime  @default(now())
+  expiresAt   DateTime?
+  clan        Clan      @relation(fields: [clanId], references: [id], onDelete: Cascade)
+
+  @@unique([clanId, upgradeType])
+  @@index([clanId])
+  @@map("clan_upgrades")
+}
+
+model ClanActivity {
+  id           String   @id @default(cuid())
+  clanId       String
+  activityType String
+  userId       String?
+  message      String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  clan         Clan     @relation(fields: [clanId], references: [id], onDelete: Cascade)
+
+  @@index([clanId, createdAt])
+  @@map("clan_activities")
+}
+
+model SystemMetric {
+  id         String   @id @default(cuid())
+  metricType String
+  name       String
+  value      Float
+  unit       String
+  endpoint   String?
+  timestamp  DateTime @default(now())
+
+  @@index([metricType, timestamp])
+  @@index([endpoint, timestamp])
+  @@map("system_metrics")
+}
+
+model HealthLog {
+  id           String   @id @default(cuid())
+  checkType    String
+  status       String
+  message      String?
+  responseTime Float?
+  metadata     Json?
+  checkedAt    DateTime @default(now())
+
+  @@index([checkType, checkedAt])
+  @@index([status, checkedAt])
+  @@map("health_logs")
+}
+
+model AutoHealLog {
+  id            String   @id @default(cuid())
+  healType      String
+  description   String
+  itemsAffected Int      @default(0)
+  success       Boolean  @default(true)
+  error         String?
+  executedAt    DateTime @default(now())
+
+  @@index([healType, executedAt])
+  @@map("auto_heal_logs")
+}
+
+model ErrorAlert {
+  id         String    @id @default(cuid())
+  severity   String
+  source     String
+  message    String
+  stackTrace String?
+  metadata   Json?
+  notifiedAt DateTime?
+  resolvedAt DateTime?
+  isResolved Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+
+  @@index([severity, isResolved, createdAt])
+  @@index([source, createdAt])
+  @@map("error_alerts")
+}
+
+model JobQueue {
+  id              String            @id @default(cuid())
+  queueName       String            @unique
+  displayName     String
+  description     String?
+  priority        Int               @default(5)
+  concurrency     Int               @default(1)
+  maxRetries      Int               @default(3)
+  backoffStrategy String            @default("exponential")
+  backoffDelay    Int               @default(1000)
+  isEnabled       Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  metrics         JobQueueMetrics[]
+
+  @@index([priority, isEnabled])
+  @@map("job_queues")
+}
+
+model JobQueueMetrics {
+  id              String   @id @default(cuid())
+  queueName       String
+  date            DateTime @default(now())
+  processed       Int      @default(0)
+  completed       Int      @default(0)
+  failed          Int      @default(0)
+  retried         Int      @default(0)
+  stalled         Int      @default(0)
+  avgProcessTime  Float?
+  maxProcessTime  Float?
+  minProcessTime  Float?
+  processedPerSec Float?
+  failureRate     Float?
+  queue           JobQueue @relation(fields: [queueName], references: [queueName], onDelete: Cascade)
+
+  @@unique([queueName, date])
+  @@index([queueName, date])
+  @@index([date])
+  @@map("job_queue_metrics")
+}
+
+model JobFailure {
+  id          String    @id @default(cuid())
+  queueName   String
+  jobId       String
+  jobName     String
+  payload     Json?
+  error       String
+  stackTrace  String?
+  attempts    Int       @default(1)
+  maxRetries  Int
+  willRetry   Boolean
+  nextRetryAt DateTime?
+  failedAt    DateTime  @default(now())
+  resolvedAt  DateTime?
+  isResolved  Boolean   @default(false)
+
+  @@index([queueName, failedAt])
+  @@index([isResolved, failedAt])
+  @@map("job_failures")
+}
+
+model CacheConfig {
+  id           String   @id @default(cuid())
+  key          String   @unique
+  name         String
+  description  String?
+  ttlSeconds   Int      @default(60)
+  isEnabled    Boolean  @default(true)
+  strategy     String   @default("redis")
+  invalidateOn String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([key, isEnabled])
+  @@map("cache_configs")
+}
+
+model CacheMetrics {
+  id          String    @id @default(cuid())
+  cacheKey    String
+  endpoint    String
+  hitCount    Int       @default(0)
+  missCount   Int       @default(0)
+  avgHitTime  Float?
+  avgMissTime Float?
+  lastHitAt   DateTime?
+  lastMissAt  DateTime?
+  date        DateTime  @default(now())
+
+  @@unique([cacheKey, endpoint, date])
+  @@index([endpoint, date])
+  @@index([cacheKey, date])
+  @@map("cache_metrics")
+}
+
+model AchievementCollection {
+  id              String                        @id @default(cuid())
+  collectionId    String                        @unique
+  name            String
+  description     String?
+  theme           String
+  icon            String?
+  rarity          String                        @default("common")
+  titleReward     String?
+  xpReward        Int                           @default(0)
+  goldReward      Int                           @default(0)
+  diamondReward   Int                           @default(0)
+  auraUnlock      String?
+  themeUnlock     String?
+  isSeasonal      Boolean                       @default(false)
+  seasonType      String?
+  isEvent         Boolean                       @default(false)
+  eventId         String?
+  availableFrom   DateTime?
+  availableUntil  DateTime?
+  isActive        Boolean                       @default(true)
+  createdAt       DateTime                      @default(now())
+  members         AchievementCollectionMember[]
+  userCompletions UserAchievementCollection[]
+
+  @@index([theme, rarity])
+  @@index([isSeasonal, seasonType])
+  @@index([isEvent, eventId])
+  @@index([isActive, availableFrom, availableUntil])
+  @@map("achievement_collections")
+}
+
+model AchievementCollectionMember {
+  id            String                @id @default(cuid())
+  collectionId  String
+  achievementId String
+  sortOrder     Int                   @default(0)
+  achievement   Achievement           @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  collection    AchievementCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, achievementId])
+  @@index([collectionId, sortOrder])
+  @@map("achievement_collection_members")
+}
+
+model UserAchievementCollection {
+  id            String                @id @default(cuid())
+  userId        String
+  collectionId  String
+  progress      Int                   @default(0)
+  totalRequired Int
+  isCompleted   Boolean               @default(false)
+  completedAt   DateTime?
+  rewardClaimed Boolean               @default(false)
+  claimedAt     DateTime?
+  collection    AchievementCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, collectionId])
+  @@index([userId, isCompleted])
+  @@index([collectionId])
+  @@map("user_achievement_collections")
+}
+
+model ThemePack {
+  id              String    @id @default(cuid())
+  themeId         String    @unique
+  name            String
+  description     String?
+  type            String
+  rarity          String    @default("common")
+  isSeasonal      Boolean   @default(false)
+  seasonType      String?
+  gradientConfig  Json
+  particleConfig  Json?
+  animationConfig Json?
+  unlockLevel     Int       @default(1)
+  unlockCondition String?
+  goldCost        Int?
+  diamondCost     Int?
+  vipOnly         Boolean   @default(false)
+  isActive        Boolean   @default(true)
+  availableFrom   DateTime?
+  availableUntil  DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([isSeasonal, seasonType])
+  @@index([type, rarity])
+  @@index([isActive, availableFrom, availableUntil])
+  @@map("theme_packs")
+}
+
+model UserThemeSettings {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  autoSeasonalTheme Boolean   @default(false)
+  preferredThemeId  String?
+  lastAutoSwitchAt  DateTime?
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_theme_settings")
+}
+
+model UserArchetypeHistory {
+  id           String   @id @default(cuid())
+  userId       String
+  previousType String?
+  newType      String
+  reason       String
+  statSnapshot Json?
+  xpBonus      Int      @default(50)
+  evolvedAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, evolvedAt])
+  @@map("user_archetype_history")
+}
+
+model AvatarLayer {
+  id              String           @id @default(cuid())
+  layerType       String
+  name            String
+  description     String?
+  rarity          String
+  unlockLevel     Int              @default(1)
+  unlockCondition String?
+  goldCost        Int?
+  diamondCost     Int?
+  imageUrl        String?
+  zIndex          Int              @default(0)
+  createdAt       DateTime         @default(now())
+  userItems       UserAvatarItem[]
+
+  @@index([layerType, rarity])
+  @@map("avatar_layers")
+}
+
+model UserAvatarItem {
+  id         String      @id @default(cuid())
+  userId     String
+  layerId    String
+  unlockedAt DateTime    @default(now())
+  layer      AvatarLayer @relation(fields: [layerId], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, layerId])
+  @@index([userId])
+  @@map("user_avatar_items")
+}
+
+model UserAvatar {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  equippedLayers Json
+  presetName     String?
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_avatars")
+}
+
+model DuelSpectator {
+  id        String    @id @default(cuid())
+  duelId    String
+  userId    String
+  joinedAt  DateTime  @default(now())
+  reactedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([duelId, userId])
+  @@index([duelId])
+  @@map("duel_spectators")
+}
+
+model DuelHighlight {
+  id             String   @id @default(cuid())
+  duelId         String
+  initiatorName  String
+  receiverName   String
+  scoreDiff      Int
+  finalScore     String
+  category       String?
+  isTopOfDay     Boolean  @default(false)
+  viewCount      Int      @default(0)
+  reactionsCount Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  @@index([isTopOfDay, createdAt])
+  @@index([createdAt])
+  @@map("duel_highlights")
+}
+
+model CoopMission {
+  id           String         @id @default(cuid())
+  type         String
+  title        String
+  description  String?
+  questionIds  String[]
+  minMembers   Int            @default(2)
+  maxMembers   Int            @default(3)
+  rewardXp     Int            @default(150)
+  rewardGold   Int            @default(100)
+  timeLimit    Int            @default(24)
+  requiresSync Boolean        @default(true)
+  status       String         @default("open")
+  createdBy    String
+  startedAt    DateTime?
+  completedAt  DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime       @default(now())
+  members      CoopMember[]
+  progress     CoopProgress[]
+
+  @@index([status, createdAt])
+  @@map("coop_missions")
+}
+
+model CoopMember {
+  id        String      @id @default(cuid())
+  missionId String
+  userId    String
+  role      String      @default("member")
+  joinedAt  DateTime    @default(now())
+  isReady   Boolean     @default(false)
+  mission   CoopMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([missionId, userId])
+  @@index([missionId])
+  @@map("coop_members")
+}
+
+model CoopProgress {
+  id          String      @id @default(cuid())
+  missionId   String
+  questionId  String
+  userId      String
+  answer      String?
+  confirmed   Boolean     @default(false)
+  submittedAt DateTime?
+  mission     CoopMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  @@unique([missionId, questionId, userId])
+  @@index([missionId, confirmed])
+  @@map("coop_progress")
+}
+
+model TotemBattle {
+  id           String              @id @default(cuid())
+  weekNumber   Int
+  year         Int
+  groupAId     String
+  groupBId     String
+  phase        String              @default("preparation")
+  scoreA       Int                 @default(0)
+  scoreB       Int                 @default(0)
+  winnerId     String?
+  startAt      DateTime
+  endAt        DateTime
+  rewardEmblem String?
+  rewardXp     Int                 @default(500)
+  createdAt    DateTime            @default(now())
+  results      TotemBattleResult[]
+
+  @@unique([weekNumber, year, groupAId, groupBId])
+  @@index([phase, startAt])
+  @@map("totem_battles")
+}
+
+model TotemBattleResult {
+  id                  String      @id @default(cuid())
+  battleId            String
+  groupId             String
+  finalScore          Int
+  memberCount         Int
+  avgLevel            Float
+  xpGained            Int
+  challengesCompleted Int
+  ranking             Int
+  rewardsJson         Json?
+  createdAt           DateTime    @default(now())
+  battle              TotemBattle @relation(fields: [battleId], references: [id], onDelete: Cascade)
+
+  @@index([battleId])
+  @@map("totem_battle_results")
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  userId   String
+  groupId  String
+  role     String   @default("member")
+  joinedAt DateTime @default(now())
+  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([groupId])
+  @@map("group_members")
+}
+
+model GroupActivity {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String?
+  type      String
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, createdAt])
+  @@map("group_activities")
+}
+
+model Flow {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime       @default(now())
+  metadata    Json?
   progresses  FlowProgress[]
+  steps       FlowStep[]
 
   @@map("flows")
 }
 
 model FlowStep {
-  id                String   @id @default(cuid())
+  id                String          @id @default(cuid())
   flowId            String
   questionVersionId String
   order             Int
   section           String?
   branchCondition   Json?
   randomGroup       String?
-  isOptional        Boolean  @default(false)
+  isOptional        Boolean         @default(false)
   metadata          Json?
-
-  flow              Flow     @relation(fields: [flowId], references: [id])
-  questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id])
-  fromLinks         FlowStepLink[] @relation("FromStep")
-  toLinks           FlowStepLink[] @relation("ToStep")
-  progresses        FlowProgress[]
   answers           Answer[]
+  progresses        FlowProgress[]
+  fromLinks         FlowStepLink[]  @relation("FromStep")
+  toLinks           FlowStepLink[]  @relation("ToStep")
+  flow              Flow            @relation(fields: [flowId], references: [id])
+  questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id])
 
   @@map("flow_steps")
 }
 
 model FlowStepLink {
-  id          String   @id @default(cuid())
-  fromStepId  String
-  toStepId    String
-  condition   Json?
-
-  fromStep    FlowStep @relation("FromStep", fields: [fromStepId], references: [id])
-  toStep      FlowStep @relation("ToStep", fields: [toStepId], references: [id])
+  id         String   @id @default(cuid())
+  fromStepId String
+  toStepId   String
+  condition  Json?
+  fromStep   FlowStep @relation("FromStep", fields: [fromStepId], references: [id])
+  toStep     FlowStep @relation("ToStep", fields: [toStepId], references: [id])
 
   @@map("flow_step_links")
 }
 
 model FlowProgress {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   userId        String
   flowId        String
   currentStepId String?
-  startedAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  startedAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   completedAt   DateTime?
-
-  flow          Flow     @relation(fields: [flowId], references: [id])
-  currentStep   FlowStep? @relation(fields: [currentStepId], references: [id])
   answers       Answer[]
+  currentStep   FlowStep? @relation(fields: [currentStepId], references: [id])
+  flow          Flow      @relation(fields: [flowId], references: [id])
 
   @@map("flow_progress")
 }
 
 model Answer {
-  id                String   @id @default(cuid())
+  id                String          @id @default(cuid())
   sessionId         String
   stepId            String
   questionVersionId String
   value             String
-  createdAt         DateTime @default(now())
-
-  session           FlowProgress   @relation(fields: [sessionId], references: [id])
-  step              FlowStep       @relation(fields: [stepId], references: [id])
+  createdAt         DateTime        @default(now())
   questionVersion   QuestionVersion @relation(fields: [questionVersionId], references: [id])
+  session           FlowProgress    @relation(fields: [sessionId], references: [id])
+  step              FlowStep        @relation(fields: [stepId], references: [id])
 
   @@map("answers")
 }
 
 model Language {
-  id    String  @id @default(cuid())
-  code  String  @unique
-  name  String
+  id   String @id @default(cuid())
+  code String @unique
+  name String
+
   @@map("languages")
+}
+
+model Version {
+  id        String   @id @default(cuid())
+  name      String
+  value     String
+  createdAt DateTime @default(now())
+
+  @@map("versions")
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String
+  subCategories SubCategory[]
+}
+
+model SubCategory {
+  id         String           @id @default(cuid())
+  name       String
+  categoryId String
+  category   Category         @relation(fields: [categoryId], references: [id])
+  subSubs    SubSubCategory[]
+}
+
+model SubSubCategory {
+  id            String        @id @default(cuid())
+  name          String
+  subCategoryId String
+  sssCategories SssCategory[]
+  subCategory   SubCategory   @relation(fields: [subCategoryId], references: [id])
+}
+
+model SssCategory {
+  id               String          @id @default(cuid())
+  name             String
+  subSubCategoryId String
+  status           String          @default("pending")
+  generatedAt      DateTime?
+  error            String?
+  review           String?
+  finalText        String?
+  responseType     String?
+  outcome          String?
+  multiplication   Int?
+  difficulty       String?
+  ageCategory      String?
+  gender           String?
+  author           String?
+  wildcard         String?
+  subSubCategory   SubSubCategory  @relation(fields: [subSubCategoryId], references: [id])
+  flowQuestions    FlowQuestion[]  @relation("FlowQuestions")
+  generationJobs   GenerationJob[]
+  questions        Question[]      @relation("SsscQuestions")
+}
+
+model UserQuestion {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  status     String   @default("answered")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  question   Question @relation(fields: [questionId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, questionId])
+}
+
+model Group {
+  id           String          @id @default(cuid())
+  name         String          @unique
+  emblem       String?         @default("🔥")
+  motto        String?
+  ownerId      String?
+  maxMembers   Int             @default(10)
+  totalXp      Int             @default(0)
+  avgKarma     Int             @default(0)
+  avgPrestige  Int             @default(0)
+  weeklyBonus  Boolean         @default(false)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  members      UserGroup[]
+  activities   GroupActivity[]
+  groupMembers GroupMember[]
+
+  @@map("groups")
+}
+
+model UserGroup {
+  id      String @id @default(cuid())
+  userId  String
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+
+  @@unique([userId, groupId])
+  @@index([groupId])
+}
+
+model Wallet {
+  id            String        @id @default(cuid())
+  userId        String        @unique
+  tenantId      String
+  funds         Decimal       @default(0)
+  diamonds      Int           @default(0)
+  ledgerEntries LedgerEntry[]
+  user          User          @relation(fields: [userId], references: [id])
+
+  @@unique([userId, tenantId])
+  @@index([tenantId])
+}
+
+model LedgerEntry {
+  id        String     @id @default(cuid())
+  walletId  String
+  tenantId  String
+  kind      LedgerKind
+  amount    Int
+  currency  Currency
+  refType   String
+  refId     String?
+  note      String?
+  createdAt DateTime   @default(now())
+  wallet    Wallet     @relation(fields: [walletId], references: [id])
+
+  @@index([tenantId])
+  @@index([walletId, createdAt])
+}
+
+model Product {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  description     String?
+  kind            ProductKind
+  payload         Json
+  stackable       Boolean       @default(false)
+  active          Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  entitlements    Entitlement[]
+  prices          Price[]
+  purchases       Purchase[]
+  avatarEquip     UserProfile[] @relation("avatarEquip")
+  backgroundEquip UserProfile[] @relation("backgroundEquip")
+  skinEquip       UserProfile[] @relation("skinEquip")
+}
+
+model Price {
+  id            String  @id @default(cuid())
+  productId     String
+  stripePriceId String?
+  currencyCode  String
+  unitAmount    Int
+  active        Boolean @default(true)
+  product       Product @relation(fields: [productId], references: [id])
+
+  @@index([productId])
+}
+
+model Purchase {
+  id         String         @id @default(cuid())
+  userId     String
+  tenantId   String
+  productId  String
+  quantity   Int            @default(1)
+  totalMinor Int
+  status     PurchaseStatus @default(SUCCEEDED)
+  extRef     String?
+  createdAt  DateTime       @default(now())
+  product    Product        @relation(fields: [productId], references: [id])
+  user       User           @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId, createdAt])
+}
+
+model Entitlement {
+  id        String   @id @default(cuid())
+  userId    String
+  tenantId  String
+  productId String
+  meta      Json?
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, productId])
+  @@index([tenantId])
+}
+
+model Subscription {
+  id               String   @id @default(cuid())
+  userId           String
+  stripeSubId      String   @unique
+  plan             String
+  status           String
+  currentPeriodEnd DateTime
+  perks            Json
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id])
+}
+
+model UserProfile {
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  equippedAvatarId     String?
+  equippedBackgroundId String?
+  equippedSkinId       String?
+  updatedAt            DateTime @updatedAt
+  equippedAvatar       Product? @relation("avatarEquip", fields: [equippedAvatarId], references: [id])
+  equippedBackground   Product? @relation("backgroundEquip", fields: [equippedBackgroundId], references: [id])
+  equippedSkin         Product? @relation("skinEquip", fields: [equippedSkinId], references: [id])
+  user                 User     @relation(fields: [userId], references: [id])
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  description String
+  icon        String
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  userBadges  UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  createdAt DateTime @default(now())
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model FailedLoginAttempt {
+  id        String   @id @default(cuid())
+  ipAddress String
+  email     String
+  createdAt DateTime @default(now())
+
+  @@index([ipAddress, createdAt])
+  @@index([email, createdAt])
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model EmailVerify {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  ip        String
+  action    String
+  meta      Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model GenerationBatch {
+  id          String          @id @default(cuid())
+  createdAt   DateTime        @default(now())
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  status      BatchStatus     @default(PENDING)
+  language    String
+  targetCount Int
+  processed   Int             @default(0)
+  succeeded   Int             @default(0)
+  failed      Int             @default(0)
+  note        String?
+  jobs        GenerationJob[]
+
+  @@index([status, language])
+  @@map("generation_batches")
+}
+
+model GenerationJob {
+  id              String          @id @default(cuid())
+  createdAt       DateTime        @default(now())
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  status          JobStatus       @default(PENDING)
+  error           String?
+  language        String
+  sssCategoryId   String
+  batchId         String
+  aiLogId         String?
+  moderatorNotes  String?
+  moderatorScore  Float?
+  moderatorStatus String?
+  moderatorUserId String?
+  qualityScore    Float?
+  retryCount      Int             @default(0)
+  weightScore     Float?
+  aiLog           AIResponseLog?  @relation(fields: [aiLogId], references: [id])
+  batch           GenerationBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  sssCategory     SssCategory     @relation(fields: [sssCategoryId], references: [id])
+
+  @@index([status, language, sssCategoryId])
+  @@index([moderatorStatus])
+  @@map("generation_jobs")
+}
+
+model AIResponseLog {
+  id        String          @id @default(cuid())
+  createdAt DateTime        @default(now())
+  prompt    String
+  response  String
+  tokensIn  Int?
+  tokensOut Int?
+  model     String?
+  jobs      GenerationJob[]
+
+  @@map("ai_response_logs")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+  MULTI_CHOICE
+  RANGE
+  NUMBER
+  TEXT
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MOD
+  DEVOPS
 }
 
 enum TaskStatus {
@@ -393,117 +3836,10 @@ enum IntegrationType {
   WEBHOOK
 }
 
-model Version {
-  id        String   @id @default(cuid())
-  name      String   // version name
-  value     String
-  createdAt DateTime @default(now())
-
-  @@map("versions")
-}
-
-// Models for hierarchical categories
-model Category {
-  id            String         @id @default(cuid())
-  name          String
-  subCategories SubCategory[]
-}
-
-model SubCategory {
-  id          String         @id @default(cuid())
-  name        String
-  categoryId  String
-  category    Category       @relation(fields: [categoryId], references: [id])
-  subSubs     SubSubCategory[]
-}
-
-model SubSubCategory {
-  id            String         @id @default(cuid())
-  name          String
-  subCategoryId String
-  subCategory   SubCategory    @relation(fields: [subCategoryId], references: [id])
-  sssCategories SssCategory[]
-}
-
-model SssCategory {
-  id               String   @id @default(cuid())
-  name             String
-  subSubCategoryId String
-  subSubCategory   SubSubCategory @relation(fields: [subSubCategoryId], references: [id])
-
-  // Generation status for AI seeding
-  status      String   @default("pending") // pending|generating|done|failed
-  generatedAt DateTime?
-  error       String?
-
-  // Optional fields for metadata
-  review          String?
-  finalText       String?
-  responseType    String?
-  outcome         String?
-  multiplication  Int?
-  difficulty      String?
-  ageCategory     String?
-  gender          String?
-  author          String?
-  wildcard        String?
-
-  // Questions under this leaf
-  questions Question[] @relation("SsscQuestions")
-}
-
-// Add source enum for questions
 enum QuestionSource {
   ai
   user
   import
-}
-
-// Track per-user question status
-model UserQuestion {
-  id         String   @id @default(cuid())
-  userId     String
-  questionId String
-  status     String   @default("answered") // answered|skipped|hidden
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  user     User     @relation(fields: [userId], references: [id])
-  question Question @relation(fields: [questionId], references: [id])
-
-  @@unique([userId, questionId])
-}
-
-// Add Group and UserGroup models
-model Group {
-  id      String     @id @default(cuid())
-  name    String     @unique
-  members UserGroup[]
-}
-
-model UserGroup {
-  id      String   @id @default(cuid())
-  userId  String
-  groupId String
-
-  user    User     @relation(fields: [userId], references: [id])
-  group   Group    @relation(fields: [groupId], references: [id])
-
-  @@unique([userId, groupId])
-  @@index([groupId])
-}
-
-// Wallet for user balances
-model Wallet {
-  id            String        @id @default(cuid())
-  userId        String        @unique
-  tenantId      String
-  user          User          @relation(fields: [userId], references: [id])
-  funds         Decimal       @default(0)
-  diamonds      Int           @default(0)
-  ledgerEntries LedgerEntry[]
-  @@index([tenantId])
-  @@unique([userId, tenantId])
 }
 
 enum Currency {
@@ -516,71 +3852,9 @@ enum LedgerKind {
   DEBIT
 }
 
-model LedgerEntry {
-  id        String      @id @default(cuid())
-  walletId  String
-  tenantId  String
-  wallet    Wallet      @relation(fields: [walletId], references: [id])
-  kind      LedgerKind
-  amount    Int         // positive or negative
-  currency  Currency    // FUNDS or DIAMONDS
-  refType   String      // e.g., "purchase", "admin_adjustment", "subscription_drip"
-  refId     String?
-  note      String?
-  createdAt DateTime    @default(now())
-  @@index([tenantId])
-  @@index([walletId, createdAt])
-}
-
-model Product {
-  id           String            @id @default(cuid())
-  slug         String            @unique
-  title        String
-  description  String?
-  kind         ProductKind
-  payload      Json
-  stackable    Boolean           @default(false) // whether entitlements can stack
-  active       Boolean           @default(true)
-  prices       Price[]
-  entitlements Entitlement[]
-  purchases    Purchase[]
-  avatarEquip      UserProfile[] @relation("avatarEquip")
-  backgroundEquip  UserProfile[] @relation("backgroundEquip")
-  skinEquip        UserProfile[] @relation("skinEquip")
-  createdAt    DateTime          @default(now())
-}
-
 enum ProductKind {
   CURRENCY_PACK
   COSMETIC
-}
-
-model Price {
-  id            String    @id @default(cuid())
-  productId     String
-  product       Product   @relation(fields: [productId], references: [id])
-  stripePriceId String?
-  currencyCode  String    // "USD", "EUR", etc.
-  unitAmount    Int       // minor units (cents)
-  active        Boolean   @default(true)
-
-  @@index([productId])
-}
-
-model Purchase {
-  id         String         @id @default(cuid())
-  userId     String
-  tenantId   String
-  user       User           @relation(fields: [userId], references: [id])
-  productId  String
-  product    Product        @relation(fields: [productId], references: [id])
-  quantity   Int            @default(1)
-  totalMinor Int            // charged amount in minor units
-  status     PurchaseStatus @default(SUCCEEDED)
-  extRef     String?        // external payment/session ID
-  createdAt  DateTime       @default(now())
-  @@index([tenantId])
-  @@index([userId, createdAt])
 }
 
 enum PurchaseStatus {
@@ -590,120 +3864,17 @@ enum PurchaseStatus {
   REFUNDED
 }
 
-model Entitlement {
-  id        String    @id @default(cuid())
-  userId    String
-  tenantId  String
-  user      User      @relation(fields: [userId], references: [id])
-  productId String
-  product   Product   @relation(fields: [productId], references: [id])
-  meta      Json?
-  createdAt DateTime  @default(now())
-  @@index([tenantId])
-  @@unique([userId, productId]) // Note: This enforces uniqueness for non-stackable products
+enum BatchStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+  PAUSED
 }
 
-model Subscription {
-  id               String    @id @default(cuid())
-  userId           String
-  user             User      @relation(fields: [userId], references: [id])
-  stripeSubId      String    @unique
-  plan             String
-  status           String
-  currentPeriodEnd DateTime
-  perks            Json      // e.g., { monthlyDiamonds: 300 }
-  createdAt        DateTime  @default(now())
+enum JobStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
 }
-
-// Profiles storing user equip settings
-model UserProfile {
-  id                   String   @id @default(cuid())
-  userId               String   @unique
-  user                 User     @relation(fields: [userId], references: [id])
-  equippedAvatarId     String?
-  equippedAvatar       Product? @relation("avatarEquip", fields: [equippedAvatarId], references: [id])
-  equippedBackgroundId String?
-  equippedBackground   Product? @relation("backgroundEquip", fields: [equippedBackgroundId], references: [id])
-  equippedSkinId       String?
-  equippedSkin         Product? @relation("skinEquip", fields: [equippedSkinId], references: [id])
-  updatedAt            DateTime @updatedAt
-}
-
-model Badge {
-  id          String    @id @default(cuid())
-  slug        String    @unique
-  title       String
-  description String
-  icon        String    // emoji or icon identifier
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  
-  userBadges  UserBadge[]
-}
-
-model UserBadge {
-  id        String   @id @default(cuid())
-  userId    String
-  badgeId   String
-  createdAt DateTime @default(now())
-  
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  
-  @@unique([userId, badgeId])
-}
-
-model FailedLoginAttempt {
-  id        String   @id @default(cuid())
-  ipAddress String
-  email     String
-  createdAt DateTime @default(now())
-  
-  @@index([ipAddress, createdAt])
-  @@index([email, createdAt])
-}
-
-model PasswordReset {
-  id        String   @id @default(cuid())
-  userId    String
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([token])
-  @@index([expiresAt])
-}
-
-model EmailVerify {
-  id        String   @id @default(cuid())
-  userId    String
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  @@index([token])
-  @@index([expiresAt])
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?  // Optional - may be null for anonymous actions
-  ip        String
-  action    String
-  meta      Json?    // Additional metadata as JSON
-  createdAt DateTime @default(now())
-  
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
-  @@index([createdAt])
-  @@map("audit_logs")
-}
-
-
-
-
-

@@ -1,0 +1,280 @@
+{
+  "version": "0.9.1",
+  "tiers": {
+    "free": {
+      "name": "Free",
+      "icon": "🆓",
+      "color": "#64748b",
+      "rateLimit": 1000,
+      "dailyLimit": 10000,
+      "price": 0,
+      "features": [
+        "Basic embedding",
+        "1,000 requests/hour",
+        "10,000 requests/day",
+        "Community support"
+      ]
+    },
+    "standard": {
+      "name": "Standard",
+      "icon": "⭐",
+      "color": "#3b82f6",
+      "rateLimit": 5000,
+      "dailyLimit": 100000,
+      "price": 99,
+      "features": [
+        "All Free features",
+        "5,000 requests/hour",
+        "100,000 requests/day",
+        "Custom branding",
+        "Email support",
+        "Basic analytics"
+      ]
+    },
+    "premium": {
+      "name": "Premium",
+      "icon": "💎",
+      "color": "#8b5cf6",
+      "rateLimit": 20000,
+      "dailyLimit": 500000,
+      "price": 299,
+      "features": [
+        "All Standard features",
+        "20,000 requests/hour",
+        "500,000 requests/day",
+        "Advanced analytics",
+        "Webhook callbacks",
+        "Priority support",
+        "Custom content creation"
+      ]
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "icon": "🏢",
+      "color": "#f59e0b",
+      "rateLimit": 100000,
+      "dailyLimit": 5000000,
+      "price": 999,
+      "features": [
+        "All Premium features",
+        "100,000 requests/hour",
+        "5,000,000 requests/day",
+        "White-label embedding",
+        "Dedicated account manager",
+        "SLA guarantee",
+        "Custom integration"
+      ]
+    }
+  },
+  "apiScopes": [
+    {
+      "scope": "read:questions",
+      "name": "Read Questions",
+      "description": "Access question catalog",
+      "required": true
+    },
+    {
+      "scope": "read:categories",
+      "name": "Read Categories",
+      "description": "Access category tree",
+      "required": true
+    },
+    {
+      "scope": "write:answers",
+      "name": "Submit Answers",
+      "description": "Submit user responses",
+      "required": false
+    },
+    {
+      "scope": "read:stats",
+      "name": "Read Statistics",
+      "description": "Access engagement metrics",
+      "required": false
+    },
+    {
+      "scope": "embed:widget",
+      "name": "Embed Widgets",
+      "description": "Embed question widgets",
+      "required": true
+    },
+    {
+      "scope": "create:content",
+      "name": "Create Content",
+      "description": "Create custom questions/flows",
+      "required": false
+    }
+  ],
+  "webhookEvents": [
+    {
+      "event": "response.created",
+      "name": "Response Created",
+      "description": "User submitted an answer",
+      "payload": {
+        "userId": "string",
+        "questionId": "string",
+        "answer": "any",
+        "timestamp": "ISO8601"
+      }
+    },
+    {
+      "event": "embed.viewed",
+      "name": "Embed Viewed",
+      "description": "Widget was displayed",
+      "payload": {
+        "embedId": "string",
+        "questionId": "string",
+        "timestamp": "ISO8601"
+      }
+    },
+    {
+      "event": "embed.clicked",
+      "name": "Embed Clicked",
+      "description": "User interacted with widget",
+      "payload": {
+        "embedId": "string",
+        "questionId": "string",
+        "action": "string",
+        "timestamp": "ISO8601"
+      }
+    },
+    {
+      "event": "question.answered",
+      "name": "Question Answered",
+      "description": "Question was answered",
+      "payload": {
+        "questionId": "string",
+        "answerId": "string",
+        "isCorrect": "boolean",
+        "timestamp": "ISO8601"
+      }
+    },
+    {
+      "event": "daily.summary",
+      "name": "Daily Summary",
+      "description": "Daily statistics summary",
+      "payload": {
+        "date": "ISO8601",
+        "totalViews": "number",
+        "totalResponses": "number",
+        "uniqueUsers": "number"
+      }
+    }
+  ],
+  "embeddableWidgets": {
+    "single_question": {
+      "name": "Single Question Poll",
+      "description": "Embed a single question with voting",
+      "params": {
+        "questionId": "required",
+        "theme": "optional",
+        "showResults": "optional"
+      },
+      "code": "<script src=\"https://parel.app/embed.js\" data-question=\"{questionId}\" data-theme=\"{theme}\"></script>"
+    },
+    "flow_preview": {
+      "name": "Flow Preview Card",
+      "description": "Preview a complete flow with CTA",
+      "params": {
+        "flowId": "required",
+        "theme": "optional"
+      },
+      "code": "<iframe src=\"https://parel.app/embed/flow/{flowId}\" width=\"100%\" height=\"400\"></iframe>"
+    },
+    "leaderboard": {
+      "name": "Leaderboard Widget",
+      "description": "Show top players or clans",
+      "params": {
+        "type": "required",
+        "limit": "optional"
+      },
+      "code": "<iframe src=\"https://parel.app/embed/leaderboard?type={type}&limit={limit}\" width=\"100%\" height=\"300\"></iframe>"
+    }
+  },
+  "rateLimiting": {
+    "strategies": {
+      "sliding_window": {
+        "enabled": true,
+        "windowSize": 3600
+      },
+      "token_bucket": {
+        "enabled": false
+      }
+    },
+    "headers": {
+      "X-RateLimit-Limit": "Max requests per window",
+      "X-RateLimit-Remaining": "Remaining requests",
+      "X-RateLimit-Reset": "Unix timestamp of reset"
+    },
+    "errorResponse": {
+      "statusCode": 429,
+      "message": "Rate limit exceeded. Please try again later.",
+      "retryAfter": "seconds"
+    }
+  },
+  "security": {
+    "hmacAlgorithm": "sha256",
+    "signatureHeader": "X-PareL-Signature",
+    "timestampHeader": "X-PareL-Timestamp",
+    "timestampTolerance": 300,
+    "ipWhitelisting": {
+      "enabled": false,
+      "allowedIps": []
+    },
+    "cors": {
+      "enabled": true,
+      "allowedOrigins": ["*"],
+      "allowedMethods": ["GET", "POST"],
+      "allowedHeaders": ["Content-Type", "Authorization"]
+    }
+  },
+  "documentation": {
+    "baseUrl": "https://parel.app/api/partners",
+    "endpoints": [
+      {
+        "path": "/questions",
+        "method": "GET",
+        "description": "List available questions",
+        "scopes": ["read:questions"],
+        "rateLimit": "tier-based"
+      },
+      {
+        "path": "/questions/:id",
+        "method": "GET",
+        "description": "Get specific question",
+        "scopes": ["read:questions"],
+        "rateLimit": "tier-based"
+      },
+      {
+        "path": "/answers",
+        "method": "POST",
+        "description": "Submit user answer",
+        "scopes": ["write:answers"],
+        "rateLimit": "tier-based"
+      },
+      {
+        "path": "/stats",
+        "method": "GET",
+        "description": "Get engagement statistics",
+        "scopes": ["read:stats"],
+        "rateLimit": "tier-based"
+      },
+      {
+        "path": "/embed",
+        "method": "GET",
+        "description": "Get embeddable widget code",
+        "scopes": ["embed:widget"],
+        "rateLimit": "tier-based"
+      }
+    ]
+  }
+}
+
+
+
+
+
+
+
+
+
+

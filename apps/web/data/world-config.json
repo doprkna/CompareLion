@@ -1,0 +1,341 @@
+{
+  "version": "0.9.4",
+  "variables": {
+    "hope": {
+      "name": "Hope",
+      "icon": "☀️",
+      "color": "#f59e0b",
+      "description": "Collective optimism and light",
+      "sources": [
+        "Positive answer sentiment",
+        "Helping others",
+        "Completing uplifting flows"
+      ]
+    },
+    "chaos": {
+      "name": "Chaos",
+      "icon": "🌀",
+      "color": "#ec4899",
+      "description": "Unpredictability and change",
+      "sources": [
+        "Creative challenge responses",
+        "Unexpected choices",
+        "Risk-taking behavior"
+      ]
+    },
+    "creativity": {
+      "name": "Creativity",
+      "icon": "🎨",
+      "color": "#8b5cf6",
+      "description": "Innovation and imagination",
+      "sources": [
+        "Completing creative flows",
+        "Unique answer patterns",
+        "Artist archetype actions"
+      ]
+    },
+    "knowledge": {
+      "name": "Knowledge",
+      "icon": "📚",
+      "color": "#3b82f6",
+      "description": "Wisdom and understanding",
+      "sources": [
+        "Answering questions",
+        "Educational flows",
+        "Scholar archetype actions"
+      ]
+    },
+    "harmony": {
+      "name": "Harmony",
+      "icon": "⚖️",
+      "color": "#10b981",
+      "description": "Balance and cooperation",
+      "sources": [
+        "Social interactions",
+        "Helping clan members",
+        "Balanced stat development"
+      ]
+    }
+  },
+  "alignments": {
+    "hopeful": {
+      "name": "Age of Light",
+      "icon": "☀️",
+      "color": "#f59e0b",
+      "description": "The world is filled with optimism and light",
+      "threshold": {
+        "hope": 60
+      },
+      "effects": {
+        "xp_bonus": 1.10,
+        "gold_bonus": 1.05,
+        "npc_mood": "cheerful"
+      }
+    },
+    "chaotic": {
+      "name": "Era of Chaos",
+      "icon": "🌀",
+      "color": "#ec4899",
+      "description": "Unpredictability reigns supreme",
+      "threshold": {
+        "chaos": 60
+      },
+      "effects": {
+        "challenge_frequency": 1.50,
+        "reward_variance": 2.0,
+        "npc_mood": "mischievous"
+      }
+    },
+    "creative": {
+      "name": "Renaissance",
+      "icon": "🎨",
+      "color": "#8b5cf6",
+      "description": "Innovation and imagination flourish",
+      "threshold": {
+        "creativity": 60
+      },
+      "effects": {
+        "unique_answer_bonus": 1.25,
+        "cosmetic_unlock_rate": 1.20,
+        "npc_mood": "inspired"
+      }
+    },
+    "ordered": {
+      "name": "Age of Wisdom",
+      "icon": "📚",
+      "color": "#3b82f6",
+      "description": "Wisdom and order prevail",
+      "threshold": {
+        "knowledge": 60
+      },
+      "effects": {
+        "question_difficulty": 1.15,
+        "xp_per_question": 1.20,
+        "npc_mood": "scholarly"
+      }
+    },
+    "balanced": {
+      "name": "Era of Harmony",
+      "icon": "⚖️",
+      "color": "#10b981",
+      "description": "Perfect balance achieved",
+      "threshold": {
+        "harmony": 60,
+        "variance": 10
+      },
+      "effects": {
+        "all_bonuses": 1.10,
+        "rare_event_chance": 1.50,
+        "npc_mood": "serene"
+      }
+    },
+    "dark": {
+      "name": "Age of Darkness",
+      "icon": "🌑",
+      "color": "#64748b",
+      "description": "Darkness spreads across the land",
+      "threshold": {
+        "hope": 30,
+        "harmony": 30
+      },
+      "effects": {
+        "challenge_difficulty": 1.50,
+        "reward_reduction": 0.80,
+        "npc_mood": "grim"
+      }
+    }
+  },
+  "eventTriggers": [
+    {
+      "eventId": "chaos_surge",
+      "name": "Chaos Surge",
+      "triggerType": "threshold",
+      "condition": {
+        "chaos": 70
+      },
+      "lore": "The fabric of reality trembles as chaos energy reaches critical mass. Ancient forces stir...",
+      "duration": 72,
+      "impact": {
+        "chaos": -10,
+        "harmony": +5
+      },
+      "challenge": "Complete 1,000 order-restoring actions",
+      "rewards": {
+        "badge": "chaos_tamer",
+        "gold": 2000,
+        "title": "Order Bringer"
+      }
+    },
+    {
+      "eventId": "age_of_light",
+      "name": "Age of Light",
+      "triggerType": "threshold",
+      "condition": {
+        "hope": 80
+      },
+      "lore": "Hope shines so bright that darkness cannot exist. A golden age dawns upon the world...",
+      "duration": 168,
+      "impact": {
+        "hope": +5,
+        "all": +2
+      },
+      "challenge": null,
+      "rewards": {
+        "xp_bonus": 1.25,
+        "theme": "golden_age"
+      }
+    },
+    {
+      "eventId": "enlightenment",
+      "name": "Great Enlightenment",
+      "triggerType": "threshold",
+      "condition": {
+        "knowledge": 75
+      },
+      "lore": "Collective wisdom reaches unprecedented heights. The veil of ignorance lifts...",
+      "duration": 120,
+      "impact": {
+        "knowledge": +10,
+        "creativity": +5
+      },
+      "challenge": "Share knowledge with 500 new learners",
+      "rewards": {
+        "badge": "enlightened_one",
+        "xp": 5000
+      }
+    },
+    {
+      "eventId": "perfect_balance",
+      "name": "Cosmic Harmony",
+      "triggerType": "combination",
+      "condition": {
+        "all_balanced": true,
+        "variance": 5
+      },
+      "lore": "For the first time in millennia, perfect harmony is achieved. The cosmos itself takes notice...",
+      "duration": 48,
+      "impact": {
+        "all": +10
+      },
+      "challenge": "Maintain balance for 48 hours",
+      "rewards": {
+        "badge": "cosmic_one",
+        "diamonds": 100,
+        "aura": "cosmic_balance",
+        "title": "Harbinger of Harmony"
+      }
+    },
+    {
+      "eventId": "age_of_darkness",
+      "name": "Age of Darkness",
+      "triggerType": "combination",
+      "condition": {
+        "hope": 20,
+        "harmony": 20
+      },
+      "lore": "Hope fades and harmony crumbles. Darkness spreads across the land. Will heroes rise?",
+      "duration": 96,
+      "impact": {
+        "hope": -5,
+        "chaos": +10
+      },
+      "challenge": "Restore 1,000 hope points collectively",
+      "rewards": {
+        "badge": "lightbringer",
+        "gold": 5000,
+        "title": "Hope's Champion"
+      }
+    }
+  ],
+  "contributionMapping": {
+    "answer_question": {
+      "knowledge": 0.1,
+      "hope": 0.05
+    },
+    "accept_challenge": {
+      "chaos": 0.2,
+      "hope": 0.1
+    },
+    "complete_flow": {
+      "creativity": 0.15,
+      "knowledge": 0.1
+    },
+    "send_message": {
+      "harmony": 0.2,
+      "hope": 0.05
+    },
+    "help_friend": {
+      "harmony": 0.3,
+      "hope": 0.1
+    },
+    "create_content": {
+      "creativity": 0.25,
+      "chaos": 0.1
+    }
+  },
+  "dashboard": {
+    "visualizations": [
+      {
+        "type": "radial_chart",
+        "variables": ["hope", "chaos", "creativity", "knowledge", "harmony"],
+        "center": "alignment_icon"
+      },
+      {
+        "type": "trend_lines",
+        "timeRange": "7_days",
+        "variables": ["hope", "chaos", "creativity", "knowledge", "harmony"]
+      },
+      {
+        "type": "alignment_indicator",
+        "size": "large",
+        "animated": true
+      }
+    ],
+    "stats": [
+      {
+        "key": "total_contributions",
+        "name": "Total Contributions Today",
+        "icon": "👥"
+      },
+      {
+        "key": "dominant_force",
+        "name": "Dominant Force",
+        "icon": "⭐"
+      },
+      {
+        "key": "days_in_alignment",
+        "name": "Days in Current Alignment",
+        "icon": "📅"
+      },
+      {
+        "key": "next_threshold",
+        "name": "Next Event Threshold",
+        "icon": "🎯"
+      }
+    ]
+  },
+  "cronJobs": {
+    "recalculate_state": {
+      "schedule": "0 0 * * *",
+      "description": "Recalculate world state daily at midnight UTC"
+    },
+    "check_triggers": {
+      "schedule": "0 */6 * * *",
+      "description": "Check for event triggers every 6 hours"
+    },
+    "post_updates": {
+      "schedule": "0 12 * * *",
+      "description": "Post daily world state update to feed"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
