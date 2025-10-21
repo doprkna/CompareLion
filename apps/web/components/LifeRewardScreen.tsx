@@ -130,3 +130,4 @@ export function LifeRewardScreen({ open, onClose, data }: LifeRewardScreenProps)
 
 
 
+

@@ -311,3 +311,4 @@ process.exit(issues.filter(i => i.severity === 'critical').length > 0 ? 1 : 0);
 
 
 
+

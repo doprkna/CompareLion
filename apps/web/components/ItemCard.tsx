@@ -107,3 +107,4 @@ export default function ItemCard({ item, quantity, equipped, onClick }: ItemCard
 
 
 
+
