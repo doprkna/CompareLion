@@ -1,5 +1,76 @@
 # CHANGELOG
 
+## [0.33.6] - 2025-11-01
+
+### 🧩 Step 4 — Folder Sanity Cleanup
+
+#### 🎯 Goal
+Remove leftover placeholder folders, obsolete mocks, and temporary scripts left from rapid iterations.  
+Reduce repo noise before next feature sprint.
+
+#### ✅ Changes Completed
+
+**1. Folder Audit**
+- Scanned for garbage folders: `tmp`, `temp`, `old`, `__mocks__`, `deprecated`, `backup`
+- Only found `__mocks__` in `node_modules` (safe to ignore)
+- All targeted cleanup folders were NOT FOUND (repo already clean)
+- Audit log: `logs/folder-audit.txt`
+
+**2. Folders Removed**
+- ✅ `apps/web/app/api/test-auth` (empty directory)
+- ✅ `apps/web/app/api/test-session` (empty directory)
+
+**3. Test Endpoints Identified (not removed)**
+- `apps/web/app/api/test-login` - DB test endpoint (functional)
+- `apps/web/app/api/test-users` - User query endpoint (functional)
+- These are working debug endpoints, kept for now
+
+**4. JS/TS Noise Check**
+- Found only 2 `.d.ts` files outside ignored folders (minimal)
+- Found 0 `.map` files (repo clean)
+- Scripts folder skipped (in `.cursorignore` restricted zone per v0.33.3)
+
+**5. Folder Structure Map**
+- Created: `logs/folder-structure-brief.txt` for future cleanup tracking
+
+#### 📊 Files Created/Modified
+```
+Created:
+  logs/folder-audit.txt
+  logs/folder-structure-brief.txt
+
+Deleted:
+  apps/web/app/api/test-auth/ (empty)
+  apps/web/app/api/test-session/ (empty)
+
+Modified:
+  apps/web/CHANGELOG.md (this entry)
+```
+
+#### ⚠️ Build Status
+- Build attempted but failed with **pre-existing errors** (not caused by cleanup)
+- Error 1: `TypeError: eL is not a function` (React rendering issue, ~100+ pages affected)
+- Error 2: `Prisma engine not found` (bundler/Prisma client issue on `/quiz/today`)
+- These errors existed before cleanup (only 2 empty folders were deleted)
+- Build fix deferred to separate issue/PR
+
+#### ✅ Verification
+- ✅ Folder audit completed
+- ✅ Empty test folders removed
+- ✅ Repo structure documented
+- ✅ No import errors introduced by cleanup
+- ⚠️ Build errors are pre-existing, require separate fix
+
+#### 📝 Notes
+- Repo was already fairly clean
+- Test endpoints (`test-login`, `test-users`) kept as functional debug tools
+- Build issues require investigation of:
+  1. React component rendering (`eL is not a function`)
+  2. Prisma client bundling configuration
+- Cleanup scope completed without introducing new issues
+
+---
+
 ## [0.33.5a] - 2025-11-01
 
 ### 🧩 Manual Migration Creation (Schema Drift Fix)
