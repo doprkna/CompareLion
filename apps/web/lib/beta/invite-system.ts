@@ -4,7 +4,6 @@
  * PLACEHOLDER: Invite code generation and referral mechanics.
  */
 
-import { prisma } from "@/lib/db/connection-pool";
 import { randomBytes } from "crypto";
 
 /**
@@ -32,7 +31,6 @@ export async function createBetaInvite(
     utmCampaign?: string;
   } = {}
 ) {
-  console.log("[BetaInvite] PLACEHOLDER: Would create invite", { creatorId, options });
   
   // PLACEHOLDER: Would execute
   // const code = generateInviteCode();
@@ -59,7 +57,6 @@ export async function createBetaInvite(
  * Validate and redeem invite code
  */
 export async function redeemInviteCode(code: string, userId: string) {
-  console.log("[BetaInvite] PLACEHOLDER: Would redeem code", { code, userId });
   
   // PLACEHOLDER: Would execute
   // 1. Find invite by code
@@ -99,7 +96,6 @@ export function generateShareLink(
  * Get referral stats for user
  */
 export async function getUserReferralStats(userId: string) {
-  console.log("[BetaInvite] PLACEHOLDER: Would get referral stats", { userId });
   
   // PLACEHOLDER: Would execute
   // const stats = await prisma.referral.groupBy({
@@ -131,7 +127,6 @@ export async function getUserReferralStats(userId: string) {
  * Get top referrers (leaderboard)
  */
 export async function getTopReferrers(limit: number = 10) {
-  console.log("[BetaInvite] PLACEHOLDER: Would get top referrers", { limit });
   
   // PLACEHOLDER: Would execute
   // const topReferrers = await prisma.user.findMany({
@@ -166,7 +161,6 @@ export async function getTopReferrers(limit: number = 10) {
  * Get total beta users count
  */
 export async function getBetaUserCount(): Promise<number> {
-  console.log("[BetaInvite] PLACEHOLDER: Would get beta user count");
   
   // PLACEHOLDER: Would execute
   // const count = await prisma.betaUser.count();
@@ -179,7 +173,6 @@ export async function getBetaUserCount(): Promise<number> {
  * Grant referral rewards
  */
 export async function grantReferralRewards(referralId: string) {
-  console.log("[BetaInvite] PLACEHOLDER: Would grant rewards", { referralId });
   
   // PLACEHOLDER: Would execute
   // const referral = await prisma.referral.findUnique({
@@ -218,6 +211,8 @@ export async function grantReferralRewards(referralId: string) {
   
   return null;
 }
+
+
 
 
 

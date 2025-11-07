@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { apiFetch } from '@/lib/apiBase';
-import { xpToLevel, levelProgress } from '@/lib/xp';
 import { Sparkles } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface XpBarProps {
   variant?: 'header' | 'dropdown';
@@ -42,7 +42,7 @@ export function XpBar({ variant = 'header' }: XpBarProps) {
         setProgress(userData.progress || 0);
       }
     } catch (error) {
-      console.error('Failed to load XP data:', error);
+      logger.error('Failed to load XP data', error);
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@
  */
 
 import { prisma } from "@/lib/db/connection-pool";
+import { logger } from "@/lib/logger";
 
 /**
  * Calculate percentile from sorted array
@@ -119,7 +120,6 @@ async function aggregateByDateAndType(
  * Aggregate all telemetry for yesterday
  */
 export async function aggregateTelemetryDaily(): Promise<void> {
-  console.log("[Telemetry] Starting daily aggregation...");
   
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
@@ -168,9 +168,8 @@ export async function aggregateTelemetryDaily(): Promise<void> {
       }
     }
     
-    console.log("[Telemetry] Daily aggregation completed");
   } catch (error) {
-    console.error("[Telemetry] Aggregation failed:", error);
+    logger.error("[Telemetry] Aggregation failed", error);
     throw error;
   }
 }
@@ -252,6 +251,8 @@ export async function getSummaryStats(days: number = 7) {
   
   return summary;
 }
+
+
 
 
 

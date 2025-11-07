@@ -1,82 +1,68 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { createListing } from "@/lib/marketplace";
+/**
+ * Market List API - Create a listing
+ * v0.26.4 - Marketplace Foundations
+ */
+
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { listItem } from '@/lib/services/marketService';
+import { safeAsync, unauthorizedError, validationError, successResponse, parseBody } from '@/lib/api-handler';
 
 /**
  * POST /api/market/list
- * Create new market listing
+ * Create a marketplace listing
+ * Body: { itemId: string (inventoryItemId), price: number, currencyKey: string }
  */
-export async function POST(req: NextRequest) {
+export const POST = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    return unauthorizedError('Authentication required');
+  }
+
+  const user = await import('@/lib/db').then(m => m.prisma.user.findUnique({
+    where: { email: session.user.email! },
+    select: { id: true },
+  }));
+
+  if (!user) {
+    return unauthorizedError('User not found');
+  }
+
+  const body = await parseBody<{
+    itemId: string; // inventoryItemId
+    price: number;
+    currencyKey: string;
+  }>(req);
+
+  if (!body.itemId || !body.price || !body.currencyKey) {
+    return validationError('Missing required fields: itemId, price, currencyKey');
+  }
+
+  if (body.price <= 0) {
+    return validationError('Price must be greater than 0');
+  }
+
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const listing = await listItem({
+      userId: user.id,
+      inventoryItemId: body.itemId,
+      price: body.price,
+      currencyKey: body.currencyKey,
     });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const body = await req.json();
-    const { itemId, price, currency } = body;
-
-    if (!itemId || !price) {
-      return NextResponse.json(
-        { error: "itemId and price required" },
-        { status: 400 }
-      );
-    }
-
-    if (price <= 0) {
-      return NextResponse.json(
-        { error: "Price must be greater than 0" },
-        { status: 400 }
-      );
-    }
-
-    const validCurrencies = ["gold", "diamonds"];
-    if (currency && !validCurrencies.includes(currency)) {
-      return NextResponse.json(
-        { error: "Invalid currency" },
-        { status: 400 }
-      );
-    }
-
-    const listing = await createListing(
-      user.id,
-      itemId,
-      price,
-      currency || "gold"
-    );
-
-    return NextResponse.json({
+    return successResponse({
       success: true,
-      listing,
-      message: "Item listed successfully",
+      listing: {
+        id: listing.id,
+        price: listing.price,
+        currencyKey: listing.currencyKey,
+      },
     });
-  } catch (error: any) {
-    console.error("[API] Error creating listing:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create listing" },
-      { status: 500 }
+  } catch (error) {
+    return validationError(
+      error instanceof Error ? error.message : 'Failed to create listing'
     );
   }
-}
-
-
-
-
-
-
-
-
-
-
-
+});

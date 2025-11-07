@@ -1,36 +1,15 @@
-// DTO mapper accepts any shape matching the Prisma include payload
-export function toQuestionDTO(q: any): {
-  id: string;
-  ssscId: string;
-  format: string;
-  responseType: string;
-  outcome: string;
-  multiplication: number;
-  difficulty: number;
-  ageCategory: string | null;
-  gender: string | null;
-  author: string | null;
-  wildcard: boolean;
-  texts: { lang: string; text: string }[];
-  relations: { relatedQuestionId: string; relationType: string }[];
-} {
-  return {
-    id: q.id.toString(),
-    ssscId: q.ssscId.toString(),
-    format: q.format,
-    responseType: q.responseType,
-    outcome: q.outcome,
-    multiplication: q.multiplication,
-    difficulty: q.difficulty,
-    ageCategory: q.ageCategory ?? null,
-    gender: q.gender ?? null,
-    author: q.author ?? null,
-    wildcard: Boolean(q.wildcard),
-    texts: Array.isArray(q.texts) ? q.texts.map((t: any) => ({ lang: t.lang, text: t.text })) : [],
-    relations: Array.isArray(q.relations)
-      ? q.relations.map((r: any) => ({ relatedQuestionId: r.relatedQuestionId.toString(), relationType: r.relationType }))
-      : [],
-  };
+﻿import { FlowQuestionSchema } from '@parel/db/generated';
+import { z } from 'zod';
+
+// Generated type from Prisma schema
+export type QuestionDTO = z.infer<typeof FlowQuestionSchema>;
+
+// Zod-powered mapper with runtime validation
+export function toQuestionDTO(q: unknown): QuestionDTO {
+  return FlowQuestionSchema.parse(q);
 }
 
-export type QuestionDTO = ReturnType<typeof toQuestionDTO>;
+// Optional: Safe parse version that returns { success, data, error }
+export function toQuestionDTOSafe(q: unknown) {
+  return FlowQuestionSchema.safeParse(q);
+}

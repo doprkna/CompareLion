@@ -6,6 +6,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { getCorrelationIdFromContext } from "./correlation-id";
+import { logger } from "@/lib/logger";
 
 /**
  * Error severity levels
@@ -46,7 +47,7 @@ export function captureError(
   };
 
   // Log to console
-  console.error("[ErrorTracker]", {
+  logger.error("[ErrorTracker]", {
     message: error.message,
     stack: error.stack,
     ...fullContext,
@@ -87,7 +88,6 @@ export function captureMessage(
     timestamp: new Date().toISOString(),
   };
 
-  console.log(`[ErrorTracker] ${message}`, fullContext);
 
   if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
     Sentry.captureMessage(message, {
@@ -176,6 +176,8 @@ export function withErrorTracking<T extends (...args: any[]) => Promise<any>>(
     }
   }) as T;
 }
+
+
 
 
 

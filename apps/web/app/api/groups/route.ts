@@ -1,392 +1,88 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { updateGroupStats, logGroupActivity } from "@/lib/groupStats";
-import { publishEvent } from "@/lib/realtime";
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError, validationError, notFoundError } from '@/lib/api-handler';
+import { z } from 'zod';
 
-/**
- * GET /api/groups
- * List all groups or get specific group details
- */
-export async function GET(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    const { searchParams } = new URL(req.url);
-    const groupId = searchParams.get("id");
+const LEVEL_REQUIREMENT = 5; // MVP threshold for creating a group
 
-    // Get specific group
-    if (groupId) {
-      const group = await prisma.group.findUnique({
-        where: { id: groupId },
-        include: {
-          groupMembers: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  level: true,
-                  xp: true,
-                  karmaScore: true,
-                  prestigeScore: true,
-                  image: true,
-                },
-              },
-            },
-            orderBy: { joinedAt: "asc" },
-          },
-          activities: {
-            orderBy: { createdAt: "desc" },
-            take: 20,
-          },
-        },
-      });
+const CreateGroupSchema = z.object({
+  name: z.string().min(3).max(64),
+  description: z.string().max(400).optional(),
+  visibility: z.enum(['private', 'public']).default('private'),
+  transparency: z.enum(['summary', 'full', 'hidden']).default('summary'),
+});
 
-      if (!group) {
-        return NextResponse.json({ error: "Group not found" }, { status: 404 });
-      }
+export const GET = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return unauthorizedError('Unauthorized');
 
-      return NextResponse.json({
-        success: true,
-        group,
-      });
-    }
+  const user = await prisma.user.findUnique({ where: { email: session.user.email }, select: { id: true } });
+  if (!user) return unauthorizedError('Unauthorized');
 
-    // List all groups
-    const groups = await prisma.group.findMany({
-      orderBy: { totalXp: "desc" },
-      include: {
-        groupMembers: {
-          select: {
-            id: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true,
-              },
-            },
-          },
-        },
+  const memberships = await prisma.groupMember.findMany({
+    where: { userId: user.id },
+    select: { groupId: true, role: true, group: true },
+  });
+
+  const groups = memberships.map((m) => ({
+    id: m.group.id,
+    name: m.group.name,
+    description: (m.group as any).description ?? null,
+    visibility: (m.group as any).visibility,
+    transparency: (m.group as any).transparency,
+    role: m.role,
+    createdAt: (m.group as any).createdAt,
+  }));
+
+  return NextResponse.json({ success: true, groups });
+});
+
+export const POST = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return unauthorizedError('Unauthorized');
+
+  const body = await req.json().catch(() => ({}));
+  const parsed = CreateGroupSchema.safeParse(body);
+  if (!parsed.success) {
+    return validationError(parsed.error.issues[0]?.message || 'Invalid group payload');
+  }
+
+  const creator = await prisma.user.findUnique({ where: { email: session.user.email } });
+  if (!creator) return unauthorizedError('Unauthorized');
+
+  if (creator.level < LEVEL_REQUIREMENT) {
+    return validationError(`Level ${LEVEL_REQUIREMENT}+ required to create a group`);
+  }
+
+  const cost = 100; // align with schema default
+  if (creator.diamonds < cost) {
+    return validationError('Insufficient diamonds to create a group');
+  }
+
+  // Create group and membership in a transaction; deduct diamonds
+  const group = await prisma.$transaction(async (tx) => {
+    const g = await tx.group.create({
+      data: {
+        name: parsed.data.name,
+        description: parsed.data.description,
+        visibility: parsed.data.visibility,
+        transparency: parsed.data.transparency,
+        ownerId: creator.id,
+        cost,
       },
     });
 
-    // If logged in, include user's groups
-    let myGroups: any[] = [];
-    if (session?.user?.email) {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-        include: {
-          groupMemberships: {
-            include: {
-              group: true,
-            },
-          },
-        },
-      });
+    await tx.user.update({ where: { id: creator.id }, data: { diamonds: { decrement: cost } } });
+    await tx.groupMember.create({ data: { groupId: g.id, userId: creator.id, role: 'admin' } });
+    return g;
+  });
 
-      myGroups = user?.groupMemberships.map((m) => m.group) || [];
-    }
+  return NextResponse.json({ success: true, group: { id: group.id, name: group.name } }, { status: 201 });
+});
 
-    return NextResponse.json({
-      success: true,
-      groups,
-      myGroups,
-    });
-  } catch (error) {
-    console.error("[API] Error fetching groups:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch groups" },
-      { status: 500 }
-    );
-  }
-}
 
-/**
- * POST /api/groups
- * Create a new group or join existing group
- */
-export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const body = await req.json();
-    const { action, groupId, name, emblem, motto } = body;
-
-    // Create new group
-    if (action === "create") {
-      if (!name) {
-        return NextResponse.json(
-          { error: "Group name required" },
-          { status: 400 }
-        );
-      }
-
-      // Check if name already exists
-      const existing = await prisma.group.findUnique({ where: { name } });
-      if (existing) {
-        return NextResponse.json(
-          { error: "Group name already taken" },
-          { status: 400 }
-        );
-      }
-
-      // Create group
-      const group = await prisma.group.create({
-        data: {
-          name,
-          emblem: emblem || "🔥",
-          motto: motto || "Together we rise",
-          ownerId: user.id,
-        },
-      });
-
-      // Add creator as member
-      await prisma.groupMember.create({
-        data: {
-          userId: user.id,
-          groupId: group.id,
-          role: "owner",
-        },
-      });
-
-      // Log activity
-      await logGroupActivity(
-        group.id,
-        "group_created",
-        `${user.name || user.email} created the totem`,
-        user.id
-      );
-
-      // Update stats
-      await updateGroupStats(group.id);
-
-      // Publish event
-      await publishEvent("group:created", {
-        groupId: group.id,
-        name: group.name,
-        creator: user.email,
-      });
-
-      return NextResponse.json({
-        success: true,
-        group,
-        message: "Group created successfully",
-      });
-    }
-
-    // Join existing group
-    if (action === "join") {
-      if (!groupId) {
-        return NextResponse.json(
-          { error: "groupId required" },
-          { status: 400 }
-        );
-      }
-
-      const group = await prisma.group.findUnique({
-        where: { id: groupId },
-        include: { groupMembers: true },
-      });
-
-      if (!group) {
-        return NextResponse.json({ error: "Group not found" }, { status: 404 });
-      }
-
-      // Check if already a member
-      const existing = await prisma.groupMember.findUnique({
-        where: {
-          userId_groupId: {
-            userId: user.id,
-            groupId: group.id,
-          },
-        },
-      });
-
-      if (existing) {
-        return NextResponse.json(
-          { error: "Already a member" },
-          { status: 400 }
-        );
-      }
-
-      // Check capacity
-      if (group.groupMembers.length >= group.maxMembers) {
-        return NextResponse.json(
-          { error: "Group is full" },
-          { status: 400 }
-        );
-      }
-
-      // Add member
-      await prisma.groupMember.create({
-        data: {
-          userId: user.id,
-          groupId: group.id,
-          role: "member",
-        },
-      });
-
-      // Log activity
-      await logGroupActivity(
-        group.id,
-        "member_join",
-        `${user.name || user.email} joined the totem`,
-        user.id
-      );
-
-      // Update stats
-      await updateGroupStats(group.id);
-
-      // Publish event
-      await publishEvent("group:member_joined", {
-        groupId: group.id,
-        userId: user.id,
-        userName: user.name || user.email,
-      });
-
-      return NextResponse.json({
-        success: true,
-        message: "Joined group successfully",
-      });
-    }
-
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  } catch (error) {
-    console.error("[API] Error creating/joining group:", error);
-    return NextResponse.json(
-      { error: "Failed to process request" },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * DELETE /api/groups
- * Leave a group
- */
-export async function DELETE(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const { searchParams } = new URL(req.url);
-    const groupId = searchParams.get("id");
-
-    if (!groupId) {
-      return NextResponse.json(
-        { error: "groupId required" },
-        { status: 400 }
-      );
-    }
-
-    const membership = await prisma.groupMember.findUnique({
-      where: {
-        userId_groupId: {
-          userId: user.id,
-          groupId,
-        },
-      },
-    });
-
-    if (!membership) {
-      return NextResponse.json(
-        { error: "Not a member of this group" },
-        { status: 400 }
-      );
-    }
-
-    // If owner, check if there are other members
-    if (membership.role === "owner") {
-      const group = await prisma.group.findUnique({
-        where: { id: groupId },
-        include: { groupMembers: true },
-      });
-
-      if (group && group.groupMembers.length > 1) {
-        return NextResponse.json(
-          { error: "Transfer ownership before leaving" },
-          { status: 400 }
-        );
-      }
-
-      // If last member, delete group
-      if (group && group.groupMembers.length === 1) {
-        await prisma.group.delete({ where: { id: groupId } });
-
-        return NextResponse.json({
-          success: true,
-          message: "Group disbanded",
-        });
-      }
-    }
-
-    // Remove member
-    await prisma.groupMember.delete({
-      where: {
-        userId_groupId: {
-          userId: user.id,
-          groupId,
-        },
-      },
-    });
-
-    // Log activity
-    await logGroupActivity(
-      groupId,
-      "member_leave",
-      `${user.name || user.email} left the totem`,
-      user.id
-    );
-
-    // Update stats
-    await updateGroupStats(groupId);
-
-    // Publish event
-    await publishEvent("group:member_left", {
-      groupId,
-      userId: user.id,
-      userName: user.name || user.email,
-    });
-
-    return NextResponse.json({
-      success: true,
-      message: "Left group successfully",
-    });
-  } catch (error) {
-    console.error("[API] Error leaving group:", error);
-    return NextResponse.json(
-      { error: "Failed to leave group" },
-      { status: 500 }
-    );
-  }
-}
 
 
 

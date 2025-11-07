@@ -17,6 +17,7 @@
 'use client';
 
 import { useXp } from "@/components/XpProvider";
+import { logger } from "@/lib/logger";
 
 export type StatType = 'sleep' | 'health' | 'social' | 'knowledge' | 'creativity';
 
@@ -45,7 +46,7 @@ export function useStatXpPopup() {
     triggerXp(amount, 'xp');
     
     // TODO: Extend XP system to support stat-specific animations
-    console.log(`[StatXP] +${amount} ${stat} (${statIcons[stat]})`);
+    logger.debug('[StatXP] Stat gain triggered', { amount, stat, icon: statIcons[stat] });
   };
 
   return { triggerStatXp };
@@ -69,6 +70,8 @@ export function useMultiStatXp() {
 
   return { triggerMultiple };
 }
+
+
 
 
 

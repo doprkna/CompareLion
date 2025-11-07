@@ -25,10 +25,9 @@ export interface HealthCheck {
  * Record API latency metric
  */
 export async function recordApiLatency(
-  endpoint: string,
-  latencyMs: number
+  _endpoint: string,
+  _latencyMs: number
 ): Promise<void> {
-  console.log(`[Monitoring] API Latency: ${endpoint} - ${latencyMs}ms`);
   
   // PLACEHOLDER: Would record to database
   // await prisma.systemMetric.create({
@@ -46,9 +45,8 @@ export async function recordApiLatency(
  * Record event throughput
  */
 export async function recordEventThroughput(
-  eventsPerSecond: number
+  _eventsPerSecond: number
 ): Promise<void> {
-  console.log(`[Monitoring] Event Throughput: ${eventsPerSecond} events/s`);
   
   // PLACEHOLDER: Would record to database
 }
@@ -57,10 +55,9 @@ export async function recordEventThroughput(
  * Record error rate
  */
 export async function recordErrorRate(
-  endpoint: string,
-  errorRate: number
+  _endpoint: string,
+  _errorRate: number
 ): Promise<void> {
-  console.log(`[Monitoring] Error Rate: ${endpoint} - ${errorRate}%`);
   
   // PLACEHOLDER: Would record to database and trigger alerts if high
 }
@@ -72,7 +69,6 @@ export async function checkDatabase(): Promise<HealthCheck> {
   const startTime = Date.now();
   
   try {
-    console.log("[Monitoring] PLACEHOLDER: Would check database connection");
     // await prisma.$queryRaw`SELECT 1`;
     
     return {
@@ -98,7 +94,6 @@ export async function checkRedis(): Promise<HealthCheck> {
   const startTime = Date.now();
   
   try {
-    console.log("[Monitoring] PLACEHOLDER: Would check Redis connection");
     // await redis.ping();
     
     return {
@@ -124,7 +119,6 @@ export async function checkJobQueues(): Promise<HealthCheck> {
   const startTime = Date.now();
   
   try {
-    console.log("[Monitoring] PLACEHOLDER: Would check job queue status");
     
     // Check for stuck jobs, high failure rates
     const stalledCount = 0; // Would get from BullMQ
@@ -169,7 +163,6 @@ export async function checkJobQueues(): Promise<HealthCheck> {
  * Run all health checks
  */
 export async function runHealthChecks(): Promise<HealthCheck[]> {
-  console.log("[Monitoring] Running health checks...");
   
   const checks = await Promise.all([
     checkDatabase(),
@@ -214,13 +207,12 @@ export async function getSystemHealth() {
  * Create error alert
  */
 export async function createErrorAlert(
-  severity: "info" | "warning" | "error" | "critical",
-  source: string,
-  message: string,
-  stackTrace?: string,
-  metadata?: Record<string, any>
+  _severity: "info" | "warning" | "error" | "critical",
+  _source: string,
+  _message: string,
+  _stackTrace?: string,
+  _metadata?: Record<string, any>
 ): Promise<void> {
-  console.log(`[Monitoring] Error Alert [${severity}] from ${source}: ${message}`);
   
   // PLACEHOLDER: Would create alert in database
   // await prisma.errorAlert.create({
@@ -232,6 +224,8 @@ export async function createErrorAlert(
   //   await notifyAdmins({ severity, source, message });
   // }
 }
+
+
 
 
 

@@ -132,7 +132,6 @@ export function DebugPanel() {
 
           <div className="mt-3 pt-3 border-t border-gray-700">
             <button
-              onClick={() => console.log("Environment Info:", info)}
               className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs py-1.5 rounded transition-colors"
             >
               Log to Console

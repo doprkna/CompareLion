@@ -6,13 +6,12 @@
  * Profile theme selector with animated gradient previews.
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Lock, Sparkles, ShoppingCart } from "lucide-react";
 import { PROFILE_THEMES, ProfileTheme, getThemeById } from "@/lib/profileThemes";
-import { apiFetch } from "@/lib/apiBase";
 import { toast } from "sonner";
 
 interface ThemeSelectorProps {

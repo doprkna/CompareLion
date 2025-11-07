@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { safeAsync, successResponse } from '@/lib/api-handler';
 
-export async function GET() {
-  return NextResponse.json({ status: 'ok' });
-}
+export const GET = safeAsync(async (_req: NextRequest) => {
+  return successResponse({ status: 'ok' });
+});
 

@@ -58,7 +58,6 @@ export function getTrustLevel(score: number): string {
  * Update user reputation
  */
 export async function updateUserReputation(userId: string) {
-  console.log("[Reputation] PLACEHOLDER: Would update reputation", { userId });
   
   // PLACEHOLDER: Would execute
   // const factors = await prisma.reputationScore.findUnique({
@@ -91,10 +90,6 @@ export async function updateUserReputation(userId: string) {
  * Apply reputation restrictions
  */
 export async function applyReputationRestrictions(userId: string, score: number) {
-  console.log("[Reputation] PLACEHOLDER: Would apply restrictions", {
-    userId,
-    score,
-  });
   
   // PLACEHOLDER: Auto-restrict based on score
   // if (score < 40) {
@@ -119,6 +114,8 @@ export async function applyReputationRestrictions(userId: string, score: number)
   //   });
   // }
 }
+
+
 
 
 

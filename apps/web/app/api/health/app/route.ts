@@ -4,17 +4,17 @@
  * Returns app uptime and memory usage.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import os from "os";
+import { safeAsync } from "@/lib/api-handler";
 
 const startTime = Date.now();
 
-export async function GET() {
-  try {
-    const uptime = Date.now() - startTime;
-    const memoryUsage = process.memoryUsage();
-    const totalMemory = os.totalmem();
-    const freeMemory = os.freemem();
+export const GET = safeAsync(async (_req: NextRequest) => {
+  const uptime = Date.now() - startTime;
+  const memoryUsage = process.memoryUsage();
+  const totalMemory = os.totalmem();
+  const freeMemory = os.freemem();
     
     const status = {
       status: "healthy",
@@ -55,19 +55,10 @@ export async function GET() {
       );
     }
     
-    return NextResponse.json(status);
-  } catch (error) {
-    console.error("[Health] App health check failed:", error);
-    return NextResponse.json(
-      {
-        status: "unhealthy",
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      },
-      { status: 503 }
-    );
-  }
-}
+  return NextResponse.json(status);
+});
+
+
 
 
 

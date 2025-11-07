@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export async function grantBadge(userId: string, badgeSlug: string) {
   try {
@@ -33,7 +34,7 @@ export async function grantBadge(userId: string, badgeSlug: string) {
 
     return { granted: true, userBadge };
   } catch (error) {
-    console.error('Error granting badge:', error);
+    logger.error('Error granting badge', error);
     return { granted: false, reason: 'error' };
   }
 }

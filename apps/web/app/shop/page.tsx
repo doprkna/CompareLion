@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * Shop Page
+ * Economy and item purchasing (BETA - Feature disabled for public release)
+ * v0.13.2p
+ */
+
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/apiBase";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -10,6 +16,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ThemeSelector from "@/components/ThemeSelector";
 import { useTheme } from "@/components/ThemeProvider";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { FeatureGuard } from "@/components/FeatureGuard";
 
 interface ShopItem {
   id: string;
@@ -27,6 +34,15 @@ interface ShopItem {
 }
 
 export default function ShopPage() {
+  // Feature guard for public beta
+  return (
+    <FeatureGuard feature="ECONOMY" redirectTo="/main">
+      <ShopPageContent />
+    </FeatureGuard>
+  );
+}
+
+function ShopPageContent() {
   const [items, setItems] = useState<ShopItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [userFunds, setUserFunds] = useState(0);

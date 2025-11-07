@@ -6,14 +6,15 @@ import { startJob } from '@/lib/services/jobService';
 import { toJobDTO, JobDTO } from '@/lib/dto/jobDTO';
 import { requireSession } from '@/lib/auth/requireSession';
 import { JobStartSchema } from '@/lib/validation/job';
+import { safeAsync, validationError, serverError } from '@/lib/api-handler';
 
-export async function POST(req: NextRequest, { params }: { params: { ssscId: string } }) {
+export const POST = safeAsync(async (req: NextRequest, { params }: { params: { ssscId: string } }) => {
   const session = await requireSession(req);
   if (session instanceof NextResponse) return session;
 
   const parsed = JobStartSchema.safeParse(await req.json());
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    return validationError('Invalid input');
   }
   const { runVersion } = parsed.data;
   const ssscId = parseInt(params.ssscId, 10);
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest, { params }: { params: { ssscId: str
   try {
     await questionGenQueue.add(jobId, { ssscId, runVersion }, { jobId });
   } catch (e) {
-    return NextResponse.json({ error: 'redis_unavailable' }, { status: 500 });
+    return serverError('Redis unavailable');
   }
-  return NextResponse.json({ success: true, jobLog, jobId });
-}
+  return NextResponse.json({ success: true, jobLog, jobId, timestamp: new Date().toISOString() });
+});

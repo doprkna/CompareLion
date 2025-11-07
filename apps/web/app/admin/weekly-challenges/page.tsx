@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { AlertCircle, Zap } from "lucide-react";
 
 export default function WeeklyChallengesPage() {
@@ -72,6 +71,8 @@ export default function WeeklyChallengesPage() {
     </div>
   );
 }
+
+
 
 
 

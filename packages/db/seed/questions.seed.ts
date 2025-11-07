@@ -1,6 +1,6 @@
 /**
  * Questions Seed Script
- * Version: 0.13.2
+ * Version: 0.23.0 - Added localization support (Phase G)
  * 
  * Seeds the database with sample questions for all question types:
  * - SINGLE_CHOICE: Select one option
@@ -8,6 +8,11 @@
  * - RANGE: Slider/range input (stored in numericVal)
  * - NUMBER: Numeric input (stored in numericVal)
  * - TEXT: Free text input (stored in textVal)
+ * 
+ * Localization:
+ * - metadata.localization.lang: ['en', 'cs'] - supported languages
+ * - metadata.localization.region: ['EU-CZ', 'GLOBAL'] - allowed regions
+ * - metadata.localization.excludeRegions: ['US'] - blocked regions
  */
 
 import { PrismaClient, QuestionType } from '@prisma/client';
@@ -19,6 +24,7 @@ interface QuestionSeedData {
   type: QuestionType;
   locale: string;
   categoryId?: string;
+  metadata?: any; // v0.23.0 - Localization data
   options?: Array<{
     label: string;
     value: string;
@@ -135,6 +141,100 @@ const questions: QuestionSeedData[] = [
     locale: "en",
     options: [],
   },
+
+  // ========================================
+  // LOCALIZED QUESTIONS (v0.23.0 - Phase G)
+  // ========================================
+
+  // Czech-specific question (Brno example)
+  {
+    text: "Je Brno to nejpříjemnější město v Česku?",
+    type: "SINGLE_CHOICE",
+    locale: "cs",
+    metadata: {
+      localization: {
+        lang: ["cs"],
+        region: ["EU-CZ"],
+      }
+    },
+    options: [
+      { label: "Ano, určitě!", value: "yes_definitely", order: 1 },
+      { label: "Možná", value: "maybe", order: 2 },
+      { label: "Ne", value: "no", order: 3 },
+      { label: "Nevím", value: "dont_know", order: 4 },
+    ],
+  },
+
+  // Multi-language global question
+  {
+    text: "What's your go-to comfort meal?",
+    type: "SINGLE_CHOICE",
+    locale: "en",
+    metadata: {
+      localization: {
+        lang: ["en", "cs"],
+        region: ["GLOBAL"],
+      }
+    },
+    options: [
+      { label: "Pizza", value: "pizza", order: 1 },
+      { label: "Pasta", value: "pasta", order: 2 },
+      { label: "Soup", value: "soup", order: 3 },
+      { label: "Something sweet", value: "sweet", order: 4 },
+      { label: "Home-cooked traditional meal", value: "traditional", order: 5 },
+    ],
+  },
+
+  // Czech + Polish question
+  {
+    text: "Preferuješ hory nebo moře?",
+    type: "SINGLE_CHOICE",
+    locale: "cs",
+    metadata: {
+      localization: {
+        lang: ["cs"],
+        region: ["EU-CZ", "EU-PL"],
+      }
+    },
+    options: [
+      { label: "Hory", value: "mountains", order: 1 },
+      { label: "Moře", value: "sea", order: 2 },
+      { label: "Obojí stejně", value: "both", order: 3 },
+    ],
+  },
+
+  // English-only, exclude specific regions
+  {
+    text: "Do you prefer working from home or office?",
+    type: "SINGLE_CHOICE",
+    locale: "en",
+    metadata: {
+      localization: {
+        lang: ["en"],
+        excludeRegions: ["EU-CZ"], // Example: testing exclusion
+      }
+    },
+    options: [
+      { label: "Home", value: "home", order: 1 },
+      { label: "Office", value: "office", order: 2 },
+      { label: "Hybrid", value: "hybrid", order: 3 },
+      { label: "Coworking space", value: "coworking", order: 4 },
+    ],
+  },
+
+  // Pure global question (no restrictions)
+  {
+    text: "How many hours of sleep do you usually get?",
+    type: "RANGE",
+    locale: "en",
+    metadata: {
+      localization: {
+        lang: ["en", "cs"],
+        region: ["GLOBAL"],
+      }
+    },
+    options: [], // RANGE type doesn't need options
+  },
 ];
 
 async function seedQuestions() {
@@ -159,6 +259,10 @@ async function seedQuestions() {
     }
 
     // Create question
+    // NOTE: FlowQuestion model currently doesn't have metadata field
+    // Localization data from questionData.metadata is prepared but not stored
+    // Future: Add metadata Json? field to FlowQuestion schema
+    // For now, locale field serves as basic language indicator
     const question = await prisma.flowQuestion.create({
       data: {
         text: questionData.text,
@@ -166,6 +270,7 @@ async function seedQuestions() {
         locale: questionData.locale,
         isActive: true,
         categoryId: questionData.categoryId || null,
+        // metadata: questionData.metadata || {}, // TODO: Add to schema
       },
     });
 
@@ -219,6 +324,13 @@ main()
     console.error('Fatal error:', error);
     process.exit(1);
   });
+
+
+
+
+
+
+
 
 
 

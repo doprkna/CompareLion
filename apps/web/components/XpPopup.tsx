@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 
 export interface XpPopupProps {
@@ -145,6 +145,8 @@ export function XpPopup({
     </motion.div>
   );
 }
+
+
 
 
 

@@ -7,7 +7,7 @@
 /**
  * Record engagement event
  */
-export async function recordEngagement(data: {
+export async function recordEngagement(_data: {
   contentType: string;
   contentId: string;
   creatorId: string;
@@ -15,7 +15,6 @@ export async function recordEngagement(data: {
   type: "view" | "completion" | "like" | "share";
   fingerprint?: string;
 }) {
-  console.log("[Engagement] PLACEHOLDER: Would record engagement", data);
   
   // PLACEHOLDER: Would execute
   // const weekStart = getWeekStart(new Date());
@@ -34,7 +33,6 @@ export async function recordEngagement(data: {
   //   });
   //   
   //   if (existing) {
-  //     console.log("Duplicate engagement blocked");
   //     return null;
   //   }
   // }
@@ -61,7 +59,7 @@ export async function recordEngagement(data: {
 /**
  * Get engagement value based on type
  */
-function getEngagementValue(type: string): number {
+function _getEngagementValue(type: string): number {
   const values = {
     view: 0.1,
     completion: 1.0,
@@ -74,7 +72,7 @@ function getEngagementValue(type: string): number {
 /**
  * Get week start date (Monday)
  */
-function getWeekStart(date: Date): Date {
+function _getWeekStart(date: Date): Date {
   const d = new Date(date);
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust to Monday
@@ -87,13 +85,9 @@ function getWeekStart(date: Date): Date {
  * Get creator engagement stats
  */
 export async function getCreatorEngagementStats(
-  creatorId: string,
-  weekStart?: Date
+  _creatorId: string,
+  _weekStart?: Date
 ) {
-  console.log("[Engagement] PLACEHOLDER: Would get engagement stats", {
-    creatorId,
-    weekStart,
-  });
   
   // PLACEHOLDER: Would execute
   // const week = weekStart || getWeekStart(new Date());
@@ -129,13 +123,9 @@ export async function getCreatorEngagementStats(
  * Detect suspicious engagement patterns
  */
 export async function detectFraudulentEngagement(
-  contentId: string,
-  contentType: string
+  _contentId: string,
+  _contentType: string
 ): Promise<string[]> {
-  console.log("[Engagement] PLACEHOLDER: Would detect fraud", {
-    contentId,
-    contentType,
-  });
   
   // PLACEHOLDER: Would execute
   // const suspicious: string[] = [];
@@ -207,6 +197,8 @@ export async function detectFraudulentEngagement(
   
   return [];
 }
+
+
 
 
 

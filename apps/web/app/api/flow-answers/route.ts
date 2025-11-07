@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/options';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
+import { safeAsync } from '@/lib/api-handler';
+import { logger } from '@/lib/logger';
 
 // Debug framework for systematic testing
 interface DebugStage {
@@ -36,11 +38,10 @@ function addDebugStage(context: DebugContext, stage: string, success: boolean, d
   });
   
   if (process.env.DEBUG_API === 'true') {
-    console.log(`[DEBUG][${context.requestId}] ${stage}:`, { success, data, error });
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = safeAsync(async (request: NextRequest) => {
   const isDebugMode = process.env.DEBUG_API === 'true';
   const debug = createDebugContext();
   
@@ -367,22 +368,12 @@ export async function POST(request: NextRequest) {
       existingId: existingResponse?.id
     });
     
-    // DEEP DEBUG LOGGING BEFORE PRISMA CALL
-    console.log('======================================');
-    console.log('[DEBUG] FULL BODY:', body);
-    console.log('[DEBUG] SANITIZED VALUES:');
-    console.log('  - questionId:', questionId, '(type:', typeof questionId, ')');
-    console.log('  - optionIds:', optionIds, '(type:', typeof optionIds, ')');
-    console.log('  - numericVal:', numericVal, '(type:', typeof numericVal, ')');
-    console.log('  - textVal:', textVal, '(type:', typeof textVal, ')');
-    console.log('  - skipped:', skipped, '(type:', typeof skipped, ')');
-    console.log('[DEBUG] PRISMA OPERATION:', existingResponse ? 'UPDATE' : 'CREATE');
-    console.log('======================================');
+    // Debug logging handled by addDebugStage framework
     
     let response;
     try {
       if (existingResponse) {
-        console.log('[DEBUG] Updating existing response:', existingResponse.id);
+        // Updating existing response
         response = await prisma.userResponse.update({
           where: { id: existingResponse.id },
           data: {
@@ -394,7 +385,7 @@ export async function POST(request: NextRequest) {
         });
         addDebugStage(debug, 'RESPONSE_UPDATE_SUCCESS', true, { responseId: response.id });
       } else {
-        console.log('[DEBUG] Creating new response for user:', user.id, 'question:', questionId);
+        // Creating new response
         response = await prisma.userResponse.create({
           data: {
             userId: user.id,
@@ -407,18 +398,18 @@ export async function POST(request: NextRequest) {
         });
         addDebugStage(debug, 'RESPONSE_CREATE_SUCCESS', true, { responseId: response.id });
       }
-      console.log('[DEBUG] Prisma operation SUCCESS. Response ID:', response.id);
+      // Prisma operation completed
     } catch (dbError) {
       // FULL PRISMA ERROR LOGGING
-      console.error('======================================');
-      console.error('[UPSERT ERROR RAW]', dbError);
-      console.error('[ERROR] Full error object:', JSON.stringify(dbError, null, 2));
-      console.error('[ERROR] Error message:', dbError instanceof Error ? dbError.message : String(dbError));
-      console.error('[ERROR] Error name:', (dbError as any)?.name);
-      console.error('[ERROR] Error code:', (dbError as any)?.code);
-      console.error('[ERROR] Error meta:', (dbError as any)?.meta);
-      console.error('[ERROR] Stack trace:', dbError instanceof Error ? dbError.stack : 'N/A');
-      console.error('======================================');
+      logger.error('[UPSERT ERROR RAW]', {
+        error: dbError,
+        errorObject: JSON.stringify(dbError, null, 2),
+        message: dbError instanceof Error ? dbError.message : String(dbError),
+        name: (dbError as any)?.name,
+        code: (dbError as any)?.code,
+        meta: (dbError as any)?.meta,
+        stack: dbError instanceof Error ? dbError.stack : 'N/A'
+      });
       
       addDebugStage(debug, 'RESPONSE_SAVE_ERROR', false, null, dbError instanceof Error ? dbError.message : String(dbError));
       return NextResponse.json(
@@ -463,23 +454,16 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(result);
   } catch (error) {
-    addDebugStage(debug, 'UNEXPECTED_ERROR', false, null, error instanceof Error ? error.message : String(error));
-    
-    console.error('[API] Unexpected error saving answer:', error);
-    
-    const errorResponse = {
-      success: false,
-      error: 'Failed to save answer',
-      debug: isDebugMode ? { 
-        stages: debug.stages,
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        totalTime: Date.now() - debug.startTime,
-        requestId: debug.requestId
-      } : undefined
-    };
-
-    return NextResponse.json(errorResponse, { status: 500 });
+    // Catch-all for any unhandled errors
+    logger.error('[FLOW_ANSWERS] Unexpected error', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Internal server error',
+        debug: isDebugMode ? { stages: debug.stages } : undefined
+      },
+      { status: 500 }
+    );
   }
-}
+});
 

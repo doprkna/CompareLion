@@ -2,6 +2,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import * as Sentry from '@sentry/nextjs';
+import { logger } from '@/lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -44,7 +45,22 @@ export class ErrorBoundary extends Component<Props, State> {
 
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      logger.error('ErrorBoundary caught an error', { error, errorInfo });
+    }
+
+    // Track error event
+    if (typeof window !== 'undefined') {
+      try {
+        import('@/lib/metrics').then(({ trackEvent }) => {
+          trackEvent('error_occurred', {
+            message: error.message,
+            stack: error.stack,
+            componentStack: errorInfo.componentStack,
+          });
+        });
+      } catch (e) {
+        // Ignore tracking errors
+      }
     }
   }
 
@@ -126,9 +142,33 @@ export class ErrorBoundary extends Component<Props, State> {
               </button>
             </div>
 
-            <div className="mt-6 text-xs text-gray-500">
+            <div className="mt-6 text-center">
+              <a
+                href={`/feedback?category=bug&message=${encodeURIComponent(
+                  `Error: ${this.state.error?.message || 'Unknown error'}\n\nPage: ${typeof window !== 'undefined' ? window.location.href : 'Unknown'}\nTime: ${new Date().toISOString()}`
+                )}`}
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+              >
+                <svg
+                  className="w-4 h-4 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.952-1.333-2.732 0L4.082 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                Report this issue
+              </a>
+            </div>
+
+            <div className="mt-4 text-xs text-gray-500">
               <p>
-                If this problem persists, please contact support with the error details above.
+                If this problem persists, please report it so we can fix it.
               </p>
             </div>
           </div>

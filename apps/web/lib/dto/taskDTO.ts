@@ -1,23 +1,15 @@
-import type { Task as PrismaTask } from '@parel/db';
+﻿import { TaskSchema } from '@parel/db/generated';
+import { z } from 'zod';
 
-export function toTaskDTO(t: PrismaTask): {
-  id: string;
-  workflowId: string;
-  label: string;
-  status: string;
-  assignedTo: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-} {
-  return {
-    id: t.id,
-    workflowId: t.assigneeId ?? '',
-    label: t.title,
-    status: t.status,
-    assignedTo: t.assigneeId ?? null,
-    createdAt: t.createdAt,
-    updatedAt: t.updatedAt,
-  };
+// Generated type from Prisma schema
+export type TaskDTO = z.infer<typeof TaskSchema>;
+
+// Zod-powered mapper with runtime validation
+export function toTaskDTO(t: unknown): TaskDTO {
+  return TaskSchema.parse(t);
 }
 
-export type TaskDTO = ReturnType<typeof toTaskDTO>;
+// Optional: Safe parse version
+export function toTaskDTOSafe(t: unknown) {
+  return TaskSchema.safeParse(t);
+}

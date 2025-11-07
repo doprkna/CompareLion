@@ -29,7 +29,7 @@ export const eventBus = {
    * @param event Event name
    * @param listener Callback function
    */
-  on: (event: string, listener: (...args: any[]) => void) => {
+  on: (event: string, listener: (..._args: any[]) => void) => {
     emitter.on(event, listener);
   },
 
@@ -38,7 +38,7 @@ export const eventBus = {
    * @param event Event name
    * @param listener Callback function
    */
-  off: (event: string, listener: (...args: any[]) => void) => {
+  off: (event: string, listener: (..._args: any[]) => void) => {
     emitter.off(event, listener);
   },
 
@@ -48,7 +48,6 @@ export const eventBus = {
    * @param payload Event data
    */
   emit: (event: string, payload: any) => {
-    console.log(`[EventBus] Emitting ${event}:`, payload);
     emitter.emit(event, payload);
   },
 
@@ -57,7 +56,7 @@ export const eventBus = {
    * @param event Event name
    * @param listener Callback function
    */
-  once: (event: string, listener: (...args: any[]) => void) => {
+  once: (event: string, listener: (..._args: any[]) => void) => {
     emitter.once(event, listener);
   },
 
@@ -106,6 +105,8 @@ export interface LevelUpEvent {
   newLevel: number;
   oldLevel: number;
 }
+
+
 
 
 

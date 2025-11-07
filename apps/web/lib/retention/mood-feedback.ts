@@ -16,16 +16,11 @@ export const MOOD_EMOJIS = {
  * Record mood feedback
  */
 export async function recordMoodFeedback(
-  userId: string,
-  emoji: string,
-  context?: string,
-  comment?: string
+  _userId: string,
+  _emoji: string,
+  _context?: string,
+  _comment?: string
 ) {
-  console.log("[MoodFeedback] PLACEHOLDER: Would record mood", {
-    userId,
-    emoji,
-    context,
-  });
   
   // PLACEHOLDER: Would execute
   // const moodData = Object.values(MOOD_EMOJIS).find(m => m.emoji === emoji);
@@ -52,11 +47,7 @@ export async function recordMoodFeedback(
 /**
  * Get mood trends for user
  */
-export async function getUserMoodTrends(userId: string, days: number = 7) {
-  console.log("[MoodFeedback] PLACEHOLDER: Would get mood trends", {
-    userId,
-    days,
-  });
+export async function getUserMoodTrends(_userId: string, _days: number = 7) {
   
   // PLACEHOLDER: Would execute
   // const startDate = new Date();
@@ -92,11 +83,10 @@ export async function getUserMoodTrends(userId: string, days: number = 7) {
 /**
  * Update daily summary mood
  */
-async function updateDailySummaryMood(userId: string) {
-  console.log("[MoodFeedback] PLACEHOLDER: Would update daily summary mood", {
-    userId,
-  });
+async function updateDailySummaryMood(_userId: string) {
 }
+
+
 
 
 

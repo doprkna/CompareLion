@@ -1,67 +1,63 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { addHearts, getUserEnergy } from "@/lib/energy";
 import { publishEvent } from "@/lib/realtime";
 import { logQuizToFeed } from "@/lib/feed";
 import { notify } from "@/lib/notify";
+import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError } from "@/lib/api-handler";
+import { attack, getPowerBonus } from "@/lib/services/combatService";
+import { logger } from "@/lib/utils/debug";
 
 /**
  * POST /api/quiz/submit
  * Submit daily quiz answers
  */
-export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
+export const POST = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
+  }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+  if (!user) {
+    return notFoundError('User');
+  }
 
-    const body = await req.json();
-    const { quizId, answers } = body; // answers: { questionId: optionId }
+  const body = await req.json();
+  const { quizId, answers } = body; // answers: { questionId: optionId }
 
-    if (!quizId || !answers) {
-      return NextResponse.json(
-        { error: "quizId and answers required" },
-        { status: 400 }
-      );
-    }
+  if (!quizId || !answers) {
+    return validationError('quizId and answers required');
+  }
 
-    // Get quiz
-    const quiz = await prisma.dailyQuiz.findUnique({
-      where: { id: quizId },
-    });
+  // Get quiz
+  const quiz = await prisma.dailyQuiz.findUnique({
+    where: { id: quizId },
+  });
 
-    if (!quiz) {
-      return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
-    }
+  if (!quiz) {
+    return notFoundError('Quiz');
+  }
 
-    // Check if already completed
-    const existing = await prisma.dailyQuizCompletion.findUnique({
-      where: {
-        userId_quizId: {
-          userId: user.id,
-          quizId: quiz.id,
-        },
+  // Check if already completed
+  const existing = await prisma.dailyQuizCompletion.findUnique({
+    where: {
+      userId_quizId: {
+        userId: user.id,
+        quizId: quiz.id,
       },
-    });
+    },
+  });
 
-    if (existing) {
-      return NextResponse.json(
-        { error: "Quiz already completed" },
-        { status: 400 }
-      );
-    }
+  if (existing) {
+    return validationError('Quiz already completed');
+  }
 
     // Get questions and check answers
     const questions = await prisma.flowQuestion.findMany({
@@ -123,6 +119,11 @@ export async function POST(req: NextRequest) {
 
     await addHearts(user.id, heartsAwarded);
 
+    // 🎮 Trigger combat attack on quiz completion (fire-and-forget)
+    getPowerBonus(user.id)
+      .then(powerBonus => attack(user.id, powerBonus))
+      .catch(err => logger.debug('[QUIZ] Combat trigger failed', err));
+
     // Send notification
     await notify(
       user.id,
@@ -142,28 +143,21 @@ export async function POST(req: NextRequest) {
       totalQuestions,
     });
 
-    // Get updated energy status
-    const energyStatus = await getUserEnergy(user.id);
+  // Get updated energy status
+  const energyStatus = await getUserEnergy(user.id);
 
-    return NextResponse.json({
-      success: true,
-      message: "Quiz completed!",
-      results: {
-        score,
-        totalQuestions,
-        xpAwarded,
-        heartsAwarded,
-      },
-      energy: energyStatus,
-    });
-  } catch (error) {
-    console.error("[API] Error submitting quiz:", error);
-    return NextResponse.json(
-      { error: "Failed to submit quiz" },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse({
+    results: {
+      score,
+      totalQuestions,
+      xpAwarded,
+      heartsAwarded,
+    },
+    energy: energyStatus,
+  }, 'Quiz completed!');
+});
+
+
 
 
 

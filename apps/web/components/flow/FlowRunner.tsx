@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useFlow, type FlowQuestion } from '@/hooks/useFlow';
 import { ProgressBar } from './ProgressBar';
 import { AnswerPad } from './AnswerPad';
 import { useXp } from '@/components/XpProvider';
+import { logger } from '@/lib/logger';
+import { useCombatLink } from '@/hooks/useCombatLink';
 
 interface FlowRunnerProps {
   initialQuestions: FlowQuestion[];
@@ -16,6 +19,7 @@ interface FlowRunnerProps {
 export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps) {
   const router = useRouter();
   const { triggerXp } = useXp();
+  const { attack: combatAttack, skip: combatSkip } = useCombatLink();
   const [selectedOptionId, setSelectedOptionId] = useState<string | undefined>();
   const [isSaving, setIsSaving] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
@@ -43,7 +47,7 @@ export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps)
             setQuestions(data.questions);
           }
         })
-        .catch(console.error);
+        .catch((err) => logger.error('Failed to fetch flow questions', err));
     }
   }, [initialQuestions.length, locale, setQuestions]);
 
@@ -51,6 +55,35 @@ export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps)
   useEffect(() => {
     setSelectedOptionId(undefined);
   }, [currentIndex]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isSaving) return;
+      
+      switch (e.key) {
+        case 'Enter':
+          e.preventDefault();
+          if (selectedOptionId) {
+            handleConfirm();
+          }
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          handleSkip();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          if (canGoBack) {
+            back();
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedOptionId, isSaving, canGoBack, handleConfirm, handleSkip, back]);
 
   // Show completion modal when done
   useEffect(() => {
@@ -77,16 +110,19 @@ export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps)
       });
 
       if (response.ok) {
-        // Trigger XP animation
-        triggerXp(1, 'xp');
+        // Trigger XP animation with proper amount
+        triggerXp(10, 'xp');
+        
+        // Trigger combat attack
+        combatAttack();
         
         // Confirm in local state
         confirm(selectedOptionId);
       } else {
-        console.error('Failed to save answer');
+        logger.error('Failed to save answer');
       }
     } catch (error) {
-      console.error('Error saving answer:', error);
+      logger.error('Error saving answer', error);
     } finally {
       setIsSaving(false);
     }
@@ -107,9 +143,12 @@ export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps)
         }),
       });
 
+      // Trigger enemy attack on skip
+      combatSkip();
+
       skip();
     } catch (error) {
-      console.error('Error skipping question:', error);
+      logger.error('Error skipping question', error);
     } finally {
       setIsSaving(false);
     }
@@ -175,62 +214,109 @@ export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps)
 
   // Main flow UI
   return (
-    <div className="min-h-screen bg-bg p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-bg p-4 sm:p-6 flex flex-col">
+      <div className="max-w-2xl mx-auto flex-1 flex flex-col">
         {/* Progress */}
-        <ProgressBar
-          current={currentIndex + 1}
-          total={questions.length}
-          className="mb-8"
-        />
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ProgressBar
+            current={currentIndex + 1}
+            total={questions.length}
+            className="mb-6 sm:mb-8"
+          />
+        </motion.div>
 
         {/* Question Card */}
-        <div className="bg-card border-2 border-border rounded-2xl p-8 shadow-2xl mb-6">
-          <h2 className="text-2xl font-bold text-text mb-8 leading-relaxed">
-            {currentQuestion.text}
-          </h2>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestion.id}
+            initial={{ opacity: 0, x: 50, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -50, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="bg-card border-2 border-border rounded-2xl p-6 sm:p-8 shadow-2xl mb-6 flex-1 flex flex-col"
+          >
+            <motion.h2 
+              className="text-xl sm:text-2xl font-bold text-text mb-6 sm:mb-8 leading-relaxed flex-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              {currentQuestion.text}
+            </motion.h2>
 
-          <AnswerPad
-            options={currentQuestion.options}
-            selectedId={selectedOptionId}
-            onSelect={setSelectedOptionId}
-          />
-        </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <AnswerPad
+                options={currentQuestion.options}
+                selectedId={selectedOptionId}
+                onSelect={setSelectedOptionId}
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
+        <motion.div 
+          className="flex items-center gap-3 sm:gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
           <button
             onClick={back}
             disabled={!canGoBack || isSaving}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-card border-2 border-border text-text font-medium hover:border-accent transition disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg bg-card border-2 border-border text-text font-medium hover:border-accent transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            <span className="hidden sm:inline">Back</span>
           </button>
 
           <button
             onClick={handleSkip}
             disabled={isSaving}
-            className="flex items-center gap-2 px-6 py-3 rounded-lg bg-card border-2 border-border text-subtle font-medium hover:border-accent transition disabled:opacity-40"
+            className="flex items-center gap-2 px-4 sm:px-6 py-3 rounded-lg bg-card border-2 border-border text-subtle font-medium hover:border-accent transition disabled:opacity-40"
           >
             <SkipForward className="h-4 w-4" />
-            Skip
+            <span className="hidden sm:inline">Skip</span>
           </button>
 
           <button
             onClick={handleConfirm}
             disabled={!selectedOptionId || isSaving}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-accent text-white font-bold hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
+            className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg bg-accent text-white font-bold hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed shadow-lg"
           >
             {isSaving ? 'Saving...' : 'Confirm'}
             {!isSaving && <ArrowRight className="h-4 w-4" />}
           </button>
-        </div>
+        </motion.div>
 
         {/* Help text */}
-        <p className="text-center text-subtle text-sm mt-4">
+        <motion.p 
+          className="text-center text-subtle text-xs sm:text-sm mt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
           Select an answer and click Confirm, or Skip to move on
-        </p>
+          <br className="sm:hidden" />
+          <span className="hidden sm:inline"> • </span>
+          <span className="sm:hidden">Use </span>
+          <kbd className="hidden sm:inline bg-border px-2 py-1 rounded text-xs">Enter</kbd>
+          <span className="sm:hidden">Enter</span>
+          <span className="hidden sm:inline"> to confirm, </span>
+          <span className="sm:hidden"> or </span>
+          <kbd className="hidden sm:inline bg-border px-2 py-1 rounded text-xs">→</kbd>
+          <span className="sm:hidden">→</span>
+          <span className="hidden sm:inline"> to skip</span>
+          <span className="sm:hidden"> to skip</span>
+        </motion.p>
       </div>
     </div>
   );

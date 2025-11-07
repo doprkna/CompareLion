@@ -1,78 +1,150 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/apiBase";
-import { Sparkles, Star, Flame, Trophy } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import { ARCHETYPES, getArchetype } from '@/lib/config/archetypeConfig';
+import { getUserStats } from '@/lib/services/progressionService';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { Sparkles, TrendingUp } from 'lucide-react';
+
+interface Stats {
+  str: number;
+  int: number;
+  cha: number;
+  luck: number;
+}
 
 export default function StatsPanel() {
-  const [stats, setStats] = useState<any>(null);
+  const { data: session } = useSession();
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [archetype, setArchetype] = useState<string | null>(null);
+  const [level, setLevel] = useState(1);
+  const [xp, setXp] = useState(0);
+  const [xpProgress, setXpProgress] = useState({ currentXP: 0, requiredXP: 100, progress: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const res = await apiFetch("/api/user/summary");
-      if ((res as any).ok && (res as any).data?.user) {
-        setStats((res as any).data.user);
-      }
-      setLoading(false);
-    })();
-  }, []);
+    if (session?.user?.email) {
+      loadStats();
+    }
+  }, [session]);
 
-  if (loading) {
-    return <div className="text-subtle">Loading stats...</div>;
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/progression/stats');
+      const data = await res.json();
+      
+      if (data.success) {
+        setStats(data.stats);
+        setArchetype(data.archetype);
+        setLevel(data.level);
+        setXp(data.xp);
+        setXpProgress(data.xpProgress);
+      }
+    } catch (error) {
+      console.error('[StatsPanel] Load error:', error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (!stats) {
-    return <div className="text-destructive">Failed to load stats</div>;
+  const archetypeDef = archetype ? getArchetype(archetype) : null;
+
+  if (loading) {
+    return (
+      <Card className="bg-card border-2 border-border">
+        <CardContent className="p-6">
+          <div className="text-center text-subtle">Loading stats...</div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div className="bg-bg border border-accent rounded-lg p-4 text-center">
-        <Sparkles className="h-6 w-6 text-accent mx-auto mb-2" />
-        <div className="text-2xl font-bold text-text">{stats.xp}</div>
-        <div className="text-xs text-subtle">Total XP</div>
-      </div>
+    <Card className="bg-card border-2 border-border">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-accent" />
+          Character Stats & Progression
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Level & XP Progress */}
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-semibold text-text">
+              Level {level}
+            </span>
+            {archetypeDef && (
+              <Link
+                href="/profile/archetype"
+                className="text-xs text-accent hover:underline flex items-center gap-1"
+              >
+                <Sparkles className="h-3 w-3" />
+                {archetypeDef.emoji} {archetypeDef.name}
+              </Link>
+            )}
+            {!archetype && (
+              <Link
+                href="/profile/archetype"
+                className="text-xs text-accent hover:underline"
+              >
+                Select Archetype →
+              </Link>
+            )}
+          </div>
+          
+          {/* XP Progress Bar */}
+          <div className="w-full bg-bg rounded-full h-3 mb-2 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-accent to-accent/70 transition-all duration-300"
+              style={{ width: `${xpProgress.progress * 100}%` }}
+            />
+          </div>
+          <div className="text-xs text-subtle text-center">
+            {xpProgress.currentXP} / {xpProgress.requiredXP} XP
+          </div>
+        </div>
 
-      <div className="bg-bg border border-border rounded-lg p-4 text-center">
-        <Star className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
-        <div className="text-2xl font-bold text-text">{stats.funds}</div>
-        <div className="text-xs text-subtle">Gold</div>
-      </div>
-
-      <div className="bg-bg border border-border rounded-lg p-4 text-center">
-        <Star className="h-6 w-6 text-purple-500 mx-auto mb-2" />
-        <div className="text-2xl font-bold text-text">{stats.diamonds}</div>
-        <div className="text-xs text-subtle">Diamonds</div>
-      </div>
-
-      <div className="bg-bg border border-border rounded-lg p-4 text-center">
-        <Flame className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-        <div className="text-2xl font-bold text-text">{stats.streakCount}</div>
-        <div className="text-xs text-subtle">Day Streak</div>
-      </div>
-
-      <div className="bg-bg border border-border rounded-lg p-4 text-center col-span-2">
-        <Trophy className="h-6 w-6 text-accent mx-auto mb-2" />
-        <div className="text-2xl font-bold text-text">Level {stats.level}</div>
-        <div className="text-xs text-subtle">{Math.round(stats.progress)}% to next level</div>
-      </div>
-
-      <div className="bg-bg border border-border rounded-lg p-4 text-center col-span-2">
-        <div className="text-2xl font-bold text-text">{stats.questionsAnswered || 0}</div>
-        <div className="text-xs text-subtle">Questions Answered</div>
-      </div>
-    </div>
+        {/* Stats Grid */}
+        {stats ? (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-bg/50 rounded-lg border border-border">
+              <div className="text-xs uppercase text-subtle mb-1">Strength</div>
+              <div className="text-2xl font-bold text-red-400">{stats.str}</div>
+              <div className="text-xs text-subtle">Physical Power</div>
+            </div>
+            <div className="p-3 bg-bg/50 rounded-lg border border-border">
+              <div className="text-xs uppercase text-subtle mb-1">Intelligence</div>
+              <div className="text-2xl font-bold text-blue-400">{stats.int}</div>
+              <div className="text-xs text-subtle">XP & Reflection</div>
+            </div>
+            <div className="p-3 bg-bg/50 rounded-lg border border-border">
+              <div className="text-xs uppercase text-subtle mb-1">Charisma</div>
+              <div className="text-2xl font-bold text-purple-400">{stats.cha}</div>
+              <div className="text-xs text-subtle">Social & Shop</div>
+            </div>
+            <div className="p-3 bg-bg/50 rounded-lg border border-border">
+              <div className="text-xs uppercase text-subtle mb-1">Luck</div>
+              <div className="text-2xl font-bold text-yellow-400">{stats.luck}</div>
+              <div className="text-xs text-subtle">Crit & Drops</div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-6 text-subtle">
+            <p>No stats available</p>
+            {!archetype && (
+              <Link
+                href="/profile/archetype"
+                className="text-accent hover:underline text-sm mt-2 inline-block"
+              >
+                Select an archetype to begin →
+              </Link>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -17,6 +17,7 @@
 
 import { useEffect, useRef } from "react";
 import { eventBus } from "@/lib/eventBus";
+import { logger } from "@/lib/logger";
 
 export function useRealtime() {
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -29,13 +30,13 @@ export function useRealtime() {
       if (!mounted) return;
 
       try {
-        console.log("📡 Connecting to real-time server...");
+        logger.debug("📡 Connecting to real-time server...");
         
         const eventSource = new EventSource("/api/realtime");
         eventSourceRef.current = eventSource;
 
         eventSource.onopen = () => {
-          console.log("✅ Real-time connection established");
+          logger.info("✅ Real-time connection established");
         };
 
         eventSource.onmessage = (event) => {
@@ -43,20 +44,20 @@ export function useRealtime() {
             const data = JSON.parse(event.data);
             
             if (data.event === "connected") {
-              console.log("📡 Real-time handshake complete");
+              logger.debug("📡 Real-time handshake complete");
               return;
             }
 
             // Emit to local event bus
-            console.log(`[SSE→Local] ${data.event}:`, data.payload);
+            logger.debug('[SSE→Local] Event received', { event: data.event, payload: data.payload });
             eventBus.emit(data.event, data.payload);
           } catch (err) {
-            console.error("❌ Failed to parse SSE message:", err);
+            logger.error("Failed to parse SSE message", err);
           }
         };
 
         eventSource.onerror = (error) => {
-          console.warn("⚠️ Real-time connection error, attempting reconnect...");
+          logger.warn("Real-time connection error, attempting reconnect...");
           eventSource.close();
           
           // Exponential backoff reconnect
@@ -69,7 +70,7 @@ export function useRealtime() {
         };
 
       } catch (err) {
-        console.error("❌ Failed to establish real-time connection:", err);
+        logger.error("Failed to establish real-time connection", err);
       }
     }
 
@@ -81,7 +82,7 @@ export function useRealtime() {
       mounted = false;
       
       if (eventSourceRef.current) {
-        console.log("👋 Closing real-time connection");
+        logger.debug("👋 Closing real-time connection");
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
@@ -102,6 +103,8 @@ export function useRealtimeStatus() {
   // This is a simplified version - could be enhanced with state management
   return typeof EventSource !== "undefined";
 }
+
+
 
 
 

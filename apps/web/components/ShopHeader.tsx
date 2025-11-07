@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog } from '@headlessui/react';
 import LedgerTable from './LedgerTable';
+import { logger } from '@/lib/logger';
 
 export default function ShopHeader() {
   const [funds, setFunds] = useState<number>(0);
@@ -36,7 +37,7 @@ export default function ShopHeader() {
         window.location.assign(data.url);
       }
     } catch (err) {
-      console.error('Checkout error', err);
+      logger.error('Checkout error', err);
     } finally {
       setLoading(false);
     }
@@ -51,7 +52,7 @@ export default function ShopHeader() {
         window.location.assign(data.url);
       }
     } catch (err) {
-      console.error('Portal error', err);
+      logger.error('Portal error', err);
     } finally {
       setLoading(false);
     }

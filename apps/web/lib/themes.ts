@@ -17,12 +17,15 @@ export interface ThemeColors {
 
 export interface Theme {
   id: string;
+  key: string; // v0.29.11 - Theme key identifier
   name: string;
   description?: string;
   colors: Partial<ThemeColors>;
   pattern?: string;
   season?: 'spring' | 'summer' | 'autumn' | 'winter';
+  region?: 'home-base' | 'city-echoes' | 'calm-grove' | 'night-bazaar'; // v0.29.11 - Region-based themes
   emoji?: string;
+  animation?: 'fade' | 'pulse' | 'shimmer' | 'neon'; // v0.29.11 - Theme-specific animations
 }
 
 // Base colors (default theme)
@@ -38,17 +41,104 @@ export const BASE_COLORS: ThemeColors = {
   destructive: '#dc2626' // red-600
 };
 
+// v0.29.11 - Region-based themes
+export const REGION_THEMES: Record<string, Theme> = {
+  'home-base': {
+    id: 'home-base',
+    key: 'home-base',
+    name: 'Home Base',
+    description: 'Soft neutral comfort zone',
+    colors: {
+      bg: '#1a1815',
+      card: '#2a2824',
+      accent: '#d4a574', // Warm beige-gold
+      text: '#f5f3f0',
+      subtle: '#c9c5be',
+      border: '#4a453f',
+    },
+    pattern: 'linear-gradient(135deg, #1a1815 0%, #2a2824 50%, #1a1815 100%)',
+    region: 'home-base',
+    animation: 'fade',
+    emoji: '🏠'
+  },
+  'city-echoes': {
+    id: 'city-echoes',
+    key: 'city-echoes',
+    name: 'City of Echoes',
+    description: 'Metallic blues and urban vibes',
+    colors: {
+      bg: '#0f1625',
+      card: '#1a2332',
+      accent: '#5b9bd5', // Metallic blue
+      text: '#e8f0f8',
+      subtle: '#9cb3d1',
+      border: '#3d4f66',
+    },
+    pattern: 'linear-gradient(135deg, #0f1625 0%, #1a2332 50%, #0f1625 100%), radial-gradient(circle at 50% 50%, rgba(91, 155, 213, 0.1) 0%, transparent 70%)',
+    region: 'city-echoes',
+    animation: 'pulse',
+    emoji: '🏙️'
+  },
+  'calm-grove': {
+    id: 'calm-grove',
+    key: 'calm-grove',
+    name: 'Calm Grove',
+    description: 'Green and warm nature vibes',
+    colors: {
+      bg: '#0f1a0f',
+      card: '#1a2e1a',
+      accent: '#6bbf6b', // Warm green
+      text: '#f0f8f0',
+      subtle: '#9bc99b',
+      border: '#3d5f3d',
+    },
+    pattern: 'linear-gradient(135deg, #0f1a0f 0%, #1a2e1a 50%, #0f1a0f 100%), radial-gradient(circle at 30% 30%, rgba(107, 191, 107, 0.15) 0%, transparent 50%)',
+    region: 'calm-grove',
+    animation: 'fade',
+    emoji: '🌳'
+  },
+  'night-bazaar': {
+    id: 'night-bazaar',
+    key: 'night-bazaar',
+    name: 'Night Bazaar',
+    description: 'Purple neon marketplace',
+    colors: {
+      bg: '#1a0f1a',
+      card: '#2d1a2d',
+      accent: '#c77dff', // Neon purple
+      text: '#f8f0f8',
+      subtle: '#d4a0d4',
+      border: '#4d3d4d',
+    },
+    pattern: 'linear-gradient(135deg, #1a0f1a 0%, #2d1a2d 50%, #1a0f1a 100%), radial-gradient(circle at 50% 50%, rgba(199, 125, 255, 0.2) 0%, transparent 70%)',
+    region: 'night-bazaar',
+    animation: 'neon',
+    emoji: '🌆'
+  },
+};
+
 export const THEMES: Theme[] = [
   {
     id: 'default',
-    name: 'Default Dark',
-    description: 'Classic navy blue theme',
-    colors: BASE_COLORS,
+    key: 'default',
+    name: 'Neutral Light',
+    description: 'Classic light theme (fallback)',
+    colors: {
+      bg: '#f8fafc',
+      card: '#ffffff',
+      accent: '#3b82f6',
+      text: '#1e293b',
+      subtle: '#64748b',
+      border: '#e2e8f0',
+    },
     pattern: 'none',
+    animation: 'fade',
     emoji: '🌙'
   },
+  // ... existing themes ...
   {
     id: 'teal',
+    key: 'teal',
     name: 'Teal Flow',
     description: 'Calm ocean vibes',
     colors: {
@@ -61,6 +151,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'sunset',
+    key: 'sunset',
     name: 'Sunset Horizon',
     description: 'Warm amber glow',
     colors: {
@@ -74,6 +165,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'snow',
+    key: 'snow',
     name: 'Winter Snow',
     description: 'Cool icy blues',
     colors: {
@@ -88,6 +180,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'cyber',
+    key: 'cyber',
     name: 'Cyber Pulse',
     description: 'Neon purple energy',
     colors: {
@@ -101,6 +194,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'forest',
+    key: 'forest',
     name: 'Forest Depth',
     description: 'Deep emerald greens',
     colors: {
@@ -115,6 +209,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'autumn',
+    key: 'autumn',
     name: 'Autumn Leaves',
     description: 'Warm orange and brown',
     colors: {
@@ -129,6 +224,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'sakura',
+    key: 'sakura',
     name: 'Sakura Bloom',
     description: 'Soft pink cherry blossoms',
     colors: {
@@ -144,6 +240,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'midnight',
+    key: 'midnight',
     name: 'Midnight Abyss',
     description: 'Pure dark indigo',
     colors: {
@@ -157,6 +254,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'rose',
+    key: 'rose',
     name: 'Rose Gold',
     description: 'Elegant rose and gold',
     colors: {
@@ -170,6 +268,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'matrix',
+    key: 'matrix',
     name: 'Matrix Code',
     description: 'Green terminal vibes',
     colors: {
@@ -185,6 +284,7 @@ export const THEMES: Theme[] = [
   },
   {
     id: 'lava',
+    key: 'lava',
     name: 'Lava Flow',
     description: 'Hot red and orange',
     colors: {
@@ -198,9 +298,19 @@ export const THEMES: Theme[] = [
   }
 ];
 
-// Get theme by ID with fallback to default
+// Get theme by ID or key with fallback to default
 export function getTheme(themeId: string): Theme {
-  return THEMES.find(t => t.id === themeId) || THEMES[0];
+  return THEMES.find(t => t.id === themeId || t.key === themeId) || REGION_THEMES[themeId] || THEMES[0];
+}
+
+// Get theme by key (v0.29.11)
+export function getThemeByKey(themeKey: string): Theme | null {
+  return REGION_THEMES[themeKey] || THEMES.find(t => t.key === themeKey) || null;
+}
+
+// Get all themes including region themes (v0.29.11)
+export function getAllThemes(): Theme[] {
+  return [...THEMES, ...Object.values(REGION_THEMES)];
 }
 
 // Get current season (for auto-theme suggestion)
@@ -222,6 +332,8 @@ export function getSeasonalThemes(): Theme[] {
 export function mergeColors(partial: Partial<ThemeColors>): ThemeColors {
   return { ...BASE_COLORS, ...partial };
 }
+
+
 
 
 

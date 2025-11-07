@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../auth/[...nextauth]/options'
+import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
+import { safeAsync, unauthorizedError, notFoundError } from '@/lib/api-handler';
 
-export async function GET(
-  request: NextRequest,
+export const GET = safeAsync(async (
+  _request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const task = await prisma.task.findUnique({
@@ -27,19 +28,19 @@ export async function GET(
   })
 
   if (!task) {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+    return notFoundError('Task');
   }
 
   return NextResponse.json(task)
-}
+});
 
-export async function PATCH(
+export const PATCH = safeAsync(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const body = await request.json()
@@ -55,7 +56,7 @@ export async function PATCH(
   })
 
   return NextResponse.json(task)
-}
+});
 
 
 

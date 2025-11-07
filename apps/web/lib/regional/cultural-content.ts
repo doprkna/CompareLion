@@ -56,10 +56,6 @@ export const CULTURAL_EVENTS = {
  * Get cultural items for region
  */
 export async function getCulturalItems(region: string, month?: number) {
-  console.log("[Cultural] PLACEHOLDER: Would get cultural items", {
-    region,
-    month,
-  });
   
   // PLACEHOLDER: Would execute
   // const currentMonth = month || new Date().getMonth() + 1;
@@ -91,7 +87,6 @@ export async function getCulturalItems(region: string, month?: number) {
  * Seed cultural items
  */
 export async function seedCulturalContent() {
-  console.log("[Cultural] PLACEHOLDER: Would seed cultural content");
   
   // PLACEHOLDER: Would execute
   // for (const [region, events] of Object.entries(CULTURAL_EVENTS)) {
@@ -130,10 +125,6 @@ export async function seedCulturalContent() {
  * Get region leaderboard
  */
 export async function getRegionalLeaderboard(region: string, limit: number = 10) {
-  console.log("[Cultural] PLACEHOLDER: Would get regional leaderboard", {
-    region,
-    limit,
-  });
   
   // PLACEHOLDER: Would execute
   // // This would require user region tracking
@@ -155,6 +146,8 @@ export async function getRegionalLeaderboard(region: string, limit: number = 10)
   
   return [];
 }
+
+
 
 
 

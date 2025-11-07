@@ -242,6 +242,39 @@ const getTopologicalOrder = (models: any[]) => {
   return result;
 };
 
+// Seed core QuestionTags for humor/tone and content sensitivity
+async function seedCoreQuestionTags() {
+  console.log("\n🏷️  Seeding core QuestionTags...");
+  const tags: Array<{ name: string; type: 'tone' | 'content'; description?: string }> = [
+    { name: 'dry', type: 'tone' },
+    { name: 'sarcastic', type: 'tone' },
+    { name: 'dark', type: 'tone' },
+    { name: 'wholesome', type: 'tone' },
+    { name: 'absurd', type: 'tone' },
+    { name: 'emotional', type: 'tone' },
+    { name: 'picky', type: 'content' },
+    { name: 'complex', type: 'content' },
+    { name: 'nsfw', type: 'content', description: 'Mature content; hidden by default' },
+    { name: 'sensitive', type: 'content', description: 'Potentially sensitive topics' },
+    { name: 'reflective', type: 'tone' },
+  ];
+
+  let inserted = 0;
+  for (const t of tags) {
+    try {
+      await prisma.questionTag.upsert({
+        where: { name: t.name },
+        update: { type: t.type as any, description: t.description },
+        create: { name: t.name, type: t.type as any, description: t.description },
+      });
+      inserted++;
+    } catch (e: any) {
+      console.warn(`   ⚠️  Tag ${t.name}: ${e.message}`);
+    }
+  }
+  console.log(`   ✅ Ensured ${inserted} core tags`);
+}
+
 async function main() {
   console.log("🌱 Starting comprehensive seed...\n");
   
@@ -447,7 +480,10 @@ async function main() {
     console.warn(`   ⚠️  Relationships: ${error.message}\n`);
   }
   
-  // 4. Final summary
+  // 4. Seed core tags for tone/content
+  await seedCoreQuestionTags();
+  
+  // 5. Final summary
   console.log("📊 SEEDING SUMMARY:");
   console.log("=" .repeat(50));
   

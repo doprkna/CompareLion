@@ -5,27 +5,30 @@
  */
 
 import Redis from "ioredis";
+import { logger } from "@/lib/logger";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 
 let redis: Redis | null = null;
 
-try {
-  redis = new Redis(REDIS_URL, {
-    maxRetriesPerRequest: 3,
-    enableReadyCheck: true,
-    lazyConnect: true,
-  });
-  
-  redis.on("error", (err) => {
-    console.warn("[Cache] Redis connection error:", err.message);
-  });
-  
-  redis.on("ready", () => {
-    console.log("[Cache] Redis connected");
-  });
-} catch (error) {
-  console.warn("[Cache] Redis initialization failed, falling back to no-cache");
+if (REDIS_URL) {
+  try {
+    redis = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      enableReadyCheck: true,
+      lazyConnect: true,
+    });
+    
+    redis.on("error", (err) => {
+      logger.warn("[Cache] Redis connection error", { message: err.message });
+    });
+    
+    redis.on("ready", () => {
+      // Connected
+    });
+  } catch (error) {
+    logger.warn("[Cache] Redis initialization failed, falling back to no-cache");
+  }
 }
 
 export interface CacheOptions {
@@ -57,7 +60,7 @@ export async function getCached<T>(key: string): Promise<T | null> {
     
     return JSON.parse(data) as T;
   } catch (error) {
-    console.warn(`[Cache] Get failed for key ${key}:`, error);
+    logger.warn('[Cache] Get failed', { key, error });
     return null;
   }
 }
@@ -88,7 +91,7 @@ export async function setCached<T>(
       }
     }
   } catch (error) {
-    console.warn(`[Cache] Set failed for key ${key}:`, error);
+    logger.warn('[Cache] Set failed', { key, error });
   }
 }
 
@@ -101,7 +104,7 @@ export async function deleteCached(key: string): Promise<void> {
   try {
     await redis.del(key);
   } catch (error) {
-    console.warn(`[Cache] Delete failed for key ${key}:`, error);
+    logger.warn('[Cache] Delete failed', { key, error });
   }
 }
 
@@ -119,7 +122,7 @@ export async function invalidateByTag(tag: string): Promise<void> {
       await redis.del(`tag:${tag}`);
     }
   } catch (error) {
-    console.warn(`[Cache] Invalidate tag ${tag} failed:`, error);
+    logger.warn('[Cache] Invalidate tag failed', { tag, error });
   }
 }
 
@@ -169,9 +172,8 @@ export async function clearCache(): Promise<void> {
   
   try {
     await redis.flushdb();
-    console.log("[Cache] All cache cleared");
   } catch (error) {
-    console.warn("[Cache] Clear all failed:", error);
+    logger.warn("[Cache] Clear all failed", error);
   }
 }
 

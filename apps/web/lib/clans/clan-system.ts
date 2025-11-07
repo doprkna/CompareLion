@@ -157,7 +157,6 @@ export function calculateRewardChestTier(weeklyXp: number): {
  * PLACEHOLDER: Create clan
  */
 export async function createClan(leaderId: string, config: ClanConfig) {
-  console.log("[Clan] PLACEHOLDER: Would create clan", config.name);
   
   // PLACEHOLDER: Would validate and create
   // - Check if user already in clan
@@ -171,7 +170,6 @@ export async function createClan(leaderId: string, config: ClanConfig) {
  * PLACEHOLDER: Weekly XP reset and reward distribution
  */
 export async function weeklyReset() {
-  console.log("[Clan] PLACEHOLDER: Would run weekly reset");
   
   // PLACEHOLDER: Would execute
   // 1. Calculate reward chests for all clans based on weeklyXp
@@ -190,7 +188,6 @@ export async function addClanXp(
   userId: string,
   xpAmount: number
 ) {
-  console.log(`[Clan] PLACEHOLDER: Would add ${xpAmount} XP to clan ${clanId} from user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Add to clan totalXp and weeklyXp
@@ -209,10 +206,11 @@ export async function purchaseUpgrade(
   upgradeType: string,
   level: number
 ) {
-  console.log(`[Clan] PLACEHOLDER: Would purchase ${upgradeType} level ${level} for clan ${clanId}`);
   
   return null;
 }
+
+
 
 
 

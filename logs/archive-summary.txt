@@ -1,0 +1,9 @@
+﻿âœ… Archived folders:
+  - docs/ (22 files)
+  - apps/web/app/legacy/ (1 file)
+  - apps/web/__tests__/ (15 files)
+  - apps/web/tests/ (13 files)
+  - apps/web/e2e/ (3 files)
+  - apps/web/scripts/ (6 files)
+
+Total archived: 60 files

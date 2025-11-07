@@ -99,7 +99,7 @@ export function calculateDamage(
   }[attackType];
   
   // Calculate raw damage
-  let rawDamage = baseDamage * randomFactor * typeMultiplier;
+  const rawDamage = baseDamage * randomFactor * typeMultiplier;
   
   // Apply defense reduction
   const damageReduction = Math.min(0.75, threatDefense / 100);
@@ -176,7 +176,6 @@ export async function attackThreat(
   threatId: string,
   attackType: "solo" | "faction" | "cooperative"
 ) {
-  console.log(`[Battle] PLACEHOLDER: User ${userId} attacks threat ${threatId} (${attackType})`);
   
   // PLACEHOLDER: Would execute
   // - Load user stats
@@ -194,7 +193,6 @@ export async function attackThreat(
  * PLACEHOLDER: Generate AI threat
  */
 export async function generateAIThreat(worldState: any) {
-  console.log("[Battle] PLACEHOLDER: Would generate AI threat based on world state");
   
   // PLACEHOLDER: Would use LLM to generate
   // - Analyze world state
@@ -205,6 +203,8 @@ export async function generateAIThreat(worldState: any) {
   
   return null;
 }
+
+
 
 
 

@@ -6,6 +6,7 @@
 
 import { prisma } from "@/lib/db";
 import { publishEvent } from "@/lib/realtime";
+import { logger } from "@/lib/logger";
 
 export interface GlobalEventData {
   id: string;
@@ -26,7 +27,7 @@ export interface GlobalEventData {
  */
 export async function getActiveEvents(): Promise<GlobalEventData[]> {
   if (!prisma) {
-    console.warn("[Events] Prisma client not available - returning empty events");
+    logger.warn("[Events] Prisma client not available - returning empty events");
     return [];
   }
 

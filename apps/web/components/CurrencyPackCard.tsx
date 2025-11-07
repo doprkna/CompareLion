@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 export interface Price {
   stripePriceId?: string;
@@ -33,7 +34,7 @@ export default function CurrencyPackCard({ product }: { product: CurrencyPackPro
         window.location.assign(data.url);
       }
     } catch (err) {
-      console.error('Checkout error', err);
+      logger.error('Checkout error', err);
     } finally {
       setLoading(false);
     }

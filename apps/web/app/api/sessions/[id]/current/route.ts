@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import { safeAsync, notFoundError } from '@/lib/api-handler';
 
 // Get the current question in a session
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export const GET = safeAsync(async (_req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const session = await prisma.flowProgress.findUnique({
     where: { id },
@@ -11,7 +12,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     },
   });
   if (!session || !session.currentStepId) {
-    return NextResponse.json({ success: false, message: 'Session not found or no current step.' }, { status: 404 });
+    return notFoundError('Session or current step');
   }
   const question = await prisma.questionVersion.findUnique({
     where: { id: session.currentStep?.questionVersionId },
@@ -21,5 +22,6 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     sessionId: session.id,
     currentStepId: session.currentStepId,
     question,
+    timestamp: new Date().toISOString(),
   });
-}
+});

@@ -5,6 +5,7 @@
  */
 
 import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 interface QueryLog {
   query: string;
@@ -34,7 +35,7 @@ export function logSlowQuery(query: string, duration: number, params?: any) {
     slowQueries.pop();
   }
 
-  console.warn(`[DB] Slow query (${duration}ms):`, query.substring(0, 100));
+  logger.warn(`[DB] Slow query (${duration}ms)`, { query: query.substring(0, 100) });
 }
 
 /**
@@ -93,9 +94,10 @@ export function setupQueryMonitoring() {
       return result;
     });
 
-    console.log("✅ Prisma query monitoring enabled (dev mode)");
   }
 }
+
+
 
 
 

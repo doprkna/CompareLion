@@ -19,7 +19,7 @@ import { prisma } from "@/lib/db";
  * @param questionType Question category/type
  * @returns Karma change (-5 to +5)
  */
-export function calculateAnswerKarma(answer: string, questionType?: string): number {
+export function calculateAnswerKarma(answer: string, _questionType?: string): number {
   const lowerAnswer = answer.toLowerCase();
   
   // Positive indicators
@@ -122,6 +122,8 @@ export async function setKarma(userId: string, score: number): Promise<void> {
     data: { karmaScore: Math.round(score) },
   });
 }
+
+
 
 
 

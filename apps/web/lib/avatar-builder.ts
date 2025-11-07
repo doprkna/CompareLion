@@ -10,14 +10,14 @@ export const LAYER_TYPES = [
 ];
 
 export async function getAvatarLayers() {
-  console.log("[AvatarBuilder] PLACEHOLDER: Would return available layers");
   return [];
 }
 
 export async function equipAvatarItem(userId: string, layerType: string, layerId: string) {
-  console.log("[AvatarBuilder] PLACEHOLDER: Would equip item");
   return null;
 }
+
+
 
 
 

@@ -4,36 +4,33 @@
  * PLACEHOLDER: Shared question chains for friends.
  */
 
-import { prisma } from "@/lib/db";
 
 export async function createCoopMission(
-  creatorId: string,
-  type: string,
-  questionIds: string[]
+  _creatorId: string,
+  _type: string,
+  _questionIds: string[]
 ) {
-  console.log("[CoopMission] PLACEHOLDER: Would create mission");
   return null;
 }
 
-export async function joinCoopMission(missionId: string, userId: string) {
-  console.log("[CoopMission] PLACEHOLDER: Would join mission");
+export async function joinCoopMission(_missionId: string, _userId: string) {
   return null;
 }
 
 export async function submitCoopAnswer(
-  missionId: string,
-  userId: string,
-  questionId: string,
-  answer: string
+  _missionId: string,
+  _userId: string,
+  _questionId: string,
+  _answer: string
 ) {
-  console.log("[CoopMission] PLACEHOLDER: Would submit answer");
   return null;
 }
 
-export async function checkMissionCompletion(missionId: string) {
-  console.log("[CoopMission] PLACEHOLDER: Would check if all members finished");
+export async function checkMissionCompletion(_missionId: string) {
   return null;
 }
+
+
 
 
 

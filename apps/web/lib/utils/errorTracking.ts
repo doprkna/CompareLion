@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
+import { logger } from '@/lib/logger';
 
 export interface ErrorContext {
   requestId?: string;
@@ -48,7 +49,7 @@ export function captureError(error: Error, context: ErrorContext = {}): void {
 
   // Also log to console for development
   if (process.env.NODE_ENV === 'development') {
-    console.error('Error captured:', {
+    logger.error('Error captured', {
       message: error.message,
       stack: error.stack,
       context,
@@ -94,7 +95,6 @@ export function captureMessage(message: string, level: 'info' | 'warning' | 'err
 
   // Also log to console for development
   if (process.env.NODE_ENV === 'development') {
-    console.log(`[${level.toUpperCase()}] ${message}`, context);
   }
 }
 

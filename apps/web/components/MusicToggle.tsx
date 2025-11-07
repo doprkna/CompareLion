@@ -1,42 +1,26 @@
+/**
+ * Music Toggle Button
+ * v0.22.7 - Now synced with MusicPlayerContext
+ * 
+ * Keeps existing UI/position but now controls the global audio player.
+ * Integrated with mini-player for consistent state management.
+ */
+
 "use client";
-import { useState, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
+import { useMusicPlayer } from "@/contexts/MusicPlayerContext";
 
 export default function MusicToggle() {
-  const [playing, setPlaying] = useState(false);
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    const el = new Audio("/audio/lofi-loop.mp3");
-    el.loop = true;
-    el.volume = 0.25;
-    setAudio(el);
-    return () => {
-      el.pause();
-      el.src = "";
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!audio) return;
-    if (playing) {
-      audio.play().catch(() => {
-        console.warn("Audio playback blocked by browser");
-        setPlaying(false);
-      });
-    } else {
-      audio.pause();
-    }
-  }, [playing, audio]);
+  const { isPlaying, toggle } = useMusicPlayer();
 
   return (
     <button
-      onClick={() => setPlaying((p) => !p)}
+      onClick={toggle}
       className="fixed bottom-4 right-4 z-50 p-3 rounded-full bg-slate-800 text-white shadow-lg hover:bg-blue-600 transition"
       aria-label="Toggle music"
-      title={playing ? "Mute background music" : "Play background music"}
+      title={isPlaying ? "Pause background music" : "Play background music"}
     >
-      {playing ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+      {isPlaying ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
     </button>
   );
 }

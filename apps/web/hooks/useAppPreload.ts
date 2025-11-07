@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { logger } from '@/lib/logger';
 
 interface PreloadData {
   user?: any;
@@ -38,7 +39,7 @@ export function useAppPreload() {
         setPreloadData({ ready: true });
       }
     } catch (error) {
-      console.error('Preload error:', error);
+      logger.error('Preload error', error);
       setPreloadData({ ready: true }); // Still mark as ready to not block UI
     } finally {
       setIsPreloading(false);
@@ -52,6 +53,13 @@ export function useAppPreload() {
     isReady: preloadData.ready,
   };
 }
+
+
+
+
+
+
+
 
 
 

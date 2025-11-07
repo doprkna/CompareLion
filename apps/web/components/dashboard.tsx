@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Filter, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
+import { logger } from '@/lib/logger'
 
 interface Task {
   id: string
@@ -46,7 +47,7 @@ export function Dashboard() {
       const data = await response.json()
       setTasks(data)
     } catch (error) {
-      console.error('Failed to fetch tasks:', error)
+      logger.error('Failed to fetch tasks', error)
     } finally {
       setLoading(false)
     }
@@ -69,7 +70,7 @@ export function Dashboard() {
         fetchTasks()
       }
     } catch (error) {
-      console.error('Failed to create task:', error)
+      logger.error('Failed to create task', error)
     }
   }
 

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]/options'
+import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
 import { enqueueRun } from '@/lib/queue'
 import { toTaskDTO, TaskDTO } from '@/lib/dto/taskDTO';
+import { safeAsync, unauthorizedError, validationError } from '@/lib/api-handler';
 
-export async function GET(request: NextRequest) {
+export const GET = safeAsync(async (request: NextRequest) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const { searchParams } = new URL(request.url)
@@ -36,24 +37,24 @@ export async function GET(request: NextRequest) {
   })
   const tasks: TaskDTO[] = rawTasks.map(toTaskDTO);
   return NextResponse.json(tasks)
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = safeAsync(async (request: NextRequest) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const body = await request.json()
   const { title, description, priority = 'MEDIUM', assigneeType = 'AUTO' } = body
 
   if (!title) {
-    return NextResponse.json({ error: 'Title is required' }, { status: 400 })
+    return validationError('Title is required');
   }
 
   const orgId = session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined
   if (!orgId) {
-    return NextResponse.json({ error: 'No organization found' }, { status: 400 })
+    return validationError('No organization found');
   }
 
   const rawTask = await prisma.task.create({
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
 
   const task: TaskDTO = toTaskDTO(rawTask);
   return NextResponse.json(task);
-}
+});
 
 
 

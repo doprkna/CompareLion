@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getSessionFromCookie } from '@/lib/auth/session';
 import { logAuditEvent, extractIpFromRequest } from '@/lib/services/auditService';
+import { logger } from '@/lib/logger';
 
 /**
  * Check if a user is an admin based on environment configuration
@@ -72,7 +73,7 @@ export async function requireAdmin(req: NextRequest): Promise<{
 
     return { success: true, user };
   } catch (error) {
-    console.error('Admin auth error:', error);
+    logger.error('Admin auth error', error);
     return { success: false, error: 'Authentication failed' };
   }
 }

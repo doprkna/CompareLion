@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
-import { UserRole, QuestionType } from "@prisma/client";
+import { UserRole, QuestionType } from "@parel/db/client";
 import { hash } from "bcryptjs";
 
 // Utility to log audit
@@ -259,6 +259,8 @@ export async function POST() {
     );
   }
 }
+
+
 
 
 

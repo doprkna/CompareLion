@@ -1,58 +1,43 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { ensurePrismaClient } from "@/lib/prisma-guard";
-import { handleApiError } from "@/lib/api-error-handler";
+import { safeAsync, successResponse } from "@/lib/api-handler";
 
 /**
- * Shop API - Fetch all available items for purchase
- * Public endpoint (no auth required to browse)
+ * GET /api/shop
+ * Fetch all available shop items for purchase
+ * v0.26.2 - Economy Feedback & Shop Loop
  */
-export async function GET() {
-  try {
-    ensurePrismaClient();
-    
-    const items = await prisma.item.findMany({
-      orderBy: [
-        { rarity: 'desc' }, // Legendary first
-        { name: 'asc' },
-      ],
-    });
+export const GET = safeAsync(async (req: NextRequest) => {
+  const items = await prisma.item.findMany({
+    where: {
+      isShopItem: true,
+    },
+    orderBy: [
+      { rarity: 'desc' },
+      { goldPrice: 'asc' },
+      { name: 'asc' },
+    ],
+  });
 
-    // Add pricing logic (simple formula based on rarity and stats)
-    const itemsWithPrices = items.map(item => {
-      let basePrice = 0;
-      
-      // Base price by rarity
-      const rarityPrices: Record<string, number> = {
-        common: 10,
-        uncommon: 25,
-        rare: 50,
-        epic: 100,
-        legendary: 500,
-      };
-      basePrice = rarityPrices[item.rarity] || 10;
-      
-      // Add stat bonuses
-      if (item.power) basePrice += item.power * 2;
-      if (item.defense) basePrice += item.defense * 3;
-      
-      return {
-        ...item,
-        price: basePrice,
-        currency: 'funds' as const,
-      };
-    });
+  // Format items with display info
+  const shopItems = items.map(item => ({
+    id: item.id,
+    key: item.key,
+    name: item.name,
+    emoji: item.emoji || item.icon || '📦',
+    description: item.description,
+    price: item.goldPrice || 0,
+    rarity: item.rarity,
+    type: item.type,
+    power: item.power,
+    defense: item.defense,
+  }));
 
-    return NextResponse.json({
-      success: true,
-      items: itemsWithPrices,
-      count: items.length,
-    });
-  } catch (error) {
-    console.error("[API Error][shop]", error);
-    return handleApiError(error, "Failed to fetch shop items");
-  }
-}
+  return successResponse({
+    items: shopItems,
+    count: shopItems.length,
+  });
+});
 
 
 

@@ -8,6 +8,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import TwitterProvider from "next-auth/providers/twitter";
 // import RedditProvider from "next-auth/providers/reddit";
 import { verifyPassword } from "@/lib/auth/password";
+import { logger } from "@/lib/logger";
 
 // Import Prisma client with fallback strategy
 import * as dbModule from "@/lib/db";
@@ -15,7 +16,7 @@ const prisma = (dbModule as any).default || (dbModule as any).prisma;
 
 // Verify prisma is valid before passing to adapter
 if (!prisma || typeof prisma?.user?.findUnique !== 'function') {
-  console.error("❌ CRITICAL: Prisma client is not properly initialized!");
+  logger.error("❌ CRITICAL: Prisma client is not properly initialized!");
   throw new Error("Prisma client not initialized - cannot create NextAuth adapter");
 }
 
@@ -64,7 +65,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (error: any) {
-          console.error("[Auth] Login error:", error.message);
+          logger.error("[Auth] Login error", { message: error.message });
           throw error;
         }
       },

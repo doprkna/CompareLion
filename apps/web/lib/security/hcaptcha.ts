@@ -1,5 +1,7 @@
 // hCaptcha verification utility
 
+import { logger } from '@/lib/logger';
+
 export interface HCaptchaResponse {
   success: boolean;
   error_codes?: string[];
@@ -22,14 +24,14 @@ export async function verifyHCaptcha(
     });
 
     if (!response.ok) {
-      console.error('hCaptcha API error:', response.status, response.statusText);
+      logger.error('hCaptcha API error', { status: response.status, statusText: response.statusText });
       return { success: false, error: 'hCaptcha verification failed' };
     }
 
     const data: HCaptchaResponse = await response.json();
 
     if (!data.success) {
-      console.error('hCaptcha verification failed:', data.error_codes);
+      logger.error('hCaptcha verification failed', { errorCodes: data.error_codes });
       return { 
         success: false, 
         error: `hCaptcha verification failed: ${data.error_codes?.join(', ') || 'Unknown error'}` 
@@ -38,7 +40,7 @@ export async function verifyHCaptcha(
 
     return { success: true };
   } catch (error) {
-    console.error('hCaptcha verification error:', error);
+    logger.error('hCaptcha verification error', error);
     return { success: false, error: 'hCaptcha verification failed' };
   }
 }

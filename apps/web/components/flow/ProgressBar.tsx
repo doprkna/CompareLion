@@ -1,3 +1,7 @@
+'use client';
+
+import { motion } from 'framer-motion';
+
 interface ProgressBarProps {
   current: number;
   total: number;
@@ -10,22 +14,36 @@ export function ProgressBar({ current, total, className = '' }: ProgressBarProps
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex justify-between text-sm">
-        <span className="text-text font-medium">
+        <motion.span 
+          className="text-text font-medium"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           Question {current} of {total}
-        </span>
-        <span className="text-subtle">
+        </motion.span>
+        <motion.span 
+          className="text-subtle"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           {percentage}%
-        </span>
+        </motion.span>
       </div>
       <div className="w-full bg-border rounded-full h-2 overflow-hidden">
-        <div
-          className="h-full bg-accent transition-all duration-300 ease-out"
-          style={{ width: `${percentage}%` }}
+        <motion.div
+          className="h-full bg-accent"
+          initial={{ width: 0 }}
+          animate={{ width: `${percentage}%` }}
+          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
         />
       </div>
     </div>
   );
 }
+
+
 
 
 

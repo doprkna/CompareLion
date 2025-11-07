@@ -2,9 +2,18 @@ const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Transpile monorepo packages
+  transpilePackages: ['@parel/db'],
+  
   // Performance optimizations (v0.11.1)
   swcMinify: true,
   compress: true,
+  
+  // Static export for mobile/desktop builds
+  output: process.env.BUILD_TARGET === 'mobile' ? 'export' : undefined,
+  
+  // Suppress production warnings if enabled
+  productionBrowserSourceMaps: false,
   
   // Image optimization
   images: {
@@ -14,9 +23,9 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
-	eslint: {
-	  ignoreDuringBuilds: true,
-	},
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   
   // Headers for caching
   async headers() {
@@ -55,6 +64,26 @@ const nextConfig = {
   
   // Webpack optimizations
   webpack: (config, { isServer }) => {
+    const path = require('path');
+    const prismaClientPath = require.resolve('@prisma/client');
+    const prismaClientDir = path.dirname(prismaClientPath);
+    
+    // Fix pnpm resolution for @prisma/client and runtime modules
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@prisma/client$': prismaClientPath,
+      '@prisma/client/runtime/library.js': path.join(prismaClientDir, 'runtime', 'library.js'),
+      '@prisma/client/runtime/library$': path.join(prismaClientDir, 'runtime', 'library.js'),
+      '@prisma/client/runtime/index-browser.js': path.join(prismaClientDir, 'runtime', 'index-browser.js'),
+      '@prisma/client/runtime/index-browser$': path.join(prismaClientDir, 'runtime', 'index-browser.js'),
+    };
+    
+    // Add runtime path to resolve modules
+    config.resolve.modules = [
+      ...((config.resolve.modules) || []),
+      path.join(prismaClientDir, 'runtime'),
+    ];
+    
     // Bundle analyzer (only in production builds with ANALYZE=true)
     if (process.env.ANALYZE === 'true') {
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -68,6 +97,24 @@ const nextConfig = {
       );
     }
     
+    // Exclude Node.js-only packages from client bundle (v0.33.4)
+    if (!isServer) {
+      // Mark ioredis as external to prevent bundling
+      config.externals = config.externals || [];
+      config.externals.push('ioredis');
+      
+      // Fallback for Node.js built-ins
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+        crypto: false,
+        stream: false,
+      };
+    }
+    
     return config;
   },
   
@@ -77,14 +124,19 @@ const nextConfig = {
   },
 };
 
-const sentryWebpackPluginOptions = {
-  // Additional config options for the Sentry webpack plugin
-  silent: true, // Suppresses source map uploading logs during build
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-};
-
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+// Only enable Sentry webpack plugin if DSN is configured
+if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+  const sentryWebpackPluginOptions = {
+    silent: true, // Suppresses source map uploading logs during build
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    disableLogger: true, // Disable Sentry build-time warnings
+  };
+  
+  module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+} else {
+  module.exports = nextConfig;
+}
 
 
 

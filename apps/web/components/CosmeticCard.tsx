@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { formatCurrency } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 export interface Price {
   stripePriceId?: string;
@@ -46,7 +47,7 @@ export default function CosmeticCard({ product, owned = false, equipped = false,
         if (product.payload.autoEquip && onEquip) onEquip();
       }
     } catch (err) {
-      console.error('Purchase error', err);
+      logger.error('Purchase error', err);
     } finally {
       setLoading(false);
     }

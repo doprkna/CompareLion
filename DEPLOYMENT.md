@@ -1,53 +1,87 @@
 # Deployment Guide
 
-## ✅ Local Development Server
-
-The app is currently running successfully on **http://localhost:3000**
-
-### Verified Working Endpoints:
-- ✅ `/api/health` - Health check (200 OK)
-- ✅ `/login` - Login page (200 OK) 
-- ✅ `/roadmap` - Roadmap page (200 OK)
-
-## 🚀 Vercel Deployment
+## 🚀 Production Deployment
 
 ### Prerequisites
-1. Vercel account
-2. Vercel CLI installed (`npm install -g vercel`)
-3. Git repository connected to Vercel
+- Node.js 20.10.0+
+- PostgreSQL database
+- Redis (optional, for caching)
+- Vercel account (for web deployment)
 
-### Deployment Steps
+## 📱 Multi-Platform Support
 
-1. **Login to Vercel:**
-   ```bash
-   vercel login
-   ```
+PareL supports deployment across multiple platforms:
 
-2. **Deploy to Vercel:**
-   ```bash
-   vercel --prod
-   ```
+### 🌐 Web (Vercel)
+- **Primary platform** - Full PWA support
+- Service worker with intelligent caching
+- Offline functionality
+- Mobile-optimized layouts
 
-3. **Set Environment Variables in Vercel Dashboard:**
-   Go to Project Settings → Environment Variables and add:
-   
-   **Required:**
-   - `DATABASE_URL` - Your production PostgreSQL URL
-   - `REDIS_URL` - Your production Redis URL  
-   - `NEXTAUTH_URL` - Your Vercel app URL (e.g., `https://your-app.vercel.app`)
-   - `NEXTAUTH_SECRET` - A secure random string
-   - `JWT_SECRET` - A secure random string
+### 📱 Mobile (Android/iOS)
+- React Native builds via Expo
+- Native app store distribution
+- Push notifications
+- Offline sync capabilities
 
-   **Optional:**
-   - `RESEND_API_KEY` - For email functionality
-   - `STRIPE_SECRET_KEY` - For payments
-   - `SENTRY_DSN` - For error tracking
-   - And other variables from `apps/web/.env.example`
+### 🖥️ Desktop (Electron)
+- Cross-platform desktop apps
+- Native OS integration
+- Auto-updater support
 
-### Configuration Files
+## 🔧 Environment Variables
 
-- ✅ `vercel.json` - Monorepo configuration for Vercel
-- ✅ `apps/web/.env.local` - Local environment variables
+### Required
+```bash
+DATABASE_URL=postgresql://...
+NEXTAUTH_URL=https://your-domain.com
+NEXTAUTH_SECRET=your-secret-key
+JWT_SECRET=your-jwt-secret
+```
+
+### Optional
+```bash
+REDIS_URL=redis://...
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+RESEND_API_KEY=re_...
+SENTRY_DSN=https://...
+```
+
+## 🚀 Deployment Steps
+
+### 1. Vercel (Web)
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login and deploy
+vercel login
+vercel --prod
+```
+
+### 2. Mobile Build
+```bash
+# Android
+pnpm build:android
+
+# iOS (macOS only)
+pnpm build:ios
+```
+
+### 3. Desktop Build
+```bash
+# All platforms
+pnpm build:desktop
+```
+
+## ✅ Verified Working Endpoints
+- `/api/health` - Health check
+- `/api/auth/*` - Authentication
+- `/api/flow/*` - Question flows
+- `/api/profile/*` - User profiles
+- `/api/shop/*` - Marketplace
+- `/api/telemetry/*` - Analytics
 - ✅ `apps/web/.env.example` - Template for production variables
 
 ### Build Status

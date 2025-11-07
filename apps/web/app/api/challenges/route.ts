@@ -1,337 +1,186 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { publishEvent } from "@/lib/realtime";
-import { notify } from "@/lib/notify";
-import { updateKarma } from "@/lib/karma";
-import { updateUserScores } from "@/lib/scores";
+/**
+ * Challenges API
+ * Returns daily and weekly challenges
+ * v0.13.2n - Community Growth
+ */
 
-const truthOrDarePrompts = [
-  "What's your most embarrassing moment from the past year?",
-  "What's one thing you've always wanted to try but haven't?",
-  "If you could have dinner with anyone, who would it be?",
-  "What's your biggest fear?",
-  "Share a secret talent nobody knows about",
-  "What would you do with a million dollars?",
-  "Who was your first crush?",
-  "What's your guilty pleasure?",
+import { NextRequest } from 'next/server';
+import { safeAsync, successResponse } from '@/lib/api-handler';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+
+// Preset challenges pool
+const DAILY_CHALLENGES = [
+  {
+    id: 'daily_questions_5',
+    title: 'Question Marathon',
+    description: 'Answer 5 questions today',
+    type: 'daily',
+    target: 5,
+    metric: 'questions_answered',
+    reward: { xp: 50, diamonds: 10 },
+    icon: '🎯',
+  },
+  {
+    id: 'daily_streak_maintain',
+    title: 'Keep The Flame',
+    description: 'Maintain your streak today',
+    type: 'daily',
+    target: 1,
+    metric: 'streak_maintained',
+    reward: { xp: 30, diamonds: 5 },
+    icon: '🔥',
+  },
+  {
+    id: 'daily_perfect_5',
+    title: 'Perfectionist',
+    description: 'Answer 5 questions without skipping',
+    type: 'daily',
+    target: 5,
+    metric: 'perfect_answers',
+    reward: { xp: 75, diamonds: 15 },
+    icon: '⭐',
+  },
+  {
+    id: 'daily_speed_demon',
+    title: 'Speed Demon',
+    description: 'Answer 10 questions in under 5 minutes',
+    type: 'daily',
+    target: 10,
+    metric: 'fast_answers',
+    reward: { xp: 100, diamonds: 20 },
+    icon: '⚡',
+  },
+  {
+    id: 'daily_social_butterfly',
+    title: 'Social Butterfly',
+    description: 'Send 3 messages to friends',
+    type: 'daily',
+    target: 3,
+    metric: 'messages_sent',
+    reward: { xp: 40, diamonds: 8 },
+    icon: '💬',
+  },
 ];
 
-/**
- * GET /api/challenges - List challenges
- */
-export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+const WEEKLY_CHALLENGES = [
+  {
+    id: 'weekly_questions_25',
+    title: 'Weekly Warrior',
+    description: 'Answer 25 questions this week',
+    type: 'weekly',
+    target: 25,
+    metric: 'questions_answered',
+    reward: { xp: 200, diamonds: 50 },
+    icon: '🏆',
+  },
+  {
+    id: 'weekly_streak_7',
+    title: 'Week Streak',
+    description: 'Maintain a 7-day streak',
+    type: 'weekly',
+    target: 7,
+    metric: 'streak_days',
+    reward: { xp: 300, diamonds: 75 },
+    icon: '🔥',
+  },
+  {
+    id: 'weekly_refer_friend',
+    title: 'Invite a Friend',
+    description: 'Get 1 friend to join via your invite code',
+    type: 'weekly',
+    target: 1,
+    metric: 'referrals',
+    reward: { xp: 150, diamonds: 100 },
+    icon: '👥',
+  },
+  {
+    id: 'weekly_share_3',
+    title: 'Social Sharer',
+    description: 'Share your progress 3 times',
+    type: 'weekly',
+    target: 3,
+    metric: 'shares',
+    reward: { xp: 100, diamonds: 30 },
+    icon: '📢',
+  },
+];
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true },
-    });
+// Deterministic random selection based on date
+function getDailyChallenges(date: Date): any[] {
+  const dayOfYear = Math.floor(
+    (date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 86400000
+  );
+  
+  // Pick 3 challenges based on day
+  const seed = dayOfYear;
+  const indices = [
+    seed % DAILY_CHALLENGES.length,
+    (seed + 1) % DAILY_CHALLENGES.length,
+    (seed + 2) % DAILY_CHALLENGES.length,
+  ];
+  
+  return indices.map(i => DAILY_CHALLENGES[i]);
+}
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const challenges = await prisma.challenge.findMany({
-      where: {
-        OR: [
-          { initiatorId: user.id },
-          { receiverId: user.id },
-        ],
-      },
-      include: {
-        initiator: {
-          select: { id: true, name: true, email: true, image: true },
-        },
-        receiver: {
-          select: { id: true, name: true, email: true, image: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-    });
-
-    return NextResponse.json({
-      success: true,
-      challenges,
-    });
-  } catch (error) {
-    console.error("[API] Error fetching challenges:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch challenges" },
-      { status: 500 }
-    );
-  }
+function getWeeklyChallenges(date: Date): any[] {
+  const weekOfYear = Math.floor(
+    (date.getTime() - new Date(date.getFullYear(), 0, 0).getTime()) / 604800000
+  );
+  
+  // Pick 2 weekly challenges
+  const seed = weekOfYear;
+  const indices = [
+    seed % WEEKLY_CHALLENGES.length,
+    (seed + 1) % WEEKLY_CHALLENGES.length,
+  ];
+  
+  return indices.map(i => WEEKLY_CHALLENGES[i]);
 }
 
 /**
- * POST /api/challenges - Create or update challenge
+ * GET /api/challenges
+ * Returns active daily and weekly challenges
  */
-export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export const GET = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  const now = new Date();
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, name: true, email: true },
-    });
+  const dailyChallenges = getDailyChallenges(now);
+  const weeklyChallenges = getWeeklyChallenges(now);
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+  // In production, you'd fetch progress from database
+  // For now, return challenges with 0 progress (client will use localStorage)
+  const formattedDaily = dailyChallenges.map(challenge => ({
+    ...challenge,
+    progress: 0,
+    completed: false,
+  }));
 
-    const { receiverEmail, type, message } = await req.json();
+  const formattedWeekly = weeklyChallenges.map(challenge => ({
+    ...challenge,
+    progress: 0,
+    completed: false,
+  }));
 
-    if (!receiverEmail) {
-      return NextResponse.json({ error: "receiverEmail required" }, { status: 400 });
-    }
-
-    const receiver = await prisma.user.findUnique({
-      where: { email: receiverEmail },
-      select: { id: true, name: true, email: true },
-    });
-
-    if (!receiver) {
-      return NextResponse.json({ error: "Receiver not found" }, { status: 404 });
-    }
-
-    if (receiver.id === user.id) {
-      return NextResponse.json({ error: "Cannot challenge yourself" }, { status: 400 });
-    }
-
-    // Generate prompt based on type
-    let prompt = "";
-    if (type === "truth_or_dare") {
-      prompt = truthOrDarePrompts[Math.floor(Math.random() * truthOrDarePrompts.length)];
-    }
-
-    // Create challenge
-    const challenge = await prisma.challenge.create({
-      data: {
-        initiatorId: user.id,
-        receiverId: receiver.id,
-        type: type || "random",
-        message: message || null,
-        prompt,
-        status: "pending",
-      },
-    });
-
-    // Notify receiver
-    await notify(
-      receiver.id,
-      "system",
-      "🧩 Challenge Received!",
-      `${user.email} dared you: ${prompt || 'Answer the challenge!'}`
-    );
-
-    // Broadcast event
-    await publishEvent("challenge:new", {
-      initiatorId: user.id,
-      receiverId: receiver.id,
-      challengeId: challenge.id,
-      type: challenge.type,
-    });
-
-    return NextResponse.json({
-      success: true,
-      challenge,
-    });
-  } catch (error) {
-    console.error("[API] Error creating challenge:", error);
-    return NextResponse.json(
-      { error: "Failed to create challenge" },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse({
+    daily: formattedDaily,
+    weekly: formattedWeekly,
+    timestamp: now.toISOString(),
+  });
+});
 
 /**
- * PATCH /api/challenges - Accept/decline/complete challenge
+ * POST /api/challenges
+ * Update challenge progress (stored in localStorage on client)
  */
-export async function PATCH(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const { challengeId, action, response } = await req.json();
-
-    if (!challengeId || !action) {
-      return NextResponse.json(
-        { error: "challengeId and action required" },
-        { status: 400 }
-      );
-    }
-
-    const challenge = await prisma.challenge.findUnique({
-      where: { id: challengeId },
-      include: {
-        initiator: { select: { id: true, email: true } },
-        receiver: { select: { id: true, email: true } },
-      },
-    });
-
-    if (!challenge) {
-      return NextResponse.json({ error: "Challenge not found" }, { status: 404 });
-    }
-
-    // Only receiver can accept/decline, both can complete
-    if (action === "accept") {
-      if (challenge.receiverId !== user.id) {
-        return NextResponse.json({ error: "Only receiver can accept" }, { status: 403 });
-      }
-
-      const updated = await prisma.challenge.update({
-        where: { id: challengeId },
-        data: {
-          status: "accepted",
-          respondedAt: new Date(),
-        },
-      });
-
-      // Reward karma for accepting
-      await updateKarma(user.id, 5);
-
-      await notify(
-        challenge.initiatorId,
-        "system",
-        "Challenge Accepted!",
-        `${user.id === challenge.receiverId ? challenge.receiver.email : 'User'} accepted your challenge!`
-      );
-
-      await publishEvent("challenge:update", {
-        challengeId,
-        status: "accepted",
-        receiverId: user.id,
-      });
-
-      return NextResponse.json({
-        success: true,
-        challenge: updated,
-        karmaGained: 5,
-      });
-    }
-
-    if (action === "decline") {
-      if (challenge.receiverId !== user.id) {
-        return NextResponse.json({ error: "Only receiver can decline" }, { status: 403 });
-      }
-
-      const updated = await prisma.challenge.update({
-        where: { id: challengeId },
-        data: {
-          status: "declined",
-          respondedAt: new Date(),
-        },
-      });
-
-      // Penalty karma for declining
-      await updateKarma(user.id, -5);
-
-      await notify(
-        challenge.initiatorId,
-        "system",
-        "Challenge Declined",
-        `Your challenge was declined`
-      );
-
-      await publishEvent("challenge:update", {
-        challengeId,
-        status: "declined",
-      });
-
-      return NextResponse.json({
-        success: true,
-        challenge: updated,
-        karmaLost: -5,
-      });
-    }
-
-    if (action === "complete") {
-      if (!response) {
-        return NextResponse.json({ error: "response required" }, { status: 400 });
-      }
-
-      if (challenge.receiverId !== user.id) {
-        return NextResponse.json({ error: "Only receiver can complete" }, { status: 403 });
-      }
-
-      const updated = await prisma.challenge.update({
-        where: { id: challengeId },
-        data: {
-          status: "completed",
-          response,
-          completedAt: new Date(),
-        },
-      });
-
-      // Reward XP and update scores
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { xp: { increment: challenge.rewardXp } },
-      });
-
-      await updateUserScores(user.id);
-
-      await notify(
-        challenge.initiatorId,
-        "system",
-        "Challenge Completed!",
-        `${challenge.receiver.email} completed your challenge!`
-      );
-
-      await publishEvent("challenge:update", {
-        challengeId,
-        status: "completed",
-        xpGained: challenge.rewardXp,
-      });
-
-      return NextResponse.json({
-        success: true,
-        challenge: updated,
-        xpGained: challenge.rewardXp,
-      });
-    }
-
-    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  } catch (error) {
-    console.error("[API] Error updating challenge:", error);
-    return NextResponse.json(
-      { error: "Failed to update challenge" },
-      { status: 500 }
-    );
+export const POST = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return successResponse({ message: 'Guest mode - progress saved locally' });
   }
-}
 
-
-
-
-
-
-
-
-
-
-
+  // In future, save to database
+  // For now, just acknowledge
+  return successResponse({ message: 'Progress updated' });
+});

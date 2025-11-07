@@ -198,17 +198,14 @@ export function adjustConcurrency(
  * PLACEHOLDER: Initialize queues
  */
 export async function initializeQueues() {
-  console.log("[JobQueue] PLACEHOLDER: Would initialize BullMQ queues");
-  for (const config of QUEUE_CONFIGS) {
-    console.log(`  - ${config.displayName} (priority: ${config.priority}, concurrency: ${config.concurrency})`);
+  for (const _config of QUEUE_CONFIGS) {
   }
 }
 
 /**
  * PLACEHOLDER: Get queue health
  */
-export async function getQueueHealth(queueName: string) {
-  console.log(`[JobQueue] PLACEHOLDER: Would get health for queue: ${queueName}`);
+export async function getQueueHealth(_queueName: string) {
   return {
     active: 0,
     waiting: 0,
@@ -218,6 +215,8 @@ export async function getQueueHealth(queueName: string) {
     paused: false,
   };
 }
+
+
 
 
 

@@ -1,22 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../auth/[...nextauth]/options'
+import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
+import { safeAsync, unauthorizedError, validationError } from '@/lib/api-handler';
 
-export async function POST(
+export const POST = safeAsync(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const body = await request.json()
   const { text } = body
 
   if (!text) {
-    return NextResponse.json({ error: 'Message text is required' }, { status: 400 })
+    return validationError('Message text is required');
   }
 
   const message = await prisma.message.create({
@@ -28,7 +29,7 @@ export async function POST(
   })
 
   return NextResponse.json(message)
-}
+});
 
 
 

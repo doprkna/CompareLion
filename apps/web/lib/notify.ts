@@ -7,6 +7,7 @@
 
 import { prisma } from "@/lib/db";
 import { publishEvent } from "@/lib/realtime";
+import { logger } from "@/lib/logger";
 
 // In-memory cache to prevent duplicate notifications within 5 seconds
 const recentNotifications = new Map<string, number>();
@@ -34,7 +35,6 @@ export async function notify(
     const now = Date.now();
 
     if (lastSent && (now - lastSent) < DUPLICATE_THRESHOLD_MS) {
-      console.log(`[Notify] Skipping duplicate notification: ${title}`);
       return null;
     }
 
@@ -71,11 +71,10 @@ export async function notify(
       createdAt: notification.createdAt,
     });
 
-    console.log(`[Notify] Created: ${title} for user ${userId}`);
     return notification;
 
   } catch (error) {
-    console.error("[Notify] Failed to create notification:", error);
+    logger.error("[Notify] Failed to create notification", error);
     return null;
   }
 }
@@ -122,6 +121,8 @@ export async function notifyAchievement(userId: string, achievementTitle: string
 export async function notifySystem(userId: string, title: string, body?: string) {
   return await notify(userId, "system", title, body);
 }
+
+
 
 
 

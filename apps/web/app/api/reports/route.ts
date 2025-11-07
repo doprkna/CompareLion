@@ -1,18 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
+import { safeAsync, successResponse } from "@/lib/api-handler";
 
-export async function GET() {
-  try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        xp: true,
-        funds: true,
-        createdAt: true,
-      },
-    });
+export const GET = safeAsync(async (_req: NextRequest) => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      xp: true,
+      funds: true,
+      createdAt: true,
+    },
+  });
 
     const messagesCount = await prisma.message.count();
     const flowQuestionsCount = await prisma.flowQuestion.count();
@@ -49,32 +49,26 @@ export async function GET() {
       where: { createdAt: { gte: sevenDaysAgo } },
     });
 
-    const recentResponses = await prisma.userResponse.count({
-      where: { createdAt: { gte: sevenDaysAgo } },
-    });
+  const recentResponses = await prisma.userResponse.count({
+    where: { createdAt: { gte: sevenDaysAgo } },
+  });
 
-    return NextResponse.json({
-      success: true,
-      stats: {
-        usersCount: users.length,
-        messagesCount,
-        flowQuestionsCount,
-        userResponsesCount,
-        avgXP,
-        recentMessages,
-        recentResponses,
-      },
-      xpDistribution,
-      topUsers,
-    });
-  } catch (error) {
-    console.error('[API] Error fetching reports:', error);
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch reports" },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse({
+    stats: {
+      usersCount: users.length,
+      messagesCount,
+      flowQuestionsCount,
+      userResponsesCount,
+      avgXP,
+      recentMessages,
+      recentResponses,
+    },
+    xpDistribution,
+    topUsers,
+  });
+});
+
+
 
 
 

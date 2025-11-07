@@ -1,22 +1,12 @@
 export const runtime = 'nodejs';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { clearSessionCookie } from '@/lib/auth/session';
+import { safeAsync, successResponse } from '@/lib/api-handler';
 
-export async function POST(req: NextRequest) {
-  try {
-    // Clear the session cookie
-    await clearSessionCookie();
+export const POST = safeAsync(async (_req: NextRequest) => {
+  // Clear the session cookie
+  await clearSessionCookie();
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Logged out successfully' 
-    });
-  } catch (error) {
-    console.error('Logout error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Logout failed' },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse(undefined, 'Logged out successfully');
+});

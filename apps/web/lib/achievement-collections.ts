@@ -155,12 +155,10 @@ export const ACHIEVEMENT_COLLECTIONS: AchievementCollectionData[] = [
 ];
 
 export async function updateCollectionProgress(userId: string, achievementCode: string) {
-  console.log("[Collections] PLACEHOLDER: Would update progress for user", userId, achievementCode);
   return null;
 }
 
 export async function claimCollectionReward(userId: string, collectionId: string) {
-  console.log("[Collections] PLACEHOLDER: Would claim reward", userId, collectionId);
   return null;
 }
 
@@ -176,6 +174,8 @@ export function getCollectionProgress(userAchievements: string[], collection: Ac
     isComplete: earned === collection.achievements.length,
   };
 }
+
+
 
 
 

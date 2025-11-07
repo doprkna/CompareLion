@@ -1,0 +1,9 @@
+﻿
+Size(KB) FullName                                                               
+-------- --------                                                               
+ 18810.5 C:\Users\doprk\parel-mvp\prisma\generated\query_engine-windows.dll.node
+ 2690.88 C:\Users\doprk\parel-mvp\prisma\generated\index.d.ts                   
+  449.44 C:\Users\doprk\parel-mvp\apps\web\CHANGELOG-Archive.md                 
+  446.82 C:\Users\doprk\parel-mvp\pnpm-lock.yaml                                
+
+

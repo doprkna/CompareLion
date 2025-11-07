@@ -1,11 +1,12 @@
 export const runtime = 'nodejs';
 
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { safeAsync, successResponse } from '@/lib/api-handler';
 
-export async function GET() {
-  return NextResponse.json({
+export const GET = safeAsync(async (_req: NextRequest) => {
+  return successResponse({
     status: 'active',
     plan: 'basic',
     nextDrip: '2025-11-01'
   });
-}
+});

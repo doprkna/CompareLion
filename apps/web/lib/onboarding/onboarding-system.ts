@@ -137,7 +137,6 @@ export async function completeOnboardingStep(
   userId: string,
   stepId: string
 ) {
-  console.log(`[Onboarding] PLACEHOLDER: Would mark step ${stepId} complete for user ${userId}`);
   
   // PLACEHOLDER: Would update OnboardingProgress
   return null;
@@ -155,7 +154,6 @@ export async function submitFeedback(data: {
   page?: string;
   screenshot?: string;
 }) {
-  console.log(`[Feedback] PLACEHOLDER: Would submit ${data.type} from user ${data.userId}`);
   
   // PLACEHOLDER: Would execute
   // - Create feedback submission
@@ -164,6 +162,8 @@ export async function submitFeedback(data: {
   
   return null;
 }
+
+
 
 
 

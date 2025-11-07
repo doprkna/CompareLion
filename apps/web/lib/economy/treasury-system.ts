@@ -4,19 +4,18 @@
  * PLACEHOLDER: Collect taxes and fund community projects.
  */
 
-const TAX_RATE = 0.05; // 5% tax
+const _TAX_RATE = 0.05; // 5% tax
 
 /**
  * Collect tax from transaction
  */
-export async function collectTax(data: {
+export async function collectTax(_data: {
   sourceType: string;
   sourceId?: string;
   amount: number;
   currency: "gold" | "diamond";
   userId?: string;
 }) {
-  console.log("[Treasury] PLACEHOLDER: Would collect tax", data);
   
   // PLACEHOLDER: Would execute
   // const taxAmount = Math.floor(data.amount * TAX_RATE);
@@ -51,8 +50,7 @@ export async function collectTax(data: {
 /**
  * Get or create treasury
  */
-async function getTreasury() {
-  console.log("[Treasury] PLACEHOLDER: Would get treasury");
+async function _getTreasury() {
   
   // PLACEHOLDER: Would execute
   // let treasury = await prisma.treasury.findFirst();
@@ -72,7 +70,6 @@ async function getTreasury() {
  * Get treasury balance
  */
 export async function getTreasuryBalance() {
-  console.log("[Treasury] PLACEHOLDER: Would get treasury balance");
   
   // PLACEHOLDER: Would execute
   // const treasury = await getTreasury();
@@ -92,15 +89,10 @@ export async function getTreasuryBalance() {
  * Spend from treasury for event/project
  */
 export async function spendFromTreasury(
-  amount: number,
-  currency: "gold" | "diamond",
-  purpose: "event" | "project"
+  _amount: number,
+  _currency: "gold" | "diamond",
+  _purpose: "event" | "project"
 ) {
-  console.log("[Treasury] PLACEHOLDER: Would spend from treasury", {
-    amount,
-    currency,
-    purpose,
-  });
   
   // PLACEHOLDER: Would execute
   // const treasury = await getTreasury();
@@ -129,15 +121,10 @@ export async function spendFromTreasury(
  * Donate to treasury
  */
 export async function donateToTreasury(
-  userId: string,
-  amount: number,
-  currency: "gold" | "diamond"
+  _userId: string,
+  _amount: number,
+  _currency: "gold" | "diamond"
 ) {
-  console.log("[Treasury] PLACEHOLDER: Would donate to treasury", {
-    userId,
-    amount,
-    currency,
-  });
   
   // PLACEHOLDER: Would execute
   // // Deduct from user
@@ -161,6 +148,8 @@ export async function donateToTreasury(
   
   return null;
 }
+
+
 
 
 

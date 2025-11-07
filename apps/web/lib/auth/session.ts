@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { logger } from '@/lib/logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
 const secret = new TextEncoder().encode(JWT_SECRET);
@@ -26,7 +27,7 @@ export async function verifySession(token: string): Promise<SessionPayload | nul
     const { payload } = await jwtVerify(token, secret);
     return payload as SessionPayload;
   } catch (error) {
-    console.error('Session verification error:', error);
+    logger.error('Session verification error', error);
     return null;
   }
 }

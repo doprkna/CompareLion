@@ -8,9 +8,6 @@
  * Generate personalized narrative quest
  */
 export async function generateNarrativeQuest(userId: string) {
-  console.log("[Narrative] PLACEHOLDER: Would generate narrative quest", {
-    userId,
-  });
   
   // PLACEHOLDER: Would execute
   // // Get user context
@@ -109,11 +106,6 @@ export async function submitNarrativeChoice(
   step: number,
   selectedOption: number
 ) {
-  console.log("[Narrative] PLACEHOLDER: Would submit choice", {
-    questId,
-    step,
-    selectedOption,
-  });
   
   // PLACEHOLDER: Would execute
   // const choice = await prisma.narrativeChoice.findFirst({
@@ -149,7 +141,6 @@ export async function submitNarrativeChoice(
  * Generate final outcome based on choices
  */
 async function generateNarrativeOutcome(questId: string) {
-  console.log("[Narrative] PLACEHOLDER: Would generate outcome", { questId });
   
   // PLACEHOLDER: Would execute
   // const quest = await prisma.narrativeQuest.findUnique({
@@ -197,7 +188,6 @@ async function generateNarrativeOutcome(questId: string) {
  * Get user's narrative quest history
  */
 export async function getNarrativeHistory(userId: string, limit: number = 10) {
-  console.log("[Narrative] PLACEHOLDER: Would get history", { userId, limit });
   
   // PLACEHOLDER: Would execute
   // const quests = await prisma.narrativeQuest.findMany({
@@ -216,6 +206,8 @@ export async function getNarrativeHistory(userId: string, limit: number = 10) {
   
   return [];
 }
+
+
 
 
 

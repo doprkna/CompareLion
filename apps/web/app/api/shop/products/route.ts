@@ -1,9 +1,10 @@
 export const runtime = 'nodejs';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
+import { safeAsync, successResponse } from '@/lib/api-handler';
 
-export async function GET(req: NextRequest) {
+export const GET = safeAsync(async (req: NextRequest) => {
   const url = new URL(req.url);
   const kindParam = url.searchParams.get('kind');
   const category = url.searchParams.get('category');
@@ -22,5 +23,5 @@ export async function GET(req: NextRequest) {
     include: { prices: true },
     orderBy,
   });
-  return NextResponse.json({ success: true, products });
-}
+  return successResponse({ products });
+});

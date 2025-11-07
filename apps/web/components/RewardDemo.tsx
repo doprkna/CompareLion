@@ -48,9 +48,6 @@ export function RewardDemo() {
           rarity: 'epic',
         },
       ],
-      onNextFlow: () => console.log('Next Flow'),
-      onReviewAnswers: () => console.log('Review Answers'),
-      onBackToMain: () => console.log('Back to Main'),
     });
   };
 
@@ -88,9 +85,6 @@ export function RewardDemo() {
           rarity: 'epic',
         },
       ],
-      onBuyHearts: () => console.log('Buy Hearts'),
-      onBuyFood: () => console.log('Buy Food'),
-      onReturnHome: () => console.log('Return Home'),
     });
   };
 
@@ -130,6 +124,8 @@ export function RewardDemo() {
     </>
   );
 }
+
+
 
 
 

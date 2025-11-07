@@ -18,7 +18,6 @@ export async function analyzeTrendingTopics(): Promise<string[]> {
   // - Count frequency of topics
   // - Return top 5-10 trending topics
   
-  console.log("[ChallengeGen] PLACEHOLDER: Would analyze trending topics from EventLog");
   
   return ["creativity", "social-connection", "self-reflection", "decision-making"];
 }
@@ -44,14 +43,12 @@ export async function generateWeeklyChallenges(): Promise<{ challengeCount: numb
   });
 
   if (existing) {
-    console.log("[ChallengeGen] Weekly challenge already exists for this week");
     return { challengeCount: 0 };
   }
 
   // Get trending topics
   const topics = await analyzeTrendingTopics();
 
-  console.log("[ChallengeGen] PLACEHOLDER: Would generate challenge with topics:", topics);
 
   // TODO: Implement actual AI generation:
   // 1. Analyze trending topics from EventLog
@@ -78,7 +75,6 @@ export async function generateWeeklyChallenges(): Promise<{ challengeCount: numb
     },
   });
 
-  console.log(`[ChallengeGen] Created draft challenge for week ${weekNumber}`);
   
   return { challengeCount: 1 };
 }
@@ -107,7 +103,6 @@ export async function publishWeeklyChallenge(challengeId: string): Promise<void>
   });
 
   // TODO: Send notifications to all users
-  console.log(`[ChallengeGen] Published weekly challenge: ${challengeId}`);
 }
 
 /**
@@ -129,8 +124,9 @@ export async function overrideWeeklyChallenge(
     },
   });
 
-  console.log(`[ChallengeGen] Admin override applied to ${challengeId}`);
 }
+
+
 
 
 

@@ -1,0 +1,25 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError } from '@/lib/api-handler';
+
+export const GET = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) return unauthorizedError('Unauthorized');
+  const user = await prisma.user.findUnique({ where: { email: session.user.email }, select: { id: true } });
+  if (!user) return unauthorizedError('Unauthorized');
+  const cursor = req.nextUrl.searchParams.get('cursor') || undefined;
+  const take = Math.min(50, Math.max(1, parseInt(req.nextUrl.searchParams.get('limit') || '20')));
+
+  const entries = await prisma.memoryJournal.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: 'desc' },
+    take: take + 1,
+    ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+  });
+  const nextCursor = entries.length > take ? entries.pop()?.id : undefined;
+  return NextResponse.json({ success: true, entries, nextCursor });
+});
+
+

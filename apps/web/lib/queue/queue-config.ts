@@ -4,19 +4,23 @@
  * Priority-based queue system with concurrency control.
  */
 
-import { Queue, QueueOptions, Worker, WorkerOptions } from "bullmq";
+import { Queue, QueueOptions } from "bullmq";
 import Redis from "ioredis";
 import os from "os";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 
 /**
- * Redis connection for BullMQ
+ * Redis connection for BullMQ (only if REDIS_URL is set)
  */
-const connection = new Redis(REDIS_URL, {
-  maxRetriesPerRequest: null, // BullMQ requires this
-  enableReadyCheck: false,
-});
+let connection: Redis | null = null;
+
+if (REDIS_URL) {
+  connection = new Redis(REDIS_URL, {
+    maxRetriesPerRequest: null, // BullMQ requires this
+    enableReadyCheck: false,
+  });
+}
 
 /**
  * Queue priorities and configurations
@@ -105,6 +109,10 @@ export const QUEUE_CONFIG = {
  * Create queue instance
  */
 export function createQueue(priority: QueuePriority): Queue {
+  if (!connection) {
+    throw new Error("Queue system not available - REDIS_URL not configured");
+  }
+  
   const config = QUEUE_CONFIG[priority];
   
   return new Queue(config.name, {

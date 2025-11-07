@@ -4,7 +4,8 @@
  * Optimized Prisma client configuration with connection pooling.
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@parel/db/client";
+import { logger } from "@/lib/logger";
 
 const DATABASE_URL = process.env.DATABASE_URL || "";
 const isProduction = process.env.NODE_ENV === "production";
@@ -94,7 +95,7 @@ if (!isProduction) {
   // @ts-ignore
   prisma.$on("query", (e: any) => {
     if (e.duration > 100) {
-      console.warn(`[DB] Slow query (${e.duration}ms): ${e.query}`);
+      logger.warn('[DB] Slow query detected', { duration: e.duration, query: e.query });
     }
   });
 }
@@ -127,7 +128,7 @@ export async function getPoolStats() {
       idle: Number(result[0]?.total_connections || 0) - Number(result[0]?.active_connections || 0),
     };
   } catch (error) {
-    console.error("[DB] Failed to get pool stats:", error);
+    logger.error("[DB] Failed to get pool stats", error);
     return { total: 0, active: 0, idle: 0 };
   }
 }
@@ -140,7 +141,7 @@ export async function testConnection(): Promise<boolean> {
     await prisma.$queryRaw`SELECT 1`;
     return true;
   } catch (error) {
-    console.error("[DB] Connection test failed:", error);
+    logger.error("[DB] Connection test failed", error);
     return false;
   }
 }
@@ -173,17 +174,18 @@ export async function archiveOldLogs(daysToKeep: number = 30): Promise<number> {
     
     const totalDeleted = eventLogResult.count + activityResult.count;
     
-    console.log(`[DB] Archived ${totalDeleted} old log entries (older than ${daysToKeep} days)`);
     
     return totalDeleted;
   } catch (error) {
-    console.error("[DB] Failed to archive old logs:", error);
+    logger.error("[DB] Failed to archive old logs", error);
     return 0;
   }
 }
 
 export { prisma };
 export default prisma;
+
+
 
 
 

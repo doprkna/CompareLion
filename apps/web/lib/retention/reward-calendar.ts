@@ -36,13 +36,9 @@ export const THIRTY_DAY_REWARDS = [
  * Initialize reward calendar for user
  */
 export async function initializeRewardCalendar(
-  userId: string,
-  calendarType: "7day" | "30day"
+  _userId: string,
+  _calendarType: "7day" | "30day"
 ) {
-  console.log("[RewardCalendar] PLACEHOLDER: Would initialize calendar", {
-    userId,
-    calendarType,
-  });
   
   // PLACEHOLDER: Would execute
   // const rewards = calendarType === "7day" ? SEVEN_DAY_REWARDS : THIRTY_DAY_REWARDS;
@@ -68,12 +64,7 @@ export async function initializeRewardCalendar(
 /**
  * Claim reward for current day
  */
-export async function claimDailyReward(userId: string, calendarType: string, day: number) {
-  console.log("[RewardCalendar] PLACEHOLDER: Would claim reward", {
-    userId,
-    calendarType,
-    day,
-  });
+export async function claimDailyReward(_userId: string, _calendarType: string, _day: number) {
   
   // PLACEHOLDER: Would execute
   // const reward = await prisma.rewardCalendar.findFirst({
@@ -110,13 +101,11 @@ export async function claimDailyReward(userId: string, calendarType: string, day
 /**
  * Get user's calendar progress
  */
-export async function getCalendarProgress(userId: string, calendarType: string) {
-  console.log("[RewardCalendar] PLACEHOLDER: Would get progress", {
-    userId,
-    calendarType,
-  });
+export async function getCalendarProgress(_userId: string, _calendarType: string) {
   return null;
 }
+
+
 
 
 

@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { getUserEnergy } from "@/lib/energy";
+import { safeAsync, serverError } from "@/lib/api-handler";
 
 /**
  * GET /api/quiz/today
  * Get today's daily quiz
  */
-export async function GET(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
+export const GET = safeAsync(async (_req: NextRequest) => {
+  const session = await getServerSession(authOptions);
 
     // Get today's date (start of day)
     const today = new Date();
@@ -38,10 +38,7 @@ export async function GET(req: NextRequest) {
       });
 
       if (allQuestions.length < 3) {
-        return NextResponse.json(
-          { error: "Not enough questions available" },
-          { status: 500 }
-        );
+        return serverError("Not enough questions available");
       }
 
       // Shuffle and pick 3
@@ -125,14 +122,9 @@ export async function GET(req: NextRequest) {
       })),
       energy: energyStatus,
     });
-  } catch (error) {
-    console.error("[API] Error fetching today's quiz:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch quiz" },
-      { status: 500 }
-    );
-  }
-}
+});
+
+
 
 
 

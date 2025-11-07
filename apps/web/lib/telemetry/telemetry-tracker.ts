@@ -6,6 +6,7 @@
 
 import { prisma } from "@/lib/db/connection-pool";
 import { randomUUID } from "crypto";
+import { logger } from "@/lib/logger";
 
 /**
  * Event types
@@ -131,7 +132,7 @@ export async function trackEvent(data: TelemetryEventData): Promise<void> {
     });
   } catch (error) {
     // Silently fail - telemetry should never break the app
-    console.warn("[Telemetry] Failed to track event:", error);
+    logger.warn("[Telemetry] Failed to track event", error);
   }
 }
 
@@ -233,14 +234,15 @@ export async function cleanupOldTelemetry(daysToKeep: number = 30): Promise<numb
       },
     });
     
-    console.log(`[Telemetry] Deleted ${result.count} old events (older than ${daysToKeep} days)`);
     
     return result.count;
   } catch (error) {
-    console.error("[Telemetry] Failed to cleanup old data:", error);
+    logger.error("[Telemetry] Failed to cleanup old data", error);
     return 0;
   }
 }
+
+
 
 
 

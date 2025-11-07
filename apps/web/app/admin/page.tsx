@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
   Trophy, 
@@ -228,11 +227,30 @@ export default function AdminDashboard() {
               className="flex items-center gap-2"
             >
               <Download className="h-4 w-4" />
-              Export
+              Export Metrics
             </Button>
             <Button onClick={loadOverview} variant="outline">
               Refresh
             </Button>
+          </div>
+        </div>
+
+        {/* Color Legend */}
+        <div className="mb-6 p-4 bg-card border border-border rounded-lg">
+          <h3 className="text-sm font-semibold mb-2">Status Legend</h3>
+          <div className="flex flex-wrap gap-4 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+              <span>Healthy (data present)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
+              <span>Warning (no data)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+              <span>Error (critical issue)</span>
+            </div>
           </div>
         </div>
 
@@ -354,7 +372,8 @@ export default function AdminDashboard() {
 
         {/* Footer */}
         <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>Admin Dashboard v0.12.5 • Last updated: {new Date(overview.timestamp).toLocaleString()}</p>
+          <p>Admin Dashboard v0.13.2j • Last updated: {new Date(overview.timestamp).toLocaleString()}</p>
+          <p className="mt-1">🧪 PareL – Test Build v0.13.2j</p>
         </div>
       </div>
     </div>

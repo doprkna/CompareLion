@@ -182,8 +182,7 @@ export function calculateVotingPower(
 /**
  * PLACEHOLDER: Join faction
  */
-export async function joinFaction(userId: string, factionId: string) {
-  console.log(`[Faction] PLACEHOLDER: Would add user ${userId} to faction ${factionId}`);
+export async function joinFaction(_userId: string, _factionId: string) {
   
   // PLACEHOLDER: Would execute
   // - Check if user already in faction
@@ -199,12 +198,11 @@ export async function joinFaction(userId: string, factionId: string) {
  * PLACEHOLDER: Switch faction
  */
 export async function switchFaction(
-  userId: string,
-  fromFactionId: string,
-  toFactionId: string,
-  penaltyChoice: "prestige" | "gold" | "quest"
+  _userId: string,
+  _fromFactionId: string,
+  _toFactionId: string,
+  _penaltyChoice: "prestige" | "gold" | "quest"
 ) {
-  console.log(`[Faction] PLACEHOLDER: Would switch user ${userId} from ${fromFactionId} to ${toFactionId}`);
   
   // PLACEHOLDER: Would execute
   // - Calculate penalty
@@ -220,8 +218,7 @@ export async function switchFaction(
 /**
  * PLACEHOLDER: Calculate faction stats
  */
-export async function calculateFactionStats(factionId: string) {
-  console.log(`[Faction] PLACEHOLDER: Would calculate stats for faction ${factionId}`);
+export async function calculateFactionStats(_factionId: string) {
   
   // PLACEHOLDER: Would execute
   // - Aggregate member XP
@@ -231,6 +228,8 @@ export async function calculateFactionStats(factionId: string) {
   
   return null;
 }
+
+
 
 
 

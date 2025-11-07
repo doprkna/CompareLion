@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/options';
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import * as dbModule from '@/lib/db';
+import { safeAsync, successResponse, unauthorizedError, validationError } from '@/lib/api-handler';
 
 const prisma = (dbModule as any).default || (dbModule as any).prisma;
 
-export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+export const GET = safeAsync(async (request: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
+  }
 
     // For now, return mock data since guilds table doesn't exist yet
     // This will be replaced with actual database queries once the schema is updated
@@ -81,38 +81,23 @@ export async function GET(request: NextRequest) {
       }
     ];
 
-    return NextResponse.json({
-      success: true,
-      data: mockGuilds
-    });
+  return successResponse({ data: mockGuilds });
+});
 
-  } catch (error) {
-    console.error('Error fetching guilds:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+export const POST = safeAsync(async (request: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const body = await request.json();
+  const { name, description, isPublic, maxMembers, requirements } = body;
 
-    const body = await request.json();
-    const { name, description, isPublic, maxMembers, requirements } = body;
-
-    // Validate required fields
-    if (!name || !description) {
-      return NextResponse.json(
-        { error: 'Name and description are required' },
-        { status: 400 }
-      );
-    }
+  // Validate required fields
+  if (!name || !description) {
+    return validationError('Name and description are required');
+  }
 
     // For now, return a mock response since guilds table doesn't exist yet
     const mockGuild = {
@@ -143,16 +128,5 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    return NextResponse.json({
-      success: true,
-      data: mockGuild
-    });
-
-  } catch (error) {
-    console.error('Error creating guild:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse({ data: mockGuild });
+});

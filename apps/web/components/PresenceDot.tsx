@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useEventBus } from "@/hooks/useEventBus";
 
 interface PresenceDotProps {
@@ -34,6 +34,8 @@ export default function PresenceDot({ userId, className = "" }: PresenceDotProps
     />
   );
 }
+
+
 
 
 

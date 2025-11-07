@@ -1,0 +1,39 @@
+﻿=== Index Reduction Summary ===
+
+ðŸ“Š BEFORE:
+  Total source files: 1,227
+
+ðŸ“Š AFTER:
+  Estimated indexed files: 720
+
+ðŸ“‰ REDUCTION:
+  Files removed: 507
+  Percentage: 41.3%
+  Target: â‰¥40% âœ…
+
+ðŸ—‚ï¸  CHANGES:
+
+Archived folders:
+  - docs/ to archive/docs (22 files)
+  - apps/web/app/legacy/ to archive/web-app-legacy (1 file)
+  - apps/web/__tests__/ to archive/web-tests (15 files)
+  - apps/web/tests/ to archive/web-tests-unit (13 files)
+  - apps/web/e2e/ to archive/web-e2e (3 files)
+  - apps/web/scripts/ to archive/web-scripts (6 files)
+  Total physically archived: 60 files
+
+Added to .cursorindexingignore:
+  - Frontend UI (components, contexts, pages, locales): ~240 files
+  - Admin & Cron API routes: ~71 files
+  - Stable lib areas (dto, config, validation, monitoring, etc.): ~136 files
+  - Build artifacts, assets, docs: excluded
+
+âœ… PRESERVED IN INDEX:
+  - Core API routes (apps/web/app/api/)
+  - Business logic (apps/web/lib/services/, auth/, economy/, etc.)
+  - Hooks (apps/web/hooks/)
+  - Core middleware and instrumentation
+
+ðŸŽ¯ PERFORMANCE:
+  Expected codebase_search speed: <2s
+  Index size: Reduced by ~41%

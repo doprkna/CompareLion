@@ -193,7 +193,6 @@ export function checkEventTriggers(vars: WorldVariables): {
  * PLACEHOLDER: Recalculate world state (daily cron)
  */
 export async function recalculateWorldState() {
-  console.log("[WorldSim] PLACEHOLDER: Would recalculate world state");
   
   // PLACEHOLDER: Would execute
   // - Aggregate all user contributions from past 24h
@@ -215,7 +214,6 @@ export async function recordWorldContribution(
   actionType: "answer" | "challenge" | "flow" | "social",
   actionData: any
 ) {
-  console.log(`[WorldSim] PLACEHOLDER: Would record contribution from user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Calculate contribution values
@@ -224,6 +222,8 @@ export async function recordWorldContribution(
   
   return null;
 }
+
+
 
 
 

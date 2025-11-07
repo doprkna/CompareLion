@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export interface WalletUpdate {
   userId: string;
@@ -103,7 +104,7 @@ export async function updateWalletWithLock(
 
     return result;
   } catch (error) {
-    console.error('Wallet update error:', error);
+    logger.error('Wallet update error', error);
     return {
       success: false,
       newBalance: { funds: 0, diamonds: 0 },
@@ -142,7 +143,7 @@ export async function getWalletBalanceWithLock(
       diamonds: wallet.diamonds,
     };
   } catch (error) {
-    console.error('Get wallet balance error:', error);
+    logger.error('Get wallet balance error', error);
     return null;
   }
 }
@@ -273,7 +274,7 @@ export async function transferBetweenWallets(
 
     return { success: true };
   } catch (error) {
-    console.error('Wallet transfer error:', error);
+    logger.error('Wallet transfer error', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -313,7 +314,7 @@ export async function bulkWalletUpdate(
       results: processedResults,
     };
   } catch (error) {
-    console.error('Bulk wallet update error:', error);
+    logger.error('Bulk wallet update error', error);
     return {
       success: false,
       results: updates.map(() => ({

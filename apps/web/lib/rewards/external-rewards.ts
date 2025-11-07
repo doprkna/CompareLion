@@ -195,7 +195,6 @@ export function isEligibleForReward(
  * PLACEHOLDER: Claim reward
  */
 export async function claimReward(userId: string, offerId: string) {
-  console.log(`[Rewards] PLACEHOLDER: Would claim reward ${offerId} for user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Check eligibility
@@ -216,7 +215,6 @@ export async function verifyRedemption(
   redemptionCode: string,
   verificationCode?: string
 ) {
-  console.log(`[Rewards] PLACEHOLDER: Would verify redemption ${redemptionCode}`);
   
   // PLACEHOLDER: Would execute
   // - Look up redemption
@@ -232,7 +230,6 @@ export async function verifyRedemption(
  * PLACEHOLDER: Mint NFT proof (optional)
  */
 export async function mintRewardNFT(redemptionId: string) {
-  console.log(`[Rewards] PLACEHOLDER: Would mint NFT for redemption ${redemptionId}`);
   
   // PLACEHOLDER: Would execute
   // - Connect to blockchain
@@ -242,6 +239,8 @@ export async function mintRewardNFT(redemptionId: string) {
   
   return null;
 }
+
+
 
 
 

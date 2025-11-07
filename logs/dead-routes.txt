@@ -1,0 +1,112 @@
+﻿# Dead Routes Report - Updated
+# Generated: 2025-11-06 21:00:54
+# Method: Manual analysis + grep reference checking
+
+## ðŸŽ¯ Scan Summary
+
+Scanned directories:
+- apps/web/app/ (pages)
+- apps/web/app/api/ (API routes)
+
+---
+
+## âœ… ARCHIVED ROUTES (Confirmed Dead - No References Found)
+
+### Debug/Test API Routes
+
+1. /api/debug/
+   Type: API endpoint
+   Purpose: Admin user debug inspector
+   References: 0
+   Status: âœ… ARCHIVED to archive/unused/api-debug
+
+2. /api/debug-prisma/
+   Type: API endpoint
+   Purpose: Prisma connection test
+   References: 0
+   Status: âœ… ARCHIVED to archive/unused/api-debug-prisma
+
+3. /api/debug-session/
+   Type: API endpoint
+   Purpose: Session debugging
+   References: 0
+   Status: âœ… ARCHIVED to archive/unused/api-debug-session
+
+4. /api/test-login/
+   Type: API endpoint
+   Purpose: Login testing endpoint
+   References: 0
+   Status: âœ… ARCHIVED to archive/unused/api-test-login
+
+5. /api/test-users/
+   Type: API endpoint
+   Purpose: User query testing
+   References: 0
+   Status: âœ… ARCHIVED to archive/unused/api-test-users
+
+6. /api/simple-login/
+   Type: API endpoint
+   Purpose: Alternative login method
+   References: 0
+   Status: âœ… ARCHIVED to archive/unused/api-simple-login
+
+7. /api/test-env/
+   Type: Empty directory
+   Purpose: Unknown (no files)
+   References: N/A
+   Status: âœ… DELETED
+
+---
+
+## âœ… VERIFIED LIVE ROUTES (Actively Used)
+
+### Routes Initially Suspected but Found Active:
+
+1. /flow-demo
+   Type: Page route
+   References: 3 (main page, questions page, routes.ts)
+   Status: âœ… KEPT - Actively used
+
+2. /synch-tests
+   Type: Page + API routes
+   References: 10+ (hooks, components, API calls)
+   Status: âœ… KEPT - Feature in active use
+
+3. /api/synch-tests/*
+   Type: API endpoints
+   References: Multiple (useSynchTests hook)
+   Status: âœ… KEPT - Required by synch-tests feature
+
+---
+
+## ðŸ“Š Statistics
+
+Total routes scanned: ~150 API routes + ~70 page routes
+Dead routes archived: 6 API routes
+Empty directories removed: 1
+Live routes preserved: All others
+Cleanup impact: 7 routes removed
+
+---
+
+## ðŸ” Analysis Method
+
+1. Grep search for route references in codebase:
+   - href="/path" (Link components)
+   - fetch('/api/path' (API calls)
+   - router.push('/path' (Navigation)
+   - path: '/path' (Config files)
+
+2. Manual inspection of route files
+3. CHANGELOG review for previous cleanup notes
+4. No references found = Dead route
+
+---
+
+## ðŸŽ¯ Impact
+
+- Reduced API surface area by 6 debug/test endpoints
+- Cleaner API directory structure
+- No impact on production features
+- All removed routes were debug/test only
+

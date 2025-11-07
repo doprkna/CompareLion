@@ -1,10 +1,13 @@
-import { NextResponse } from 'next/server';
-import { getUserFromRequest } from '../_utils';
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/app/api/_utils';
 import { toUserDTO, UserDTO } from '@/lib/dto/userDTO';
 import bcrypt from 'bcrypt';
 import { getUserProfile, updateUserProfile } from '@/lib/services/userService';
+import { prisma } from '@/lib/db';
+import { safeAsync, authError, notFoundError, validationError } from '@/lib/api-handler';
+import { z } from 'zod';
 
-function msToHMS(ms: number) {
+function _msToHMS(ms: number) {
   if (!ms || ms < 0) return '0s';
   const s = Math.floor(ms / 1000);
   const h = Math.floor(s / 3600);
@@ -17,14 +20,14 @@ function msToHMS(ms: number) {
   ].filter(Boolean).join(' ');
 }
 
-export async function GET(request: Request) {
-  const user = await getUserFromRequest(request);
+export const GET = safeAsync(async (req: NextRequest) => {
+  const user = await getUserFromRequest(req);
   if (!user) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    return authError('Unauthorized');
   }
   const dbUser = await getUserProfile(user.userId);
   if (!dbUser) {
-    return NextResponse.json({ success: false, message: 'User not found' }, { status: 404 });
+    return notFoundError('User');
   }
   // Stats: per session
   const sessions = await prisma.flowProgress.findMany({ where: { userId: dbUser.id }, orderBy: { startedAt: 'desc' } });
@@ -77,32 +80,58 @@ export async function GET(request: Request) {
       })),
     },
   });
-}
+});
 
-export async function PATCH(request: Request) {
-  const user = await getUserFromRequest(request);
+const ProfileUpdateSchema = z.object({
+  email: z.string().email().optional(),
+  password: z.string().min(6).optional(),
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  language: z.string().optional(),
+  country: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  avatarUrl: z.string().url().optional(),
+  motto: z.string().optional(),
+  theme: z.string().optional(),
+  funds: z.number().optional(),
+  diamonds: z.number().optional(),
+  xp: z.number().optional(),
+  level: z.number().optional(),
+});
+
+export const PATCH = safeAsync(async (req: NextRequest) => {
+  const user = await getUserFromRequest(req);
   if (!user) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    return authError('Unauthorized');
   }
-  const body = await request.json();
+  
+  const body = await req.json();
+  const parsed = ProfileUpdateSchema.safeParse(body);
+  if (!parsed.success) {
+    return validationError('Invalid profile data', parsed.error.issues);
+  }
+  
+  const validData = parsed.data;
   const data: any = {};
-  if (body.email) data.email = body.email;
-  if (body.password) data.password = await bcrypt.hash(body.password, 10);
-  if (body.name) data.name = body.name;
-  if (body.phone) data.phone = body.phone;
-  if (body.language) data.language = body.language;
-  if (body.country) data.country = body.country;
-  if (body.dateOfBirth) data.dateOfBirth = new Date(body.dateOfBirth);
-  if (body.avatarUrl) data.avatarUrl = body.avatarUrl;
-  if (body.motto) data.motto = body.motto;
-  if (body.theme) data.theme = body.theme;
-  if (body.funds !== undefined) data.funds = body.funds;
-  if (body.diamonds !== undefined) data.diamonds = body.diamonds;
-  if (body.xp !== undefined) data.xp = body.xp;
-  if (body.level !== undefined) data.level = body.level;
+  if (validData.email) data.email = validData.email;
+  if (validData.password) data.password = await bcrypt.hash(validData.password, 10);
+  if (validData.name) data.name = validData.name;
+  if (validData.phone) data.phone = validData.phone;
+  if (validData.language) data.language = validData.language;
+  if (validData.country) data.country = validData.country;
+  if (validData.dateOfBirth) data.dateOfBirth = new Date(validData.dateOfBirth);
+  if (validData.avatarUrl) data.avatarUrl = validData.avatarUrl;
+  if (validData.motto) data.motto = validData.motto;
+  if (validData.theme) data.theme = validData.theme;
+  if (validData.funds !== undefined) data.funds = validData.funds;
+  if (validData.diamonds !== undefined) data.diamonds = validData.diamonds;
+  if (validData.xp !== undefined) data.xp = validData.xp;
+  if (validData.level !== undefined) data.level = validData.level;
+  
   if (Object.keys(data).length === 0) {
-    return NextResponse.json({ success: false, message: 'No changes provided' }, { status: 400 });
+    return validationError('No changes provided');
   }
+  
   await updateUserProfile(user.userId, data);
   return NextResponse.json({ success: true, message: 'Profile updated' });
-}
+});

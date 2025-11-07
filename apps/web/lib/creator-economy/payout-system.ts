@@ -26,11 +26,7 @@ export const POOL_ALLOCATION = {
 /**
  * Calculate weekly payout pool
  */
-export async function calculateWeeklyPool(weekStart: Date, weekEnd: Date) {
-  console.log("[Payout] PLACEHOLDER: Would calculate weekly pool", {
-    weekStart,
-    weekEnd,
-  });
+export async function calculateWeeklyPool(_weekStart: Date, _weekEnd: Date) {
   
   // PLACEHOLDER: Would execute
   // const subscriptionRevenue = await getSubscriptionRevenue(weekStart, weekEnd);
@@ -64,14 +60,10 @@ export async function calculateWeeklyPool(weekStart: Date, weekEnd: Date) {
  * Calculate creator engagement score for the week
  */
 export async function calculateCreatorEngagement(
-  creatorId: string,
-  weekStart: Date,
-  weekEnd: Date
+  _creatorId: string,
+  _weekStart: Date,
+  _weekEnd: Date
 ): Promise<number> {
-  console.log("[Payout] PLACEHOLDER: Would calculate creator engagement", {
-    creatorId,
-    weekStart,
-  });
   
   // PLACEHOLDER: Would execute
   // const metrics = await prisma.engagementMetric.findMany({
@@ -94,8 +86,7 @@ export async function calculateCreatorEngagement(
 /**
  * Distribute weekly payouts
  */
-export async function distributeWeeklyPayouts(poolId: string) {
-  console.log("[Payout] PLACEHOLDER: Would distribute payouts", { poolId });
+export async function distributeWeeklyPayouts(_poolId: string) {
   
   // PLACEHOLDER: Would execute
   // const pool = await prisma.payoutPool.findUnique({
@@ -175,11 +166,7 @@ export async function distributeWeeklyPayouts(poolId: string) {
 /**
  * Process payout to Stripe Connect
  */
-export async function processStripePayout(walletId: string, amount: number) {
-  console.log("[Payout] PLACEHOLDER: Would process Stripe payout", {
-    walletId,
-    amount,
-  });
+export async function processStripePayout(_walletId: string, _amount: number) {
   
   // PLACEHOLDER: Would execute
   // const wallet = await prisma.creatorWallet.findUnique({

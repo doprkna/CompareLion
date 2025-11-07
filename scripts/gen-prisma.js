@@ -4,7 +4,6 @@ const path = require('path');
 
 function run() {
   console.log('Generating Prisma Client in packages/db...');
-  // Run prisma generate within the packages/db directory
   const pkgDbDir = path.resolve(__dirname, '../packages/db');
   try {
     execSync('npx prisma generate --schema=./schema.prisma', { stdio: 'inherit', cwd: pkgDbDir });
@@ -12,16 +11,20 @@ function run() {
     console.warn('Warning: prisma generate failed, continuing. Error:', e.message);
   }
 
-  // Copy from the generated client in packages/db
   const srcDir = path.resolve(pkgDbDir, 'node_modules/.prisma/client');
   const destDir = path.resolve(__dirname, '../prisma/generated');
+
+  if (!fs.existsSync(srcDir)) {
+    console.log('Source not found. Prisma client available via node_modules, skipping copy.');
+    return;
+  }
 
   if (fs.existsSync(destDir)) {
     fs.rmSync(destDir, { recursive: true, force: true });
   }
   fs.mkdirSync(destDir, { recursive: true });
 
-  console.log(`Copying generated client from ${srcDir} to ${destDir}...`);
+  console.log('Copying generated client...');
   copyRecursive(srcDir, destDir);
 }
 

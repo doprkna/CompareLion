@@ -7,8 +7,10 @@
  * This is the last resort error boundary
  */
 
+import { logger } from '@/lib/logger';
+
 export default function GlobalError({ error }: { error: Error }) {
-  console.error("GlobalError:", error);
+  logger.error("GlobalError", error);
   
   const isDev = process.env.NODE_ENV !== "production";
   

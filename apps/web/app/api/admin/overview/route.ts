@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { ensurePrismaClient } from "@/lib/prisma-guard";
-import { handleApiError } from "@/lib/api-error-handler";
+import { safeAsync, authError, forbiddenError } from "@/lib/api-handler";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 
@@ -40,76 +40,65 @@ function readLastSeedTimestamp(): string | null {
   }
 }
 
-export async function GET() {
-  try {
-    ensurePrismaClient();
-    
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { role: true },
-    });
-
-    if (!user || user.role !== "ADMIN") {
-      return NextResponse.json(
-        { error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    // Log database connection for debugging
-    console.log("🔗 Admin Overview - Connected to:", process.env.DATABASE_URL);
-
-    // Run all aggregation queries in parallel for better performance
-    const [
-      users,
-      questions,
-      achievements,
-      items,
-      messages,
-      notifications,
-      worldEvents,
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.question.count(),
-      prisma.achievement.count(),
-      prisma.item.count(),
-      prisma.message.count(),
-      prisma.notification.count(),
-      prisma.worldEvent.count(),
-    ]);
-
-    const overview: AdminOverview = {
-      users,
-      questions,
-      achievements,
-      items,
-      messages,
-      notifications,
-      worldEvents,
-      lastSeed: readLastSeedTimestamp(),
-      databaseUrl: process.env.DATABASE_URL || "Not configured",
-      timestamp: new Date().toISOString(),
-    };
-
-    return NextResponse.json({
-      success: true,
-      data: overview,
-    });
-  } catch (error) {
-    console.error("[API Error][admin/overview]", error);
-    return handleApiError(error, "Failed to fetch admin overview");
+export const GET = safeAsync(async (req: NextRequest) => {
+  ensurePrismaClient();
+  
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return authError();
   }
-}
+
+  // Check if user is admin
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { role: true },
+  });
+
+  if (!user || user.role !== "ADMIN") {
+    return forbiddenError("Admin access required");
+  }
+
+  // Run all aggregation queries in parallel for better performance
+  const [
+    users,
+    questions,
+    achievements,
+    items,
+    messages,
+    notifications,
+    worldEvents,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.question.count(),
+    prisma.achievement.count(),
+    prisma.item.count(),
+    prisma.message.count(),
+    prisma.notification.count(),
+    prisma.worldEvent.count(),
+  ]);
+
+  const overview: AdminOverview = {
+    users,
+    questions,
+    achievements,
+    items,
+    messages,
+    notifications,
+    worldEvents,
+    lastSeed: readLastSeedTimestamp(),
+    databaseUrl: process.env.DATABASE_URL || "Not configured",
+    timestamp: new Date().toISOString(),
+  };
+
+  return NextResponse.json({
+    success: true,
+    data: overview,
+  });
+});
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { securityConfig } from '@/lib/config/security';
+import { logger } from '@/lib/logger';
 
 // hCaptcha configuration
 const HCAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '10000000-ffff-ffff-ffff-000000000001'; // Test key
@@ -21,7 +22,6 @@ export interface HCaptchaResult {
 export async function verifyHCaptcha(token: string, ip?: string): Promise<HCaptchaResult> {
   // If bypass is enabled, always return success
   if (HCAPTCHA_BYPASS) {
-    console.log('hCaptcha bypassed for development');
     return {
       success: true,
       challengeTs: new Date().toISOString(),
@@ -46,7 +46,7 @@ export async function verifyHCaptcha(token: string, ip?: string): Promise<HCaptc
     const result: HCaptchaResult = await response.json();
     return result;
   } catch (error) {
-    console.error('hCaptcha verification failed:', error);
+    logger.error('hCaptcha verification failed', error);
     return {
       success: false,
       errorCodes: ['network-error']

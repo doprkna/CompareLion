@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]/options'
+import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
 import { toWorkflowDTO, WorkflowDTO } from '@/lib/dto/workflowDTO';
+import { safeAsync, unauthorizedError, validationError } from '@/lib/api-handler';
 
-export async function GET(request: NextRequest) {
+export const GET = safeAsync(async (request: NextRequest) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const orgId = session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined
   if (!orgId) {
-    return NextResponse.json({ error: 'No organization found' }, { status: 400 })
+    return validationError('No organization found');
   }
 
   const rawWorkflows = await prisma.workflow.findMany({
@@ -21,12 +22,12 @@ export async function GET(request: NextRequest) {
   });
   const workflows: WorkflowDTO[] = rawWorkflows.map(toWorkflowDTO);
   return NextResponse.json(workflows);
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = safeAsync(async (request: NextRequest) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const body = await request.json()
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   const orgId = session.user.orgs && session.user.orgs.length > 0 ? session.user.orgs[0].id : undefined
   if (!orgId) {
-    return NextResponse.json({ error: 'No organization found' }, { status: 400 })
+    return validationError('No organization found');
   }
 
   const rawWorkflow = await prisma.workflow.create({
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
   })
   const workflow: WorkflowDTO = toWorkflowDTO(rawWorkflow);
   return NextResponse.json(workflow);
-}
+});
 
 
 

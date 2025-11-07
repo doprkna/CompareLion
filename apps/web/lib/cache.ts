@@ -1,210 +1,136 @@
 /**
- * Caching Layer (v0.8.10)
- * 
- * PLACEHOLDER: Hybrid caching with Redis backend + edge in-memory.
+ * Simple In-Memory Cache
+ * Fallback for flow state when Redis not available
+ * v0.13.2i
  */
 
-import { LRUCache } from "lru-cache";
+import { logger } from '@/lib/utils/debug';
 
-// In-memory edge cache (fallback when Redis unavailable)
-const edgeCache = new LRUCache<string, any>({
-  max: 500, // Max 500 entries
-  ttl: 1000 * 60 * 2, // 2 minutes default TTL
-  updateAgeOnGet: true,
-  updateAgeOnHas: true,
-});
-
-export interface CacheOptions {
-  ttl?: number; // Time-to-live in seconds
-  strategy?: "redis" | "memory" | "hybrid";
-  invalidateOn?: string[]; // Event types that invalidate this cache
+interface CacheEntry<T> {
+  value: T;
+  expiresAt: number;
 }
 
-export interface CacheMetadata {
-  key: string;
-  hit: boolean;
-  source?: "redis" | "memory" | "none";
-  duration: number; // ms
-}
+class MemoryCache {
+  private cache: Map<string, CacheEntry<any>>;
+  private cleanupInterval: NodeJS.Timeout | null;
 
-// Default TTL strategies per endpoint type
-export const DEFAULT_TTLS = {
-  user_summary: 60,      // 1 minute
-  leaderboard: 120,      // 2 minutes
-  shop_items: 300,       // 5 minutes
-  cosmetics: 300,        // 5 minutes
-  achievements: 180,     // 3 minutes
-  themes: 240,           // 4 minutes
-  feed: 30,              // 30 seconds
-  notifications: 15,     // 15 seconds
-  presence: 10,          // 10 seconds
-  stats: 90,             // 1.5 minutes
-};
-
-/**
- * Get cached data
- */
-export async function getCache<T>(
-  key: string,
-  options?: CacheOptions
-): Promise<{ data: T | null; metadata: CacheMetadata }> {
-  const startTime = Date.now();
-  const strategy = options?.strategy || "hybrid";
-  
-  // Try Redis first (if enabled and available)
-  if (strategy === "redis" || strategy === "hybrid") {
-    console.log(`[Cache] PLACEHOLDER: Would check Redis for key: ${key}`);
-    // const redisData = await redis.get(key);
-    // if (redisData) return JSON.parse(redisData);
+  constructor() {
+    this.cache = new Map();
+    this.cleanupInterval = null;
+    this.startCleanup();
   }
-  
-  // Try memory cache
-  if (strategy === "memory" || strategy === "hybrid") {
-    const memoryData = edgeCache.get(key);
-    if (memoryData !== undefined) {
-      return {
-        data: memoryData as T,
-        metadata: {
-          key,
-          hit: true,
-          source: "memory",
-          duration: Date.now() - startTime,
-        },
-      };
+
+  /**
+   * Set a value with optional TTL (in seconds)
+   */
+  set<T>(key: string, value: T, ttl: number = 3600): void {
+    const expiresAt = Date.now() + ttl * 1000;
+    this.cache.set(key, { value, expiresAt });
+    logger.debug(`Cache SET: ${key}`, { ttl });
+  }
+
+  /**
+   * Get a value from cache
+   */
+  get<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    
+    if (!entry) {
+      return null;
+    }
+
+    // Check if expired
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(key);
+      logger.debug(`Cache EXPIRED: ${key}`);
+      return null;
+    }
+
+    logger.debug(`Cache HIT: ${key}`);
+    return entry.value as T;
+  }
+
+  /**
+   * Delete a value from cache
+   */
+  delete(key: string): boolean {
+    const deleted = this.cache.delete(key);
+    if (deleted) {
+      logger.debug(`Cache DELETE: ${key}`);
+    }
+    return deleted;
+  }
+
+  /**
+   * Clear all cache entries
+   */
+  clear(): void {
+    this.cache.clear();
+    logger.debug('Cache CLEARED');
+  }
+
+  /**
+   * Get cache size
+   */
+  size(): number {
+    return this.cache.size;
+  }
+
+  /**
+   * Start periodic cleanup of expired entries
+   */
+  private startCleanup(): void {
+    // Run cleanup every 5 minutes
+    this.cleanupInterval = setInterval(() => {
+      const now = Date.now();
+      let cleaned = 0;
+
+      for (const [key, entry] of this.cache.entries()) {
+        if (now > entry.expiresAt) {
+          this.cache.delete(key);
+          cleaned++;
+        }
+      }
+
+      if (cleaned > 0) {
+        logger.debug(`Cache cleanup: removed ${cleaned} expired entries`);
+      }
+    }, 5 * 60 * 1000);
+  }
+
+  /**
+   * Stop cleanup interval
+   */
+  stop(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
     }
   }
-  
-  return {
-    data: null,
-    metadata: {
-      key,
-      hit: false,
-      source: "none",
-      duration: Date.now() - startTime,
-    },
-  };
 }
+
+// Singleton instance
+export const cache = new MemoryCache();
 
 /**
- * Set cached data
+ * Flow-specific cache helpers
  */
-export async function setCache(
-  key: string,
-  data: any,
-  options?: CacheOptions
-): Promise<void> {
-  const ttl = options?.ttl || 60;
-  const strategy = options?.strategy || "hybrid";
-  
-  // Set in Redis (if enabled)
-  if (strategy === "redis" || strategy === "hybrid") {
-    console.log(`[Cache] PLACEHOLDER: Would set Redis key: ${key} with TTL: ${ttl}s`);
-    // await redis.setex(key, ttl, JSON.stringify(data));
-  }
-  
-  // Set in memory cache
-  if (strategy === "memory" || strategy === "hybrid") {
-    edgeCache.set(key, data, { ttl: ttl * 1000 });
-  }
+export interface FlowState {
+  flowId: string;
+  lastQuestionId: string;
+  startedAt: number;
+  questionsAnswered: number;
 }
 
-/**
- * Invalidate cached data
- */
-export async function invalidateCache(keyOrPattern: string): Promise<void> {
-  console.log(`[Cache] PLACEHOLDER: Would invalidate: ${keyOrPattern}`);
-  
-  // If exact key, delete from memory
-  if (!keyOrPattern.includes("*")) {
-    edgeCache.delete(keyOrPattern);
-    // await redis.del(keyOrPattern);
-    return;
-  }
-  
-  // If pattern, clear all matching keys
-  const pattern = keyOrPattern.replace("*", "");
-  for (const key of edgeCache.keys()) {
-    if (key.includes(pattern)) {
-      edgeCache.delete(key);
-    }
-  }
-  
-  // Redis pattern deletion
-  // const keys = await redis.keys(keyOrPattern);
-  // if (keys.length) await redis.del(...keys);
+export function setFlowState(userId: string, state: FlowState): void {
+  cache.set(`flow:${userId}`, state, 3600); // 1 hour TTL
 }
 
-/**
- * Wrapper for cached API responses
- */
-export async function withCache<T>(
-  key: string,
-  fetcher: () => Promise<T>,
-  options?: CacheOptions
-): Promise<{ data: T; cached: boolean; metadata: CacheMetadata }> {
-  const startTime = Date.now();
-  
-  // Check cache first
-  const cached = await getCache<T>(key, options);
-  if (cached.data !== null) {
-    return {
-      data: cached.data,
-      cached: true,
-      metadata: cached.metadata,
-    };
-  }
-  
-  // Cache miss - fetch fresh data
-  const data = await fetcher();
-  
-  // Store in cache
-  await setCache(key, data, options);
-  
-  return {
-    data,
-    cached: false,
-    metadata: {
-      key,
-      hit: false,
-      source: "none",
-      duration: Date.now() - startTime,
-    },
-  };
+export function getFlowState(userId: string): FlowState | null {
+  return cache.get<FlowState>(`flow:${userId}`);
 }
 
-/**
- * Generate cache key
- */
-export function cacheKey(namespace: string, ...parts: (string | number)[]): string {
-  return `parel:${namespace}:${parts.join(":")}`;
+export function clearFlowState(userId: string): void {
+  cache.delete(`flow:${userId}`);
 }
-
-/**
- * Record cache metrics (for admin dashboard)
- */
-export async function recordCacheMetrics(
-  cacheKey: string,
-  endpoint: string,
-  hit: boolean,
-  duration: number
-): Promise<void> {
-  console.log(`[Cache] Metrics: ${cacheKey} @ ${endpoint} - ${hit ? "HIT" : "MISS"} (${duration}ms)`);
-  
-  // PLACEHOLDER: Would record to database
-  // await prisma.cacheMetrics.upsert({
-  //   where: { cacheKey_endpoint_date: { cacheKey, endpoint, date: today } },
-  //   update: { [hit ? 'hitCount' : 'missCount']: { increment: 1 } },
-  //   create: { cacheKey, endpoint, hitCount: hit ? 1 : 0, missCount: hit ? 0 : 1 }
-  // });
-}
-
-
-
-
-
-
-
-
-
-
-

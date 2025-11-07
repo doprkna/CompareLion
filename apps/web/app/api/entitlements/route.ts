@@ -3,8 +3,9 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthedUser } from '@/lib/server/auth';
 import { prisma } from '@/lib/db';
+import { safeAsync } from '@/lib/api-handler';
 
-export async function GET(req: NextRequest) {
+export const GET = safeAsync(async (req: NextRequest) => {
   // Get mock or real authenticated user
   const { id: userId } = getAuthedUser(req);
   // Build filter
@@ -30,4 +31,4 @@ export async function GET(req: NextRequest) {
     createdAt: e.createdAt,
   }));
   return NextResponse.json(result);
-}
+});

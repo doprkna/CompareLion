@@ -183,11 +183,10 @@ export function meetsCreatorTierRequirements(
  * PLACEHOLDER: Create creator profile
  */
 export async function createCreatorProfile(
-  userId: string,
-  displayName: string,
-  bio?: string
+  _userId: string,
+  _displayName: string,
+  _bio?: string
 ) {
-  console.log("[Creator] PLACEHOLDER: Would create profile for", userId);
   
   // PLACEHOLDER: Would create profile
   // - Check if user level >= 10
@@ -200,8 +199,7 @@ export async function createCreatorProfile(
 /**
  * PLACEHOLDER: Submit flow for review
  */
-export async function submitFlowForReview(flowId: string) {
-  console.log("[Creator] PLACEHOLDER: Would submit flow for review", flowId);
+export async function submitFlowForReview(_flowId: string) {
   
   // PLACEHOLDER: Would execute
   // - Change status to "pending_review"
@@ -215,13 +213,12 @@ export async function submitFlowForReview(flowId: string) {
  * PLACEHOLDER: Award creator reward
  */
 export async function awardCreatorReward(
-  creatorId: string,
-  type: "xp_share" | "gold_bonus" | "milestone_bonus",
-  amount: number,
-  source: string,
-  description: string
+  _creatorId: string,
+  _type: "xp_share" | "gold_bonus" | "milestone_bonus",
+  _amount: number,
+  _source: string,
+  _description: string
 ) {
-  console.log(`[Creator] PLACEHOLDER: Would award ${amount} ${type} to creator ${creatorId}`);
   
   // PLACEHOLDER: Would execute
   // - Create reward record
@@ -230,6 +227,8 @@ export async function awardCreatorReward(
   
   return null;
 }
+
+
 
 
 

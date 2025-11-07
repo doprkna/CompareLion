@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import { safeAsync, notFoundError } from '@/lib/api-handler';
 
 // Get a single flow with steps and links
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export const GET = safeAsync(async (_req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const flow = await prisma.flow.findUnique({
     where: { id },
@@ -16,12 +17,12 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       },
     },
   });
-  if (!flow) return NextResponse.json({ success: false, message: 'Not found' }, { status: 404 });
-  return NextResponse.json({ success: true, flow });
-}
+  if (!flow) return notFoundError('Flow');
+  return NextResponse.json({ success: true, flow, timestamp: new Date().toISOString() });
+});
 
 // Update flow metadata/settings
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export const PUT = safeAsync(async (request: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const body = await request.json();
   const { name, description, metadata } = body;
@@ -29,15 +30,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     where: { id },
     data: { name, description, metadata },
   });
-  return NextResponse.json({ success: true, flow });
-}
+  return NextResponse.json({ success: true, flow, timestamp: new Date().toISOString() });
+});
 
 // Soft delete a flow (add deletedAt to metadata)
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export const DELETE = safeAsync(async (_req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   await prisma.flow.update({
     where: { id },
     data: { metadata: { deletedAt: new Date().toISOString() } },
   });
-  return NextResponse.json({ success: true });
-}
+  return NextResponse.json({ success: true, timestamp: new Date().toISOString() });
+});

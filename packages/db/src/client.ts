@@ -1,3 +1,6 @@
+// Re-export everything from @prisma/client
+export * from '@prisma/client';
+
 import { PrismaClient } from '@prisma/client';
 
 // Prevent multiple instances in development (Next.js hot reload)

@@ -182,7 +182,7 @@ export async function performCrafting(
   }
 
   // Check items
-  const { hasAll, missing } = await hasRequiredItems(userId, recipe.inputItemIds);
+  const { hasAll } = await hasRequiredItems(userId, recipe.inputItemIds);
   if (!hasAll) {
     return {
       success: false,
@@ -344,6 +344,8 @@ export async function getCraftingHistory(userId: string, limit: number = 20) {
     take: limit,
   });
 }
+
+
 
 
 

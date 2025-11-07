@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { logger } from '@/lib/logger';
 
 interface SssCategoryDTO {
   id: string;
@@ -18,7 +19,7 @@ export function AdminSSSCList() {
     fetch('/api/admin/sssc/pending')
       .then(res => res.json())
       .then(data => setEntries(data.entries))
-      .catch(console.error);
+      .catch((err) => logger.error('Failed to fetch SSSC entries', err));
   }, []);
 
   const handleGenerate = async (id: string) => {

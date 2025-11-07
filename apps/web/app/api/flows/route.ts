@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@parel/db/client';
+import { safeAsync } from '@/lib/api-handler';
 
 // Create a new flow with steps and links
-export async function POST(request: Request) {
+export const POST = safeAsync(async (request: NextRequest) => {
   const body = await request.json();
   const { name, description, metadata, steps = [], links = [] } = body;
 
@@ -41,11 +42,11 @@ export async function POST(request: Request) {
     return { flow, steps: stepRecords };
   });
 
-  return NextResponse.json({ success: true, ...result });
-}
+  return NextResponse.json({ success: true, ...result, timestamp: new Date().toISOString() });
+});
 
 // List all flows (with steps and links)
-export async function GET() {
+export const GET = safeAsync(async (_req: NextRequest) => {
   const flows = await prisma.flow.findMany({
     include: {
       steps: {
@@ -57,5 +58,5 @@ export async function GET() {
       },
     },
   });
-  return NextResponse.json({ success: true, flows });
-}
+  return NextResponse.json({ success: true, flows, timestamp: new Date().toISOString() });
+});

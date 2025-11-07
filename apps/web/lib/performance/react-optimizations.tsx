@@ -149,7 +149,6 @@ export class PerformanceMarker {
     if (!start || !end) return 0;
     
     const duration = end - start;
-    console.log(`[Performance] ${name}: ${duration.toFixed(2)}ms`);
     
     return duration;
   }
@@ -187,6 +186,8 @@ export function useVirtualScroll<T>(
     return { visibleItems, totalHeight, offsetY };
   }, [items, scrollTop, containerHeight, itemHeight]);
 }
+
+
 
 
 

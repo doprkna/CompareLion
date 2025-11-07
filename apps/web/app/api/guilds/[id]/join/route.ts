@@ -1,32 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../auth/[...nextauth]/options';
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { safeAsync, successResponse, unauthorizedError } from '@/lib/api-handler';
 
-export async function POST(
+export const POST = safeAsync(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const guildId = params.id;
-
-    // For now, return a mock success response
-    // This will be replaced with actual database operations once the schema is updated
-    return NextResponse.json({
-      success: true,
-      message: 'Successfully joined guild'
-    });
-
-  } catch (error) {
-    console.error('Error joining guild:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+) => {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
   }
-}
+
+  const guildId = params.id;
+
+  // For now, return a mock success response
+  // This will be replaced with actual database operations once the schema is updated
+  return successResponse(undefined, 'Successfully joined guild');
+});

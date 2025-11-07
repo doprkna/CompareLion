@@ -154,10 +154,9 @@ export const AMBIENT_THEMES = [
  * PLACEHOLDER: Play sound effect
  */
 export function playSoundEffect(
-  eventType: string,
-  userPreferences?: { soundEnabled: boolean; soundVolume: number }
+  _eventType: string,
+  _userPreferences?: { soundEnabled: boolean; soundVolume: number }
 ) {
-  console.log(`[Sound] PLACEHOLDER: Would play sound: ${eventType}`);
   
   // PLACEHOLDER: Would execute
   // - Check if sound enabled
@@ -172,10 +171,9 @@ export function playSoundEffect(
  * PLACEHOLDER: Play ambient music
  */
 export function playAmbientMusic(
-  theme: string,
-  userPreferences?: { ambientMusicEnabled: boolean; soundVolume: number }
+  _theme: string,
+  _userPreferences?: { ambientMusicEnabled: boolean; soundVolume: number }
 ) {
-  console.log(`[Sound] PLACEHOLDER: Would play ambient theme: ${theme}`);
   
   // PLACEHOLDER: Would execute
   // - Check if ambient enabled
@@ -185,6 +183,8 @@ export function playAmbientMusic(
   
   return null;
 }
+
+
 
 
 

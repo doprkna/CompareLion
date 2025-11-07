@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import { safeAsync, notFoundError } from '@/lib/api-handler';
 
 function evaluateBranch(branch: any, answer: any) {
   if (branch.if) {
@@ -13,7 +14,7 @@ function evaluateBranch(branch: any, answer: any) {
 }
 
 // Submit an answer and advance the session (with branching)
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export const POST = safeAsync(async (request: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const body = await request.json();
   const { answer } = body;
@@ -24,7 +25,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     include: { currentStep: true },
   });
   if (!session || !session.currentStep) {
-    return NextResponse.json({ success: false, message: 'Session or step not found.' }, { status: 404 });
+    return notFoundError('Session or step');
   }
 
   // Store answer in Answer table
@@ -39,7 +40,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
   // Branching logic
   let nextStepId = null;
-  let completed = false;
+  const completed = false;
   let nextStep = null;
   let question = null;
   const branchCondition = session.currentStep.branchCondition;
@@ -92,6 +93,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       currentStepId: nextStep.id,
       question,
       completed: false,
+      timestamp: new Date().toISOString(),
     });
   } else {
     // No more steps: mark as complete
@@ -107,6 +109,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       success: true,
       sessionId: id,
       completed: true,
+      timestamp: new Date().toISOString(),
     });
   }
-}
+});

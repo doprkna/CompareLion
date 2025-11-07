@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { logger } from '@/lib/logger';
 
 export type AuditAction = 
   | 'signup'
@@ -40,7 +41,7 @@ export async function logAuditEvent(data: AuditLogData): Promise<void> {
     });
   } catch (error) {
     // Don't throw errors from audit logging to avoid breaking main functionality
-    console.error('Failed to log audit event:', error);
+    logger.error('Failed to log audit event', error);
   }
 }
 

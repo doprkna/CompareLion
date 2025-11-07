@@ -8,7 +8,6 @@
  * Check for inactive users and grant return bonuses
  */
 export async function checkAndGrantReturnBonuses() {
-  console.log("[ReturnBonus] PLACEHOLDER: Would check inactive users");
   
   // PLACEHOLDER: Would execute
   // const twoDaysAgo = new Date();
@@ -39,8 +38,7 @@ export async function checkAndGrantReturnBonuses() {
 /**
  * Create return bonus for user
  */
-async function createReturnBonus(userId: string) {
-  console.log("[ReturnBonus] PLACEHOLDER: Would create bonus", { userId });
+async function createReturnBonus(_userId: string) {
   
   // PLACEHOLDER: Would execute
   // const bonusTier = calculateBonusTier(inactiveDays);
@@ -76,8 +74,7 @@ function calculateBonusTier(days: number) {
 /**
  * Claim return bonus
  */
-export async function claimReturnBonus(userId: string, bonusId: string) {
-  console.log("[ReturnBonus] PLACEHOLDER: Would claim bonus", { userId, bonusId });
+export async function claimReturnBonus(_userId: string, _bonusId: string) {
   
   // PLACEHOLDER: Would execute
   // const bonus = await prisma.returnBonus.findFirst({
@@ -112,6 +109,8 @@ export async function claimReturnBonus(userId: string, bonusId: string) {
   
   return null;
 }
+
+
 
 
 

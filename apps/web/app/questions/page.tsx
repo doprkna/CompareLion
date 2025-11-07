@@ -1,6 +1,5 @@
 "use client";
 import Link from 'next/link';
-import { ProgressBar } from '@/components/flow/ProgressBar';
 
 export default function QuestionsPage() {
   // Mock categories for demo

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/[...nextauth]/options";
-import { UserRole } from "@prisma/client";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { UserRole } from "@parel/db/client";
 
 /**
  * Admin Question Validation Endpoint
@@ -69,6 +69,8 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+
 
 
 

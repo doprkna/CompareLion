@@ -3,6 +3,8 @@
  * Unified API fetch layer for PareL
  */
 
+import { logger } from '@/lib/logger';
+
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 export const getApiUrl = (path: string) => `${API_BASE_URL}${path}`;
@@ -23,7 +25,7 @@ export const safeApiFetch = async <T>(
     if (!res.ok) return { ok: false, error: `HTTP ${res.status}` };
     return { ok: true, data: await res.json() };
   } catch (err: any) {
-    console.error(`[safeApiFetch] ${path}`, err);
+    logger.error('[safeApiFetch] API fetch failed', { path, error: err });
     return { ok: false, error: err.message || 'Unknown error' };
   }
 };

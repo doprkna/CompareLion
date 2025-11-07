@@ -1,0 +1,31 @@
+﻿PAREL v0.33.09 - Full Visibility Index Report
+Generated: 2025-11-06 19:12:13
+================================================
+
+ADMIN PAGES: 27 files
+- Dashboard, Economy, Alerts, Metrics, System Health
+- Users, Questions, Categories, Campaigns, Analytics
+- Moderation, Events, Feedback, Waitlist, Errors
+- Weekly Challenges, AI Generator, Totem Battles
+- UI Preview, Seeds, Audit, SSSC, Dev Lab, UGC, Performance
+
+COMPONENTS: 236+ files  
+- Admin UI, Market, Social, Game, Crafting
+- Music, Generation, Dreamspace, Share, Prestige
+- Wildcard, Mirror, Meta, Quest, Lore, Region
+- Reflection, Chronicle, Badge, Loot, Roast
+- Micro-clans, Rituals, Duet Runs, Forks, Rarity
+- Moods, Postcards, Community, Factions, etc.
+
+API ROUTES (Admin): 63 files
+- /api/admin/economy/* (overview, refresh, export, list)
+- /api/admin/alerts/* (webhooks, resolve)
+- /api/admin/system/health
+- /api/admin/metrics/* (overview, qgen)
+- /api/admin/balance, presets, api-map, db/summary
+- /api/admin/users, questions, campaigns, feedback
+- /api/admin/events, moderation, waitlist, audit
+- /api/admin/sssc/* (batch, metrics, progress, pending)
+
+VISIBILITY STATUS: âœ… FULL
+All previously ignored sections (Frontend UI, Locales, Backend Maintenance) now indexed.

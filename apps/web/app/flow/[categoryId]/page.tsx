@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCombatLink } from '@/hooks/useCombatLink';
 
 type Question = {
   id: string;
@@ -11,6 +12,7 @@ type Question = {
 
 export default function FlowPage() {
   const { categoryId } = useParams() as { categoryId: string };
+  const { attack: combatAttack, skip: combatSkip } = useCombatLink();
   const [question, setQuestion] = useState<Question | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -34,6 +36,7 @@ export default function FlowPage() {
     if (!question) return;
     setLoading(true);
     await fetch(`/api/flow/${question.id}/answer`, { method: 'POST' });
+    combatAttack();
     loadNext();
   }
 
@@ -41,6 +44,7 @@ export default function FlowPage() {
     if (!question) return;
     setLoading(true);
     await fetch(`/api/flow/${question.id}/skip`, { method: 'POST' });
+    combatSkip();
     loadNext();
   }
 

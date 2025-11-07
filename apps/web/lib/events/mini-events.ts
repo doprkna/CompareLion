@@ -145,10 +145,9 @@ export function getTimeRemaining(endTime: Date): {
  * PLACEHOLDER: Create mini-event
  */
 export async function createMiniEvent(
-  template: MiniEventDefinition,
-  startTime: Date
+  _template: MiniEventDefinition,
+  _startTime: Date
 ) {
-  console.log("[MiniEvent] PLACEHOLDER: Would create event", template.name);
   
   // PLACEHOLDER: Would create event
   // - Generate unique eventId with timestamp
@@ -163,11 +162,10 @@ export async function createMiniEvent(
  * PLACEHOLDER: Update event progress
  */
 export async function updateEventProgress(
-  eventId: string,
-  userId: string,
-  contribution: number
+  _eventId: string,
+  _userId: string,
+  _contribution: number
 ) {
-  console.log(`[MiniEvent] PLACEHOLDER: Would add ${contribution} progress to event ${eventId} from user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Update user's contribution
@@ -181,8 +179,7 @@ export async function updateEventProgress(
 /**
  * PLACEHOLDER: Distribute event rewards
  */
-export async function distributeEventRewards(eventId: string) {
-  console.log("[MiniEvent] PLACEHOLDER: Would distribute rewards for event", eventId);
+export async function distributeEventRewards(_eventId: string) {
   
   // PLACEHOLDER: Would execute
   // - Get all participants
@@ -198,7 +195,6 @@ export async function distributeEventRewards(eventId: string) {
  * PLACEHOLDER: Auto-start/end events (cron job)
  */
 export async function processScheduledEvents() {
-  console.log("[MiniEvent] PLACEHOLDER: Would process scheduled events");
   
   // PLACEHOLDER: Would execute
   // - Start events where startTime <= now && status === "scheduled"
@@ -207,6 +203,8 @@ export async function processScheduledEvents() {
   
   return null;
 }
+
+
 
 
 

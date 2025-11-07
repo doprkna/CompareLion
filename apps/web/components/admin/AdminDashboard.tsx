@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
 import { apiFetch } from "@/lib/apiBase";
 
 export default function AdminDashboard() {

@@ -44,9 +44,16 @@ export default function NavLinks() {
     { href: "/profile", label: "Profile", locked: false },
   ];
 
+  const communityLinks = [
+    { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/challenges", label: "Challenges" },
+    { href: "/invite", label: "Invite Friends" },
+  ];
+
+  // Experimental features - hidden for public beta v0.13.2p
   const lockedFeatures = [
-    { href: "/guilds", label: "Guilds", unlockLevel: 10, tooltip: "Join guilds to collaborate with others" },
-    { href: "/market", label: "Market", unlockLevel: 5, tooltip: "Trade items with other players" },
+    // { href: "/guilds", label: "Guilds", unlockLevel: 10, tooltip: "Join guilds to collaborate with others" },
+    // { href: "/market", label: "Market", unlockLevel: 5, tooltip: "Trade items with other players" },
   ];
 
   const infoLinks = [
@@ -60,9 +67,13 @@ export default function NavLinks() {
   const adminLinks = [
     { href: "/reports", label: "Reports" },
     { href: "/admin", label: "Admin Panel" },
+    { href: "/admin/metrics", label: "Growth Metrics" },
     { href: "/admin/categories", label: "Category Health" },
     { href: "/admin/users", label: "User Management" },
     { href: "/admin/logs", label: "System Logs" },
+    { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/challenges", label: "Challenges" },
+    { href: "/invite", label: "Invite System" },
   ];
 
   return (
@@ -112,6 +123,23 @@ export default function NavLinks() {
             </Tooltip>
           );
         })}
+
+      {/* Community Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger className="text-text hover:text-accent font-medium transition-colors flex items-center gap-1">
+          Community
+          <ChevronDown className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-card border-border">
+          {communityLinks.map((link) => (
+            <DropdownMenuItem key={link.href} asChild>
+              <Link href={link.href} className="text-text hover:text-accent cursor-pointer">
+                {link.label}
+              </Link>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Info Dropdown */}
       <DropdownMenu>

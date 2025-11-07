@@ -4,12 +4,12 @@
  * Monitors BullMQ job queues for lag and failures.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getAllQueueStats } from "@/lib/queue/queue-config";
+import { safeAsync } from "@/lib/api-handler";
 
-export async function GET() {
-  try {
-    const queueStats = await getAllQueueStats();
+export const GET = safeAsync(async (_req: NextRequest) => {
+  const queueStats = await getAllQueueStats();
     
     // Calculate overall lag and failure rates
     const totalWaiting = queueStats.reduce((sum, q) => sum + q.waiting, 0);
@@ -66,21 +66,12 @@ export async function GET() {
       },
     };
     
-    const httpStatus = status === "unhealthy" ? 503 : 200;
-    
-    return NextResponse.json(response, { status: httpStatus });
-  } catch (error) {
-    console.error("[Health] Queue health check failed:", error);
-    return NextResponse.json(
-      {
-        status: "unhealthy",
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      },
-      { status: 503 }
-    );
-  }
-}
+  const httpStatus = status === "unhealthy" ? 503 : 200;
+  
+  return NextResponse.json(response, { status: httpStatus });
+});
+
+
 
 
 

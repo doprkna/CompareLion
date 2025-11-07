@@ -1,0 +1,56 @@
+name: Health Monitor
+
+# Run health checks every 5 minutes
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check Health Endpoint
+        run: |
+          echo "🏥 Checking application health..."
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" https://parel.app/api/health/extended)
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+          
+          echo "Status Code: $HTTP_CODE"
+          echo "Response:"
+          echo "$BODY" | jq '.' || echo "$BODY"
+          
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Health check passed"
+          else
+            echo "❌ Health check failed"
+            exit 1
+          fi
+      
+      - name: Check for Critical Errors
+        if: success()
+        run: |
+          echo "🔍 Checking for critical errors..."
+          
+          ERRORS=$(curl -s "https://parel.app/api/errors?severity=critical&resolved=false&limit=10")
+          ERROR_COUNT=$(echo "$ERRORS" | jq '.count // 0')
+          
+          echo "Critical Errors: $ERROR_COUNT"
+          
+          if [ "$ERROR_COUNT" -gt 0 ]; then
+            echo "⚠️  Warning: $ERROR_COUNT critical error(s) detected"
+            echo "$ERRORS" | jq '.errors[]' || true
+          else
+            echo "✅ No critical errors"
+          fi
+      
+      - name: Log Metrics
+        if: always()
+        run: |
+          echo "📊 Recording health check..."
+          echo "Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          echo "Check completed"
+

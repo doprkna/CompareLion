@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getTheme, mergeColors, type Theme } from '@/lib/themes';
+import { getTheme, mergeColors } from '@/lib/themes';
 
 interface ThemeManagerProps {
   themeId: string;
@@ -45,6 +45,8 @@ export function ThemeManager({ themeId }: ThemeManagerProps) {
 
   return null; // This component doesn't render anything
 }
+
+
 
 
 

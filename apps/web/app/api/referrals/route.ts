@@ -1,65 +1,76 @@
 /**
- * Referrals API (v0.11.8)
- * 
- * PLACEHOLDER: Referral statistics and leaderboard.
+ * Referrals API
+ * Get user's referral stats and history
+ * v0.15.0 - Marketing Expansion
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import {
-  getUserReferralStats,
-  getTopReferrers,
-} from "@/lib/beta/invite-system";
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, successResponse, unauthorizedError, notFoundError } from '@/lib/api-handler';
 
-/**
- * GET - Get referral stats or leaderboard
- */
-export async function GET(req: NextRequest) {
-  try {
-    const searchParams = req.nextUrl.searchParams;
-    const action = searchParams.get("action");
-    
-    if (action === "leaderboard") {
-      // Get top referrers
-      const limit = parseInt(searchParams.get("limit") || "10", 10);
-      const topReferrers = await getTopReferrers(limit);
-      
-      return NextResponse.json({
-        leaderboard: topReferrers,
+const REFERRAL_BONUS_XP = 100;
+
+export const GET = safeAsync(async (request: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: {
+      id: true,
+      inviteCode: true
+    }
+  });
+
+  if (!user) {
+    return notFoundError('User');
+  }
+
+    // Get or generate invite code
+    let inviteCode = user.inviteCode;
+    if (!inviteCode) {
+      // Generate invite code
+      inviteCode = `INV-${user.id.slice(0, 6).toUpperCase()}`;
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { inviteCode }
       });
     }
-    
-    // Get user's referral stats
-    const session = await getServerSession();
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    
-    // PLACEHOLDER: Get user ID
-    const userId = "placeholder";
-    
-    const stats = await getUserReferralStats(userId);
-    
-    return NextResponse.json({
-      stats,
+
+    // Get referral stats
+    const referrals = await prisma.referral.findMany({
+      where: {
+        referrerId: user.id,
+        status: 'completed'
+      },
+      include: {
+        referredUser: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
-  } catch (error) {
-    console.error("[Referrals API] GET failed:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch referral data" },
-      { status: 500 }
-    );
-  }
-}
 
+    const referralCount = referrals.length;
+    const totalXpEarned = referralCount * REFERRAL_BONUS_XP;
 
+  const shareUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/signup?ref=${inviteCode}`;
 
-
-
-
-
-
-
-
-
+  return successResponse({
+    inviteCode,
+    shareUrl,
+    referralCount,
+    totalXpEarned,
+    referrals
+  });
+});

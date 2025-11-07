@@ -9,146 +9,280 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                   String                         @id @default(cuid())
-  email                String                         @unique
-  passwordHash         String?
-  name                 String?
-  phone                String?
-  language             String?
-  country              String?
-  dateOfBirth          DateTime?
-  avatarUrl            String?
-  motto                String?
-  theme                String?                        @default("light")
-  funds                Decimal                        @default(0)
-  diamonds             Int                            @default(0)
-  xp                   Int                            @default(0)
-  level                Int                            @default(1)
-  lastLoginAt          DateTime?
-  lastActiveAt         DateTime?
-  createdAt            DateTime                       @default(now())
-  image                String?
-  streakCount          Int                            @default(0)
-  lastAnsweredAt       DateTime?
-  score                Int                            @default(0)
-  questionsAnswered    Int                            @default(0)
-  questionsCreated     Int                            @default(0)
-  emailVerified        DateTime?
-  emailVerifiedAt      DateTime?
-  newsletterOptIn      Boolean                        @default(false)
-  role                 UserRole                       @default(USER)
-  archetype            String?                        @default("Adventurer")
-  statCreativity       Int                            @default(0)
-  statHealth           Int                            @default(0)
-  statKnowledge        Int                            @default(0)
-  statSleep            Int                            @default(0)
-  statSocial           Int                            @default(0)
-  allowPublicCompare   Boolean                        @default(true)
-  badgeType            String?                        @default("none")
-  karmaScore           Int                            @default(0)
-  prestigeScore        Int                            @default(0)
-  showBadges           Boolean                        @default(true)
-  emailVerifies        EmailVerify[]
-  entitlements         Entitlement[]
-  passwordResets       PasswordReset[]
-  purchases            Purchase[]
-  subscriptions        Subscription[]
-  userBadges           UserBadge[]
-  userGroups           UserGroup[]
-  userProfile          UserProfile?
-  userQuestions        UserQuestion[]
-  wallet               Wallet?
-  accounts             Account[]
-  actionLogs           ActionLog[]
-  activities           Activity[]
-  auditLogs            AuditLog[]
-  betaInvitesCreated   BetaInvite[]                   @relation("BetaInvitesCreated")
-  betaUser             BetaUser?
-  blocksReceived       BlockedUser[]                  @relation("BlocksReceived")
-  blocksCreated        BlockedUser[]                  @relation("BlocksCreated")
-  challengesInitiated  Challenge[]                    @relation("ChallengeInitiator")
-  challengesReceived   Challenge[]                    @relation("ChallengeReceiver")
-  clan                 ClanMember?
-  coopMemberships      CoopMember[]
-  craftingLogs         CraftingLog[]
-  followingCreators    CreatorFollower[]              @relation("UserFollowing")
-  creatorProfile       CreatorProfile?
-  creatorWallet        CreatorWallet?
-  dailyQuizCompletions DailyQuizCompletion[]
-  dailySummaries       DailySummary[]
-  spectatedDuels       DuelSpectator[]
-  duelsInitiated       Duel[]                         @relation("DuelInitiator")
-  duelsReceived        Duel[]                         @relation("DuelReceiver")
-  creatorEngagements   EngagementMetric[]             @relation("CreatorEngagements")
-  userEngagements      EngagementMetric[]             @relation("UserEngagements")
-  eventLogs            EventLog[]                     @relation("EventLogs")
-  factionChanges       FactionChangeLog[]
-  factionMembership    FactionMember?
-  factionVotes         FactionVote[]
-  feedbackMoods        FeedbackMood[]
-  feedbackSubmissions  FeedbackSubmission[]
-  friendOf             Friend[]                       @relation("FriendOf")
-  friends              Friend[]                       @relation("UserFriends")
-  feedItems            GlobalFeedItem[]
-  groupMemberships     GroupMember[]
-  inventoryItems       InventoryItem[]
-  languagePreference   LanguagePreference?
-  legacyRecords        LegacyRecord[]
-  marketListings       MarketListing[]
-  memberships          Membership[]
-  mentorLogs           MentorLog[]
-  mentorProfile        MentorProfile?
-  receivedMessages     Message[]                      @relation("ReceivedMessages")
-  sentMessages         Message[]                      @relation("SentMessages")
-  miniEventProgress    MiniEventProgress[]
-  moderationPerformed  ModerationAction[]             @relation("ModerationActionsPerformed")
-  moderationActions    ModerationAction[]
-  narrativeQuests      NarrativeQuest[]
-  notifications        Notification[]
-  npcInteractions      NpcInteraction[]
-  offlineActions       OfflineAction[]
-  onboardingProgress   OnboardingProgress?
-  paymentLogs          PaymentLog[]
-  playerQuotes         PlayerQuote[]
-  presence             Presence?
-  ownedThemes          ProfileTheme[]
-  pushSubscriptions    PushSubscription[]
-  questCompletions     QuestCompletion[]
-  reactions            Reaction[]
-  referralsReceived    Referral?                      @relation("ReferralsReceived")
-  referralsSent        Referral[]                     @relation("ReferralsSent")
-  reflectionEntries    ReflectionEntry[]
-  reportsReceived      Report[]                       @relation("ReportsReceived")
-  reportsSubmitted     Report[]                       @relation("ReportsSubmitted")
-  reportsResolved      Report[]                       @relation("ReportsResolved")
-  reputationScore      ReputationScore?
-  returnBonuses        ReturnBonus[]
-  rewardCalendars      RewardCalendar[]
-  rewardRedemptions    RewardRedemption[]
-  sessions             Session[]
-  createdTasks         Task[]                         @relation("TaskCreator")
-  taxTransactions      TaxTransaction[]
-  threatBattles        ThreatBattle[]
-  completedCollections UserAchievementCollection[]
-  userAchievements     UserAchievement[]
-  archetypeHistory     UserArchetypeHistory[]
-  ownedAvatarItems     UserAvatarItem[]
-  avatar               UserAvatar?
-  energy               UserEnergy?
-  insights             UserInsight[]
-  legacyBonuses        UserLegacyBonus[]
-  userPreferences      UserPreferences?
-  flowResponses        UserResponse[]
-  userStreak           UserStreak?
-  premiumSubscriptions UserSubscription[]
-  themeSettings        UserThemeSettings?
-  userTimeZone         UserTimeZone?
-  weeklyParticipations WeeklyChallengeParticipation[]
+generator zod {
+  provider = "zod-prisma-types"
+  output = "./generated"
+  useDecimalJs = false
+  prismaJsonNullability = true
+  createInputTypes = false
+  createModelTypes = true
+}
 
-  @@index([emailVerifiedAt])
+
+model User {
+  id                  String         @id @default(cuid())
+  email               String         @unique
+  passwordHash        String?
+  name                String?
+  phone               String?
+  language            String?
+  country             String?
+  dateOfBirth         DateTime?
+  avatarUrl           String?
+  username            String?        @unique
+  bio                 String?
+  visibility          UserVisibility @default(FRIENDS)
+  banned              Boolean        @default(false)
+  motto               String?
+  theme               String?        @default("light")
+  funds               Decimal        @default(0)
+  diamonds            Int            @default(0)
+  xp                  Int            @default(0)
+  level               Int            @default(1)
+  lastLoginAt         DateTime?
+  lastActiveAt        DateTime?
+  createdAt           DateTime       @default(now())
+  image               String?
+  streakCount         Int            @default(0)
+  lastAnsweredAt      DateTime?
+  score               Int            @default(0)
+  questionsAnswered   Int            @default(0)
+  questionsCreated    Int            @default(0)
+  emailVerified       DateTime?
+  emailVerifiedAt     DateTime?
+  newsletterOptIn     Boolean        @default(false)
+  role                UserRole       @default(USER)
+  archetype           String?        @default("Adventurer")
+  archetypeKey        String? // v0.26.6 - Archetype system key (warrior, thinker, etc.)
+  stats               Json? // v0.26.6 - Character stats { str, int, cha, luck, etc. }
+  lastArchetypeReroll DateTime? // v0.26.6 - Cooldown for archetype reroll
+  settings            Json? // v0.28.27 - User settings { roastLevel: 1-5, etc. }
+
+  // Localization (v0.27.0 - Phase M)
+  lang       Lang   @default(en)
+  // Locale code (v0.27.1 - Phase M+): e.g. en-US, cs-CZ
+  localeCode String @default("en-US")
+
+  // Onboarding fields (v0.24.0 - Phase I)
+  ageGroup            String? // "kid", "teen", "youngAdult", "adult", "mature", "senior"
+  region              String? // e.g. "EU-CZ", "US", "GLOBAL"
+  interests           String[] @default([]) // e.g. ["food", "psychology", "memes"]
+  tone                String? // "funny", "deep", "random", "roast"
+  onboardingCompleted Boolean  @default(false)
+
+  // Combat stats (v0.25.0 - Phase J-Lite)
+  combatKills         Int @default(0)
+  combatBattles       Int @default(0)
+  combatHighestStreak Int @default(0)
+
+  statCreativity          Int                            @default(0)
+  statHealth              Int                            @default(0)
+  statKnowledge           Int                            @default(0)
+  statSleep               Int                            @default(0)
+  statSocial              Int                            @default(0)
+  allowPublicCompare      Boolean                        @default(true)
+  canBeAdded              String                         @default("anyone")
+  badgeType               String?                        @default("none")
+  karmaScore              Int                            @default(0)
+  prestigeScore           Int                            @default(0)
+  showBadges              Boolean                        @default(true)
+  coins                   Int                            @default(0)
+  seasonalXP              Int                            @default(0)
+  seasonLevel             Int                            @default(1) // v0.29.9 - Meta-progression season level
+  seasonXP                Int                            @default(0) // v0.29.9 - Meta-progression season XP
+  prestigeCount           Int                            @default(0) // v0.29.9 - Total prestige count
+  legacyPerk              String? // v0.29.9 - Legacy perk identifier
+  prestigeTitle           String? // v0.29.14 - Current prestige title
+  prestigeBadgeId         String? // v0.29.14 - Current prestige badge ID
+  prestigeColorTheme      String? // v0.29.14 - Current prestige color theme
+  currentGeneration       Int                            @default(1) // v0.29.17 - Current generation number
+  avatarTheme             String?
+  moodFeed                String?
+  equippedTitle           String?
+  equippedIcon            String?
+  equippedBackground      String?
+  emailVerifies           EmailVerify[]
+  entitlements            Entitlement[]
+  passwordResets          PasswordReset[]
+  purchases               Purchase[]
+  subscriptions           Subscription[]
+  userBadges              UserBadge[]
+  userGroups              UserGroup[]
+  userProfile             UserProfile?
+  userQuestions           UserQuestion[]
+  wallet                  Wallet?
+  accounts                Account[]
+  actionLogs              ActionLog[]
+  activities              Activity[]
+  auditLogs               AuditLog[]
+  betaInvitesCreated      BetaInvite[]                   @relation("BetaInvitesCreated")
+  betaUser                BetaUser?
+  blocksReceived          BlockedUser[]                  @relation("BlocksReceived")
+  blocksCreated           BlockedUser[]                  @relation("BlocksCreated")
+  challengesInitiated     Challenge[]                    @relation("ChallengeInitiator")
+  challengesReceived      Challenge[]                    @relation("ChallengeReceiver")
+  clan                    ClanMember?
+  coopMemberships         CoopMember[]
+  craftingLogs            CraftingLog[]
+  followingCreators       CreatorFollower[]              @relation("UserFollowing")
+  creatorProfile          CreatorProfile?
+  creatorWallet           CreatorWallet?
+  dailyQuizCompletions    DailyQuizCompletion[]
+  dailySummaries          DailySummary[]
+  spectatedDuels          DuelSpectator[]
+  duelsInitiated          Duel[]                         @relation("DuelInitiator")
+  duelsReceived           Duel[]                         @relation("DuelReceiver")
+  creatorEngagements      EngagementMetric[]             @relation("CreatorEngagements")
+  userEngagements         EngagementMetric[]             @relation("UserEngagements")
+  eventLogs               EventLog[]                     @relation("EventLogs")
+  factionChanges          FactionChangeLog[]
+  factionMembership       FactionMember?
+  factionVotes            FactionVote[]
+  feedbackMoods           FeedbackMood[]
+  feedbackSubmissions     FeedbackSubmission[]
+  friendOf                Friend[]                       @relation("FriendOf")
+  friends                 Friend[]                       @relation("UserFriends")
+  feedItems               GlobalFeedItem[]
+  groupMemberships        GroupMember[]
+  affinitiesFrom          Affinity[]                     @relation("FromUser")
+  affinitiesTo            Affinity[]                     @relation("ToUser")
+  inventoryItems          InventoryItem[]
+  languagePreference      LanguagePreference?
+  legacyRecords           LegacyRecord[]
+  marketListings          MarketListing[]                @relation("seller")
+  marketPurchases         MarketListing[]                @relation("buyer") // v0.26.4
+  memberships             Membership[]
+  mentorLogs              MentorLog[]
+  mentorProfile           MentorProfile?
+  receivedMessages        Message[]                      @relation("ReceivedMessages")
+  sentMessages            Message[]                      @relation("SentMessages")
+  miniEventProgress       MiniEventProgress[]
+  moderationPerformed     ModerationAction[]             @relation("ModerationActionsPerformed")
+  moderationActions       ModerationAction[]
+  narrativeQuests         NarrativeQuest[]
+  notifications           Notification[]
+  npcInteractions         NpcInteraction[]
+  offlineActions          OfflineAction[]
+  onboardingProgress      OnboardingProgress?
+  paymentLogs             PaymentLog[]
+  playerQuotes            PlayerQuote[]
+  presence                Presence?
+  ownedThemes             ProfileTheme[]
+  pushSubscriptions       PushSubscription[]
+  questCompletions        QuestCompletion[]
+  reactions               Reaction[]
+  referralsReceived       Referral?                      @relation("ReferralsReceived")
+  referralsSent           Referral[]                     @relation("ReferralsSent")
+  reflectionEntries       ReflectionEntry[]
+  reportsReceived         Report[]                       @relation("ReportsReceived")
+  reportsSubmitted        Report[]                       @relation("ReportsSubmitted")
+  reportsResolved         Report[]                       @relation("ReportsResolved")
+  reputationScore         ReputationScore?
+  returnBonuses           ReturnBonus[]
+  rewardCalendars         RewardCalendar[]
+  rewardRedemptions       RewardRedemption[]
+  sessions                Session[]
+  createdTasks            Task[]                         @relation("TaskCreator")
+  taxTransactions         TaxTransaction[]
+  threatBattles           ThreatBattle[]
+  combatSessions          CombatSession[]
+  completedCollections    UserAchievementCollection[]
+  userAchievements        UserAchievement[]
+  archetypeHistory        UserArchetypeHistory[]
+  ownedAvatarItems        UserAvatarItem[]
+  avatar                  UserAvatar?
+  energy                  UserEnergy?
+  insights                UserInsight[]
+  legacyBonuses           UserLegacyBonus[]
+  userPreferences         UserPreferences?
+  flowResponses           UserResponse[]
+  userSynchTestsA         UserSynchTest[]                @relation("UserSynchTestsA")
+  userSynchTestsB         UserSynchTest[]                @relation("UserSynchTestsB")
+  userStreak              UserStreak?
+  premiumSubscriptions    UserSubscription[]
+  themeSettings           UserThemeSettings?
+  userTimeZone            UserTimeZone?
+  weeklyParticipations    WeeklyChallengeParticipation[]
+  userSubmissions         UserSubmission[]               @relation("UserSubmissions")
+  moderatedSubmissions    UserSubmission[]               @relation("ModeratedSubmissions")
+  createdEvents           Event[]                        @relation("CreatedEvents")
+  votes                   Vote[]                         @relation("UserVotes")
+  cosmetics               UserCosmetic[]
+  seasonArchives          SeasonArchive[]
+  reflections             UserReflection[]
+  chronicles              Chronicle[]
+  reflectionConversations ReflectionConversation[] // v0.29.2 - AI conversations
+  userRegions             UserRegion[] // v0.29.3 - World regions
+  userQuests              UserQuest[] // v0.29.4 - Quest tracking
+  loreEntries             UserLoreEntry[] // v0.29.5 - Personal lore log
+  friendshipsAsA          Friendship[]                   @relation("UserA") // v0.29.7 - Social friendships
+  friendshipsAsB          Friendship[]                   @relation("UserB") // v0.29.7 - Social friendships
+  duelsAsChallenger       SocialDuel[]                   @relation("Challenger") // v0.29.7 - Social duels
+  duelsAsOpponent         SocialDuel[]                   @relation("Opponent") // v0.29.7 - Social duels
+  duelsAsWinner           SocialDuel[]                   @relation("Winner") // v0.29.7 - Social duels
+  userWallets             UserWallet[] // v0.29.8 - Multi-currency wallets
+  transactions            Transaction[] // v0.29.8 - Transaction history
+  prestigeRecords         PrestigeRecord[] // v0.29.9 - Prestige progression
+  userWildcardEvents      UserWildcardEvent[] // v0.29.13 - Wildcard Events
+  shareCards              ShareCard[] // v0.29.15 - Share Cards
+  userDreamEvents         UserDreamEvent[] // v0.29.16 - Dreamspace Events
+  generationRecords       GenerationRecord[] // v0.29.17 - Generation Records
+  feedback                Feedback[] // v0.29.19 - Feedback
+  creatorPacks            CreatorPack[] // v0.29.19 - Creator Packs
+  itemDiscoveries         ItemDiscovery[] // v0.29.20 - Item Discoveries
+  reflectionJournals      Reflection[]
+  pollResponses           PollResponse[]
+  userArchetypeFusions    UserArchetypeFusion[]
+  userPacks               UserPack[]
+  memoryJournals          MemoryJournal[]
+  comparisonCards         ComparisonCard[]
+  userMicroMissions       UserMicroMission[]
+  avatarMoods             AvatarMood[]
+  userMentors             UserMentor[]
+  faction                 UserFaction?
+  communityCreations      CommunityCreation[]
+  communityCreationLikes  CommunityCreationLike[]
+  sentPostcards           Postcard[]                     @relation("SentPostcards")
+  receivedPostcards       Postcard[]                     @relation("ReceivedPostcards")
+  dailyForks              UserDailyFork[]
+  duetRunsA               UserDuetRun[]                  @relation("DuetRunsUserA")
+  duetRunsB               UserDuetRun[]                  @relation("DuetRunsUserB")
+  rituals                 UserRitual[]
+  microClansLed           MicroClan[]                    @relation("MicroClanLeader")
+  lootMoments             UserLootMoment[]
+  userStats               UserStats? // v0.29.22 - Unified stats (replaces weekly_stats)
+  weeklyStats             UserWeeklyStats[] // v0.29.22 - Deprecated, kept for backward compatibility
+  sentNotifications       Notification[]                 @relation("SentNotifications")
+   comments                Comment[]                      @relation("UserComments")
+   moderationLogs          ModerationLog[]                @relation("ModeratorLogs")
+   battleAchievements      UserBattleAchievement[]        // v0.29.25 - Battle achievements
+   moodLogs                 UserMoodLog[]                  // v0.29.26 - Mood logs
+   userCreatedPacks         UserCreatedPack[]              // v0.29.27 - User created packs
+   posterCards               PosterCard[]                   // v0.29.28 - Poster cards
+   npcAffinities             NpcAffinity[]                 // v0.29.29 - NPC affinity tracking
+
+   @@index([emailVerifiedAt])
   @@index([role])
+  @@index([username])
   @@map("users")
+}
+
+model Affinity {
+  id         String   @id @default(cuid())
+  sourceId   String
+  targetId   String
+  type       String
+  strength   Float    @default(0.5)
+  mutual     Boolean  @default(false)
+  visibility String   @default("public")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  source     User     @relation("FromUser", fields: [sourceId], references: [id], onDelete: Cascade)
+  target     User     @relation("ToUser", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId, type])
+  @@index([type, mutual])
+  @@map("affinities")
 }
 
 model Org {
@@ -265,31 +399,50 @@ model Integration {
 }
 
 model Question {
-  text             String
-  normalizedText   String?
-  difficulty       String?
-  source           QuestionSource    @default(ai)
-  approved         Boolean           @default(false)
-  reviewNotes      String?
-  createdByUserId  String?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  id               String            @id @default(cuid())
-  categoryId       String
-  subCategoryId    String?
-  subSubCategoryId String?
-  relatedToId      String?
-  metadata         Json?
-  currentVersionId String?           @unique
-  ssscId           String
-  userQuestions    UserQuestion[]
-  versions         QuestionVersion[] @relation("AllVersions")
-  currentVersion   QuestionVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  relatedTo        Question?         @relation("RelatedTo", fields: [relatedToId], references: [id])
-  relatedQuestions Question[]        @relation("RelatedTo")
-  sssc             SssCategory       @relation("SsscQuestions", fields: [ssscId], references: [id])
+  text              String
+  normalizedText    String?
+  difficulty        String?
+  source            QuestionSource     @default(ai)
+  approved          Boolean            @default(false)
+  reviewNotes       String?
+  createdByUserId   String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  id                String             @id @default(cuid())
+  categoryId        String
+  subCategoryId     String?
+  subSubCategoryId  String?
+  relatedToId       String?
+  metadata          Json?
+  currentVersionId  String?            @unique
+  ssscId            String
+  // Localization (v0.27.0 - Phase M)
+  lang              Lang?
+  region            String?            @default("global")
+  isLocalized       Boolean            @default(false)
+  // Locale code (v0.27.1)
+  localeCode        String?            @default("global")
+  // Moderation (v0.27.6)
+  isFlagged         Boolean            @default(false)
+  flagReason        String?
+  visibility        ContentVisibility  @default(PUBLIC)
+  // Reactions (v0.27.3)
+  reactionsLike     Int                @default(0)
+  reactionsLaugh    Int                @default(0)
+  reactionsThink    Int                @default(0)
+  userQuestions     UserQuestion[]
+  versions          QuestionVersion[]  @relation("AllVersions")
+  currentVersion    QuestionVersion?   @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  relatedTo         Question?          @relation("RelatedTo", fields: [relatedToId], references: [id])
+  relatedQuestions  Question[]         @relation("RelatedTo")
+  sssc              SssCategory        @relation("SsscQuestions", fields: [ssscId], references: [id])
+  trendingQuestions TrendingQuestion[]
 
   @@index([ssscId, approved])
+  @@index([lang, region])
+  @@index([localeCode])
+  @@index([visibility])
+  @@index([region, createdAt(sort: Desc)])
   @@map("questions")
 }
 
@@ -314,9 +467,11 @@ model QuestionVersion {
 }
 
 model QuestionTag {
-  id       String               @id @default(cuid())
-  name     String               @unique
-  versions QuestionVersionTag[]
+  id          String               @id @default(cuid())
+  name        String               @unique
+  type        TagType              @default(tone)
+  description String?
+  versions    QuestionVersionTag[]
 
   @@map("question_tags")
 }
@@ -329,7 +484,28 @@ model QuestionVersionTag {
   tag               QuestionTag     @relation(fields: [tagId], references: [id])
 
   @@unique([questionVersionId, tagId])
+  @@index([tagId])
+  @@index([questionVersionId])
   @@map("question_version_tags")
+}
+
+model QuestionGeneration {
+  id            String      @id
+  ssscId        String
+  targetCount   Int         @default(10)
+  status        String      @default("pending")
+  prompt        String?     @db.Text
+  insertedCount Int         @default(0)
+  rawResponse   String?     @db.Text
+  finishedAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  sssc          SssCategory @relation("QuestionGenerationLogs", fields: [ssscId], references: [id])
+
+  @@index([ssscId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("question_generations")
 }
 
 model FlowQuestion {
@@ -363,17 +539,17 @@ model FlowQuestionOption {
 }
 
 model UserResponse {
-  id          String       @id @default(cuid())
-  userId      String
-  questionId  String
-  optionIds   String[]     @default([]) // for single or multi-select
-  numericVal  Float?                     // for range/number
-  textVal     String?                    // for open/free text
-  skipped     Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  question    FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String       @id @default(cuid())
+  userId     String
+  questionId String
+  optionIds  String[]     @default([]) // for single or multi-select
+  numericVal Float? // for range/number
+  textVal    String? // for open/free text
+  skipped    Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  question   FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, questionId])
   @@index([userId])
@@ -381,20 +557,393 @@ model UserResponse {
   @@map("user_responses")
 }
 
-model Message {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @default(now())
-  content    String
-  isRead     Boolean  @default(false)
-  receiverId String
+// Synch Tests (v0.28.16)
+model SynchTest {
+  id                  String          @id @default(cuid())
+  key                 String          @unique
+  title               String
+  description         String?
+  questions           Json // Array of questions
+  resultTextTemplates Json // Array of templates based on score ranges
+  rewardXP            Int             @default(0)
+  rewardKarma         Int             @default(0)
+  isActive            Boolean         @default(true)
+  createdAt           DateTime        @default(now())
+  userSynchTests      UserSynchTest[]
+
+  @@index([isActive])
+  @@map("synch_tests")
+}
+
+model UserSynchTest {
+  id                 String              @id @default(cuid())
+  testId             String
+  userA              String
+  userB              String
+  answersA           Json                @default("[]")
+  answersB           Json                @default("[]")
+  compatibilityScore Float?
+  shared             Boolean             @default(false)
+  status             UserSynchTestStatus @default(pending)
+  createdAt          DateTime            @default(now())
+  test               SynchTest           @relation(fields: [testId], references: [id], onDelete: Cascade)
+  userA_ref          User                @relation("UserSynchTestsA", fields: [userA], references: [id], onDelete: Cascade)
+  userB_ref          User                @relation("UserSynchTestsB", fields: [userB], references: [id], onDelete: Cascade)
+
+  @@index([userA, status])
+  @@index([userB, status])
+  @@index([testId])
+  @@map("user_synch_tests")
+}
+
+// Factions (v0.28.17)
+model Faction {
+  id             String             @id @default(cuid())
+  key            String             @unique
+  name           String
+  motto          String?
+  description    String?
+  colorPrimary   String
+  colorSecondary String?
+  buffType       FactionBuffType?
+  buffValue      Float              @default(1.05)
+  regionScope    RegionScope        @default(global)
+  isActive       Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  influences     FactionInfluence[]
+  members        UserFaction[]
+
+  @@index([isActive])
+  @@map("factions")
+}
+
+model FactionInfluence {
+  id                 String   @id @default(cuid())
+  factionId          String
+  region             String
+  influenceScore     Float    @default(0)
+  lastUpdated        DateTime @default(now())
+  dailyDelta         Float    @default(0)
+  contributionsCount Int      @default(0)
+  faction            Faction  @relation(fields: [factionId], references: [id], onDelete: Cascade)
+
+  @@unique([region, factionId])
+  @@index([region, factionId])
+  @@map("faction_influence")
+}
+
+model UserFaction {
+  userId        String   @id
+  factionId     String
+  joinedAt      DateTime @default(now())
+  contributedXP Int      @default(0)
+  isLeader      Boolean  @default(false)
+  faction       Faction  @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([factionId])
+  @@map("user_factions")
+}
+
+// Community Creations (v0.28.18)
+model CommunityCreation {
+  id          String                  @id @default(cuid())
+  userId      String
+  title       String
+  type        CreationType
+  content     Json // JSON or text content
+  status      CreationStatus          @default(pending)
+  likes       Int                     @default(0)
+  rewardXP    Int?
+  rewardKarma Int?
+  createdAt   DateTime                @default(now())
+  user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes_rel   CommunityCreationLike[]
+
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("community_creations")
+}
+
+model CommunityCreationLike {
+  id         String            @id @default(cuid())
+  userId     String
+  creationId String
+  createdAt  DateTime          @default(now())
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creation   CommunityCreation @relation(fields: [creationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, creationId])
+  @@index([creationId])
+  @@map("community_creation_likes")
+}
+
+// Postcards (v0.28.19)
+model Postcard {
+  id         String         @id @default(cuid())
   senderId   String
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  message    String         @db.VarChar(300)
+  status     PostcardStatus @default(pending)
+  deliveryAt DateTime
+  createdAt  DateTime       @default(now())
+  sender     User           @relation("SentPostcards", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User           @relation("ReceivedPostcards", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId, status])
+  @@index([senderId, createdAt(sort: Desc)])
+  @@index([status, deliveryAt])
+  @@map("postcards")
+}
+
+// Rarity Tiers (v0.28.21)
+model RarityTier {
+  id           String         @id @default(cuid())
+  key          String         @unique
+  name         String
+  colorPrimary String
+  colorGlow    String?
+  frameStyle   String?
+  rankOrder    Int // 1-7
+  description  String?
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  items        Item[]
+  badges       Badge[]
+  cosmetics    CosmeticItem[]
+  themes       ProfileTheme[]
+
+  @@index([rankOrder])
+  @@index([isActive])
+  @@map("rarity_tiers")
+}
+
+// Daily Forks (v0.28.22)
+model DailyFork {
+  id          String          @id @default(cuid())
+  key         String          @unique
+  title       String
+  description String?
+  optionA     String
+  optionB     String
+  effectA     Json // JSON effect data
+  effectB     Json // JSON effect data
+  rarity      ForkRarity      @default(common)
+  createdAt   DateTime        @default(now())
+  isActive    Boolean         @default(true)
+  userForks   UserDailyFork[]
+
+  @@index([isActive])
+  @@index([rarity])
+  @@index([createdAt(sort: Desc)])
+  @@map("daily_forks")
+}
+
+model UserDailyFork {
+  id            String     @id @default(cuid())
+  userId        String
+  forkId        String
+  choice        ForkChoice
+  resultSummary String?
+  createdAt     DateTime   @default(now())
+  fork          DailyFork  @relation(fields: [forkId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, forkId])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([forkId])
+  @@map("user_daily_forks")
+}
+
+// Duet Runs (v0.28.23)
+model DuetRun {
+  id          String        @id @default(cuid())
+  missionKey  String        @unique
+  title       String
+  description String
+  type        DuetRunType
+  durationSec Int           @default(300) // 5 min default
+  rewardXP    Int           @default(50)
+  rewardKarma Int           @default(10)
+  createdAt   DateTime      @default(now())
+  isActive    Boolean       @default(true)
+  userRuns    UserDuetRun[]
+
+  @@index([isActive])
+  @@index([type])
+  @@index([createdAt(sort: Desc)])
+  @@map("duet_runs")
+}
+
+model UserDuetRun {
+  id        String        @id @default(cuid())
+  runId     String
+  userA     String
+  userB     String
+  status    DuetRunStatus @default(pending)
+  startedAt DateTime      @default(now())
+  endedAt   DateTime?
+  progressA Int           @default(0) // 0-100
+  progressB Int           @default(0) // 0-100
+  run       DuetRun       @relation(fields: [runId], references: [id], onDelete: Cascade)
+  userA_ref User          @relation("DuetRunsUserA", fields: [userA], references: [id], onDelete: Cascade)
+  userB_ref User          @relation("DuetRunsUserB", fields: [userB], references: [id], onDelete: Cascade)
+
+  @@index([userA, status])
+  @@index([userB, status])
+  @@index([runId, status])
+  @@index([startedAt])
+  @@map("user_duet_runs")
+}
+
+// Rituals (v0.28.24)
+model Ritual {
+  id          String          @id @default(cuid())
+  key         String          @unique
+  title       String
+  description String
+  rewardXP    Int             @default(10)
+  rewardKarma Int             @default(5)
+  timeOfDay   RitualTimeOfDay @default(any)
+  createdAt   DateTime        @default(now())
+  isActive    Boolean         @default(true)
+  userRituals UserRitual[]
+
+  @@index([isActive])
+  @@index([timeOfDay])
+  @@index([createdAt(sort: Desc)])
+  @@map("rituals")
+}
+
+model UserRitual {
+  id             String    @id @default(cuid())
+  userId         String
+  ritualId       String
+  lastCompleted  DateTime?
+  streakCount    Int       @default(0)
+  totalCompleted Int       @default(0)
+  ritual         Ritual    @relation(fields: [ritualId], references: [id], onDelete: Cascade)
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, ritualId])
+  @@index([userId])
+  @@index([ritualId])
+  @@index([lastCompleted])
+  @@map("user_rituals")
+}
+
+// Micro-Clans (v0.28.26)
+model MicroClan {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  leaderId    String
+  memberIds   String[] // Array of member user IDs (max 5)
+  buffType    MicroClanBuffType
+  buffValue   Float             @default(1.05)
+  seasonId    String?
+  createdAt   DateTime          @default(now())
+  isActive    Boolean           @default(true)
+  stats       MicroClanStats?
+  leader      User              @relation("MicroClanLeader", fields: [leaderId], references: [id], onDelete: Cascade)
+
+  @@index([leaderId])
+  @@index([seasonId])
+  @@index([isActive])
+  @@index([createdAt(sort: Desc)])
+  @@map("micro_clans")
+}
+
+model MicroClanStats {
+  id            String    @id @default(cuid())
+  clanId        String    @unique
+  xpTotal       Int       @default(0)
+  activityScore Int       @default(0)
+  rank          Int       @default(9999)
+  updatedAt     DateTime  @updatedAt
+  clan          MicroClan @relation(fields: [clanId], references: [id], onDelete: Cascade)
+
+  @@index([rank])
+  @@index([xpTotal(sort: Desc)])
+  @@index([activityScore(sort: Desc)])
+  @@map("micro_clan_stats")
+}
+
+// Loot Moments (v0.28.28)
+model LootMoment {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  trigger     LootTrigger
+  rewardType  LootRewardType
+  rewardValue Int // Value or item ID reference
+  rarity      LootRarity       @default(common)
+  flavorText  String?
+  createdAt   DateTime         @default(now())
+  isActive    Boolean          @default(true)
+  userLoot    UserLootMoment[]
+
+  @@index([trigger])
+  @@index([rarity])
+  @@index([isActive])
+  @@index([createdAt(sort: Desc)])
+  @@map("loot_moments")
+}
+
+model UserLootMoment {
+  id          String     @id @default(cuid())
+  userId      String
+  momentId    String
+  rewardData  Json // Store reward details
+  triggeredAt DateTime   @default(now())
+  redeemedAt  DateTime?
+  moment      LootMoment @relation(fields: [momentId], references: [id], onDelete: Cascade)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, triggeredAt(sort: Desc)])
+  @@index([userId, redeemedAt])
+  @@index([momentId])
+  @@map("user_loot_moments")
+}
+
+model Message {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  content          String
+  isRead           Boolean  @default(false)
+  receiverId       String
+  senderId         String
+  flagged          Boolean  @default(false)
+  hiddenBySender   Boolean  @default(false)
+  hiddenByReceiver Boolean  @default(false)
+  receiver         User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender           User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([senderId])
   @@index([receiverId])
   @@index([createdAt])
   @@map("messages")
+}
+
+model Comment {
+  id         String            @id @default(cuid())
+  userId     String
+  targetType String
+  targetId   String
+  content    String
+  flagged    Boolean           @default(false)
+  // Moderation (v0.27.6)
+  isFlagged  Boolean           @default(false)
+  flagReason String?
+  visibility ContentVisibility @default(PUBLIC)
+  createdAt  DateTime          @default(now())
+  user       User              @relation("UserComments", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([targetType, targetId])
+  @@index([visibility])
+  @@index([createdAt])
+  @@map("comments")
 }
 
 model ActionLog {
@@ -410,17 +959,121 @@ model ActionLog {
   @@map("action_logs")
 }
 
+model ModerationLog {
+  id          String   @id @default(cuid())
+  moderatorId String
+  action      String
+  targetType  String
+  targetId    String
+  reason      String?
+  createdAt   DateTime @default(now())
+  moderator   User     @relation("ModeratorLogs", fields: [moderatorId], references: [id], onDelete: Cascade)
+
+  @@index([moderatorId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+  @@map("moderation_logs")
+}
+
+/// v0.27.6 â€” Cultural Filters & Moderation Reports
+enum CulturalFilterSeverity {
+  info
+  warn
+  block
+}
+
+enum ContentVisibility {
+  PUBLIC
+  HIDDEN
+}
+
+model CulturalFilter {
+  id          String                 @id @default(cuid())
+  region      String
+  tag         String
+  category    String?
+  description String?
+  severity    CulturalFilterSeverity @default(warn)
+  createdBy   String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  @@index([region, tag])
+  @@map("cultural_filters")
+}
+
+enum ModerationContentType {
+  QUESTION
+  EVENT
+  COMMENT
+}
+
+model ModerationReport {
+  id          String                @id @default(cuid())
+  contentId   String
+  type        ModerationContentType
+  reasonTag   String
+  region      String?
+  reporterId  String?
+  isAnonymous Boolean               @default(false)
+  createdAt   DateTime              @default(now())
+
+  @@index([type, region])
+  @@map("moderation_reports")
+}
+
+/// v0.27.7 â€” AI Regional Contexts
+model AIRegionalContext {
+  id            String   @id @default(cuid())
+  region        String // e.g., CZ, US, GLOBAL
+  localeCode    String // e.g., cs-CZ, en-US
+  toneProfile   String?
+  culturalNotes String?  @db.Text
+  humorStyle    String?
+  tabooTopics   Json?
+  updatedAt     DateTime @updatedAt
+
+  @@index([region])
+  @@index([localeCode])
+  @@map("ai_regional_contexts")
+}
+
+/// v0.28.0 â€” Reflection Journal (Light)
+model Reflection {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String   @db.VarChar(200)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("reflections")
+}
+
+/// v0.28.1 â€” Mini-Events System (removed duplicate - see MiniEvent model later in schema)
+
 model Achievement {
   id                String                        @id @default(cuid())
-  code              String                        @unique
+  code              String                        @unique // Keep for backward compatibility
+  key               String?                       @unique // New: semantic key like "first-blood"
+  category          String                        @default("integration") // 'combat' | 'mind' | 'social' | 'commerce' | 'integration'
+  tier              Int                           @default(1) // I=1, II=2, III=3
   title             String
+  name              String? // Shorter display name (optional, use title if not set)
   description       String
   icon              String?
+  emoji             String? // New: emoji for display
   xpReward          Int                           @default(50)
+  rewardXp          Int? // Alternative field name (use xpReward as primary)
+  rewardGold        Int                           @default(0)
+  updatedAt         DateTime                      @default(now()) @updatedAt
   createdAt         DateTime                      @default(now())
   collectionMembers AchievementCollectionMember[]
   userAchievements  UserAchievement[]
 
+  @@index([category])
+  @@index([key])
   @@map("achievements")
 }
 
@@ -428,28 +1081,33 @@ model UserAchievement {
   id               String      @id @default(cuid())
   userId           String
   achievementId    String
+  tier             Int         @default(1) // Track which tier was unlocked
   earnedAt         DateTime    @default(now())
+  unlockedAt       DateTime? // Alternative field name (use earnedAt as primary)
   animationShownAt DateTime?
   achievement      Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
   user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, achievementId])
+  @@unique([userId, achievementId, tier]) // Allow same achievement multiple tiers
   @@index([userId])
   @@index([achievementId])
+  @@index([userId, earnedAt])
   @@map("user_achievements")
 }
 
 model EventLog {
   id             String   @id @default(cuid())
   userId         String
-  type           String
+  type           String?
   title          String
   description    String?
   metadata       Json?
   visibility     String   @default("public")
   reactionsCount Int      @default(0)
   createdAt      DateTime @default(now())
-  user           User     @relation("EventLogs", fields: [userId], references: [id], onDelete: Cascade)
+  eventType      String?
+  eventData      Json?
+  user           User?    @relation("EventLogs", fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([type, createdAt])
@@ -458,15 +1116,47 @@ model EventLog {
   @@map("event_logs")
 }
 
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  refCode   String?
+  source    String   @default("landing")
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("waitlist")
+}
+
+model MarketingCampaign {
+  id             String    @id @default(cuid())
+  title          String
+  content        String
+  link           String?
+  status         String    @default("draft")
+  sentAt         DateTime?
+  deliveredCount Int       @default(0)
+  openedCount    Int       @default(0)
+  clickedCount   Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("marketing_campaigns")
+}
+
 model Activity {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   userId      String
-  type        String
+  type        ActivityType // v0.29.22 - Consolidated from activity_logs
   title       String
   description String?
   metadata    Json?
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([type])
@@ -474,17 +1164,20 @@ model Activity {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   userId    String
-  type      String
+  senderId  String?
+  type      NotificationType
   title     String
   body      String?
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sender    User?            @relation("SentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
 
   @@index([userId, isRead])
   @@index([createdAt])
+  @@index([senderId])
   @@map("notifications")
 }
 
@@ -509,6 +1202,8 @@ model Item {
   effect          String?
   bonus           String?
   icon            String?
+  key             String?         @unique // v0.26.2 - Semantic key for shop items (e.g. 'alpha-item')
+  emoji           String? // v0.26.2 - Display emoji for shop
   createdAt       DateTime        @default(now())
   availableUntil  DateTime?
   cosmeticSubtype String?
@@ -524,27 +1219,59 @@ model Item {
   culturalItems   CulturalItem[]
   dynamicPrice    DynamicPrice?
   inventoryItems  InventoryItem[]
+  rarityId        String?
+  rarityTier      RarityTier?     @relation(fields: [rarityId], references: [id], onDelete: SetNull)
+  ItemRecipe      ItemRecipe[]
+  ItemDiscovery   ItemDiscovery[]
 
   @@index([type, rarity])
+  @@index([rarityId])
   @@index([cosmeticType, cosmeticSubtype])
   @@index([isShopItem, isFeatured])
+  @@index([key]) // v0.26.2
+  // Note: isCraftable and category indexes removed (v0.29.24) - fields don't exist yet
   @@map("items")
 }
 
 model InventoryItem {
-  id        String   @id @default(cuid())
-  userId    String
-  itemId    String
-  quantity  Int      @default(1)
-  equipped  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String          @id @default(cuid())
+  userId         String
+  itemId         String
+  itemKey        String? // v0.26.5 - Denormalized item key for quick lookup
+  rarity         String          @default("common") // v0.26.5 - Rarity tier (common, rare, epic, legendary, alpha)
+  power          Int             @default(0) // v0.26.5 - Item power stat
+  effectKey      String? // v0.26.5 - References ItemEffect.key
+  quantity       Int             @default(1)
+  equipped       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt // v0.26.5
+  item           Item            @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  effect         ItemEffect?     @relation(fields: [effectKey], references: [key], onDelete: SetNull) // v0.26.5
+  marketListings MarketListing[]
 
   @@unique([userId, itemId])
   @@index([userId])
   @@index([itemId])
+  @@index([rarity]) // v0.26.5
+  @@index([equipped]) // v0.26.5
   @@map("inventory_items")
+}
+
+model ItemEffect {
+  key            String          @id // v0.26.5 - Unique effect key (e.g. 'life-steal', 'crit-bonus')
+  name           String // v0.26.5 - Display name
+  description    String // v0.26.5 - Effect description
+  type           String // v0.26.5 - 'buff' | 'debuff' | 'passive'
+  magnitude      Float // v0.26.5 - Effect strength/percentage
+  trigger        String? // v0.26.5 - Trigger event (e.g. 'onAttack', 'onKill', 'onCrit', 'onStart')
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  inventoryItems InventoryItem[] // v0.26.5
+
+  @@index([type])
+  @@index([trigger])
+  @@map("item_effects")
 }
 
 model Friend {
@@ -626,7 +1353,7 @@ model GlobalEvent {
   id          String   @id @default(cuid())
   title       String
   description String?
-  emoji       String?  @default("🎉")
+  emoji       String?  @default("ðŸŽ‰")
   type        String
   bonusType   String
   bonusValue  Int
@@ -738,19 +1465,22 @@ model QuestCompletion {
 }
 
 model MarketListing {
-  id       String    @id @default(cuid())
-  sellerId String
-  itemId   String
-  price    Int
-  currency String    @default("gold")
-  status   String    @default("active")
-  listedAt DateTime  @default(now())
-  soldAt   DateTime?
-  buyerId  String?
-  seller   User      @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  id          String        @id @default(cuid())
+  sellerId    String
+  itemId      String // v0.26.4 - References InventoryItem.id (locked item instance)
+  price       Int
+  currencyKey String        @default("gold") // v0.26.4 - Currency key (gold, diamonds, etc.)
+  status      String        @default("active") // active | sold | cancelled
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  buyerId     String?
+  item        InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  seller      User          @relation("seller", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer       User?         @relation("buyer", fields: [buyerId], references: [id], onDelete: SetNull)
 
-  @@index([status, listedAt])
+  @@index([currencyKey, status]) // v0.26.4
   @@index([sellerId])
+  @@index([buyerId])
   @@map("market_listings")
 }
 
@@ -858,15 +1588,18 @@ model GlobalFeedItem {
 }
 
 model ProfileTheme {
-  id         String   @id @default(cuid())
+  id         String      @id @default(cuid())
   userId     String
   themeId    String
-  isActive   Boolean  @default(false)
-  unlockedAt DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isActive   Boolean     @default(false)
+  unlockedAt DateTime    @default(now())
+  rarityId   String?
+  rarityTier RarityTier? @relation(fields: [rarityId], references: [id], onDelete: SetNull)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, themeId])
   @@index([userId])
+  @@index([rarityId])
   @@map("profile_themes")
 }
 
@@ -1656,19 +2389,24 @@ model BetaUser {
 }
 
 model TelemetryEvent {
-  id        String   @id @default(cuid())
-  type      String
-  page      String?
-  action    String?
-  duration  Int?
-  metadata  Json?
-  userAgent String?
-  platform  String?
-  sessionId String?
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  type        String
+  page        String?
+  action      String?
+  duration    Int?
+  metadata    Json?
+  userAgent   String?
+  platform    String?
+  sessionId   String?
+  userId      String?
+  anonymousId String?
+  deviceType  String?
+  region      String?
+  createdAt   DateTime @default(now())
 
   @@index([type, createdAt])
   @@index([sessionId])
+  @@index([userId])
   @@index([createdAt])
   @@map("telemetry_events")
 }
@@ -1783,6 +2521,37 @@ model FeedbackSubmission {
   @@index([userId, submittedAt])
   @@index([type, status])
   @@map("feedback_submissions")
+}
+
+model ErrorLog {
+  id          String    @id @default(cuid())
+  errorType   String
+  message     String
+  stack       String?   @db.Text
+  page        String?
+  userAgent   String?
+  userId      String?
+  sessionId   String?
+  buildId     String?
+  environment String?
+  severity    String    @default("error")
+  frequency   Int       @default(1)
+  firstSeen   DateTime  @default(now())
+  lastSeen    DateTime  @default(now())
+  status      String    @default("new")
+  assignedTo  String?
+  metadata    Json?
+  resolved    Boolean   @default(false)
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([errorType, status])
+  @@index([severity, resolved])
+  @@index([createdAt])
+  @@index([frequency])
+  @@map("error_logs")
 }
 
 model TooltipDefinition {
@@ -1999,7 +2768,7 @@ model TerritoryContest {
   @@map("territory_contests")
 }
 
-model Faction {
+model FactionLegacy {
   id              String          @id @default(cuid())
   factionId       String          @unique
   name            String
@@ -2033,26 +2802,26 @@ model Faction {
   votes           FactionVote[]
 
   @@index([isActive, memberCount])
-  @@map("factions")
+  @@map("factions_legacy")
 }
 
 model FactionMember {
-  id               String    @id @default(cuid())
+  id               String        @id @default(cuid())
   factionId        String
-  userId           String    @unique
-  role             String    @default("member")
-  rank             Int       @default(0)
+  userId           String        @unique
+  role             String        @default("member")
+  rank             Int           @default(0)
   title            String?
-  xpContributed    Int       @default(0)
-  karmaContributed Int       @default(0)
-  reputation       Int       @default(0)
-  loyaltyScore     Int       @default(50)
-  joinedAt         DateTime  @default(now())
-  lastActive       DateTime  @default(now())
+  xpContributed    Int           @default(0)
+  karmaContributed Int           @default(0)
+  reputation       Int           @default(0)
+  loyaltyScore     Int           @default(50)
+  joinedAt         DateTime      @default(now())
+  lastActive       DateTime      @default(now())
   canSwitchAt      DateTime?
-  switchCount      Int       @default(0)
-  faction          Faction   @relation(fields: [factionId], references: [id], onDelete: Cascade)
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  switchCount      Int           @default(0)
+  faction          FactionLegacy @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([factionId, role])
   @@index([userId])
@@ -2077,7 +2846,7 @@ model FactionChangeLog {
 }
 
 model FactionVote {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   factionId   String
   userId      String
   voteType    String
@@ -2085,9 +2854,9 @@ model FactionVote {
   vote        String
   votingPower Int
   comment     String?
-  votedAt     DateTime @default(now())
-  faction     Faction  @relation(fields: [factionId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votedAt     DateTime      @default(now())
+  faction     FactionLegacy @relation(fields: [factionId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([proposalId, userId])
   @@index([factionId, voteType])
@@ -2121,7 +2890,7 @@ model MentorProfile {
   id                 String    @id @default(cuid())
   userId             String    @unique
   mentorName         String    @default("Sage")
-  mentorAvatar       String    @default("🧙")
+  mentorAvatar       String    @default("ðŸ§™")
   mentorTone         String    @default("supportive")
   preferredTopics    String[]
   communicationStyle String    @default("balanced")
@@ -2168,7 +2937,7 @@ model InsightPrompt {
   category          String
   question          String
   subtext           String?
-  icon              String   @default("💭")
+  icon              String   @default("ðŸ’­")
   archetypes        String[]
   minLevel          Int      @default(1)
   karmaRange        Json?
@@ -2194,8 +2963,11 @@ model ReflectionEntry {
   isPrivate  Boolean  @default(true)
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Locale code (v0.27.1)
+  localeCode String?  @default("global")
 
   @@index([userId, createdAt])
+  @@index([localeCode])
   @@map("reflection_entries")
 }
 
@@ -2283,33 +3055,38 @@ model WorldContribution {
 }
 
 model NpcProfile {
-  id             String           @id @default(cuid())
-  npcId          String           @unique
-  name           String
-  title          String?
-  avatar         String
-  archetype      String
-  personality    Json
-  alignment      String
-  karmaAffinity  Int              @default(0)
-  archetypeMatch String[]
-  greetings      Json
-  farewells      Json
-  quirks         String[]
-  canGiveQuests  Boolean          @default(true)
-  canGiveRewards Boolean          @default(true)
-  canGiveAdvice  Boolean          @default(true)
-  isActive       Boolean          @default(true)
-  appearanceRate Float            @default(1.0)
-  minLevel       Int              @default(1)
-  backstory      String?
-  voice          String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  interactions   NpcInteraction[]
-  memories       NpcMemory[]
+  id                String            @id @default(cuid())
+  npcId             String            @unique
+  name              String
+  title             String?
+  avatar            String
+  archetypeAffinity ArchetypeAffinity // v0.29.23 - Primary archetype match (thinker|trickster|guardian|wanderer|chaos)
+  tone              NPCTone // v0.29.23 - Dialogue tone (serious|sarcastic|poetic|neutral)
+  bio               String? // v0.29.23 - NPC biography
+  portraitUrl       String? // v0.29.23 - Portrait image URL
+  personality       Json?
+  alignment         String?
+  karmaAffinity     Int               @default(0)
+  archetypeMatch    String[]
+  greetings         Json?
+  farewells         Json?
+  quirks            String[]
+  canGiveQuests     Boolean           @default(true)
+  canGiveRewards    Boolean           @default(true)
+  canGiveAdvice     Boolean           @default(true)
+  isActive          Boolean           @default(true)
+  appearanceRate    Float             @default(1.0)
+  minLevel          Int               @default(1)
+  backstory         String?
+  voice             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  interactions      NpcInteraction[]
+  memories          NpcMemory[]
+  dialogues         NPCDialogue[] // v0.29.23 - Dialogue lines
+  affinities        NpcAffinity[] // v0.29.29 - User affinity tracking
 
-  @@index([archetype, isActive])
+  @@index([archetypeAffinity, isActive]) // v0.29.23 - Updated index
   @@index([isActive, appearanceRate])
   @@map("npc_profiles")
 }
@@ -2356,6 +3133,42 @@ model NpcMemory {
   @@index([npcId, userId])
   @@index([expiresAt])
   @@map("npc_memories")
+}
+
+// NPC Affinity model (v0.29.29) - Persistent character reactions & affinity tracking
+model NpcAffinity {
+  id             String     @id @default(cuid())
+  userId         String
+  npcId          String
+  lastInteraction DateTime  @default(now())
+  affinityScore  Float      @default(0.0)
+  note           String?    // Optional note about relationship
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  npc            NpcProfile @relation(fields: [npcId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, npcId])
+  @@index([userId, npcId])
+  @@index([affinityScore])
+  @@index([lastInteraction])
+  @@map("npc_affinities")
+}
+
+// NPC Dialogue model (v0.29.23)
+model NPCDialogue {
+  id          String              @id @default(cuid())
+  npcId       String
+  triggerType DialogueTriggerType // greeting|quest|reflection|event|random
+  text        String              @db.Text
+  moodTag     String? // Optional mood tag for filtering
+  rarity      DialogueRarity      @default(common) // common|rare|epic
+  createdAt   DateTime            @default(now())
+  npc         NpcProfile          @relation(fields: [npcId], references: [id], onDelete: Cascade)
+
+  @@index([npcId, triggerType])
+  @@index([npcId, rarity])
+  @@map("npc_dialogues")
 }
 
 model NpcDialogueTree {
@@ -2610,7 +3423,7 @@ model MiniEvent {
   eventId          String              @unique
   name             String
   description      String
-  icon             String              @default("🎯")
+  icon             String              @default("ðŸŽ¯")
   eventType        String
   goalType         String
   targetCount      Int
@@ -2671,7 +3484,7 @@ model CreatorProfile {
   avatar          String?
   bannerImage     String?
   isVerified      Boolean           @default(false)
-  badge           String            @default("🎨")
+  badge           String            @default("ðŸŽ¨")
   tier            String            @default("basic")
   totalFlows      Int               @default(0)
   totalEngagement Int               @default(0)
@@ -2762,7 +3575,7 @@ model Clan {
   name              String         @unique
   tag               String         @unique
   description       String?
-  emblem            String         @default("🏰")
+  emblem            String         @default("ðŸ°")
   color             String         @default("#8b5cf6")
   leaderId          String
   totalXp           Int            @default(0)
@@ -2879,6 +3692,19 @@ model AutoHealLog {
 
   @@index([healType, executedAt])
   @@map("auto_heal_logs")
+}
+
+model CronJobLog {
+  id           String        @id @default(cuid())
+  jobKey       String
+  status       CronJobStatus
+  startedAt    DateTime      @default(now())
+  finishedAt   DateTime?
+  durationMs   Int?
+  errorMessage String?       @db.Text
+
+  @@index([jobKey, startedAt(sort: Desc)])
+  @@map("cron_job_logs")
 }
 
 model ErrorAlert {
@@ -3097,6 +3923,36 @@ model UserThemeSettings {
   @@map("user_theme_settings")
 }
 
+model Archetype {
+  key          String   @id // v0.26.6 - Unique key (warrior, thinker, trickster, etc.)
+  name         String
+  description  String
+  baseStats    Json // v0.26.6 - Base stat distribution { str:10, int:8, cha:6, luck:4 }
+  growthRates  Json // v0.26.6 - Per-level stat growth { str:2, int:1, cha:1, luck:0.5 }
+  emoji        String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  fusionWith   String[]
+  fusionResult String?
+  fusionCost   Int      @default(500)
+  fusionVisual Json?
+
+  @@map("archetypes")
+}
+
+model UserArchetypeFusion {
+  id        String   @id @default(cuid())
+  userId    String
+  baseA     String
+  baseB     String
+  result    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("user_archetype_fusions")
+}
+
 model UserArchetypeHistory {
   id           String   @id @default(cuid())
   userId       String
@@ -3292,6 +4148,7 @@ model GroupMember {
 
   @@unique([userId, groupId])
   @@index([groupId])
+  @@index([groupId, userId])
   @@map("group_members")
 }
 
@@ -3382,9 +4239,10 @@ model Answer {
 }
 
 model Language {
-  id   String @id @default(cuid())
-  code String @unique
-  name String
+  id              String           @id @default(cuid())
+  code            String           @unique
+  name            String
+  userSubmissions UserSubmission[]
 
   @@map("languages")
 }
@@ -3399,9 +4257,10 @@ model Version {
 }
 
 model Category {
-  id            String        @id @default(cuid())
-  name          String
-  subCategories SubCategory[]
+  id              String           @id @default(cuid())
+  name            String
+  subCategories   SubCategory[]
+  userSubmissions UserSubmission[]
 }
 
 model SubCategory {
@@ -3421,10 +4280,10 @@ model SubSubCategory {
 }
 
 model SssCategory {
-  id               String          @id @default(cuid())
+  id               String               @id @default(cuid())
   name             String
   subSubCategoryId String
-  status           String          @default("pending")
+  status           String               @default("pending")
   generatedAt      DateTime?
   error            String?
   review           String?
@@ -3437,43 +4296,136 @@ model SssCategory {
   gender           String?
   author           String?
   wildcard         String?
-  subSubCategory   SubSubCategory  @relation(fields: [subSubCategoryId], references: [id])
-  flowQuestions    FlowQuestion[]  @relation("FlowQuestions")
+  subSubCategory   SubSubCategory       @relation(fields: [subSubCategoryId], references: [id])
+  flowQuestions    FlowQuestion[]       @relation("FlowQuestions")
   generationJobs   GenerationJob[]
-  questions        Question[]      @relation("SsscQuestions")
+  generationLogs   QuestionGeneration[] @relation("QuestionGenerationLogs")
+  questions        Question[]           @relation("SsscQuestions")
 }
 
 model UserQuestion {
-  id         String   @id @default(cuid())
-  userId     String
-  questionId String
-  status     String   @default("answered")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  question   Question @relation(fields: [questionId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  id                 String            @id @default(cuid())
+  userId             String
+  questionId         String?
+  questionTemplateId String? // v0.29.24 - Reference to QuestionTemplate
+  status             String            @default("answered")
+  servedAt           DateTime          @default(now()) // v0.29.24 - When question was served
+  answeredAt         DateTime? // v0.29.24 - When question was answered
+  archetypeContext   String? // v0.29.24 - User archetype at time of serving
+  moodContext        String? // v0.29.24 - World mood at time of serving
+  seasonId           String? // v0.29.24 - Season association
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  question           Question?         @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  questionTemplate   QuestionTemplate? @relation(fields: [questionTemplateId], references: [id], onDelete: SetNull) // v0.29.24
+  user               User              @relation(fields: [userId], references: [id])
 
   @@unique([userId, questionId])
+  @@index([userId, servedAt(sort: Desc)]) // v0.29.24 - DB Optimization composite index
+}
+
+// Question Template model (v0.29.24)
+model QuestionTemplate {
+  id                String                   @id @default(cuid())
+  category          QuestionTemplateCategory // daily|weekly|archetype|event|wildcard
+  archetypeAffinity ArchetypeAffinity? // v0.29.24 - Optional archetype match
+  tone              QuestionTone // serious|poetic|chaotic|funny
+  text              String                   @db.Text
+  tags              String[]                 @default([])
+  weight            Float                    @default(1.0) // Priority weight for selection
+  isActive          Boolean                  @default(true)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  userQuestions     UserQuestion[] // v0.29.24 - Questions served to users
+
+  @@index([category, isActive])
+  @@index([archetypeAffinity, isActive])
+  @@index([tone, isActive])
+  @@index([weight])
+  @@map("question_templates")
+}
+
+// Battle Achievement model (v0.29.25)
+model BattleAchievement {
+  id             String                      @id @default(cuid())
+  key            String                      @unique
+  title          String
+  description    String                      @db.Text
+  triggerType    BattleAchievementTriggerType // duelWin|duelLose|missionComplete|event
+  thresholdValue Int                         @default(1) // e.g., 5 wins, 10 missions
+  rewardXP       Int                         @default(0)
+  rewardBadgeId  String?                     // Optional badge reward
+  rarity         BattleAchievementRarity     @default(common)
+  isActive       Boolean                     @default(true)
+  createdAt      DateTime                    @default(now())
+  updatedAt      DateTime                    @updatedAt
+  userProgress   UserBattleAchievement[]     // v0.29.25 - User progress tracking
+
+  @@index([triggerType, isActive])
+  @@index([rarity, isActive])
+  @@index([thresholdValue])
+  @@map("battle_achievements")
+}
+
+// User Battle Achievement progress model (v0.29.25)
+model UserBattleAchievement {
+  id           String            @id @default(cuid())
+  userId       String
+  achievementId String
+  progress     Int               @default(0)
+  isUnlocked   Boolean           @default(false)
+  isClaimed    Boolean           @default(false)
+  unlockedAt   DateTime?
+  claimedAt    DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  achievement  BattleAchievement  @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, isUnlocked])
+  @@index([userId, isClaimed])
+  @@index([achievementId])
+  @@map("user_battle_achievements")
 }
 
 model Group {
   id           String          @id @default(cuid())
   name         String          @unique
-  emblem       String?         @default("🔥")
+  emblem       String?         @default("ðŸ”¥")
   motto        String?
   ownerId      String?
+  description  String?
+  visibility   String          @default("private")
+  transparency String          @default("summary")
   maxMembers   Int             @default(10)
   totalXp      Int             @default(0)
   avgKarma     Int             @default(0)
   avgPrestige  Int             @default(0)
+  cost         Int             @default(100)
   weeklyBonus  Boolean         @default(false)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   members      UserGroup[]
   activities   GroupActivity[]
   groupMembers GroupMember[]
+  stats        GroupStat[]
 
+  @@index([visibility, createdAt(sort: Desc)])
   @@map("groups")
+}
+
+model GroupStat {
+  id          String   @id @default(cuid())
+  groupId     String
+  totalXP     Int      @default(0)
+  reflections Int      @default(0)
+  avgLevel    Int      @default(0)
+  updatedAt   DateTime @default(now())
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId, updatedAt])
+  @@map("group_stats")
 }
 
 model UserGroup {
@@ -3487,31 +4439,341 @@ model UserGroup {
   @@index([groupId])
 }
 
+model PublicPoll {
+  id            String         @id @default(cuid())
+  title         String
+  question      String
+  options       String[]
+  region        String?
+  visibility    String         @default("public")
+  creatorId     String
+  allowFreetext Boolean        @default(false)
+  premiumCost   Int            @default(0)
+  rewardXP      Int            @default(50)
+  createdAt     DateTime       @default(now())
+  expiresAt     DateTime?
+  responses     PollResponse[]
+
+  @@index([region, createdAt])
+  @@map("public_polls")
+}
+
+model PollResponse {
+  id        String     @id @default(cuid())
+  pollId    String
+  userId    String
+  optionIdx Int?
+  freetext  String?
+  region    String?
+  createdAt DateTime   @default(now())
+  poll      PublicPoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([pollId, userId])
+  @@map("poll_responses")
+}
+
+model PublicChallenge {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  region      String?
+  rewardXP    Int       @default(100)
+  rewardItem  String?
+  activeFrom  DateTime  @default(now())
+  activeTo    DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([region, createdAt])
+  @@map("public_challenges")
+}
+
+model ContentPack {
+  id          String     @id @default(cuid())
+  key         String     @unique
+  title       String
+  description String?
+  category    String?
+  price       Int        @default(0)
+  premiumOnly Boolean    @default(false)
+  isActive    Boolean    @default(true)
+  themeColor  String?
+  icon        String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  items       PackItem[]
+  userPacks   UserPack[]
+
+  @@index([category, isActive])
+  @@map("content_packs")
+}
+
+model PackItem {
+  id        String      @id @default(cuid())
+  packId    String
+  type      String
+  refId     String?
+  data      Json?
+  createdAt DateTime    @default(now())
+  pack      ContentPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+
+  @@index([packId])
+  @@map("pack_items")
+}
+
+model UserPack {
+  id         String      @id @default(cuid())
+  userId     String
+  packId     String
+  unlockedAt DateTime    @default(now())
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack       ContentPack @relation(fields: [packId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, packId])
+  @@index([packId])
+  @@map("user_packs")
+}
+
+model Fireside {
+  id             String             @id @default(cuid())
+  title          String?
+  creatorId      String
+  participantIds String[]
+  expiresAt      DateTime
+  isActive       Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  reactions      FiresideReaction[]
+
+  @@index([isActive, expiresAt])
+  @@map("firesides")
+}
+
+model FiresideReaction {
+  id         String   @id @default(cuid())
+  firesideId String
+  userId     String
+  emoji      String
+  createdAt  DateTime @default(now())
+  fireside   Fireside @relation(fields: [firesideId], references: [id], onDelete: Cascade)
+
+  @@index([firesideId, userId])
+  @@map("fireside_reactions")
+}
+
+model MemoryJournal {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  summary     String?
+  content     String
+  periodStart DateTime
+  periodEnd   DateTime
+  sourceCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("memory_journals")
+}
+
+model ComparisonCard {
+  id            String   @id @default(cuid())
+  userId        String
+  statsJson     Json
+  funText       String
+  imageUrl      String
+  generatedAt   DateTime @default(now())
+  autoGenerated Boolean  @default(false)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, generatedAt(sort: Desc)])
+  @@map("comparison_cards")
+}
+
+model MicroMission {
+  id              String             @id @default(cuid())
+  key             String             @unique
+  title           String
+  description     String
+  type            String // 'solo' | 'coop'
+  rarity          String // 'common' | 'rare' | 'unique'
+  durationSec     Int                @default(300)
+  rewardXP        Int                @default(0)
+  rewardItem      String?
+  rewardGold      Int?
+  skipCostFood    Int?
+  skipCostGold    Int?
+  skipCostPremium Int?
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  userMissions    UserMicroMission[]
+
+  @@index([isActive, rarity])
+  @@map("micro_missions")
+}
+
+model UserMicroMission {
+  id          String       @id @default(cuid())
+  userId      String
+  missionId   String
+  status      String // 'active' | 'completed' | 'skipped' | 'expired'
+  startedAt   DateTime     @default(now())
+  completedAt DateTime?
+  mission     MicroMission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("user_micro_missions")
+}
+
+model AvatarMood {
+  id           String   @id @default(cuid())
+  userId       String
+  mood         String // 'neutral' | 'happy' | 'sad' | 'angry' | 'excited' | 'tired' | 'focused'
+  pose         String // 'default' | 'thinking' | 'celebrating' | 'resting'
+  emotionScore Float    @default(0)
+  source       String // 'manual' | 'auto'
+  updatedAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("avatar_moods")
+}
+
+// Global Mood model (v0.29.26)
+model GlobalMood {
+  id             String           @id @default(cuid())
+  calmScore      Float            @default(0)
+  chaosScore     Float            @default(0)
+  neutralScore   Float            @default(0)
+  updatedAt      DateTime        @default(now()) @updatedAt
+  dominantMood   GlobalMoodType  @default(neutral)
+  worldModifier  Json?           // JSON with active buffs/debuffs
+
+  @@map("global_mood")
+}
+
+// User Mood Log model (v0.29.26)
+model UserMoodLog {
+  id           String          @id @default(cuid())
+  userId       String
+  reflectionId String?         // Optional reference to reflection
+  mood         GlobalMoodType  // calm|chaos|neutral
+  loggedAt     DateTime        @default(now())
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reflection   UserReflection? @relation(fields: [reflectionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, loggedAt(sort: Desc)])
+  @@index([mood, loggedAt])
+  @@index([loggedAt])
+  @@map("user_mood_logs")
+}
+
+model MoodPreset {
+  key         String   @id
+  title       String
+  description String?
+  toneProfile Json?
+  createdAt   DateTime @default(now())
+  isActive    Boolean  @default(true)
+
+  @@map("mood_presets")
+}
+
+model MentorNPC {
+  id                String       @id @default(cuid())
+  key               String       @unique
+  name              String
+  archetypeAffinity String[]
+  personality       String // 'analyst' | 'bard' | 'sage' | 'trickster' | 'guardian' | 'healer' | 'hacker'
+  introText         String?
+  tips              String[]
+  voiceTone         String // 'calm' | 'chaotic' | 'wise' | 'sarcastic'
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  userMentors       UserMentor[]
+
+  @@map("mentor_npcs")
+}
+
+model UserMentor {
+  id                String    @id @default(cuid())
+  userId            String
+  mentorId          String
+  affinityScore     Float     @default(0)
+  lastInteractionAt DateTime  @default(now())
+  mentor            MentorNPC @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, mentorId])
+  @@index([userId, mentorId])
+  @@map("user_mentors")
+}
+
+model SeasonStoryline {
+  id            String                 @id @default(cuid())
+  key           String                 @unique
+  title         String
+  description   String
+  startDate     DateTime
+  endDate       DateTime?
+  isActive      Boolean                @default(false)
+  xpBonus       Float?
+  goldBonus     Float?
+  eventModifier Json?
+  npcIds        String[]
+  themeColor    String?
+  posterUrl     String?
+  createdAt     DateTime               @default(now())
+  achievements  StorylineAchievement[]
+
+  @@index([isActive])
+  @@index([startDate(sort: Desc)])
+  @@map("season_storylines")
+}
+
+model StorylineAchievement {
+  id          String          @id @default(cuid())
+  seasonId    String
+  title       String
+  description String
+  rewardItem  String?
+  rewardXP    Int?
+  createdAt   DateTime        @default(now())
+  season      SeasonStoryline @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@index([seasonId])
+  @@map("storyline_achievements")
+}
+
 model Wallet {
-  id            String        @id @default(cuid())
-  userId        String        @unique
-  tenantId      String
-  funds         Decimal       @default(0)
-  diamonds      Int           @default(0)
-  ledgerEntries LedgerEntry[]
-  user          User          @relation(fields: [userId], references: [id])
+  id                 String        @id @default(cuid())
+  userId             String        @unique
+  tenantId           String
+  funds              Decimal       @default(0)
+  diamonds           Int           @default(0)
+  badgesClaimedCount Int           @default(0) // v0.29.0 - Count of badges claimed
+  ledgerEntries      LedgerEntry[]
+  user               User          @relation(fields: [userId], references: [id])
 
   @@unique([userId, tenantId])
   @@index([tenantId])
 }
 
 model LedgerEntry {
-  id        String     @id @default(cuid())
-  walletId  String
-  tenantId  String
-  kind      LedgerKind
-  amount    Int
-  currency  Currency
-  refType   String
-  refId     String?
-  note      String?
-  createdAt DateTime   @default(now())
-  wallet    Wallet     @relation(fields: [walletId], references: [id])
+  id         String     @id @default(cuid())
+  walletId   String
+  tenantId   String
+  kind       LedgerKind
+  amount     Int
+  currency   Currency   @relation(fields: [currencyId], references: [id])
+  refType    String
+  refId      String?
+  note       String?
+  createdAt  DateTime   @default(now())
+  wallet     Wallet     @relation(fields: [walletId], references: [id])
+  currencyId String
 
   @@index([tenantId])
   @@index([walletId, createdAt])
@@ -3604,25 +4866,52 @@ model UserProfile {
 }
 
 model Badge {
-  id          String      @id @default(cuid())
-  slug        String      @unique
-  title       String
-  description String
-  icon        String
-  active      Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  userBadges  UserBadge[]
+  id               String           @id @default(cuid())
+  key              String           @unique // v0.29.0 - Badge key identifier
+  name             String // v0.29.0 - Display name
+  description      String
+  icon             String
+  rarity           BadgeRarity // v0.29.0 - Badge rarity enum
+  unlockType       BadgeUnlockType // v0.29.0 - How badge is unlocked
+  requirementValue String? // v0.29.0 - XP amount, event key, etc.
+  rewardType       BadgeRewardType? // v0.29.0 - Type of reward granted
+  rewardValue      String? // v0.29.0 - Reward amount or identifier
+  seasonId         String? // v0.29.0 - Optional season association
+  isActive         Boolean          @default(true) // v0.29.0 - Active flag
+  createdAt        DateTime         @default(now())
+
+  // Legacy fields (keeping for backward compatibility)
+  slug       String?     @unique
+  title      String?
+  active     Boolean?    @default(true)
+  rarityId   String?
+  rarityTier RarityTier? @relation(fields: [rarityId], references: [id], onDelete: SetNull)
+
+  season     Season?     @relation(fields: [seasonId], references: [id], onDelete: SetNull)
+  userBadges UserBadge[]
+
+  @@index([rarity])
+  @@index([unlockType])
+  @@index([isActive])
+  @@index([seasonId])
 }
 
 model UserBadge {
-  id        String   @id @default(cuid())
-  userId    String
-  badgeId   String
-  createdAt DateTime @default(now())
-  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String    @id @default(cuid())
+  userId     String
+  badgeId    String
+  unlockedAt DateTime  @default(now()) // v0.29.0 - When badge was unlocked
+  claimedAt  DateTime? // v0.29.0 - When reward was claimed
+  isClaimed  Boolean   @default(false) // v0.29.0 - Claim status
+  badge      Badge     @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Legacy field
+  createdAt DateTime? @default(now())
 
   @@unique([userId, badgeId])
+  @@index([userId, isClaimed])
+  @@index([badgeId])
 }
 
 model FailedLoginAttempt {
@@ -3770,6 +5059,891 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+model UserSubmission {
+  id            String           @id @default(cuid())
+  userId        String
+  type          SubmissionType   @default(QUESTION)
+  status        SubmissionStatus @default(PENDING)
+  title         String
+  content       String
+  description   String?
+  categoryId    String?
+  languageId    String?
+  tags          String[]
+  imageUrl      String?
+  metadata      Json?
+  upvotes       Int              @default(0)
+  downvotes     Int              @default(0)
+  score         Int              @default(0)
+  moderatorId   String?
+  moderatorNote String?
+  reviewedAt    DateTime?
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  user          User             @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  moderator     User?            @relation("ModeratedSubmissions", fields: [moderatorId], references: [id])
+  category      Category?        @relation(fields: [categoryId], references: [id])
+  language      Language?        @relation(fields: [languageId], references: [id])
+  votes         Vote[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([categoryId])
+  @@index([createdAt])
+  @@map("user_submissions")
+}
+
+model Event {
+  id             String            @id @default(cuid())
+  title          String
+  description    String
+  type           EventType         @default(CHALLENGE)
+  status         EventStatus       @default(DRAFT)
+  startDate      DateTime
+  endDate        DateTime
+  rewardXP       Int               @default(0)
+  rewardDiamonds Int               @default(0)
+  imageUrl       String?
+  metadata       Json?
+  participants   Int               @default(0)
+  creatorId      String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  creator        User?             @relation("CreatedEvents", fields: [creatorId], references: [id])
+  // Locale code (v0.27.1)
+  localeCode     String?           @default("global")
+  // Moderation (v0.27.6)
+  isFlagged      Boolean           @default(false)
+  flagReason     String?
+  visibility     ContentVisibility @default(PUBLIC)
+
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([localeCode])
+  @@index([visibility])
+  @@map("events")
+}
+
+model Vote {
+  id           String         @id @default(cuid())
+  userId       String?
+  sessionId    String?
+  submissionId String
+  voteType     VoteType
+  createdAt    DateTime       @default(now())
+  user         User?          @relation("UserVotes", fields: [userId], references: [id], onDelete: Cascade)
+  submission   UserSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, submissionId])
+  @@unique([sessionId, submissionId])
+  @@index([submissionId])
+  @@map("votes")
+}
+
+model Season {
+  id          String          @id @default(cuid())
+  name        String
+  displayName String
+  number      Int             @unique
+  startDate   DateTime
+  endDate     DateTime
+  status      SeasonStatus    @default(UPCOMING)
+  metadata    Json?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  archives    SeasonArchive[]
+  badges      Badge[] // v0.29.0 - Badges associated with this season
+  chronicles  Chronicle[] // v0.29.1 - Chronicles associated with this season
+
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+  @@map("seasons")
+}
+
+model SeasonArchive {
+  id           String   @id @default(cuid())
+  userId       String
+  seasonId     String
+  finalXP      Int      @default(0)
+  finalCoins   Int      @default(0)
+  finalRank    Int?
+  finalKarma   Int      @default(0)
+  achievements Json?
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season       Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, seasonId])
+  @@index([seasonId])
+  @@index([userId])
+  @@map("season_archives")
+}
+
+model CosmeticItem {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  name        String
+  description String?
+  type        CosmeticType
+  rarity      CosmeticRarity @default(COMMON)
+  price       Int            @default(0)
+  imageUrl    String?
+  metadata    Json?
+  active      Boolean        @default(true)
+  seasonOnly  Boolean        @default(false)
+  seasonId    String?
+  createdAt   DateTime       @default(now())
+  userItems   UserCosmetic[]
+  rarityId    String?
+  rarityTier  RarityTier?    @relation(fields: [rarityId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([active])
+  @@index([rarityId])
+  @@map("cosmetic_items")
+}
+
+model UserCosmetic {
+  id          String       @id @default(cuid())
+  userId      String
+  cosmeticId  String
+  equipped    Boolean      @default(false)
+  purchasedAt DateTime     @default(now())
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cosmetic    CosmeticItem @relation(fields: [cosmeticId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cosmeticId])
+  @@index([userId])
+  @@index([equipped])
+  @@map("user_cosmetics")
+}
+
+model SeasonalEvent {
+  id          String              @id @default(cuid())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  bonusType   String
+  bonusValue  Int                 @default(0)
+  status      SeasonalEventStatus @default(INACTIVE)
+  metadata    Json?
+  createdAt   DateTime            @default(now())
+
+  @@index([status])
+  @@index([startDate])
+  @@map("seasonal_events")
+}
+
+// v0.29.12 - Mirror Events: Global synchronous reflection weeks
+model MirrorEvent {
+  id            String           @id @default(cuid())
+  key           String           @unique
+  title         String
+  description   String
+  theme         String? // Visual theme key
+  startDate     DateTime
+  endDate       DateTime
+  active        Boolean          @default(false)
+  questionSet   String[]         @default([]) // Array of reflection questions
+  rewardXP      Int              @default(0)
+  rewardBadgeId String?
+  createdAt     DateTime         @default(now())
+  reflections   UserReflection[]
+
+  @@index([active])
+  @@index([startDate])
+  @@index([endDate])
+  @@map("mirror_events")
+}
+
+// v0.29.13 - Wildcard Events: Random humor engine
+model WildcardEvent {
+  id            String              @id @default(cuid())
+  title         String
+  description   String
+  triggerType   String // 'xpGain' | 'login' | 'reflection' | 'random'
+  rewardXP      Int                 @default(0)
+  rewardKarma   Int                 @default(0)
+  flavorText    String
+  createdAt     DateTime            @default(now())
+  userWildcards UserWildcardEvent[]
+
+  @@index([triggerType])
+  @@map("wildcard_events")
+}
+
+// User wildcard event tracking (prevent duplicates, track daily limits)
+model UserWildcardEvent {
+  id         String        @id @default(cuid())
+  userId     String
+  wildcardId String
+  redeemed   Boolean       @default(false)
+  redeemedAt DateTime?
+  createdAt  DateTime      @default(now())
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wildcard   WildcardEvent @relation(fields: [wildcardId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, redeemed])
+  @@map("user_wildcard_events")
+}
+
+// v0.29.15 - Share Cards: Shareable reflections & summaries
+model ShareCard {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String // 'weekly' | 'achievement' | 'comparison'
+  imageUrl  String?
+  caption   String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([expiresAt])
+  @@map("share_cards")
+}
+
+// Poster Card model (v0.29.28)
+model PosterCard {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  statsJson Json     // Archetype, level, mood, XP, reflection count, etc.
+  imageUrl  String?  // Generated poster image URL
+  isShared  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([isShared, createdAt(sort: Desc)])
+  @@index([createdAt])
+  @@map("poster_cards")
+}
+
+// v0.29.16 - Dreamspace: Surreal challenge layer
+model DreamEvent {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  triggerType String // 'sleep' | 'reflection' | 'random'
+  effect      Json // XP shift, mood change, karma flux
+  flavorTone  String // 'calm' | 'chaotic' | 'mystic'
+  createdAt   DateTime         @default(now())
+  isActive    Boolean          @default(true)
+  userDreams  UserDreamEvent[]
+
+  @@index([isActive])
+  @@index([triggerType])
+  @@index([flavorTone])
+  @@map("dream_events")
+}
+
+// User dream event tracking
+model UserDreamEvent {
+  id         String     @id @default(cuid())
+  userId     String
+  dreamId    String
+  resolved   Boolean    @default(false)
+  resolvedAt DateTime?
+  createdAt  DateTime   @default(now())
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dream      DreamEvent @relation(fields: [dreamId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, resolved])
+  @@map("user_dream_events")
+}
+
+// v0.29.17 - Generation Records: Inheritance layer
+model GenerationRecord {
+  id               String   @id @default(cuid())
+  userId           String
+  generationNumber Int
+  prestigeId       String? // Link to prestige that triggered this generation
+  inheritedPerks   Json     @default("[]") // Array of inherited perks (e.g., [{ type: 'xpBoost', value: 2 }, { type: 'title', value: 'Echo' }])
+  summaryText      String? // Summary text from Lore Engine
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, generationNumber])
+  @@index([userId, createdAt])
+  @@map("generation_records")
+}
+
+// v0.29.19 - Feedback: User feedback and bug reports
+model Feedback {
+  id            String         @id @default(cuid())
+  userId        String?
+  message       String         @db.Text
+  screenshotUrl String?
+  context       String? // Additional context (page, action, etc.)
+  status        FeedbackStatus @default(NEW)
+  createdAt     DateTime       @default(now())
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("feedback")
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWED
+  RESOLVED
+}
+
+// v0.29.19 - Creator Packs: Community-created content
+// v0.29.27 - Extended with publish & reward fields
+model CreatorPack {
+  id             String            @id @default(cuid())
+  creatorId      String
+  title          String
+  description    String?           @db.Text
+  type           CreatorPackType   @default(POLL)
+  status         CreatorPackStatus @default(DRAFT)
+  metadata       Json? // Additional pack data (questions, rewards, etc.)
+  createdAt      DateTime          @default(now())
+  approvedAt     DateTime?
+  approvedBy     String?
+  // v0.29.27 - Publish & reward fields
+  rewardType     CreatorRewardType? // xp|gold|diamonds|badge
+  rewardValue    Int?               @default(0)
+  publishedAt    DateTime?
+  downloadsCount Int                @default(0)
+  user           User               @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  userCreated    UserCreatedPack[] // v0.29.27 - User pack usage tracking
+
+  @@index([status])
+  @@index([creatorId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([publishedAt])
+  @@index([downloadsCount])
+  @@map("creator_packs")
+}
+
+enum CreatorPackType {
+  POLL
+  REFLECTION
+  MISSION
+}
+
+enum CreatorPackStatus {
+  DRAFT
+  APPROVED
+  REJECTED
+}
+
+// Creator reward type enum (v0.29.27)
+enum CreatorRewardType {
+  xp
+  gold
+  diamonds
+  badge
+}
+
+// User Created Pack model (v0.29.27)
+model UserCreatedPack {
+  id            String       @id @default(cuid())
+  userId        String
+  packId        String
+  isPublished   Boolean      @default(false)
+  earnedRewards Int          @default(0) // Total rewards earned from this pack
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pack          CreatorPack  @relation(fields: [packId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, packId])
+  @@index([userId, isPublished])
+  @@index([packId])
+  @@index([createdAt])
+  @@map("user_created_packs")
+}
+
+// v0.29.20 - Item Recipes: Crafting recipes
+model ItemRecipe {
+  id           String   @id @default(cuid())
+  itemId       String // The item this recipe produces
+  ingredients  Json     @default("[]") // Array of { itemId, quantity } objects
+  craftTime    Int      @default(3000) // Crafting time in milliseconds (default 3s)
+  xpReward     Int      @default(10) // XP reward for crafting
+  discoveredBy String? // User who discovered this recipe (null = default recipe)
+  createdAt    DateTime @default(now())
+  item         Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@index([discoveredBy])
+  @@index([createdAt])
+  @@map("item_recipes")
+}
+
+// v0.29.20 - Item Discoveries: User's discovered items
+model ItemDiscovery {
+  id           String   @id @default(cuid())
+  userId       String
+  itemId       String
+  discoveredAt DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item         Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@index([discoveredAt])
+  @@map("item_discoveries")
+}
+
+model UserReflection {
+  id            String                   @id @default(cuid())
+  userId        String
+  date          DateTime                 @default(now())
+  type          ReflectionType           @default(DAILY)
+  content       String
+  summary       String?
+  sentiment     String?                  @default("neutral")
+  stats         Json?
+  metadata      Json?
+  mirrorEventId String? // v0.29.12 - Mirror Events linking
+  createdAt     DateTime                 @default(now())
+  user          User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mirrorEvent   MirrorEvent?             @relation(fields: [mirrorEventId], references: [id], onDelete: SetNull) // v0.29.12 - Mirror Events
+  conversations ReflectionConversation[] // v0.29.2 - AI conversations
+  moodLogs      UserMoodLog[]            // v0.29.26 - Mood logs
+
+  @@index([userId])
+  @@index([date])
+  @@index([type])
+  @@index([mirrorEventId])
+  @@index([userId, createdAt(sort: Desc)]) // v0.29.22 - DB Optimization composite index
+  @@map("user_reflections")
+}
+
+// Reflection Conversation system (v0.29.2)
+model ReflectionConversation {
+  id           String         @id @default(cuid())
+  userId       String
+  reflectionId String
+  prompt       String         @db.Text
+  response     String         @db.Text
+  toneLevel    Int // 1-5 from Roast/Toast meter
+  modelUsed    String? // e.g., "gpt-4", "local", "fallback"
+  createdAt    DateTime       @default(now())
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reflection   UserReflection @relation(fields: [reflectionId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([reflectionId])
+  @@index([createdAt])
+  @@map("reflection_conversations")
+}
+
+// Unified stats model (v0.29.22 - Consolidated from weekly_stats)
+model UserStats {
+  id                String   @id @default(cuid())
+  userId            String   @unique // Single unified record per user
+  totalXP           Int      @default(0)
+  totalCoins        Int      @default(0)
+  totalKarma        Int      @default(0)
+  questionsCount    Int      @default(0)
+  streakDays        Int      @default(0)
+  currentRank       Int?
+  lastWeekXP        Int      @default(0) // Weekly tracking preserved
+  lastWeekCoins     Int      @default(0)
+  lastWeekKarma     Int      @default(0)
+  lastWeekQuestions Int      @default(0)
+  lastWeekStreak    Int      @default(0)
+  rankChange        Int?
+  metadata          Json?
+  updatedAt         DateTime @default(now())
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([currentRank])
+  @@map("user_stats")
+}
+
+// Deprecated: Use UserStats instead (v0.29.22)
+// Kept for backward compatibility during migration
+model UserWeeklyStats {
+  id             String   @id @default(cuid())
+  userId         String
+  weekStart      DateTime
+  weekEnd        DateTime
+  xpGain         Int      @default(0)
+  coinsGain      Int      @default(0)
+  karmaGain      Int      @default(0)
+  questionsCount Int      @default(0)
+  streakDays     Int      @default(0)
+  rankChange     Int?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@index([weekStart])
+  @@map("user_weekly_stats")
+}
+
+// Chronicle system (v0.29.1)
+model Chronicle {
+  id          String        @id @default(cuid())
+  userId      String
+  type        ChronicleType // weekly or seasonal
+  summaryText String        @db.Text
+  statsJson   Json // Reflection count, XP, sentiment, etc.
+  quote       String? // Optional motivational/funny quote
+  generatedAt DateTime      @default(now())
+  seasonId    String? // Optional season association for seasonal chronicles
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season      Season?       @relation(fields: [seasonId], references: [id], onDelete: SetNull)
+
+  @@index([userId, generatedAt(sort: Desc)]) // Quick access to latest
+  @@index([type])
+  @@index([seasonId])
+  @@map("chronicles")
+}
+
+// Region system (v0.29.3)
+model Region {
+  id                     String                 @id @default(cuid())
+  key                    String                 @unique
+  name                   String
+  description            String                 @db.Text
+  orderIndex             Int                    @default(0) // Order for travel sequence
+  buffType               RegionBuffType
+  buffValue              Float // e.g., 0.05 for +5%
+  unlockRequirementType  UnlockRequirementType? // Optional unlock requirement
+  unlockRequirementValue String? // e.g., level "10", task "key_name", gold "1000"
+  isActive               Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  userRegions            UserRegion[]
+
+  @@index([orderIndex])
+  @@index([isActive])
+  @@map("regions")
+}
+
+model UserRegion {
+  id           String    @id @default(cuid())
+  userId       String
+  regionId     String
+  isUnlocked   Boolean   @default(false)
+  visitedAt    DateTime?
+  activeBuff   Boolean   @default(false) // Whether this region's buff is currently active
+  lastTravelAt DateTime?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  region       Region    @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, regionId])
+  @@index([userId, activeBuff])
+  @@index([regionId])
+  @@map("user_regions")
+}
+
+// Quest system (v0.29.4)
+model Quest {
+  id               String               @id @default(cuid())
+  key              String               @unique
+  title            String
+  description      String               @db.Text
+  type             QuestType // daily, weekly, story, side
+  requirementType  QuestRequirementType
+  requirementValue Int // e.g., 100 XP, 5 reflections, etc.
+  rewardXP         Int                  @default(0)
+  rewardGold       Int                  @default(0)
+  rewardItem       String? // Item ID or key
+  rewardBadge      String? // Badge key
+  rewardKarma      Int                  @default(0)
+  isRepeatable     Boolean              @default(false)
+  isActive         Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  userQuests       UserQuest[]
+
+  @@index([type, isActive])
+  @@index([isActive])
+  @@map("quests")
+}
+
+model UserQuest {
+  id          String    @id @default(cuid())
+  userId      String
+  questId     String
+  progress    Int       @default(0)
+  isCompleted Boolean   @default(false)
+  isClaimed   Boolean   @default(false)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quest       Quest     @relation(fields: [questId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questId]) // v0.29.22 - Unique constraint
+  @@index([userId, isCompleted, isClaimed]) // v0.29.22 - DB Optimization composite index (replaces separate indexes)
+  @@index([questId])
+  @@map("user_quests")
+}
+
+// Lore system (v0.29.5) - User-specific narrative logs
+model UserLoreEntry {
+  id         String         @id @default(cuid())
+  userId     String
+  sourceType LoreSourceType // reflection, quest, item, event, system
+  sourceId   String? // Optional reference to source (reflectionId, questId, etc.)
+  tone       LoreTone // serious, comedic, poetic
+  text       String         @db.Text // Lore snippet (â‰¤ 300 chars)
+  createdAt  DateTime       @default(now())
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([sourceType])
+  @@index([tone])
+  @@map("user_lore_entries")
+}
+
+// Social system (v0.29.7)
+model Friendship {
+  id           String           @id @default(cuid())
+  userA        String
+  userB        String
+  status       FriendshipStatus @default(pending)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  userAProfile User             @relation("UserA", fields: [userA], references: [id], onDelete: Cascade)
+  userBProfile User             @relation("UserB", fields: [userB], references: [id], onDelete: Cascade)
+
+  @@unique([userA, userB])
+  @@index([userA, status])
+  @@index([userB, status])
+  @@map("friendships")
+}
+
+model SocialDuel {
+  id            String        @id @default(cuid())
+  challengerId  String
+  opponentId    String
+  status        DuelStatus    @default(pending)
+  challengeType ChallengeType
+  rewardXP      Int           @default(0)
+  winnerId      String?
+  createdAt     DateTime      @default(now())
+  challenger    User          @relation("Challenger", fields: [challengerId], references: [id], onDelete: Cascade)
+  opponent      User          @relation("Opponent", fields: [opponentId], references: [id], onDelete: Cascade)
+  winner        User?         @relation("Winner", fields: [winnerId], references: [id], onDelete: SetNull)
+
+  @@index([challengerId, status])
+  @@index([opponentId, status])
+  @@index([status])
+  @@map("social_duels")
+}
+
+model SharedMission {
+  id           String              @id @default(cuid())
+  missionKey   String
+  participants String[] // Array of user IDs
+  status       SharedMissionStatus @default(active)
+  rewardXP     Int                 @default(0)
+  createdAt    DateTime            @default(now())
+  completedAt  DateTime?
+
+  @@index([status])
+  @@index([missionKey])
+  @@map("shared_missions")
+}
+
+// Economy system (v0.29.8)
+model Currency {
+  id           String        @id @default(cuid())
+  key          String        @unique
+  name         String
+  symbol       String
+  exchangeRate Float         @default(1.0) // Relative to base currency (gold)
+  isPremium    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  LedgerEntry  LedgerEntry[]
+
+  @@index([key])
+  @@map("currencies")
+}
+
+model UserWallet {
+  id          String   @id @default(cuid())
+  userId      String
+  currencyKey String
+  balance     Decimal  @default(0)
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, currencyKey])
+  @@index([userId])
+  @@index([currencyKey])
+  @@map("user_wallets")
+}
+
+model MarketItem {
+  id          String       @id @default(cuid())
+  name        String
+  description String       @db.Text
+  price       Decimal
+  currencyKey String
+  rarity      String? // e.g., "common", "rare", "epic"
+  category    ItemCategory
+  stock       Int? // Optional stock tracking (null = unlimited)
+  isEventItem Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  @@index([category])
+  @@index([rarity])
+  @@index([isEventItem])
+  @@index([currencyKey])
+  @@map("market_items")
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  itemId      String? // Optional reference to MarketItem
+  type        TransactionType
+  amount      Decimal
+  currencyKey String
+  note        String?         @db.Text
+  createdAt   DateTime        @default(now())
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([itemId])
+  @@index([type])
+  @@index([currencyKey])
+  @@map("transactions")
+}
+
+// v0.32.2 - Admin Balance Tools: Dynamic economy multipliers
+model BalanceSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Float
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@map("balance_settings")
+}
+
+// v0.32.3 - Economy Preset Profiles: Saved economy configurations
+model EconomyPreset {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  modifiers   Json // Key-value pairs matching balance_settings keys
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+  @@map("economy_presets")
+}
+
+// v0.33.0 - Alert System: System health alerts with auto-recovery
+model SystemAlert {
+  id           String            @id @default(cuid())
+  type         SystemAlertType
+  level        SystemAlertLevel
+  message      String            @db.Text
+  metadata     Json?
+  createdAt    DateTime          @default(now())
+  resolvedAt   DateTime?
+  autoResolved Boolean           @default(false)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([level])
+  @@index([type])
+  @@index([resolvedAt])
+  @@map("system_alerts")
+}
+
+enum SystemAlertType {
+  cron
+  api
+  db
+  cache
+  memory
+  cpu
+}
+
+enum SystemAlertLevel {
+  info
+  warn
+  error
+  critical
+}
+
+// v0.33.1 - Alert Notifications: Webhook integrations for alerts
+model AlertWebhook {
+  id        String          @id @default(cuid())
+  name      String
+  url       String
+  isActive  Boolean         @default(true)
+  type      WebhookType
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([isActive])
+  @@map("alert_webhooks")
+}
+
+enum WebhookType {
+  discord
+  slack
+  generic
+}
+
+// v0.29.9 - Meta-Progression: Season model for seasonal cycles
+model MetaSeason {
+  id              String           @id @default(cuid())
+  key             String           @unique
+  title           String
+  description     String?
+  startDate       DateTime
+  endDate         DateTime?
+  isActive        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  prestigeRecords PrestigeRecord[]
+
+  @@index([isActive])
+  @@index([startDate])
+  @@map("meta_seasons")
+}
+
+// v0.29.9 - Meta-Progression: Prestige records
+model PrestigeRecord {
+  id                 String     @id @default(cuid())
+  userId             String
+  seasonId           String
+  oldLevel           Int
+  legacyXP           Int        @default(0)
+  prestigeCount      Int        @default(1)
+  rewardBadgeId      String?
+  prestigeTitle      String? // v0.29.14 - Title awarded at this prestige
+  prestigeBadgeId    String? // v0.29.14 - Badge awarded at this prestige
+  prestigeColorTheme String? // v0.29.14 - Color theme awarded at this prestige
+  createdAt          DateTime   @default(now())
+  user               User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season             MetaSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([seasonId])
+  @@index([createdAt])
+  @@map("prestige_records")
+}
+
 enum QuestionType {
   SINGLE_CHOICE
   MULTI_CHOICE
@@ -3842,7 +6016,32 @@ enum QuestionSource {
   import
 }
 
-enum Currency {
+// Tag type for humor/tone vs content sensitivity
+enum TagType {
+  tone
+  content
+}
+
+// Cached hourly trending scores per region/scope
+model TrendingQuestion {
+  id           String   @id @default(cuid())
+  questionId   String
+  region       String   @default("global")
+  windowStart  DateTime
+  windowEnd    DateTime
+  reactions24h Int      @default(0)
+  score        Float    @default(0)
+  updatedAt    DateTime @updatedAt
+
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@unique([questionId, region])
+  @@index([region, score])
+  @@index([windowEnd])
+  @@map("trending_questions")
+}
+
+enum CurrencyType {
   FUNDS
   DIAMONDS
 }
@@ -3878,3 +6077,445 @@ enum JobStatus {
   DONE
   FAILED
 }
+
+enum SubmissionType {
+  QUESTION
+  PACK
+  EVENT
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  FLAGGED
+}
+
+enum EventType {
+  CHALLENGE
+  THEMED_WEEK
+  SPOTLIGHT
+  COMMUNITY
+}
+
+enum EventStatus {
+  DRAFT
+  ACTIVE
+  UPCOMING
+  ENDED
+  CANCELLED
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+enum SeasonStatus {
+  UPCOMING
+  ACTIVE
+  ENDED
+  ARCHIVED
+}
+
+enum CosmeticType {
+  ICON
+  TITLE
+  BACKGROUND
+  BADGE
+  FRAME
+}
+
+enum CosmeticRarity {
+  COMMON
+  UNCOMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+enum SeasonalEventStatus {
+  INACTIVE
+  ACTIVE
+  ENDED
+}
+
+// ========================================
+// COMBAT SYSTEM (v0.25.0 - Phase J-Lite)
+// ========================================
+
+model CombatSession {
+  id            String   @id @default(cuid())
+  userId        String
+  heroHp        Int      @default(100)
+  heroMaxHp     Int      @default(100)
+  enemyHp       Int      @default(100)
+  enemyMaxHp    Int      @default(100)
+  enemyName     String   @default("Shadow")
+  enemyType     String   @default("shadow") // "shadow", "clone", "nightmare", etc.
+  xpGained      Int      @default(0)
+  goldGained    Int      @default(0)
+  kills         Int      @default(0)
+  currentStreak Int      @default(0)
+  isActive      Boolean  @default(true)
+  lastActionAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@index([lastActionAt])
+  @@map("combat_sessions")
+}
+
+// ========================================
+// PUBLIC COMPARISONS FEED (v0.26.15 - Phase K)
+// ========================================
+
+model PublicComparison {
+  id             String   @id @default(cuid())
+  question       String
+  answers        String[]
+  isPublic       Boolean  @default(true)
+  reactionsLike  Int      @default(0)
+  reactionsLaugh Int      @default(0)
+  reactionsThink Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isPublic, createdAt(sort: Desc)])
+  @@map("public_comparisons")
+}
+
+enum ReflectionType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  MILESTONE
+}
+
+enum UserVisibility {
+  PUBLIC
+  FRIENDS
+  PRIVATE
+}
+
+enum NotificationType {
+  REFLECTION
+  LIKE
+  COMMENT
+  SYSTEM
+}
+
+// Localization enums (v0.27.0 - Phase M)
+enum Lang {
+  en
+  cs
+}
+
+enum UserSynchTestStatus {
+  pending
+  completed
+  expired
+}
+
+enum FactionBuffType {
+  xp
+  gold
+  luck
+  karma
+  custom
+}
+
+enum RegionScope {
+  global
+  regional
+}
+
+enum CreationType {
+  question
+  mission
+  item
+  other
+}
+
+enum CreationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum PostcardStatus {
+  pending
+  delivered
+  read
+  deleted
+}
+
+enum ForkRarity {
+  common
+  rare
+  special
+}
+
+enum ForkChoice {
+  A
+  B
+}
+
+enum DuetRunType {
+  reflect
+  collect
+  challenge
+}
+
+enum DuetRunStatus {
+  pending
+  active
+  completed
+  expired
+}
+
+enum RitualTimeOfDay {
+  morning
+  evening
+  any
+}
+
+enum MicroClanBuffType {
+  xp
+  gold
+  karma
+  compare
+  reflect
+}
+
+enum LootTrigger {
+  reflection
+  mission
+  comparison
+  levelup
+  random
+}
+
+enum LootRewardType {
+  xp
+  gold
+  item
+  cosmetic
+  emote
+}
+
+enum LootRarity {
+  common
+  rare
+  epic
+  legendary
+}
+
+// Badge system enums (v0.29.0)
+enum BadgeRarity {
+  common
+  rare
+  epic
+  legendary
+  mythic
+  eternal
+}
+
+enum BadgeUnlockType {
+  level
+  event
+  season
+  special
+}
+
+enum BadgeRewardType {
+  currency
+  item
+  title
+}
+
+// Chronicle system enums (v0.29.1)
+enum ChronicleType {
+  weekly
+  seasonal
+}
+
+// Region system enums (v0.29.3)
+enum RegionBuffType {
+  xp
+  gold
+  mood
+  reflection
+}
+
+enum UnlockRequirementType {
+  level
+  task
+  gold
+  achievement
+}
+
+// Quest system enums (v0.29.4)
+enum QuestType {
+  daily
+  weekly
+  story
+  side
+}
+
+enum QuestRequirementType {
+  xp
+  reflections
+  gold
+  missions
+  custom
+}
+
+// Lore system enums (v0.29.5)
+enum LoreSourceType {
+  reflection
+  quest
+  item
+  event
+  system
+}
+
+enum LoreTone {
+  serious
+  comedic
+  poetic
+}
+
+// Social system enums (v0.29.7)
+enum FriendshipStatus {
+  pending
+  accepted
+  blocked
+}
+
+enum DuelStatus {
+  pending
+  active
+  completed
+  expired
+}
+
+enum ChallengeType {
+  xp
+  reflection
+  random
+  poll
+}
+
+enum SharedMissionStatus {
+  active
+  completed
+  expired
+}
+
+// Economy system enums (v0.29.8)
+enum ItemCategory {
+  item
+  cosmetic
+  booster
+}
+
+enum TransactionType {
+  purchase
+  reward
+  gift
+  refund
+}
+
+// Cron system enum (v0.29.21)
+enum CronJobStatus {
+  success
+  error
+}
+
+// Activity type enum (v0.29.22)
+enum ActivityType {
+  reflection
+  question
+  quest
+  badge
+  achievement
+  social
+  system
+  other
+}
+
+// NPC system enums (v0.29.23)
+enum ArchetypeAffinity {
+  thinker
+  trickster
+  guardian
+  wanderer
+  chaos
+}
+
+enum NPCTone {
+  serious
+  sarcastic
+  poetic
+  neutral
+}
+
+enum DialogueRarity {
+  common
+  rare
+  epic
+}
+
+enum DialogueTriggerType {
+  greeting
+  quest
+  reflection
+  event
+  random
+}
+
+// Question system enums (v0.29.24)
+enum QuestionTemplateCategory {
+  daily
+  weekly
+  archetype
+  event
+  wildcard
+}
+
+enum QuestionTone {
+  serious
+  poetic
+  chaotic
+  funny
+}
+
+// Battle Achievement system enums (v0.29.25)
+enum BattleAchievementTriggerType {
+  duelWin
+  duelLose
+  missionComplete
+  event
+}
+
+enum BattleAchievementRarity {
+  common
+  rare
+  epic
+  legendary
+}
+
+// Global Mood system enums (v0.29.26)
+enum GlobalMoodType {
+  calm
+  chaos
+  neutral
+}
+
+// Note: Materialized views (leaderboard_view) are not directly supported in Prisma
+// Create via raw SQL migration in /packages/db/migrations/
+// Example: CREATE MATERIALIZED VIEW leaderboard_view AS ...
+

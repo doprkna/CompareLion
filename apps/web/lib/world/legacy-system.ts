@@ -198,7 +198,6 @@ export function generateRandomMutation(): Mutation {
  * PLACEHOLDER: Archive current cycle
  */
 export async function archiveCycle(cycleNumber: number) {
-  console.log(`[Legacy] PLACEHOLDER: Would archive cycle ${cycleNumber}`);
   
   // PLACEHOLDER: Would execute
   // - Snapshot all user stats
@@ -213,7 +212,6 @@ export async function archiveCycle(cycleNumber: number) {
  * PLACEHOLDER: Start new cycle
  */
 export async function startNewCycle(cycleName: string, duration: number) {
-  console.log(`[Legacy] PLACEHOLDER: Would start new cycle: ${cycleName}`);
   
   // PLACEHOLDER: Would execute
   // - Create new WorldCycle
@@ -232,7 +230,6 @@ export async function processAscension(
   userId: string,
   choice: "ascend" | "descend" | "neutral"
 ) {
-  console.log(`[Legacy] PLACEHOLDER: Would process ${choice} for user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Load user stats
@@ -243,6 +240,8 @@ export async function processAscension(
   
   return null;
 }
+
+
 
 
 

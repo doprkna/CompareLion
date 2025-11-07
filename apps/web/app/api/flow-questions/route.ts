@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { safeAsync, successResponse } from "@/lib/api-handler";
+import { filterQuestionsByLocale } from "@/lib/types/question";
 
-export async function GET(req: Request) {
-  try {
-    const url = new URL(req.url);
-    const limit = parseInt(url.searchParams.get("limit") || "5");
-    const locale = url.searchParams.get("locale") || "en";
+export const GET = safeAsync(async (req: NextRequest) => {
+  const url = new URL(req.url);
+  const limit = parseInt(url.searchParams.get("limit") || "5");
+  const locale = url.searchParams.get("locale") || "en";
+  const region = url.searchParams.get("region") || "GLOBAL";
 
-    console.log(`[flow-questions] Fetching ${limit} questions for locale: ${locale}`);
 
     // Mock questions with proper CUID-like IDs that will work with flow-answers API
     const mockQuestions = [
@@ -51,19 +52,21 @@ export async function GET(req: Request) {
       }
     ];
 
-    const questions = mockQuestions.slice(0, limit);
+  // Apply localization filtering
+  const filtered = filterQuestionsByLocale(mockQuestions, locale, region);
+  
+  // Fallback to global questions if no matches
+  const questions = filtered.length > 0 
+    ? filtered.slice(0, limit)
+    : mockQuestions.slice(0, limit);
 
-    console.log(`[flow-questions] Found ${questions.length} questions`);
-
-    return NextResponse.json({ 
-      success: true,
-      questions 
-    });
-  } catch (err: any) {
-    console.error("[API Error][flow-questions]", err);
-    return NextResponse.json({ 
-      success: false,
-      error: err.message || "Failed to fetch flow questions" 
-    }, { status: 500 });
-  }
-}
+  return successResponse({ 
+    questions,
+    meta: {
+      locale,
+      region,
+      totalAvailable: filtered.length,
+      fallbackUsed: filtered.length === 0
+    }
+  });
+});

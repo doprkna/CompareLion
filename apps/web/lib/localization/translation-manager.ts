@@ -4,20 +4,15 @@
  * PLACEHOLDER: Manage translation keys and fallbacks.
  */
 
-import { DEFAULT_LOCALE, type LocaleCode } from "./locale-config";
+import { DEFAULT_LOCALE } from "./locale-config";
 
 /**
  * Get translation for key
  */
 export async function getTranslation(
   key: string,
-  locale: string = DEFAULT_LOCALE
+  _locale: string = DEFAULT_LOCALE
 ): Promise<string> {
-  console.log("[Translation] PLACEHOLDER: Would get translation", {
-    key,
-    locale,
-  });
-  
   // PLACEHOLDER: Would execute
   // const translation = await prisma.translationKey.findUnique({
   //   where: { key },
@@ -46,14 +41,9 @@ export async function getTranslation(
  * Get all translations for namespace
  */
 export async function getNamespaceTranslations(
-  namespace: string,
-  locale: string
+  _namespace: string,
+  _locale: string
 ) {
-  console.log("[Translation] PLACEHOLDER: Would get namespace translations", {
-    namespace,
-    locale,
-  });
-  
   // PLACEHOLDER: Would execute
   // const translations = await prisma.translationKey.findMany({
   //   where: { namespace },
@@ -75,16 +65,10 @@ export async function getNamespaceTranslations(
  * Set translation for key
  */
 export async function setTranslation(
-  key: string,
-  locale: string,
-  value: string
+  _key: string,
+  _locale: string,
+  _value: string
 ) {
-  console.log("[Translation] PLACEHOLDER: Would set translation", {
-    key,
-    locale,
-    value,
-  });
-  
   // PLACEHOLDER: Would execute
   // const namespace = key.split(".")[0];
   // 
@@ -105,8 +89,7 @@ export async function setTranslation(
 /**
  * Mark translation key as missing
  */
-async function markMissingKey(key: string) {
-  console.log("[Translation] PLACEHOLDER: Would mark missing key", { key });
+async function _markMissingKey(_key: string) {
   
   // PLACEHOLDER: Would execute
   // const namespace = key.split(".")[0];
@@ -128,7 +111,6 @@ async function markMissingKey(key: string) {
  * Get missing translation keys
  */
 export async function getMissingKeys() {
-  console.log("[Translation] PLACEHOLDER: Would get missing keys");
   
   // PLACEHOLDER: Would execute
   // const missing = await prisma.translationKey.findMany({
@@ -144,10 +126,7 @@ export async function getMissingKeys() {
 /**
  * Export translations to JSON
  */
-export async function exportTranslations(locale: string) {
-  console.log("[Translation] PLACEHOLDER: Would export translations", {
-    locale,
-  });
+export async function exportTranslations(_locale: string) {
   
   // PLACEHOLDER: Would execute
   // const translations = await prisma.translationKey.findMany();
@@ -171,12 +150,9 @@ export async function exportTranslations(locale: string) {
  * Import translations from JSON
  */
 export async function importTranslations(
-  locale: string,
-  data: Record<string, Record<string, string>>
+  _locale: string,
+  _data: Record<string, Record<string, string>>
 ) {
-  console.log("[Translation] PLACEHOLDER: Would import translations", {
-    locale,
-  });
   
   // PLACEHOLDER: Would execute
   // for (const [namespace, translations] of Object.entries(data)) {
@@ -185,6 +161,8 @@ export async function importTranslations(
   //   }
   // }
 }
+
+
 
 
 

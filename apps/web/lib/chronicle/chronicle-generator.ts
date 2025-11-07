@@ -8,9 +8,6 @@
  * Generate season chronicle
  */
 export async function generateSeasonChronicle(seasonNumber: number) {
-  console.log("[Chronicle] PLACEHOLDER: Would generate season chronicle", {
-    seasonNumber,
-  });
   
   // PLACEHOLDER: Would execute
   // const seasonStart = getSeasonStartDate(seasonNumber);
@@ -73,7 +70,6 @@ export async function generateSeasonChronicle(seasonNumber: number) {
  * Aggregate season statistics
  */
 async function aggregateSeasonStats(startDate: Date, endDate: Date) {
-  console.log("[Chronicle] PLACEHOLDER: Would aggregate stats");
   
   // PLACEHOLDER: Would aggregate
   // - Total players active
@@ -99,9 +95,6 @@ async function aggregateSeasonStats(startDate: Date, endDate: Date) {
  * Create season summary sections
  */
 async function createSeasonSummaries(chronicleId: string, sections: any[]) {
-  console.log("[Chronicle] PLACEHOLDER: Would create summaries", {
-    chronicleId,
-  });
   
   // PLACEHOLDER: Would execute
   // for (const [index, section] of sections.entries()) {
@@ -127,7 +120,6 @@ async function extractPlayerQuotes(
   startDate: Date,
   endDate: Date
 ) {
-  console.log("[Chronicle] PLACEHOLDER: Would extract quotes");
   
   // PLACEHOLDER: Would execute
   // // Get achievement messages from top players
@@ -158,9 +150,6 @@ async function extractPlayerQuotes(
  * Publish chronicle to feed and lore codex
  */
 async function publishChronicle(chronicleId: string) {
-  console.log("[Chronicle] PLACEHOLDER: Would publish chronicle", {
-    chronicleId,
-  });
   
   // PLACEHOLDER: Would execute
   // const chronicle = await prisma.worldChronicle.update({
@@ -201,9 +190,6 @@ async function publishChronicle(chronicleId: string) {
  * Get chronicle for season
  */
 export async function getSeasonChronicle(seasonNumber: number) {
-  console.log("[Chronicle] PLACEHOLDER: Would get chronicle", {
-    seasonNumber,
-  });
   
   // PLACEHOLDER: Would execute
   // const chronicle = await prisma.worldChronicle.findUnique({
@@ -223,6 +209,8 @@ export async function getSeasonChronicle(seasonNumber: number) {
   
   return null;
 }
+
+
 
 
 

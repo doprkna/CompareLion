@@ -1,5 +1,5 @@
 import { Worker, Job } from 'bullmq';
-import { connection } from '../lib/queue/connection';
+import { connection } from '@/lib/queue/connection';
 import { generateAndInsertOneQuestion } from './generatorStub';
 import { prisma } from '@parel/db/src/client';
 

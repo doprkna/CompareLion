@@ -16,7 +16,6 @@ export interface HealResult {
  * Heal stale sessions (older than 30 days)
  */
 export async function healStaleSessions(): Promise<HealResult> {
-  console.log("[AutoHeal] PLACEHOLDER: Would clean stale sessions");
   
   // PLACEHOLDER: Would execute
   // const staleSessions = await prisma.session.deleteMany({
@@ -35,7 +34,6 @@ export async function healStaleSessions(): Promise<HealResult> {
  * Heal orphaned jobs (stuck in processing for > 1 hour)
  */
 export async function healOrphanedJobs(): Promise<HealResult> {
-  console.log("[AutoHeal] PLACEHOLDER: Would retry orphaned jobs");
   
   return {
     healType: "orphaned_jobs",
@@ -49,7 +47,6 @@ export async function healOrphanedJobs(): Promise<HealResult> {
  * Clear expired cache entries
  */
 export async function healExpiredCache(): Promise<HealResult> {
-  console.log("[AutoHeal] PLACEHOLDER: Would clear expired cache");
   
   return {
     healType: "expired_cache",
@@ -63,7 +60,6 @@ export async function healExpiredCache(): Promise<HealResult> {
  * Clean zombie database connections
  */
 export async function healZombieConnections(): Promise<HealResult> {
-  console.log("[AutoHeal] PLACEHOLDER: Would close zombie connections");
   
   return {
     healType: "zombie_connections",
@@ -77,7 +73,6 @@ export async function healZombieConnections(): Promise<HealResult> {
  * Run all auto-heal procedures
  */
 export async function runAutoHeal(): Promise<HealResult[]> {
-  console.log("[AutoHeal] Starting auto-heal procedures...");
   
   const results: HealResult[] = [];
   
@@ -129,9 +124,6 @@ export async function runAutoHeal(): Promise<HealResult[]> {
     });
   }
   
-  console.log(`[AutoHeal] Completed ${results.length} procedures`);
-  console.log(`  - Success: ${results.filter(r => r.success).length}`);
-  console.log(`  - Failed: ${results.filter(r => !r.success).length}`);
   
   // PLACEHOLDER: Would log results to database
   // for (const result of results) {
@@ -145,13 +137,14 @@ export async function runAutoHeal(): Promise<HealResult[]> {
  * Schedule auto-heal cron (every 6 hours)
  */
 export function scheduleAutoHeal() {
-  console.log("[AutoHeal] PLACEHOLDER: Would schedule cron job every 6 hours");
   
   // PLACEHOLDER: Would use node-cron or similar
   // cron.schedule('0 */6 * * *', async () => {
   //   await runAutoHeal();
   // });
 }
+
+
 
 
 

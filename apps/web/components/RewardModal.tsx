@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { X, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -218,7 +218,6 @@ export function RewardModal({
                     size="sm"
                     className="w-full text-xs"
                     variant="outline"
-                    onClick={() => console.log(`Purchase ${drop.name}`)}
                   >
                     Buy for {drop.price}
                     {drop.currency === 'gold' ? '💰' : '💎'}
@@ -271,6 +270,8 @@ export function RewardModal({
     </Dialog>
   );
 }
+
+
 
 
 

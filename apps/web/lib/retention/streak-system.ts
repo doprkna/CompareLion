@@ -4,7 +4,6 @@
  * PLACEHOLDER: Daily login and activity streaks with rewards.
  */
 
-import { prisma } from "@/lib/db/connection-pool";
 
 /**
  * Check if date is consecutive day
@@ -20,7 +19,6 @@ function isConsecutiveDay(lastDate: Date, currentDate: Date): boolean {
  * Update login streak
  */
 export async function updateLoginStreak(userId: string) {
-  console.log("[Streak] PLACEHOLDER: Would update login streak", { userId });
   
   // PLACEHOLDER: Would execute
   // const streak = await prisma.userStreak.upsert({
@@ -59,7 +57,6 @@ export async function updateLoginStreak(userId: string) {
  * Update quiz streak
  */
 export async function updateQuizStreak(userId: string) {
-  console.log("[Streak] PLACEHOLDER: Would update quiz streak", { userId });
   return null;
 }
 
@@ -67,7 +64,6 @@ export async function updateQuizStreak(userId: string) {
  * Update duel streak
  */
 export async function updateDuelStreak(userId: string) {
-  console.log("[Streak] PLACEHOLDER: Would update duel streak", { userId });
   return null;
 }
 
@@ -75,7 +71,6 @@ export async function updateDuelStreak(userId: string) {
  * Get user streak
  */
 export async function getUserStreak(userId: string) {
-  console.log("[Streak] PLACEHOLDER: Would get user streak", { userId });
   
   // PLACEHOLDER: Would execute
   // const streak = await prisma.userStreak.findUnique({
@@ -91,7 +86,6 @@ export async function getUserStreak(userId: string) {
  * Grant streak milestone reward
  */
 async function grantStreakReward(userId: string, streak: number) {
-  console.log("[Streak] PLACEHOLDER: Would grant reward", { userId, streak });
   
   // PLACEHOLDER: Reward tiers
   // 7 days: +50 XP
@@ -99,6 +93,8 @@ async function grantStreakReward(userId: string, streak: number) {
   // 30 days: +200 XP + 3 Diamonds + Special badge
   // 100 days: +500 XP + 10 Diamonds + Legendary badge
 }
+
+
 
 
 

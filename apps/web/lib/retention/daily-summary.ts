@@ -7,8 +7,7 @@
 /**
  * Generate daily summary for yesterday
  */
-export async function generateDailySummary(userId: string) {
-  console.log("[DailySummary] PLACEHOLDER: Would generate summary", { userId });
+export async function generateDailySummary(_userId: string) {
   
   // PLACEHOLDER: Would execute
   // const yesterday = new Date();
@@ -83,22 +82,17 @@ export async function generateDailySummary(userId: string) {
 /**
  * Get unviewed daily summaries
  */
-export async function getUnviewedSummaries(userId: string) {
-  console.log("[DailySummary] PLACEHOLDER: Would get unviewed summaries", {
-    userId,
-  });
+export async function getUnviewedSummaries(_userId: string) {
   return [];
 }
 
 /**
  * Mark summary as viewed
  */
-export async function markSummaryViewed(userId: string, summaryId: string) {
-  console.log("[DailySummary] PLACEHOLDER: Would mark viewed", {
-    userId,
-    summaryId,
-  });
+export async function markSummaryViewed(_userId: string, _summaryId: string) {
 }
+
+
 
 
 

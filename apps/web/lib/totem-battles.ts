@@ -4,7 +4,6 @@
  * PLACEHOLDER: Group-vs-group competitive events.
  */
 
-import { prisma } from "@/lib/db";
 
 /**
  * Match groups for weekly battle
@@ -18,7 +17,6 @@ export async function matchGroupsForBattle() {
   // - Prefer groups with similar member counts
   // - Random pairing if no good match
   
-  console.log("[TotemBattle] PLACEHOLDER: Would match groups by avg level");
   
   return null;
 }
@@ -36,7 +34,6 @@ export async function startWeeklyBattle(groupAId: string, groupBId: string) {
   const startAt = now;
   const endAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
   
-  console.log(`[TotemBattle] PLACEHOLDER: Would start battle week ${weekNumber}`);
   
   // TODO: Create battle, notify groups, post to feed
   
@@ -54,7 +51,6 @@ export async function calculateBattleScore(groupId: string, startDate: Date, end
   // - Add bonus for challenges completed
   // - Add multiplier for member participation rate
   
-  console.log("[TotemBattle] PLACEHOLDER: Would calculate score for group", groupId);
   
   return 0;
 }
@@ -74,7 +70,6 @@ export async function resolveBattle(battleId: string) {
   // - Post results to feed
   // - Send notifications
   
-  console.log("[TotemBattle] PLACEHOLDER: Would resolve battle", battleId);
   
   return null;
 }
@@ -86,6 +81,8 @@ function getWeekNumber(date: Date): number {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
+
+
 
 
 

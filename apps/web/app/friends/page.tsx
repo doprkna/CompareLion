@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEventBus } from "@/hooks/useEventBus";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MessageCircle } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 interface Message {
   id: string;
@@ -87,7 +88,7 @@ export default function FriendsPage() {
         });
       }
     } catch (error) {
-      console.error('Send error:', error);
+      logger.error('Send error', error);
     } finally {
       setLoading(false);
     }

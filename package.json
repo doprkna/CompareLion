@@ -2,6 +2,9 @@
   "name": "parel-mvp",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20.10.0"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -18,7 +21,11 @@
     "dev:web": "cd apps/web && pnpm run dev",
     "dev:worker": "cd apps/worker && pnpm run dev",
     "build": "pnpm run generate:prisma && pnpm run build:web",
-    "build:web": "cd apps/web && pnpm run build",
+    "build:web": "cd apps/web && pnpm run build:web",
+    "build:android": "cd apps/web && pnpm run build:android",
+    "build:ios": "cd apps/web && pnpm run build:ios",
+    "build:mobile": "cd apps/web && pnpm run build:mobile",
+    "build:desktop": "cd apps/web && pnpm run build:desktop",
     "db:push": "pnpm --filter @parel/db prisma db push",
     "db:migrate": "cd packages/db && pnpm run prisma:migrate",
     "db:seed": "tsx packages/db/seed.ts",
@@ -37,9 +44,13 @@
     "test:web": "cd apps/web && pnpm run test",
     "test:watch": "cd apps/web && pnpm run test:watch",
     "test:coverage": "cd apps/web && pnpm run test:coverage",
+    "test:social": "cd apps/web && pnpm run test:social",
     "test:e2e": "cd apps/web && pnpm run test:e2e",
     "test:e2e:ui": "cd apps/web && pnpm run test:e2e:ui",
     "typecheck": "cd apps/web && pnpm run typecheck",
+    "clean": "pnpm lint:fix && pnpm typecheck",
+    "clean:fix": "cd apps/web && pnpm lint:fix",
+    "clean:check": "pnpm lint && pnpm typecheck",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -62,15 +73,19 @@
     "vitest": "^1.6.1"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
     "@sentry/nextjs": "^10.17.0",
+    "@types/canvas-confetti": "^1.9.0",
     "@upstash/redis": "^1.35.4",
     "argon2": "^0.44.0",
     "bcryptjs": "^3.0.2",
+    "canvas-confetti": "^1.9.3",
     "framer-motion": "^12.23.22",
     "jsonwebtoken": "^9.0.2",
     "lru-cache": "^11.2.2",
     "next-themes": "^0.4.6",
     "p-limit": "^7.1.1",
+    "prisma": "^5.22.0",
     "resend": "^6.1.2",
     "stripe": "^19.0.0"
   }

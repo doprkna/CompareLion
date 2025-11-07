@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
-import { getUserFromRequest } from '../../_utils';
+import { getUserFromRequest } from '@/app/api/_utils';
+import { safeAsync, unauthorizedError } from '@/lib/api-handler';
 
-export async function GET(request: Request) {
+export const GET = safeAsync(async (request: NextRequest) => {
   const user = await getUserFromRequest(request);
   if (!user) {
-    return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    return unauthorizedError('Unauthorized');
   }
 
   const flows = await prisma.flowProgress.findMany({
@@ -28,5 +29,5 @@ export async function GET(request: Request) {
     totalQuestions: f.answers ? f.answers.length : undefined,
   }));
 
-  return NextResponse.json({ success: true, history });
-}
+  return NextResponse.json({ success: true, history, timestamp: new Date().toISOString() });
+});

@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { logger } from '@/lib/logger';
 
 const FROM_EMAIL = process.env.APP_MAIL_FROM || 'noreply@example.com';
 
@@ -30,14 +31,13 @@ export async function sendEmail({
     });
 
     if (result.error) {
-      console.error('Email send error:', result.error);
+      logger.error('Email send error', result.error);
       return { success: false, error: result.error.message };
     }
 
-    console.log('Email sent successfully:', { messageId: result.data?.id, to, subject });
     return { success: true, messageId: result.data?.id };
   } catch (error) {
-    console.error('Email send error:', error);
+    logger.error('Email send error', error);
     return { success: false, error: 'Failed to send email' };
   }
 }

@@ -4,17 +4,18 @@
  * Tests database connectivity and query performance.
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/connection-pool";
+import { safeAsync } from "@/lib/api-handler";
+import { logger } from "@/lib/utils/debug";
 
-export async function GET() {
+export const GET = safeAsync(async (_req: NextRequest) => {
   const startTime = Date.now();
   
-  try {
-    // Simple query test
-    await prisma.$queryRaw`SELECT 1 as health`;
-    
-    const queryTime = Date.now() - startTime;
+  // Simple query test
+  await prisma.$queryRaw`SELECT 1 as health`;
+  
+  const queryTime = Date.now() - startTime;
     
     // Get connection pool stats
     const poolResult = await prisma.$queryRaw<
@@ -58,19 +59,10 @@ export async function GET() {
       );
     }
     
-    return NextResponse.json(status);
-  } catch (error) {
-    console.error("[Health] Database health check failed:", error);
-    return NextResponse.json(
-      {
-        status: "unhealthy",
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date().toISOString(),
-      },
-      { status: 503 }
-    );
-  }
-}
+  return NextResponse.json(status);
+});
+
+
 
 
 

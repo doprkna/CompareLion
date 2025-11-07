@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export default function SettingsAccordion() {
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -71,6 +72,18 @@ export default function SettingsAccordion() {
           </button>
           {openSection === "preferences" && (
             <div className="p-4 border-t border-border space-y-3">
+              <Link 
+                href="/profile/combat-settings" 
+                className="block p-3 bg-bg hover:bg-accent/10 border border-border rounded-lg transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-text font-semibold">⚔️ Combat & RPG Settings</span>
+                    <p className="text-xs text-subtle mt-1">Damage numbers, effects, audio</p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-subtle" />
+                </div>
+              </Link>
               <div className="flex items-center justify-between">
                 <span className="text-text">Email Notifications</span>
                 <input type="checkbox" className="h-4 w-4" defaultChecked />
@@ -125,6 +138,8 @@ export default function SettingsAccordion() {
     </Card>
   );
 }
+
+
 
 
 

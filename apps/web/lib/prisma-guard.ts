@@ -6,6 +6,7 @@
  */
 
 import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 /**
  * Verify Prisma client is initialized
@@ -31,7 +32,7 @@ export async function safePrismaQuery<T>(
     ensurePrismaClient();
     return await query();
   } catch (error: any) {
-    console.error(`[Prisma Error] ${operation}:`, error.message || error);
+    logger.error(`[Prisma Error] ${operation}`, error.message || error);
     throw error;
   }
 }
@@ -47,6 +48,13 @@ export function checkPrismaModel(modelName: string): boolean {
     return false;
   }
 }
+
+
+
+
+
+
+
 
 
 

@@ -1,0 +1,141 @@
+# v0.34.6 Repo Cuts
+# Reduce Cursor index by ~40-50% while keeping critical backend + admin visible
+
+# ─── Build & Dependencies ─────────────────────────────────────────
+node_modules/
+.next/
+.pnpm/
+dist/
+build/
+.vercel/
+coverage/
+.turbo/
+out/
+.cache/
+.prisma/
+prisma/generated/
+
+# ─── Archived Folders ──────────────────────────────────────────────
+archive/
+docs/
+storybook/
+old/
+legacy/
+playground/
+backup/
+deprecated/
+
+# ─── Tests (Global Skip Policy) ────────────────────────────────────
+__tests__/
+tests/
+test/
+e2e/
+playwright/
+*.spec.ts
+*.spec.tsx
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.jsx
+*.test.js
+*.test.jsx
+
+# ─── Frontend UI (Heavy Component Load) ────────────────────────────
+apps/web/components/
+apps/web/contexts/
+apps/web/pages/
+apps/web/locales/
+
+# ─── Assets & Static Files ─────────────────────────────────────────
+public/
+assets/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.webp
+
+# ─── Config & Lock Files ───────────────────────────────────────────
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+tsconfig.tsbuildinfo
+*.log
+*.csv
+*.tmp
+*.bak
+*.pdf
+
+# ─── Scripts & Maintenance ─────────────────────────────────────────
+scripts/
+seed/
+apps/worker/
+
+# ─── Documentation (Non-Code) ──────────────────────────────────────
+*.md
+!README.md
+!CHANGELOG.md
+
+# ─── Stable Backend Areas (Reduce Noise) ───────────────────────────
+# Keep API routes but reduce stable config/utils
+apps/web/lib/dto/
+apps/web/lib/config/
+apps/web/lib/validation/
+apps/web/lib/monitoring/
+apps/web/lib/telemetry/
+apps/web/lib/types/
+apps/web/lib/seed-*.ts
+apps/web/lib/i18n/
+apps/web/lib/utils/
+apps/web/lib/middleware/
+apps/web/lib/mounts/
+apps/web/lib/pwa/
+apps/web/lib/regional/
+apps/web/lib/localization/
+apps/web/lib/health/
+apps/web/lib/ui/
+apps/web/lib/audio/
+apps/web/lib/cache/
+apps/web/lib/sentry/
+apps/web/lib/memory/
+
+# ─── Admin & Cron Routes (Stable Infrastructure) ───────────────────
+apps/web/app/api/admin/
+apps/web/app/api/cron/
+
+# ─── More Stable Lib Areas ──────────────────────────────────────────
+apps/web/lib/performance/
+apps/web/lib/queue/
+apps/web/lib/ux/
+apps/web/lib/system/
+apps/web/lib/world/
+apps/web/lib/subscription/
+apps/web/lib/moderation/
+apps/web/lib/db/
+apps/web/lib/server/
+apps/web/lib/security/
+apps/web/lib/timezone/
+apps/web/lib/delight/
+apps/web/lib/events/
+apps/web/lib/marketplace/
+apps/web/lib/rewards/
+
+# ─── Database & Migrations ─────────────────────────────────────────
+migrations/
+packages/db/
+
+# ═══════════════════════════════════════════════════════════════════
+# KEEP INDEXED (Let these through):
+# - apps/web/app/api/ (API routes)
+# - apps/web/app/admin/ (Admin UI)
+# - apps/web/lib/ (Core business logic, except stable areas above)
+# - apps/web/hooks/
+# - apps/web/middleware.ts
+# ═══════════════════════════════════════════════════════════════════
+

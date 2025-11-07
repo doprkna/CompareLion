@@ -1,18 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import bcrypt from 'bcrypt';
 import { SignupSchema } from '@/lib/validation/auth';
+import { safeAsync, validationError } from '@/lib/api-handler';
 
-function isValidEmail(email: string) {
+function _isValidEmail(email: string) {
   // Simple regex for email validation
   return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
 }
 
-export async function POST(request: Request) {
+export const POST = safeAsync(async (request: NextRequest) => {
   const body = await request.json();
   const parsed = SignupSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ success: false, errors: parsed.error.format() }, { status: 400 });
+    return validationError('Invalid input data', parsed.error.format());
   }
   const { username: email, password } = parsed.data;
 
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     return NextResponse.json(
-      { success: false, message: 'Email already registered.' },
+      { success: false, error: 'Email already registered.', timestamp: new Date().toISOString() },
       { status: 409 }
     );
   }
@@ -39,5 +40,5 @@ export async function POST(request: Request) {
     },
   });
 
-  return NextResponse.json({ success: true, message: 'Signup successful.' });
-}
+  return NextResponse.json({ success: true, message: 'Signup successful.', timestamp: new Date().toISOString() });
+});

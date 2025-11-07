@@ -151,7 +151,6 @@ export async function registerPartnerApp(data: {
   website?: string;
   description?: string;
 }) {
-  console.log("[PartnerAPI] PLACEHOLDER: Would register partner app", data.name);
   
   // PLACEHOLDER: Would create partner app
   // - Generate clientId and clientSecret
@@ -169,7 +168,6 @@ export async function checkRateLimit(
   partnerId: string,
   apiKeyId: string
 ): Promise<{ allowed: boolean; remaining: number; resetAt: Date }> {
-  console.log(`[PartnerAPI] PLACEHOLDER: Would check rate limit for ${partnerId}`);
   
   // PLACEHOLDER: Would check against limits
   // - Get partner tier limits
@@ -192,7 +190,6 @@ export async function sendWebhook(
   eventType: string,
   payload: Record<string, any>
 ) {
-  console.log(`[PartnerAPI] PLACEHOLDER: Would send webhook ${eventType} to partner ${partnerId}`);
   
   // PLACEHOLDER: Would execute
   // - Get partner webhook URL and secret
@@ -203,6 +200,8 @@ export async function sendWebhook(
   
   return null;
 }
+
+
 
 
 

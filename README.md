@@ -1,10 +1,56 @@
-# PareL (CompareL, PareLion, Comparelion)
+# PareL - Social Self-Discovery Platform
 
-PareL is not a todo app. It’s a social, gamified platform where people answer questions, compare themselves with others, and see fun stats and rankings (local + global). The loop is: answer → compare → reward → progress.
+PareL is a social, gamified platform where people answer questions, compare themselves with others, and see fun stats and rankings (local + global). The core loop is: **answer → compare → reward → progress**.
 
-It mixes polling, community data, and game mechanics (XP, gold, avatars, wildcards, challenges). It’s playful, surprising, and slightly addictive — more like Habitica + TikTok polls + RPG flavor, not Jira/Trello.
+It combines polling, community data, and game mechanics (XP, gold, avatars, wildcards, challenges) to create a playful, surprising, and engaging experience — more like Habitica + TikTok polls + RPG flavor.
 
-The core value is giving people perspective on themselves through comparison — from silly (“your snack vs others”) to meaningful (“your child started talking at 3 → top 10% in Prague”).
+The core value is giving people perspective on themselves through comparison — from silly ("your snack vs others") to meaningful ("your child started talking at 3 → top 10% in Prague").
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20.10.0+
+- PostgreSQL database
+- Redis (optional, for caching)
+
+### Installation
+
+1. **Clone and install:**
+   ```bash
+   git clone <repository-url>
+   cd parel-mvp
+   pnpm install
+   ```
+
+2. **Environment setup:**
+   ```bash
+   cp apps/web/.env.example apps/web/.env.local
+   # Edit apps/web/.env.local with your database URL and other configs
+   ```
+
+3. **Database setup:**
+   ```bash
+   cd apps/web
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
+
+4. **Start development server:**
+   ```bash
+   pnpm dev
+   ```
+
+5. **Open:** http://localhost:3000
+
+### Build & Deploy
+
+```bash
+# Build for production
+pnpm build
+
+# Deploy to Vercel
+vercel --prod
+```
 
 ---
 

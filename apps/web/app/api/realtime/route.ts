@@ -52,7 +52,6 @@ function initializeEventListeners() {
     eventBus.on(event, handler);
   });
 
-  console.log(`📡 SSE initialized for events: ${BROADCAST_EVENTS.join(", ")}`);
 }
 
 export async function GET(request: NextRequest) {
@@ -64,7 +63,6 @@ export async function GET(request: NextRequest) {
     start(controller) {
       // Add connection to set
       connections.add(controller);
-      console.log(`📡 SSE client connected (total: ${connections.size})`);
 
       // Send initial connection message
       controller.enqueue(`data: ${JSON.stringify({ event: "connected", payload: { timestamp: Date.now() } })}\n\n`);
@@ -82,7 +80,6 @@ export async function GET(request: NextRequest) {
       request.signal.addEventListener("abort", () => {
         clearInterval(keepAlive);
         connections.delete(controller);
-        console.log(`📡 SSE client disconnected (remaining: ${connections.size})`);
         try {
           controller.close();
         } catch {
@@ -102,6 +99,8 @@ export async function GET(request: NextRequest) {
     },
   });
 }
+
+
 
 
 

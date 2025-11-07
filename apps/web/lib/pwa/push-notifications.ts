@@ -23,7 +23,6 @@ export interface PushAction {
  * PLACEHOLDER: Subscribe to push notifications
  */
 export async function subscribeToPush(userId: string) {
-  console.log("[PWA] PLACEHOLDER: Would subscribe user to push", userId);
   
   // PLACEHOLDER: Would execute
   // - Request notification permission
@@ -41,7 +40,6 @@ export async function sendPushNotification(
   userId: string,
   payload: PushPayload
 ) {
-  console.log(`[PWA] PLACEHOLDER: Would send push to user ${userId}:`, payload.title);
   
   // PLACEHOLDER: Would execute
   // - Get user's push subscriptions
@@ -102,6 +100,8 @@ export const PUSH_TEMPLATES = {
     data: { type: "achievement", achievementName },
   }),
 };
+
+
 
 
 

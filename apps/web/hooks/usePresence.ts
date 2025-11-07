@@ -12,6 +12,7 @@
 import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { apiFetch } from "@/lib/apiBase";
+import { logger } from "@/lib/logger";
 
 const HEARTBEAT_INTERVAL_MS = 25000; // 25 seconds
 
@@ -33,9 +34,9 @@ export function usePresence() {
 
       try {
         await apiFetch("/api/presence", { method: "POST" });
-        console.log("📍 Presence ping sent");
+        logger.debug("📍 Presence ping sent");
       } catch (error) {
-        console.warn("⚠️ Presence ping failed:", error);
+        logger.warn("Presence ping failed", error);
       }
 
       // Schedule next ping
@@ -57,6 +58,8 @@ export function usePresence() {
     };
   }, [status, session]);
 }
+
+
 
 
 

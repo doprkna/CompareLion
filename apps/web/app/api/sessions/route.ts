@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import { safeAsync, validationError } from '@/lib/api-handler';
 
 // Start a new flow session
-export async function POST(request: Request) {
+export const POST = safeAsync(async (request: NextRequest) => {
   const body = await request.json();
   const { userId, flowId } = body;
 
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
     orderBy: { order: 'asc' },
   });
   if (!firstStep) {
-    return NextResponse.json({ success: false, message: 'No steps in flow.' }, { status: 400 });
+    return validationError('No steps in flow.');
   }
 
   // Create session (FlowProgress)
@@ -35,5 +36,6 @@ export async function POST(request: Request) {
     sessionId: session.id,
     currentStepId: firstStep.id,
     question,
+    timestamp: new Date().toISOString(),
   });
-}
+});

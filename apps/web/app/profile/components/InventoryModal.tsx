@@ -39,6 +39,22 @@ export default function InventoryModal({ open, onClose }: InventoryModalProps) {
     }
   }, [open]);
 
+  // Listen for inventory refresh events (from purchases, crafts, etc.)
+  useEffect(() => {
+    const handleRefresh = () => {
+      if (open) {
+        loadInventory();
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('inventory:refresh', handleRefresh);
+      return () => {
+        window.removeEventListener('inventory:refresh', handleRefresh);
+      };
+    }
+  }, [open]);
+
   async function loadInventory() {
     setLoading(true);
     const res = await apiFetch("/api/inventory");

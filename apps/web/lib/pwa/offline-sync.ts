@@ -16,7 +16,6 @@ export async function queueOfflineAction(
   userId: string,
   action: OfflineActionPayload
 ) {
-  console.log(`[OfflineSync] PLACEHOLDER: Would queue action for user ${userId}:`, action.actionType);
   
   // PLACEHOLDER: Would execute
   // - Store action in IndexedDB
@@ -30,7 +29,6 @@ export async function queueOfflineAction(
  * PLACEHOLDER: Process pending offline actions
  */
 export async function processPendingActions(userId: string) {
-  console.log(`[OfflineSync] PLACEHOLDER: Would process pending actions for user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Get all pending actions
@@ -45,7 +43,6 @@ export async function processPendingActions(userId: string) {
  * PLACEHOLDER: Register background sync
  */
 export async function registerBackgroundSync() {
-  console.log("[OfflineSync] PLACEHOLDER: Would register background sync");
   
   // PLACEHOLDER: Would execute
   // if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
@@ -53,6 +50,8 @@ export async function registerBackgroundSync() {
   //   await registration.sync.register('sync-offline-actions');
   // }
 }
+
+
 
 
 

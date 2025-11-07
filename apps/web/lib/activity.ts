@@ -6,6 +6,7 @@
  */
 
 import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export type ActivityType = 
   | "xp"
@@ -51,7 +52,7 @@ export async function logActivity(
       },
     });
   } catch (error) {
-    console.error("[Activity] Failed to log activity:", error);
+    logger.error("[Activity] Failed to log activity", error);
     // Don't throw - activity logging shouldn't break main flow
   }
 }
@@ -169,6 +170,8 @@ export async function logLogin(userId: string) {
     { timestamp: new Date().toISOString() }
   );
 }
+
+
 
 
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Zap, AlertCircle } from "lucide-react";
 
 export default function AIGeneratorPage() {
@@ -96,6 +95,8 @@ export default function AIGeneratorPage() {
     </div>
   );
 }
+
+
 
 
 

@@ -148,7 +148,6 @@ export async function generateMentorMessage(
   userId: string,
   messageType: "weekly_summary" | "suggestion" | "reflection" | "milestone"
 ) {
-  console.log(`[Mentor] PLACEHOLDER: Would generate ${messageType} for user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Load user analytics
@@ -164,7 +163,6 @@ export async function generateMentorMessage(
  * PLACEHOLDER: Analyze reflection entry
  */
 export async function analyzeReflection(reflectionId: string, content: string) {
-  console.log(`[Mentor] PLACEHOLDER: Would analyze reflection ${reflectionId}`);
   
   // PLACEHOLDER: Would execute
   // - Send to LLM for analysis
@@ -179,7 +177,6 @@ export async function analyzeReflection(reflectionId: string, content: string) {
  * PLACEHOLDER: Get personalized flow recommendations
  */
 export async function getFlowRecommendations(userId: string) {
-  console.log(`[Mentor] PLACEHOLDER: Would get flow recommendations for user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Analyze user's growth areas
@@ -189,6 +186,8 @@ export async function getFlowRecommendations(userId: string) {
   
   return [];
 }
+
+
 
 
 

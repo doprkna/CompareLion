@@ -7,6 +7,8 @@
  * - Environment-specific behavior
  */
 
+import { logger } from '@/lib/logger';
+
 export const securityConfig = {
   // hCaptcha site key from environment
   hCaptchaSiteKey: process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || "",
@@ -82,7 +84,7 @@ export async function validateCaptcha(token?: string): Promise<boolean> {
     const data = await response.json();
     return data.success === true;
   } catch (error) {
-    console.error('hCaptcha verification error:', error);
+    logger.error('hCaptcha verification error', error);
     return false;
   }
 }

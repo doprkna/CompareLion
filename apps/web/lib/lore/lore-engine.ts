@@ -244,7 +244,6 @@ Today, PareL remains one of the safest communities online.`,
  * Get lore entry by slug
  */
 export async function getLoreEntry(slug: string) {
-  console.log("[Lore] PLACEHOLDER: Would get lore entry", { slug });
   
   // PLACEHOLDER: Would execute
   // const entry = await prisma.loreEntry.findUnique({
@@ -277,7 +276,6 @@ export async function getPublishedLore(options?: {
   tags?: string[];
   limit?: number;
 }) {
-  console.log("[Lore] PLACEHOLDER: Would get published lore", options);
   
   // PLACEHOLDER: Would execute
   // const entries = await prisma.loreEntry.findMany({
@@ -314,7 +312,6 @@ export async function getPublishedLore(options?: {
  * Search lore
  */
 export async function searchLore(query: string) {
-  console.log("[Lore] PLACEHOLDER: Would search lore", { query });
   
   // PLACEHOLDER: Would execute
   // const entries = await prisma.loreEntry.findMany({
@@ -346,7 +343,6 @@ export async function searchLore(query: string) {
  * Seed sample lore
  */
 export async function seedSampleLore() {
-  console.log("[Lore] PLACEHOLDER: Would seed sample lore");
   
   // PLACEHOLDER: Would execute
   // // Create Season I era
@@ -391,6 +387,8 @@ export async function seedSampleLore() {
   //   }
   // }
 }
+
+
 
 
 

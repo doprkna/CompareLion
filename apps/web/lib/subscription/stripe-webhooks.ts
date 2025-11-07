@@ -7,10 +7,7 @@
 /**
  * Handle subscription created
  */
-export async function handleSubscriptionCreated(subscription: any) {
-  console.log("[Stripe] PLACEHOLDER: Would handle subscription.created", {
-    subscriptionId: subscription.id,
-  });
+export async function handleSubscriptionCreated(_subscription: any) {
   
   // PLACEHOLDER: Would execute
   // const userId = subscription.metadata.userId;
@@ -39,10 +36,7 @@ export async function handleSubscriptionCreated(subscription: any) {
 /**
  * Handle subscription updated
  */
-export async function handleSubscriptionUpdated(subscription: any) {
-  console.log("[Stripe] PLACEHOLDER: Would handle subscription.updated", {
-    subscriptionId: subscription.id,
-  });
+export async function handleSubscriptionUpdated(_subscription: any) {
   
   // PLACEHOLDER: Would execute
   // await prisma.userSubscription.update({
@@ -60,10 +54,7 @@ export async function handleSubscriptionUpdated(subscription: any) {
 /**
  * Handle subscription deleted
  */
-export async function handleSubscriptionDeleted(subscription: any) {
-  console.log("[Stripe] PLACEHOLDER: Would handle subscription.deleted", {
-    subscriptionId: subscription.id,
-  });
+export async function handleSubscriptionDeleted(_subscription: any) {
   
   // PLACEHOLDER: Would execute
   // await prisma.userSubscription.update({
@@ -84,10 +75,7 @@ export async function handleSubscriptionDeleted(subscription: any) {
 /**
  * Handle payment succeeded
  */
-export async function handlePaymentSucceeded(paymentIntent: any) {
-  console.log("[Stripe] PLACEHOLDER: Would handle payment_intent.succeeded", {
-    paymentIntentId: paymentIntent.id,
-  });
+export async function handlePaymentSucceeded(_paymentIntent: any) {
   
   // PLACEHOLDER: Would execute
   // const subscription = await prisma.userSubscription.findFirst({
@@ -111,10 +99,7 @@ export async function handlePaymentSucceeded(paymentIntent: any) {
 /**
  * Handle payment failed
  */
-export async function handlePaymentFailed(paymentIntent: any) {
-  console.log("[Stripe] PLACEHOLDER: Would handle payment_intent.failed", {
-    paymentIntentId: paymentIntent.id,
-  });
+export async function handlePaymentFailed(_paymentIntent: any) {
   
   // PLACEHOLDER: Would execute
   // const subscription = await prisma.userSubscription.findFirst({
@@ -147,11 +132,10 @@ export async function handlePaymentFailed(paymentIntent: any) {
  * Verify Stripe webhook signature
  */
 export function verifyWebhookSignature(
-  payload: string,
-  signature: string,
-  secret: string
+  _payload: string,
+  _signature: string,
+  _secret: string
 ): boolean {
-  console.log("[Stripe] PLACEHOLDER: Would verify webhook signature");
   
   // PLACEHOLDER: Would execute
   // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -165,6 +149,8 @@ export function verifyWebhookSignature(
   
   return true; // Bypass in placeholder mode
 }
+
+
 
 
 

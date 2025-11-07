@@ -8,7 +8,6 @@
  * Schedule regional jobs
  */
 export async function scheduleRegionalJobs() {
-  console.log("[Scheduler] PLACEHOLDER: Would schedule regional jobs");
   
   // PLACEHOLDER: Would execute
   // const regions = await prisma.regionSchedule.findMany();
@@ -40,10 +39,6 @@ export async function scheduleRegionalJobs() {
  * Calculate next reset time for timezone
  */
 function calculateNextReset(timezone: string, offsetMinutes: number): Date {
-  console.log("[Scheduler] PLACEHOLDER: Would calculate reset time", {
-    timezone,
-    offsetMinutes,
-  });
   
   // PLACEHOLDER: Would calculate
   // const now = new Date();
@@ -69,9 +64,6 @@ function calculateNextReset(timezone: string, offsetMinutes: number): Date {
  * Get all users in timezone for reset
  */
 export async function getUsersInTimezone(timezone: string) {
-  console.log("[Scheduler] PLACEHOLDER: Would get users in timezone", {
-    timezone,
-  });
   
   // PLACEHOLDER: Would execute
   // const users = await prisma.userTimeZone.findMany({
@@ -88,7 +80,6 @@ export async function getUsersInTimezone(timezone: string) {
  * Preview upcoming resets across all zones
  */
 export async function previewUpcomingResets() {
-  console.log("[Scheduler] PLACEHOLDER: Would preview resets");
   
   // PLACEHOLDER: Would execute
   // const schedules = await prisma.regionSchedule.findMany({
@@ -110,9 +101,6 @@ export async function previewUpcomingResets() {
  * Execute daily reset for region
  */
 export async function executeDailyReset(region: string) {
-  console.log("[Scheduler] PLACEHOLDER: Would execute daily reset", {
-    region,
-  });
   
   // PLACEHOLDER: Would execute
   // // Reset daily quests
@@ -132,6 +120,8 @@ export async function executeDailyReset(region: string) {
   //   await checkStreakContinuity(user.id);
   // }
 }
+
+
 
 
 

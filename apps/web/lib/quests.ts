@@ -9,6 +9,7 @@ import { publishEvent } from "@/lib/realtime";
 import { createFeedItem } from "@/lib/feed";
 import { logActivity } from "@/lib/activity";
 import { notify } from "@/lib/notify";
+import { logger } from "@/lib/logger";
 
 export interface QuestTemplate {
   type: string;
@@ -38,7 +39,7 @@ const QUEST_TEMPLATES: QuestTemplate[] = [
  */
 export async function generateDailyQuests(): Promise<void> {
   if (!prisma) {
-    console.warn("[Quests] Prisma client not available - skipping quest generation");
+    logger.warn("[Quests] Prisma client not available - skipping quest generation");
     return;
   }
 
@@ -57,7 +58,6 @@ export async function generateDailyQuests(): Promise<void> {
   });
 
   if (existing) {
-    console.log("Daily quests already generated for today");
     return;
   }
 
@@ -81,7 +81,6 @@ export async function generateDailyQuests(): Promise<void> {
     });
   }
 
-  console.log(`✅ Generated 3 daily quests for ${today.toDateString()}`);
 }
 
 /**
@@ -89,7 +88,7 @@ export async function generateDailyQuests(): Promise<void> {
  */
 export async function getTodayQuests() {
   if (!prisma) {
-    console.warn("[Quests] Prisma client not available - returning empty quests");
+    logger.warn("[Quests] Prisma client not available - returning empty quests");
     return [];
   }
 

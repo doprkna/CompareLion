@@ -7,6 +7,7 @@
 
 import { EventEmitter } from "events";
 import Redis from "ioredis";
+import { logger } from "@/lib/logger";
 
 // Event types for type safety
 export type AppEvent =
@@ -38,7 +39,7 @@ let redisPublisher: Redis | null = null;
 let redisSubscriber: Redis | null = null;
 let redisConnected = false;
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 const REDIS_CHANNEL = "parel-events";
 const MAX_RETRIES = 3;
 
@@ -50,6 +51,13 @@ const failedEvents: Array<{ event: string; error: string; timestamp: Date }> = [
  * Initialize Redis connection
  */
 function initRedis() {
+  // Skip Redis initialization if REDIS_URL is not set
+  if (!REDIS_URL) {
+    if (process.env.NODE_ENV === 'development') {
+    }
+    return;
+  }
+
   if (redisConnected) return;
 
   try {
@@ -57,7 +65,8 @@ function initRedis() {
     redisSubscriber = new Redis(REDIS_URL);
 
     redisSubscriber.subscribe(REDIS_CHANNEL, () => {
-      console.log(`📡 Subscribed to ${REDIS_CHANNEL}`);
+      if (process.env.NODE_ENV === 'development') {
+      }
       redisConnected = true;
     });
 
@@ -66,26 +75,26 @@ function initRedis() {
         const { event, payload, metadata } = JSON.parse(message);
         localEmitter.emit(event, payload, metadata);
       } catch (err) {
-        console.error("[Broker] Failed to parse Redis message:", err);
+        logger.error("[Broker] Failed to parse Redis message", err);
       }
     });
 
     redisPublisher.on("error", (err) => {
-      console.warn("[Broker] Redis publisher error:", err.message);
+      logger.warn("[Broker] Redis publisher error", { message: err.message });
       redisConnected = false;
     });
 
     redisSubscriber.on("error", (err) => {
-      console.warn("[Broker] Redis subscriber error:", err.message);
+      logger.warn("[Broker] Redis subscriber error", { message: err.message });
       redisConnected = false;
     });
   } catch (err) {
-    console.warn("[Broker] Redis not available, using local-only mode");
+    logger.warn("[Broker] Redis not available, using local-only mode");
     redisConnected = false;
   }
 }
 
-// Initialize on module load
+// Initialize on module load only if REDIS_URL is set
 initRedis();
 
 /**
@@ -125,7 +134,7 @@ export async function publish(
       (eventStats[event].avgTime * (eventStats[event].count - 1) + duration) /
       eventStats[event].count;
   } catch (error: any) {
-    console.error(`[Broker] Failed to publish ${event}:`, error.message);
+    logger.error('[Broker] Failed to publish event', { event, message: error.message });
 
     // Track failure
     if (!eventStats[event]) {
@@ -142,7 +151,6 @@ export async function publish(
     // Retry critical events
     if (options.critical && (metadata.retries || 0) < MAX_RETRIES) {
       metadata.retries = (metadata.retries || 0) + 1;
-      console.log(`[Broker] Retrying ${event} (attempt ${metadata.retries})`);
       await new Promise((resolve) => setTimeout(resolve, 1000 * metadata.retries!));
       return publish(event, payload, { ...options, retries: metadata.retries });
     }

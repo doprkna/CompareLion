@@ -39,9 +39,6 @@ export const REGIONS = {
  * Get active regional events
  */
 export async function getActiveRegionalEvents(region?: string) {
-  console.log("[RegionalEvents] PLACEHOLDER: Would get active events", {
-    region,
-  });
   
   // PLACEHOLDER: Would execute
   // const now = new Date();
@@ -67,7 +64,6 @@ export async function getActiveRegionalEvents(region?: string) {
  * Trigger regional events (cron job)
  */
 export async function triggerRegionalEvents() {
-  console.log("[RegionalEvents] PLACEHOLDER: Would trigger events");
   
   // PLACEHOLDER: Would execute
   // const now = new Date();
@@ -114,7 +110,6 @@ export async function createRegionalEvent(data: {
   rewardGold?: number;
   isRecurring?: boolean;
 }) {
-  console.log("[RegionalEvents] PLACEHOLDER: Would create event", data);
   
   // PLACEHOLDER: Would execute
   // const event = await prisma.regionalEvent.create({
@@ -145,9 +140,6 @@ export async function createRegionalEvent(data: {
  * Get region for user (from IP or profile)
  */
 export function getUserRegion(ipAddress?: string): string {
-  console.log("[RegionalEvents] PLACEHOLDER: Would detect user region", {
-    ipAddress,
-  });
   
   // PLACEHOLDER: Would use IP geolocation
   // const geo = await geolocate(ipAddress);
@@ -158,6 +150,8 @@ export function getUserRegion(ipAddress?: string): string {
   
   return "GLOBAL";
 }
+
+
 
 
 

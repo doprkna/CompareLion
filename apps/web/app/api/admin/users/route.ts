@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { ensurePrismaClient } from "@/lib/prisma-guard";
 import { handleApiError } from "@/lib/api-error-handler";
@@ -60,6 +60,9 @@ export async function GET() {
     return handleApiError(error, "Failed to fetch admin users");
   }
 }
+
+
+
 
 
 

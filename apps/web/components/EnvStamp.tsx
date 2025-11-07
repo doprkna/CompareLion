@@ -1,5 +1,5 @@
 import React from 'react';
-import { getEnvStamp } from '../lib/env';
+import { getEnvStamp } from '@/lib/env';
 
 export default function EnvStamp() {
   const stamp = getEnvStamp();

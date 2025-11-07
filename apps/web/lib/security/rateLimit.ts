@@ -1,5 +1,6 @@
 import { Redis } from '@upstash/redis';
 import { LRUCache } from 'lru-cache';
+import { logger } from '@/lib/logger';
 
 // Redis client (will be null if not configured)
 let redis: Redis | null = null;
@@ -20,12 +21,9 @@ try {
       url: redisUrl,
       token: redisToken,
     });
-    console.log('Redis rate limiting enabled');
-  } else {
-    console.log('Redis not configured, using LRU cache for rate limiting');
   }
 } catch (error) {
-  console.warn('Failed to initialize Redis client:', error);
+  logger.warn('Failed to initialize Redis client', error);
   redis = null;
 }
 
@@ -97,7 +95,7 @@ async function checkRateLimit(
         retryAfter: allowed ? undefined : Math.ceil((resetTime - now) / 1000)
       };
     } catch (error) {
-      console.error('Redis rate limit error:', error);
+      logger.error('Redis rate limit error', error);
       // Fallback to LRU cache
     }
   }
@@ -227,7 +225,7 @@ export async function trackFailedLogin(req: Request, email: string): Promise<{
         locked: false
       };
     } catch (error) {
-      console.error('Redis failed login tracking error:', error);
+      logger.error('Redis failed login tracking error', error);
       // Fallback to LRU cache
     }
   }
@@ -281,7 +279,7 @@ export async function clearFailedLogins(req: Request, email: string): Promise<vo
     try {
       await redis.del(`${key}:attempts`, `${key}:lockout`);
     } catch (error) {
-      console.error('Redis clear failed logins error:', error);
+      logger.error('Redis clear failed logins error', error);
     }
   } else {
     // LRU cache fallback

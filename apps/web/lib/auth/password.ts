@@ -1,5 +1,6 @@
 import argon2 from 'argon2';
 import bcrypt from 'bcryptjs';
+import { logger } from '@/lib/logger';
 
 // Argon2id configuration for security
 const ARGON2_CONFIG = {
@@ -14,7 +15,7 @@ export async function hashPassword(password: string): Promise<string> {
   try {
     return await argon2.hash(password, ARGON2_CONFIG);
   } catch (error) {
-    console.error('Password hashing error:', error);
+    logger.error('Password hashing error', error);
     throw new Error('Failed to hash password');
   }
 }
@@ -48,10 +49,10 @@ export async function verifyPassword(hashedPassword: string, password: string): 
     }
     
     // Unknown hash format
-    console.warn('[auth] Unknown password hash format:', hashedPassword.slice(0, 10));
+    logger.warn('[auth] Unknown password hash format', { prefix: hashedPassword.slice(0, 10) });
     return false;
   } catch (error) {
-    console.error('[auth] Password verification failed:', error);
+    logger.error('[auth] Password verification failed', error);
     return false;
   }
 }

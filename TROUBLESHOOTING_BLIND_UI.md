@@ -288,3 +288,20 @@ Get-Content .env | Select-String -Pattern "DATABASE_URL|NEXTAUTH"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

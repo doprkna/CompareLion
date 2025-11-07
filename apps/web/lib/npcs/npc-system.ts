@@ -159,7 +159,6 @@ export function generateNpcDialogue(
   },
   interactionType: string
 ): string {
-  console.log(`[NPC] PLACEHOLDER: Would generate ${interactionType} dialogue for ${npc.name}`);
   
   // PLACEHOLDER: Would use LLM to generate adaptive response
   // const prompt = `
@@ -181,7 +180,6 @@ export async function interactWithNpc(
   npcId: string,
   message?: string
 ) {
-  console.log(`[NPC] PLACEHOLDER: Would process interaction between user ${userId} and NPC ${npcId}`);
   
   // PLACEHOLDER: Would execute
   // - Load NPC profile
@@ -206,7 +204,6 @@ export async function storeNpcMemory(
   value: any,
   importance: number = 5
 ) {
-  console.log(`[NPC] PLACEHOLDER: Would store memory for ${npcId} about user ${userId}`);
   
   // PLACEHOLDER: Would execute
   // - Upsert memory record
@@ -215,6 +212,8 @@ export async function storeNpcMemory(
   
   return null;
 }
+
+
 
 
 

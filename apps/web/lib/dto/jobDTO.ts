@@ -1,22 +1,15 @@
-// Using `any` here until Prisma client is regenerated to include `JobLog`
-export function toJobDTO(job: any): {
-  id: string;
-  ssscId: string;
-  status: string;
-  error: string | null;
-  createdAt: Date;
-  startedAt: Date | null;
-  finishedAt: Date | null;
-} {
-  return {
-    id: job.id.toString(),
-    ssscId: job.ssscId?.toString() || '',
-    status: job.status,
-    error: job.error || null,
-    createdAt: job.createdAt,
-    startedAt: job.startedAt || null,
-    finishedAt: job.finishedAt || null,
-  };
+﻿import { JobLogSchema } from '@parel/db/generated';
+import { z } from 'zod';
+
+// Generated type from Prisma schema
+export type JobDTO = z.infer<typeof JobLogSchema>;
+
+// Zod-powered mapper with runtime validation
+export function toJobDTO(job: unknown): JobDTO {
+  return JobLogSchema.parse(job);
 }
 
-export type JobDTO = ReturnType<typeof toJobDTO>;
+// Optional: Safe parse version
+export function toJobDTOSafe(job: unknown) {
+  return JobLogSchema.safeParse(job);
+}

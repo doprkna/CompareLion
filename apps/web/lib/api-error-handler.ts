@@ -5,12 +5,13 @@
  */
 
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 
 export function handleApiError(
   error: any,
   context: string = "API operation"
 ): NextResponse {
-  console.error(`[API Error] ${context}:`, error);
+  logger.error(`[API Error] ${context}`, error);
 
   // Prisma errors
   if (error.code) {
@@ -47,6 +48,13 @@ export function handleApiError(
     { status: statusCode }
   );
 }
+
+
+
+
+
+
+
 
 
 

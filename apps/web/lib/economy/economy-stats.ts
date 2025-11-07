@@ -8,7 +8,6 @@
  * Record daily economy stats
  */
 export async function recordDailyStats() {
-  console.log("[Economy] PLACEHOLDER: Would record daily stats");
   
   // PLACEHOLDER: Would execute
   // const today = new Date();
@@ -86,10 +85,6 @@ export async function recordDailyStats() {
  * Get economy stats for date range
  */
 export async function getEconomyStats(startDate: Date, endDate: Date) {
-  console.log("[Economy] PLACEHOLDER: Would get economy stats", {
-    startDate,
-    endDate,
-  });
   
   // PLACEHOLDER: Would execute
   // const stats = await prisma.economyStat.findMany({
@@ -113,7 +108,6 @@ export async function getEconomyStats(startDate: Date, endDate: Date) {
  * Get top earners
  */
 export async function getTopEarners(limit: number = 10) {
-  console.log("[Economy] PLACEHOLDER: Would get top earners");
   
   // PLACEHOLDER: Would execute
   // const topGold = await prisma.user.findMany({
@@ -151,7 +145,6 @@ export async function getTopEarners(limit: number = 10) {
  * Calculate weekly economy summary
  */
 export async function calculateWeeklySummary() {
-  console.log("[Economy] PLACEHOLDER: Would calculate weekly summary");
   
   // PLACEHOLDER: Would execute
   // const weekStart = new Date();
@@ -177,6 +170,8 @@ export async function calculateWeeklySummary() {
   
   return null;
 }
+
+
 
 
 

@@ -35,6 +35,7 @@
     "@next/next/no-html-link-for-pages": "off",
     
     // General
+    "no-unused-vars": "off", // Use unused-imports/no-unused-vars instead
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "prefer-const": "error",
     "no-var": "error"
@@ -46,6 +47,8 @@
     }
   ]
 }
+
+
 
 
 

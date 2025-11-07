@@ -25,8 +25,6 @@ export const COMMON_TIMEZONES = [
  * Detect timezone from browser
  */
 export function detectBrowserTimezone(): string {
-  console.log("[Timezone] PLACEHOLDER: Would detect from browser");
-  
   // PLACEHOLDER: Client-side only
   // const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   // return tz || "UTC";
@@ -38,8 +36,6 @@ export function detectBrowserTimezone(): string {
  * Get UTC offset for timezone
  */
 export function getTimezoneOffset(timezone: string): number {
-  console.log("[Timezone] PLACEHOLDER: Would get offset", { timezone });
-  
   // PLACEHOLDER: Would use date-fns-tz or luxon
   // const now = new Date();
   // const formatter = new Intl.DateTimeFormat("en-US", {
@@ -60,8 +56,6 @@ export function getTimezoneOffset(timezone: string): number {
  * Get user's timezone
  */
 export async function getUserTimezone(userId: string): Promise<string> {
-  console.log("[Timezone] PLACEHOLDER: Would get user timezone", { userId });
-  
   // PLACEHOLDER: Would execute
   // const tz = await prisma.userTimeZone.findUnique({
   //   where: { userId },
@@ -80,11 +74,6 @@ export async function setUserTimezone(
   timezone: string,
   detectedFrom: string = "manual"
 ) {
-  console.log("[Timezone] PLACEHOLDER: Would set user timezone", {
-    userId,
-    timezone,
-  });
-  
   // PLACEHOLDER: Would execute
   // const offset = getTimezoneOffset(timezone);
   // const localMidnight = getNextLocalMidnight(timezone);
@@ -111,9 +100,6 @@ export async function setUserTimezone(
  * Get next local midnight for timezone
  */
 export function getNextLocalMidnight(timezone: string): Date {
-  console.log("[Timezone] PLACEHOLDER: Would calculate next midnight", {
-    timezone,
-  });
   
   // PLACEHOLDER: Would use date-fns-tz
   // const now = new Date();
@@ -134,7 +120,6 @@ export function getNextLocalMidnight(timezone: string): Date {
  * Convert UTC to user's local time
  */
 export function toUserLocalTime(utcDate: Date, timezone: string): Date {
-  console.log("[Timezone] PLACEHOLDER: Would convert to local time");
   
   // PLACEHOLDER: Would use date-fns-tz
   // return utcToZonedTime(utcDate, timezone);
@@ -146,7 +131,6 @@ export function toUserLocalTime(utcDate: Date, timezone: string): Date {
  * Format time until next reset
  */
 export function formatTimeUntilReset(nextReset: Date, timezone: string): string {
-  console.log("[Timezone] PLACEHOLDER: Would format countdown");
   
   // PLACEHOLDER: Would calculate
   // const now = new Date();
@@ -159,6 +143,8 @@ export function formatTimeUntilReset(nextReset: Date, timezone: string): string 
   
   return "6h 30m"; // Mock
 }
+
+
 
 
 

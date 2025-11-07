@@ -7,6 +7,7 @@
 
 import { recalculatePrestige } from "./prestige";
 import { prisma } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 /**
  * Recalculate and update all user scores
@@ -25,7 +26,6 @@ export async function updateUserScores(userId: string): Promise<{ karma: number;
 
   const karma = user?.karmaScore || 0;
 
-  console.log(`[Scores] Updated user ${userId}: Karma=${karma}, Prestige=${prestige}`);
 
   return { karma, prestige };
 }
@@ -35,18 +35,18 @@ export async function updateUserScores(userId: string): Promise<{ karma: number;
  * @param userIds Array of user IDs
  */
 export async function batchUpdateScores(userIds: string[]): Promise<void> {
-  console.log(`[Scores] Batch updating ${userIds.length} users...`);
   
   for (const userId of userIds) {
     try {
       await updateUserScores(userId);
     } catch (error) {
-      console.error(`[Scores] Failed to update user ${userId}:`, error);
+      logger.error('[Scores] Failed to update user', { userId, error });
     }
   }
   
-  console.log(`[Scores] Batch update complete`);
 }
+
+
 
 
 

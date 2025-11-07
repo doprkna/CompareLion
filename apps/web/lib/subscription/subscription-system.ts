@@ -38,10 +38,7 @@ export const SUBSCRIPTION_PLANS = {
 /**
  * Get user's active subscription
  */
-export async function getUserSubscription(userId: string) {
-  console.log("[Subscription] PLACEHOLDER: Would get user subscription", {
-    userId,
-  });
+export async function getUserSubscription(_userId: string) {
   
   // PLACEHOLDER: Would execute
   // const subscription = await prisma.userSubscription.findFirst({
@@ -66,10 +63,7 @@ export async function getUserSubscription(userId: string) {
 /**
  * Check if user has premium
  */
-export async function isPremiumUser(userId: string): Promise<boolean> {
-  console.log("[Subscription] PLACEHOLDER: Would check premium status", {
-    userId,
-  });
+export async function isPremiumUser(_userId: string): Promise<boolean> {
   
   // PLACEHOLDER: Would execute
   // const subscription = await getUserSubscription(userId);
@@ -81,10 +75,7 @@ export async function isPremiumUser(userId: string): Promise<boolean> {
 /**
  * Get XP multiplier for user
  */
-export async function getUserXpMultiplier(userId: string): Promise<number> {
-  console.log("[Subscription] PLACEHOLDER: Would get XP multiplier", {
-    userId,
-  });
+export async function getUserXpMultiplier(_userId: string): Promise<number> {
   
   // PLACEHOLDER: Would execute
   // const subscription = await getUserSubscription(userId);
@@ -97,15 +88,11 @@ export async function getUserXpMultiplier(userId: string): Promise<number> {
  * Create Stripe checkout session
  */
 export async function createCheckoutSession(
-  userId: string,
-  planName: string,
-  successUrl: string,
-  cancelUrl: string
+  _userId: string,
+  _planName: string,
+  _successUrl: string,
+  _cancelUrl: string
 ) {
-  console.log("[Subscription] PLACEHOLDER: Would create Stripe checkout", {
-    userId,
-    planName,
-  });
   
   // PLACEHOLDER: Would execute
   // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -149,10 +136,7 @@ export async function createCheckoutSession(
 /**
  * Cancel subscription
  */
-export async function cancelSubscription(userId: string) {
-  console.log("[Subscription] PLACEHOLDER: Would cancel subscription", {
-    userId,
-  });
+export async function cancelSubscription(_userId: string) {
   
   // PLACEHOLDER: Would execute
   // const subscription = await getUserSubscription(userId);
@@ -178,10 +162,7 @@ export async function cancelSubscription(userId: string) {
 /**
  * Reactivate cancelled subscription
  */
-export async function reactivateSubscription(userId: string) {
-  console.log("[Subscription] PLACEHOLDER: Would reactivate subscription", {
-    userId,
-  });
+export async function reactivateSubscription(_userId: string) {
   
   // PLACEHOLDER: Would execute
   // const subscription = await prisma.userSubscription.findFirst({
@@ -209,6 +190,8 @@ export async function reactivateSubscription(userId: string) {
   
   return null;
 }
+
+
 
 
 

@@ -1,6 +1,6 @@
 export const runtime = 'nodejs';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyPassword, hashPassword, isBcryptHash } from '@/lib/auth/password';
 import { LoginSchema } from '@/lib/validation/auth';
@@ -11,12 +11,12 @@ import { logAuditEvent, extractIpFromRequest } from '@/lib/services/auditService
 import { getRequestId, createResponseWithRequestId } from '@/lib/utils/requestId';
 import { captureError, createErrorContextFromRequest } from '@/lib/utils/errorTracking';
 import { securityConfig } from '@/lib/config/security';
+import { safeAsync } from '@/lib/api-handler';
 
-export async function POST(req: NextRequest) {
+export const POST = safeAsync(async (req: NextRequest) => {
   const requestId = getRequestId(req);
   
-  try {
-    const body = await req.json();
+  const body = await req.json();
     
     // Validate input
     const validationResult = LoginSchema.safeParse(body);
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
           );
         }
       } else {
-        console.log(`[${requestId}] Demo bypass enabled - skipping captcha verification`);
+        // Demo bypass enabled - skipping captcha verification
       }
     }
     
@@ -165,9 +165,9 @@ export async function POST(req: NextRequest) {
             lastLoginAt: new Date()
           }
         });
-        console.log(`[${requestId}] ✅ Upgraded bcrypt → argon2id for user ${email}`);
+        // Successfully upgraded bcrypt → argon2id
       } catch (rehashError) {
-        console.error(`[${requestId}] Failed to rehash password:`, rehashError);
+        // Failed to rehash password - continue with login
         // Continue with login even if rehashing fails
         await prisma.user.update({
           where: { id: user.id },
@@ -200,31 +200,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return createResponseWithRequestId({ 
-      success: true, 
-      message: 'Login successful',
-      userId: user.id,
-      requestId
-    }, 200, requestId);
-  } catch (error) {
-    console.error(`[${requestId}] Login error:`, error);
-    
-    // Capture error with Sentry
-    captureError(error as Error, {
-      ...createErrorContextFromRequest(req, requestId),
-      endpoint: '/api/auth/login',
-      extra: { requestId }
-    });
-    
-    // Provide more specific error in development
-    const errorMessage = process.env.NODE_ENV === 'development' 
-      ? `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}`
-      : 'Login failed';
-    
-    return createResponseWithRequestId(
-      { success: false, error: errorMessage, requestId },
-      500,
-      requestId
-    );
-  }
-}
+  return createResponseWithRequestId({ 
+    success: true, 
+    message: 'Login successful',
+    userId: user.id,
+    requestId
+  }, 200, requestId);
+});

@@ -4,12 +4,15 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { User, Settings, LogOut, Shield } from "lucide-react";
+import { User, Settings, LogOut, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
+import { BetaInfoModal, useBetaInfoModal } from "@/components/BetaInfoModal";
+import { logger } from "@/lib/logger";
 
 export function ProfileMenu() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
+  const betaModal = useBetaInfoModal();
 
   if (status === "loading") {
     return (
@@ -26,8 +29,13 @@ export function ProfileMenu() {
       await fetch("/api/logout", { method: "POST" });
       window.location.href = "/login";
     } catch (error) {
-      console.error("Logout failed:", error);
+      logger.error("Logout failed", error);
     }
+  };
+
+  const handleBetaInfo = () => {
+    setOpen(false);
+    betaModal.open();
   };
 
   return (
@@ -66,11 +74,17 @@ export function ProfileMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleBetaInfo} className="text-blue-600">
+          <Rocket className="w-4 h-4 mr-2" />
+          Beta Info
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-red-600">
           <LogOut className="w-4 h-4 mr-2" />
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
+      <BetaInfoModal isOpen={betaModal.isOpen} onClose={betaModal.close} />
     </DropdownMenu>
   );
 }

@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import { safeAsync, notFoundError } from '@/lib/api-handler';
 
 // Get a single question with all versions and tags
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export const GET = safeAsync(async (_req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const question = await prisma.question.findUnique({
     where: { id },
@@ -16,12 +17,12 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
       currentVersion: true,
     },
   });
-  if (!question) return NextResponse.json({ success: false, message: 'Not found' }, { status: 404 });
-  return NextResponse.json({ success: true, question });
-}
+  if (!question) return notFoundError('Question');
+  return NextResponse.json({ success: true, question, timestamp: new Date().toISOString() });
+});
 
 // Add a new version to a question
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export const PATCH = safeAsync(async (request: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const body = await request.json();
   const { text, displayText, type, options, metadata, tags = [] } = body;
@@ -67,16 +68,16 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     return { version };
   });
 
-  return NextResponse.json({ success: true, ...result });
-}
+  return NextResponse.json({ success: true, ...result, timestamp: new Date().toISOString() });
+});
 
 // Soft delete a question (add deletedAt if not present)
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export const DELETE = safeAsync(async (_req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   // Add deletedAt field if not present
   await prisma.question.update({
     where: { id },
     data: { metadata: { deletedAt: new Date().toISOString() } },
   });
-  return NextResponse.json({ success: true });
-}
+  return NextResponse.json({ success: true, timestamp: new Date().toISOString() });
+});

@@ -12,8 +12,9 @@
 
 import { eventBus } from "@/lib/eventBus";
 import Redis from "ioredis";
+import { logger } from "@/lib/logger";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
+const REDIS_URL = process.env.REDIS_URL;
 const CHANNEL_NAME = "parel-events";
 
 // Redis clients (pub/sub require separate connections)
@@ -31,13 +32,19 @@ function initializeRedis() {
     return;
   }
 
+  if (!REDIS_URL) {
+    if (process.env.NODE_ENV === 'development') {
+    }
+    return;
+  }
+
   try {
     // Publisher client
     redisPublisher = new Redis(REDIS_URL, {
       maxRetriesPerRequest: 3,
       retryStrategy: (times) => {
         if (times > 3) {
-          console.warn("⚠️ Redis connection failed, using local event bus only");
+          logger.warn("Redis connection failed, using local event bus only");
           return null;
         }
         return Math.min(times * 100, 2000);
@@ -49,7 +56,7 @@ function initializeRedis() {
       maxRetriesPerRequest: 3,
       retryStrategy: (times) => {
         if (times > 3) {
-          console.warn("⚠️ Redis subscriber failed, using local event bus only");
+          logger.warn("Redis subscriber failed, using local event bus only");
           return null;
         }
         return Math.min(times * 100, 2000);
@@ -59,10 +66,10 @@ function initializeRedis() {
     // Subscribe to event channel
     redisSubscriber.subscribe(CHANNEL_NAME, (err) => {
       if (err) {
-        console.error("❌ Failed to subscribe to Redis channel:", err);
+        logger.error("Failed to subscribe to Redis channel", err);
         redisConnected = false;
       } else {
-        console.log("📡 Subscribed to Redis channel:", CHANNEL_NAME);
+        logger.debug("Redis subscriber connected");
         redisConnected = true;
       }
     });
@@ -73,37 +80,35 @@ function initializeRedis() {
 
       try {
         const { event, payload } = JSON.parse(message);
-        console.log(`[Redis→Local] ${event}:`, payload);
         
         // Emit to local event bus
         eventBus.emit(event, payload);
       } catch (err) {
-        console.error("❌ Redis event parse error:", err);
+        logger.error("Redis event parse error", err);
       }
     });
 
     // Connection events
     redisPublisher.on("connect", () => {
-      console.log("✅ Redis publisher connected");
       redisConnected = true;
     });
 
     redisPublisher.on("error", (err) => {
-      console.warn("⚠️ Redis publisher error:", err.message);
+      logger.warn("Redis publisher error", { message: err.message });
       redisConnected = false;
     });
 
     redisSubscriber.on("connect", () => {
-      console.log("✅ Redis subscriber connected");
+      // Connected
     });
 
     redisSubscriber.on("error", (err) => {
-      console.warn("⚠️ Redis subscriber error:", err.message);
+      logger.warn("Redis subscriber error", { message: err.message });
       redisConnected = false;
     });
 
   } catch (err) {
-    console.warn("⚠️ Redis initialization failed, using local event bus only:", err);
+    logger.warn("Redis initialization failed, using local event bus only", err);
     redisPublisher = null;
     redisSubscriber = null;
     redisConnected = false;
@@ -128,9 +133,8 @@ export async function publishEvent(event: string, payload: any) {
     try {
       const message = JSON.stringify({ event, payload });
       await redisPublisher.publish(CHANNEL_NAME, message);
-      console.log(`[Local→Redis] ${event}:`, payload);
     } catch (err) {
-      console.warn("⚠️ Redis publish failed (falling back to local only):", err);
+      logger.warn("Redis publish failed (falling back to local only)", err);
     }
   }
 }
@@ -153,7 +157,6 @@ export async function disconnectRedis() {
     await redisSubscriber.quit();
   }
   redisConnected = false;
-  console.log("👋 Redis disconnected");
 }
 
 // Cleanup on process exit

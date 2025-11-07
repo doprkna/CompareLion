@@ -1,41 +1,33 @@
 export const runtime = 'nodejs';
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { generateToken, getTokenExpiry } from '@/lib/auth/tokens';
 import { sendEmailVerification } from '@/lib/email/resend';
 import { getSessionFromCookie } from '@/lib/auth/session';
+import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError, serverError } from '@/lib/api-handler';
+import { logger } from '@/lib/utils/debug';
 
-export async function POST(req: NextRequest) {
-  try {
-    // Get the current user from session
-    const session = await getSessionFromCookie();
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+export const POST = safeAsync(async (req: NextRequest) => {
+  // Get the current user from session
+  const session = await getSessionFromCookie();
+  if (!session) {
+    return unauthorizedError('Authentication required');
+  }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.userId },
-      select: { id: true, email: true, emailVerifiedAt: true }
-    });
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { id: true, email: true, emailVerifiedAt: true }
+  });
 
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      );
-    }
+  if (!user) {
+    return notFoundError('User');
+  }
 
-    // Check if already verified
-    if (user.emailVerifiedAt) {
-      return NextResponse.json(
-        { success: false, error: 'Email already verified' },
-        { status: 400 }
-      );
-    }
+  // Check if already verified
+  if (user.emailVerifiedAt) {
+    return validationError('Email already verified');
+  }
 
     // Generate verification token
     const token = generateToken();
@@ -59,29 +51,18 @@ export async function POST(req: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const verificationUrl = `${baseUrl}/api/auth/verify?token=${token}`;
     
-    const emailResult = await sendEmailVerification({
-      to: user.email,
-      verificationUrl
-    });
+  const emailResult = await sendEmailVerification({
+    to: user.email,
+    verificationUrl
+  });
 
-    if (!emailResult.success) {
-      console.error('Failed to send verification email:', emailResult.error);
-      return NextResponse.json(
-        { success: false, error: 'Failed to send verification email' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Verification email sent successfully',
-      messageId: emailResult.messageId
-    });
-  } catch (error) {
-    console.error('Request verification error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to send verification email' },
-      { status: 500 }
-    );
+  if (!emailResult.success) {
+    logger.error('[AUTH] Failed to send verification email', emailResult.error);
+    return serverError('Failed to send verification email');
   }
-}
+
+  return successResponse(
+    { messageId: emailResult.messageId },
+    'Verification email sent successfully'
+  );
+});

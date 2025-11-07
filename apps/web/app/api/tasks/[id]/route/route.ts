@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../../auth/[...nextauth]/options'
+import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 import { prisma } from '@parel/db'
 import { enqueueRun } from '@/lib/queue'
+import { safeAsync, unauthorizedError, notFoundError } from '@/lib/api-handler';
 
-export async function POST(
+export const POST = safeAsync(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return unauthorizedError('Unauthorized');
   }
 
   const body = await request.json()
@@ -22,7 +23,7 @@ export async function POST(
   })
 
   if (!task) {
-    return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+    return notFoundError('Task');
   }
 
   const updatedTask = await prisma.task.update({
@@ -56,7 +57,7 @@ export async function POST(
   }
 
   return NextResponse.json(updatedTask)
-}
+});
 
 
 

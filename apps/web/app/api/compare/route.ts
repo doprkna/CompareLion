@@ -1,93 +1,90 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { getKarmaTier } from "@/lib/karma";
 import { getPrestigeTier } from "@/lib/prestige";
+import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError, forbiddenError } from "@/lib/api-handler";
+import { canCompare } from "@/lib/middleware/privacy";
 
-export async function GET(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export const GET = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
+  }
 
-    const { searchParams } = new URL(req.url);
-    const targetId = searchParams.get("targetId");
+  const { searchParams } = new URL(req.url);
+  const targetId = searchParams.get("targetId");
 
-    if (!targetId) {
-      return NextResponse.json({ error: "targetId required" }, { status: 400 });
-    }
+  if (!targetId) {
+    return validationError('targetId required');
+  }
 
     // Get current user
-    const currentUser = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        level: true,
-        xp: true,
-        archetype: true,
-        badgeType: true,
-        karmaScore: true,
-        prestigeScore: true,
-        statSleep: true,
-        statHealth: true,
-        statSocial: true,
-        statKnowledge: true,
-        statCreativity: true,
-        allowPublicCompare: true,
-        showBadges: true,
-        userAchievements: { select: { id: true } },
-      },
-    });
+  const currentUser = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      level: true,
+      xp: true,
+      archetype: true,
+      badgeType: true,
+      karmaScore: true,
+      prestigeScore: true,
+      statSleep: true,
+      statHealth: true,
+      statSocial: true,
+      statKnowledge: true,
+      statCreativity: true,
+      allowPublicCompare: true,
+      showBadges: true,
+      userAchievements: { select: { id: true } },
+    },
+  });
 
-    if (!currentUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+  if (!currentUser) {
+    return notFoundError('User');
+  }
 
-    // Get target user
-    const targetUser = await prisma.user.findUnique({
-      where: { id: targetId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        level: true,
-        xp: true,
-        archetype: true,
-        badgeType: true,
-        karmaScore: true,
-        prestigeScore: true,
-        statSleep: true,
-        statHealth: true,
-        statSocial: true,
-        statKnowledge: true,
-        statCreativity: true,
-        allowPublicCompare: true,
-        showBadges: true,
-        userAchievements: { select: { id: true } },
-      },
-    });
+  // Get target user
+  const targetUser = await prisma.user.findUnique({
+    where: { id: targetId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      level: true,
+      xp: true,
+      archetype: true,
+      badgeType: true,
+      karmaScore: true,
+      prestigeScore: true,
+      statSleep: true,
+      statHealth: true,
+      statSocial: true,
+      statKnowledge: true,
+      statCreativity: true,
+      allowPublicCompare: true,
+      showBadges: true,
+      userAchievements: { select: { id: true } },
+    },
+  });
 
-    if (!targetUser) {
-      return NextResponse.json({ error: "Target user not found" }, { status: 404 });
-    }
+  if (!targetUser) {
+    return notFoundError('Target user');
+  }
 
-    // Privacy check
-    if (!currentUser.allowPublicCompare || !targetUser.allowPublicCompare) {
-      return NextResponse.json(
-        { 
-          error: "Comparison not allowed", 
-          reason: "One or both users have disabled public comparison" 
-        },
-        { status: 403 }
-      );
-    }
+  // Privacy check (v0.29.30 - Enhanced privacy system)
+  const canCompareUsers = await canCompare(currentUser.id, targetId);
+  
+  if (!canCompareUsers) {
+    return forbiddenError('Comparison not allowed due to privacy settings');
+  }
 
     // Calculate tiers
     const currentKarmaTier = getKarmaTier(currentUser.karmaScore);
@@ -141,20 +138,12 @@ export async function GET(req: NextRequest) {
         },
         achievementCount: targetUser.userAchievements.length,
       },
-    };
+  };
 
-    return NextResponse.json({
-      success: true,
-      comparison,
-    });
-  } catch (error) {
-    console.error("[API] Error fetching comparison:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch comparison data" },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse({ comparison });
+});
+
+
 
 
 

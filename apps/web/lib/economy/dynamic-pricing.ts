@@ -8,7 +8,6 @@
  * Update dynamic prices for all items
  */
 export async function updateDynamicPrices() {
-  console.log("[Economy] PLACEHOLDER: Would update dynamic prices");
   
   // PLACEHOLDER: Would execute
   // const items = await prisma.item.findMany({
@@ -56,7 +55,7 @@ export async function updateDynamicPrices() {
 /**
  * Calculate demand multiplier based on purchase volume
  */
-function calculateDemand(purchaseVolume: number): number {
+function _calculateDemand(purchaseVolume: number): number {
   // Higher purchases = higher demand = higher prices
   // Formula: 1.0 + (volume / 100) capped at 2.0
   return Math.min(2.0, 1.0 + (purchaseVolume / 100));
@@ -65,7 +64,7 @@ function calculateDemand(purchaseVolume: number): number {
 /**
  * Calculate supply multiplier based on crafting volume
  */
-function calculateSupply(craftingVolume: number): number {
+function _calculateSupply(craftingVolume: number): number {
   // Higher crafting = higher supply = lower prices
   // Formula: 1.0 - (volume / 200) floored at 0.5
   return Math.max(0.5, 1.0 - (craftingVolume / 200));
@@ -74,8 +73,7 @@ function calculateSupply(craftingVolume: number): number {
 /**
  * Record purchase for price adjustment
  */
-export async function recordPurchase(itemId: string) {
-  console.log("[Economy] PLACEHOLDER: Would record purchase", { itemId });
+export async function recordPurchase(_itemId: string) {
   
   // PLACEHOLDER: Would execute
   // await prisma.dynamicPrice.upsert({
@@ -95,8 +93,7 @@ export async function recordPurchase(itemId: string) {
 /**
  * Record crafting for price adjustment
  */
-export async function recordCrafting(itemId: string) {
-  console.log("[Economy] PLACEHOLDER: Would record crafting", { itemId });
+export async function recordCrafting(_itemId: string) {
   
   // PLACEHOLDER: Would execute
   // await prisma.dynamicPrice.upsert({
@@ -116,8 +113,7 @@ export async function recordCrafting(itemId: string) {
 /**
  * Get current price for item
  */
-export async function getCurrentPrice(itemId: string): Promise<number> {
-  console.log("[Economy] PLACEHOLDER: Would get current price", { itemId });
+export async function getCurrentPrice(_itemId: string): Promise<number> {
   
   // PLACEHOLDER: Would execute
   // const pricing = await prisma.dynamicPrice.findUnique({
@@ -128,6 +124,8 @@ export async function getCurrentPrice(itemId: string): Promise<number> {
   
   return 100;
 }
+
+
 
 
 

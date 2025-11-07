@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { ensurePrismaClient } from "@/lib/prisma-guard";
 import { handleApiError } from "@/lib/api-error-handler";
@@ -44,7 +44,6 @@ export async function POST() {
     }
 
     // Run the reseed command
-    console.log("🌱 Admin reseed requested by:", session.user.email);
     
     const { stdout, stderr } = await execAsync("pnpm db:reset-seed", {
       cwd: process.cwd(),
@@ -54,7 +53,6 @@ export async function POST() {
       console.error("Reseed stderr:", stderr);
     }
 
-    console.log("Reseed stdout:", stdout);
 
     return NextResponse.json({
       success: true,
@@ -66,6 +64,9 @@ export async function POST() {
     return handleApiError(error, "Failed to reseed database");
   }
 }
+
+
+
 
 
 

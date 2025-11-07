@@ -212,9 +212,10 @@ export function filterCosmetics(
 }
 
 export async function purchaseCosmetic(userId: string, itemId: string) {
-  console.log("[ShopCosmetics] PLACEHOLDER: Would purchase item", userId, itemId);
   return null;
 }
+
+
 
 
 

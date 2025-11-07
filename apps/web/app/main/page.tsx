@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { debug, error as logError } from "@/lib/utils/debug";
 import { apiFetch } from "@/lib/apiBase";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,19 @@ import { xpToLevel, levelProgress } from "@/lib/xp";
 import { LevelUpPopup } from "@/components/LevelUpPopup";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
+import { MiniEventCard } from "@/components/MiniEventCard";
+import { GlobalMoodBar } from "@/components/moods/GlobalMoodBar";
+import { DailyForkCard } from "@/components/forks/DailyForkCard";
+import { ForkResultToast } from "@/components/forks/ForkResultToast";
+import { useDailyFork, useChooseFork } from "@/hooks/useDailyFork";
+import { DuetRunCard } from "@/components/duet-runs/DuetRunCard";
+import { DuetSummaryModal } from "@/components/duet-runs/DuetSummaryModal";
+import { useDuetRun, useDuetProgress } from "@/hooks/useDuetRun";
+import { RitualCard } from "@/components/rituals/RitualCard";
+import { RitualToast } from "@/components/rituals/RitualToast";
+import { useRituals, useCompleteRitual } from "@/hooks/useRituals";
+import { ClanBuffBadge } from "@/components/micro-clans/ClanBuffBadge";
+import { useClanBuff } from "@/hooks/useMicroClans";
 
 interface UserSummary {
   name: string;
@@ -42,24 +56,38 @@ export default function MainPage() {
   const [loading, setLoading] = useState(true);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevel, setNewLevel] = useState(0);
+  const { fork, userChoice, loading: forkLoading, reload: reloadFork } = useDailyFork();
+  const { choose, loading: choosing, error: forkError } = useChooseFork();
+  const [showToast, setShowToast] = useState(false);
+  const [toastSummary, setToastSummary] = useState('');
+  const [toastChoice, setToastChoice] = useState<'A' | 'B'>('A');
+  const { duetRun, loading: duetLoading, reload: reloadDuet } = useDuetRun();
+  const { updateProgress, complete, loading: duetProgressLoading } = useDuetProgress();
+  const [showDuetSummary, setShowDuetSummary] = useState(false);
+  const [duetRewards, setDuetRewards] = useState<any>(null);
+  const [duetPartner, setDuetPartner] = useState<any>(null);
+  const { ritual, userProgress, loading: ritualLoading, reload: reloadRitual } = useRituals();
+  const { complete: completeRitual, loading: completingRitual } = useCompleteRitual();
+  const [showRitualToast, setShowRitualToast] = useState(false);
+  const [ritualRewards, setRitualRewards] = useState<any>(null);
+  const [ritualStreak, setRitualStreak] = useState(0);
+  const { buff: clanBuff } = useClanBuff();
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      console.log('[MainPage] Loading user data...');
+      debug('Loading user data...');
       const res = await apiFetch("/api/user/summary");
-      console.log('[MainPage] API response:', res);
+      debug('API response received', { ok: res.ok, hasUser: !!res.data?.data?.user });
       
       if (res.ok && res.data?.data?.user) {
-        console.log('[MainPage] Setting user data:', res.data.data.user);
         setData(res.data.data.user);
       } else {
-        console.error("Failed to load user data:", res.error);
-        console.error("Response structure:", res);
+        logError("Failed to load user data", res.error, { response: res });
         setData(null);
       }
-    } catch (error) {
-      console.error("Error loading user data:", error);
+    } catch (err) {
+      logError("Error loading user data", err);
       setData(null);
     } finally {
       setLoading(false);
@@ -162,6 +190,88 @@ export default function MainPage() {
             </p>
           </div>
         </div>
+
+        {/* Global Mood Bar */}
+        <GlobalMoodBar showTooltip={true} />
+
+        {/* Daily Fork */}
+        {fork && (
+          <DailyForkCard
+            fork={fork}
+            userChoice={userChoice}
+            onChoose={async (forkId, choice) => {
+              try {
+                const result = await choose(forkId, choice);
+                setToastSummary(result.summary || 'Choice made!');
+                setToastChoice(choice);
+                setShowToast(true);
+                reloadFork();
+              } catch (e) {
+                if (forkError) {
+                  alert(forkError);
+                }
+              }
+            }}
+            choosing={choosing}
+          />
+        )}
+
+        {/* Duet Run */}
+        {duetRun && (
+          <DuetRunCard
+            duetRun={duetRun}
+            onProgress={async (duetRunId, progress) => {
+              try {
+                await updateProgress(duetRunId, progress);
+                reloadDuet();
+              } catch (e) {
+                // Error handled by hook
+              }
+            }}
+            onComplete={async (duetRunId) => {
+              try {
+                const result = await complete(duetRunId);
+                setDuetRewards(result.rewards);
+                setDuetPartner(duetRun.partner);
+                setShowDuetSummary(true);
+                reloadDuet();
+              } catch (e) {
+                // Error handled by hook
+              }
+            }}
+            updating={duetProgressLoading}
+          />
+        )}
+
+        {/* Daily Ritual */}
+        {ritual && (
+          <RitualCard
+            ritual={ritual}
+            userProgress={userProgress || {
+              streakCount: 0,
+              totalCompleted: 0,
+              lastCompleted: null,
+              completedToday: false,
+            }}
+            onComplete={async (ritualId) => {
+              try {
+                const result = await completeRitual(ritualId);
+                setRitualRewards(result.rewards);
+                setRitualStreak(result.streakCount);
+                setShowRitualToast(true);
+                reloadRitual();
+              } catch (e) {
+                // Error handled by hook
+              }
+            }}
+            completing={completingRitual}
+          />
+        )}
+
+        {/* Micro-Clan Buff Badge */}
+        {clanBuff && (
+          <ClanBuffBadge buff={clanBuff} compact={false} />
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -307,8 +417,92 @@ export default function MainPage() {
         <div className="text-center text-subtle text-sm">
           💡 Complete flows, send messages, and explore to earn more XP and unlock achievements!
         </div>
+
+        {/* Daily Challenge */}
+        <DailyChallengeSection />
         </div>
       </div>
+
+      {/* Fork Result Toast */}
+      <ForkResultToast
+        show={showToast}
+        summary={toastSummary}
+        choice={toastChoice}
+        onClose={() => setShowToast(false)}
+      />
+
+      {/* Duet Summary Modal */}
+      {duetPartner && duetRewards && (
+        <DuetSummaryModal
+          show={showDuetSummary}
+          rewards={duetRewards}
+          partner={duetPartner}
+          onClose={() => {
+            setShowDuetSummary(false);
+            setDuetRewards(null);
+            setDuetPartner(null);
+          }}
+        />
+      )}
+
+      {/* Ritual Toast */}
+      {ritualRewards && (
+        <RitualToast
+          show={showRitualToast}
+          rewards={ritualRewards}
+          streakCount={ritualStreak}
+          onClose={() => {
+            setShowRitualToast(false);
+            setRitualRewards(null);
+            setRitualStreak(0);
+          }}
+        />
+      )}
     </>
+  );
+}
+
+function DailyChallengeSection() {
+  const [event, setEvent] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const url = new URL('/api/events/today', window.location.origin);
+        // Optionally pass region from locale context; fallback to GLOBAL
+        const res = await fetch(url.toString());
+        const json = await res.json();
+        if (!mounted) return;
+        setEvent(json?.event || null);
+      } catch {
+        if (!mounted) return;
+        setEvent(null);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold">Daily Challenge</h2>
+        <div className="border rounded p-6 opacity-60">Loading…</div>
+      </div>
+    );
+  }
+
+  if (!event) return null;
+
+  return (
+    <div className="space-y-2">
+      <h2 className="text-2xl font-semibold">Daily Challenge</h2>
+      <MiniEventCard event={event} />
+    </div>
   );
 }

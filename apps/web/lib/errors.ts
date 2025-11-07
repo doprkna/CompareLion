@@ -7,11 +7,13 @@
  * - safe() wrapper for error-safe execution
  */
 
+import { logger } from '@/lib/logger';
+
 export class AppError extends Error {
   constructor(
     public message: string,
-    public code?: string,
-    public context?: Record<string, unknown>
+    public _code?: string,
+    public _context?: Record<string, unknown>
   ) {
     super(message);
     this.name = "AppError";
@@ -33,14 +35,13 @@ export function logError(err: unknown, context: string) {
   };
 
   if (!isProd || process.env.NEXT_PUBLIC_VERBOSE_ERRORS === "true") {
-    console.error(`[${context}]`, payload);
+    logger.error(`[${context}]`, payload);
   }
 
   // Optional Sentry or telemetry integration
   if (isProd) {
     // Placeholder for Sentry / telemetry
     // Example: Sentry.captureException(err, { tags: { context } });
-    // console.log("Send to Sentry:", payload);
   }
 }
 

@@ -35,7 +35,6 @@ export async function calculateCategoryWeight(categoryId: string): Promise<numbe
  * PLACEHOLDER: Returns mock job
  */
 export async function generateWeightedQuestions(): Promise<{ jobCount: number }> {
-  console.log("[AI Generator] PLACEHOLDER: Would generate weighted questions");
   
   // TODO: Implement:
   // 1. Query all categories with calculateCategoryWeight()
@@ -86,7 +85,6 @@ export async function submitModeratorFeedback(
     },
   });
   
-  console.log(`[AI Generator] Moderator feedback recorded for job ${jobId}: ${status}`);
 }
 
 /**
@@ -126,10 +124,11 @@ export async function retryGenerationJob(jobId: string): Promise<void> {
     },
   });
   
-  console.log(`[AI Generator] Job ${jobId} queued for retry`);
   
   // TODO: Trigger actual regeneration via BullMQ
 }
+
+
 
 
 

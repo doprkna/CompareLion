@@ -1,42 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/options";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { publishEvent } from "@/lib/realtime";
 import { logPurchase } from "@/lib/activity";
 import { notify } from "@/lib/notify";
+import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError } from "@/lib/api-handler";
 
-export async function POST(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+export const POST = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  
+  if (!session?.user?.email) {
+    return unauthorizedError('Unauthorized');
+  }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, funds: true },
-    });
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true, funds: true },
+  });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+  if (!user) {
+    return notFoundError('User');
+  }
 
-    const { itemId } = await req.json();
+  const { itemId } = await req.json();
 
-    if (!itemId) {
-      return NextResponse.json({ error: "itemId required" }, { status: 400 });
-    }
+  if (!itemId) {
+    return validationError('itemId required');
+  }
 
-    // Get item details
-    const item = await prisma.item.findUnique({
-      where: { id: itemId },
-    });
+  // Get item details
+  const item = await prisma.item.findUnique({
+    where: { id: itemId },
+  });
 
-    if (!item) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
+  if (!item) {
+    return notFoundError('Item');
+  }
 
     // Calculate price (same logic as shop API)
     let price = 0;
@@ -51,14 +51,11 @@ export async function POST(req: NextRequest) {
     if (item.power) price += item.power * 2;
     if (item.defense) price += item.defense * 3;
 
-    // Check if user has enough funds
-    const userFunds = Number(user.funds);
-    if (userFunds < price) {
-      return NextResponse.json(
-        { error: "Insufficient funds", required: price, available: userFunds },
-        { status: 400 }
-      );
-    }
+  // Check if user has enough funds
+  const userFunds = Number(user.funds);
+  if (userFunds < price) {
+    return validationError(`Insufficient funds: need ${price}, have ${userFunds}`);
+  }
 
     // Deduct funds
     await prisma.user.update({
@@ -96,26 +93,18 @@ export async function POST(req: NextRequest) {
       `Spent ${price} gold`
     );
 
-    // Publish event
-    await publishEvent("purchase:complete", {
-      userId: user.id,
-      itemId: item.id,
-      itemName: item.name,
-      price,
-      newBalance: userFunds - price,
-    });
+  // Publish event
+  await publishEvent("purchase:complete", {
+    userId: user.id,
+    itemId: item.id,
+    itemName: item.name,
+    price,
+    newBalance: userFunds - price,
+  });
 
-    return NextResponse.json({
-      success: true,
-      item,
-      price,
-      newBalance: userFunds - price,
-    });
-  } catch (error) {
-    console.error("[API] Error processing purchase:", error);
-    return NextResponse.json(
-      { error: "Failed to process purchase" },
-      { status: 500 }
-    );
-  }
-}
+  return successResponse({
+    item,
+    price,
+    newBalance: userFunds - price,
+  });
+});

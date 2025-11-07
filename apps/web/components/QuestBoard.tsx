@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/apiBase";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/react";
-import { CheckCircle, Clock } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { useEventBus } from "@/hooks/useEventBus";
 
 export default function QuestBoard() {
@@ -130,6 +130,8 @@ export default function QuestBoard() {
     </Card>
   );
 }
+
+
 
 
 

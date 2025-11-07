@@ -6,7 +6,9 @@ import { apiFetch } from "@/lib/apiBase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Hammer, Sparkles, AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
+import { useRewardToast } from "@/hooks/useRewardToast"; // v0.26.9
+import { useCombatPreferences } from "@/hooks/useCombatPreferences"; // v0.26.13
+import { useSfx } from "@/hooks/useSfx"; // v0.26.13
 
 interface CraftingModalProps {
   show: boolean;
@@ -15,6 +17,9 @@ interface CraftingModalProps {
 }
 
 export default function CraftingModal({ show, onClose, onCraftComplete }: CraftingModalProps) {
+  const { pushToast } = useRewardToast(); // v0.26.9
+  const { preferences } = useCombatPreferences(); // v0.26.13
+  const { play, vibrate } = useSfx(preferences.soundEnabled, preferences.hapticsEnabled); // v0.26.13
   const [recipes, setRecipes] = useState<any[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
   const [crafting, setCrafting] = useState(false);
@@ -52,15 +57,28 @@ export default function CraftingModal({ show, onClose, onCraftComplete }: Crafti
       setResult(craftResult);
       
       if (craftResult.success) {
-        toast.success("Crafting successful! 🎉");
+        // v0.26.9 - Use unified toast system
+        pushToast({
+          type: 'craft',
+          message: `⚒️ Crafted ${craftResult.outputItem?.name || 'item'} successfully!`,
+        });
+        // Craft success sound (v0.26.13)
+        play('craft', 0.4);
+        vibrate([30, 20, 30]);
       } else {
-        toast.error("Crafting failed - materials lost!");
+        pushToast({
+          type: 'error',
+          message: 'Crafting failed - materials lost!',
+        });
       }
 
       if (onCraftComplete) onCraftComplete();
       loadRecipes(); // Refresh available recipes
     } else {
-      toast.error((res as any).error || "Crafting failed");
+      pushToast({
+        type: 'error',
+        message: (res as any).error || "Crafting failed",
+      });
     }
     setCrafting(false);
   }
@@ -317,6 +335,8 @@ export default function CraftingModal({ show, onClose, onCraftComplete }: Crafti
     </AnimatePresence>
   );
 }
+
+
 
 
 

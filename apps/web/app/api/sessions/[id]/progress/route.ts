@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
+import { safeAsync, notFoundError } from '@/lib/api-handler';
 
 // Get progress info for a session
-export async function GET(_req: Request, { params }: { params: { id: string } }) {
+export const GET = safeAsync(async (_req: NextRequest, { params }: { params: { id: string } }) => {
   const { id } = params;
   const session = await prisma.flowProgress.findUnique({
     where: { id },
@@ -12,7 +13,7 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
 	},
   });
   if (!session) {
-    return NextResponse.json({ success: false, message: 'Session not found.' }, { status: 404 });
+    return notFoundError('Session');
   }
   const total = session.flow.steps.length;
   const answered = session.answers.length;
@@ -23,5 +24,6 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
     total,
     answered,
     completed,
+    timestamp: new Date().toISOString(),
   });
-}
+});

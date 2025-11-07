@@ -15,7 +15,6 @@ export async function submitReport(data: {
   reason: string;
   description?: string;
 }) {
-  console.log("[Moderation] PLACEHOLDER: Would submit report", data);
   
   // PLACEHOLDER: Would execute
   // const report = await prisma.report.create({
@@ -47,10 +46,6 @@ export async function submitReport(data: {
  * Block user
  */
 export async function blockUser(userId: string, blockedUserId: string, reason?: string) {
-  console.log("[Moderation] PLACEHOLDER: Would block user", {
-    userId,
-    blockedUserId,
-  });
   
   // PLACEHOLDER: Would execute
   // await prisma.blockedUser.create({
@@ -72,10 +67,6 @@ export async function reviewContentWithAI(
   contentId: string,
   content: string
 ) {
-  console.log("[Moderation] PLACEHOLDER: Would review with AI", {
-    contentType,
-    contentId,
-  });
   
   // PLACEHOLDER: Would execute
   // const analysis = await analyzeContentSafety(content);
@@ -112,7 +103,6 @@ export async function takeModerationAction(data: {
   reportId?: string;
   isPublic?: boolean;
 }) {
-  console.log("[Moderation] PLACEHOLDER: Would take action", data);
   
   // PLACEHOLDER: Would execute
   // const expiresAt = data.duration
@@ -148,9 +138,6 @@ export async function takeModerationAction(data: {
  * Check for auto-suspension (repeat offenses)
  */
 export async function checkAutoSuspension(userId: string) {
-  console.log("[Moderation] PLACEHOLDER: Would check auto-suspension", {
-    userId,
-  });
   
   // PLACEHOLDER: Would execute
   // const recentReports = await prisma.report.count({
@@ -175,6 +162,8 @@ export async function checkAutoSuspension(userId: string) {
   //   });
   // }
 }
+
+
 
 
 

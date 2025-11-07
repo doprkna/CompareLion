@@ -14,7 +14,6 @@ export { runQueue };
 
 export async function enqueueRun(taskId: string, workflowId?: string) {
   if (!runQueue) {
-    console.log("Redis queue disabled. Skipping enqueueRun.");
     return;
   }
 

@@ -3,6 +3,7 @@ import { Worker } from 'bullmq';
 import { prisma } from '@parel/db/src/client';
 import { questionGenQueue, QuestionGenJob } from '@/lib/jobs/questionGen.queue';
 import { QGEN_DAILY_LIMIT } from '@/lib/config';
+import { logger } from '@/lib/logger';
 
 // Redis connection for scheduler
 const redisUrl = process.env.REDIS_URL ?? '';
@@ -53,4 +54,4 @@ export const schedulerWorker = new Worker(
   { connection }
 );
 
-schedulerWorker.on('error', err => console.error('Scheduler worker error:', err));
+schedulerWorker.on('error', err => logger.error('Scheduler worker error', err));

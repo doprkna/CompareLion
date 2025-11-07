@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { CHANGELOG_RULES, validateChangelogIntegrity } from '@/lib/changelogConfig';
+import { safeAsync } from '@/lib/api-handler';
 
 interface ChangelogEntry {
   version: string;
@@ -65,92 +66,66 @@ function parseChangelog(md: string): ChangelogEntry[] {
   return [...released, ...(showUnreleased ? unreleased : [])];
 }
 
-export async function GET() {
-  try {
-    // Try multiple possible paths for the changelog file
-    const possiblePaths = [
-      path.join(process.cwd(), 'CHANGELOG.md'),
-      path.join(process.cwd(), 'apps/web/CHANGELOG.md'),
-      path.join(process.cwd(), '..', 'CHANGELOG.md'),
-      path.join(process.cwd(), '..', '..', 'CHANGELOG.md')
-    ];
-    
-    let content = '';
-    let found = false;
-    
-    for (const changelogPath of possiblePaths) {
-      try {
-        if (fs.existsSync(changelogPath)) {
-          content = fs.readFileSync(changelogPath, 'utf-8');
-          found = true;
-          console.log(`Changelog loaded from: ${changelogPath}`);
-          break;
-        }
-      } catch (err) {
-        // Continue to next path
+export const GET = safeAsync(async (req: NextRequest) => {
+  // Try multiple possible paths for the changelog file
+  const possiblePaths = [
+    path.join(process.cwd(), 'CHANGELOG.md'),
+    path.join(process.cwd(), 'apps/web/CHANGELOG.md'),
+    path.join(process.cwd(), '..', 'CHANGELOG.md'),
+    path.join(process.cwd(), '..', '..', 'CHANGELOG.md')
+  ];
+  
+  let content = '';
+  let found = false;
+  
+  for (const changelogPath of possiblePaths) {
+    try {
+      if (fs.existsSync(changelogPath)) {
+        content = fs.readFileSync(changelogPath, 'utf-8');
+        found = true;
+        break;
       }
+    } catch (err) {
+      // Continue to next path
     }
-    
-    if (!found) {
-      console.error('Changelog file not found in any of:', possiblePaths);
-      return NextResponse.json({ 
-        success: false, 
-        entries: [],
-        error: 'Changelog file not found'
-      }, { status: 404 });
-    }
-    
-    // Debug logging
-    console.log("🪶 CHANGELOG RAW LENGTH:", content.length);
-    console.log("🪶 SAMPLE:", content.slice(0, 500));
-    
-    // 🧠 Changelog integrity validation
-    if (CHANGELOG_RULES.ENFORCE_LOCK && content.includes(CHANGELOG_RULES.LOCK_COMMENT)) {
-      const integrity = validateChangelogIntegrity(content);
-      
-      // Log warnings
-      if (integrity.warnings.length > 0) {
-        console.warn('⚠️  Changelog warnings:');
-        integrity.warnings.forEach(w => console.warn(`   - ${w}`));
-      }
-      
-      // Return error if integrity check fails
-      if (!integrity.valid) {
-        console.error('❌ Changelog integrity check failed:');
-        integrity.errors.forEach(e => console.error(`   - ${e}`));
-        
-        return NextResponse.json({
-          success: false,
-          entries: [],
-          error: 'Changelog integrity check failed',
-          details: integrity.errors,
-        }, { status: 400 });
-      }
-      
-      console.log('✅ Changelog integrity check passed');
-    }
-    
-    const entries = parseChangelog(content);
-    
-    console.log("🪶 PARSED BLOCKS:", entries.map(e => e.version));
-    
-    const response = NextResponse.json({ 
-      success: true, 
-      entries
-    });
-    
-    // Add cache-busting headers
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-    
-    return response;
-  } catch (error) {
-    console.error('Error parsing changelog:', error);
+  }
+  
+  if (!found) {
     return NextResponse.json({ 
       success: false, 
       entries: [],
-      error: error instanceof Error ? error.message : 'Failed to parse changelog'
-    }, { status: 500 });
+      error: 'Changelog file not found'
+    }, { status: 404 });
   }
-}
+  
+  // 🧠 Changelog integrity validation
+  if (CHANGELOG_RULES.ENFORCE_LOCK && content.includes(CHANGELOG_RULES.LOCK_COMMENT)) {
+    const integrity = validateChangelogIntegrity(content);
+    
+    // Return error if integrity check fails
+    if (!integrity.valid) {
+      return NextResponse.json({
+        success: false,
+        entries: [],
+        error: 'Changelog integrity check failed',
+        details: integrity.errors,
+        warnings: integrity.warnings,
+      }, { status: 400 });
+    }
+    
+  }
+  
+  const entries = parseChangelog(content);
+  
+  const response = NextResponse.json({ 
+    success: true, 
+    entries
+  });
+  
+  // Add cache-busting headers
+  response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
+  
+  return response;
+});

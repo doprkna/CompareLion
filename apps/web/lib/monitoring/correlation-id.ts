@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
+import { logger } from "@/lib/logger";
 
 export const CORRELATION_ID_HEADER = "x-correlation-id";
 
@@ -72,25 +73,23 @@ export class CorrelatedLogger {
   }
 
   log(message: string, ...args: any[]) {
-    console.log(`${this.getPrefix()} ${message}`, ...args);
+    logger.info(`${this.getPrefix()} ${message}`, ...args);
   }
 
   error(message: string, error?: Error, ...args: any[]) {
-    console.error(`${this.getPrefix()} ${message}`, error || "", ...args);
+    logger.error(`${this.getPrefix()} ${message}`, { error, ...args });
   }
 
   warn(message: string, ...args: any[]) {
-    console.warn(`${this.getPrefix()} ${message}`, ...args);
+    logger.warn(`${this.getPrefix()} ${message}`, ...args);
   }
 
   info(message: string, ...args: any[]) {
-    console.info(`${this.getPrefix()} ${message}`, ...args);
+    logger.info(`${this.getPrefix()} ${message}`, ...args);
   }
 
   debug(message: string, ...args: any[]) {
-    if (process.env.NODE_ENV !== "production") {
-      console.debug(`${this.getPrefix()} ${message}`, ...args);
-    }
+    logger.debug(`${this.getPrefix()} ${message}`, ...args);
   }
 }
 
@@ -100,6 +99,8 @@ export class CorrelatedLogger {
 export function createLogger(context: string): CorrelatedLogger {
   return new CorrelatedLogger(context);
 }
+
+
 
 
 

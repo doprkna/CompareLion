@@ -50,8 +50,7 @@ export type LocaleCode = keyof typeof SUPPORTED_LOCALES;
 /**
  * Get user's preferred locale
  */
-export async function getUserLocale(userId: string): Promise<string> {
-  console.log("[Locale] PLACEHOLDER: Would get user locale", { userId });
+export async function getUserLocale(_userId: string): Promise<string> {
   
   // PLACEHOLDER: Would execute
   // const preference = await prisma.languagePreference.findUnique({
@@ -66,11 +65,7 @@ export async function getUserLocale(userId: string): Promise<string> {
 /**
  * Set user's preferred locale
  */
-export async function setUserLocale(userId: string, locale: string) {
-  console.log("[Locale] PLACEHOLDER: Would set user locale", {
-    userId,
-    locale,
-  });
+export async function setUserLocale(_userId: string, _locale: string) {
   
   // PLACEHOLDER: Would execute
   // await prisma.languagePreference.upsert({
@@ -113,6 +108,8 @@ export function detectLocaleFromHeaders(
   
   return DEFAULT_LOCALE;
 }
+
+
 
 
 
