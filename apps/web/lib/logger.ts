@@ -77,22 +77,36 @@ class Logger {
     }
   }
 
+  private shouldLog(level: LogLevel): boolean {
+    const logLevel = process.env.LOG_LEVEL?.toLowerCase() || 'info';
+    const levels = ['debug', 'info', 'warn', 'error'];
+    const currentIndex = levels.indexOf(logLevel);
+    const messageIndex = levels.indexOf(level.toLowerCase());
+    return messageIndex >= currentIndex;
+  }
+
   debug(message: string, data?: any): void {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && this.shouldLog('DEBUG')) {
       this.output(this.format('DEBUG', message, data));
     }
   }
 
   info(message: string, data?: any): void {
-    this.output(this.format('INFO', message, data));
+    if (this.shouldLog('INFO')) {
+      this.output(this.format('INFO', message, data));
+    }
   }
 
   warn(message: string, data?: any): void {
-    this.output(this.format('WARN', message, data));
+    if (this.shouldLog('WARN')) {
+      this.output(this.format('WARN', message, data));
+    }
   }
 
   error(message: string, error?: any): void {
-    this.output(this.format('ERROR', message, error));
+    if (this.shouldLog('ERROR')) {
+      this.output(this.format('ERROR', message, error));
+    }
   }
 }
 

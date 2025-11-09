@@ -81,7 +81,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
           },
         });
 
-        userReactions = reactions.reduce((acc, r) => {
+        userReactions = (reactions || []).reduce((acc, r) => { // sanity-fix
           acc[r.targetId] = r.emoji;
           return acc;
         }, {} as Record<string, string>);
@@ -91,7 +91,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
     // Format feed items with reaction summary
     const formattedItems = feedItems.map((item) => {
       // Group reactions by emoji
-      const reactionSummary = item.reactions.reduce((acc, r) => {
+      const reactionSummary = (item.reactions || []).reduce((acc, r) => { // sanity-fix
         acc[r.emoji] = (acc[r.emoji] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
@@ -105,7 +105,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
         createdAt: item.createdAt,
         user: {
           id: item.user.id,
-          name: item.user.name || item.user.email.split("@")[0],
+          name: item.user.name || item.user.email?.split("@")[0] || 'Unknown', // sanity-fix
           image: item.user.image,
           level: item.user.level,
         },

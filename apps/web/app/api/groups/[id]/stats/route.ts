@@ -25,7 +25,7 @@ export const GET = safeAsync(async (req: NextRequest, ctx: { params: { id: strin
   // However, for private groups and non-members, we still allow summary stats but no member identities.
 
   const members = await prisma.groupMember.findMany({ where: { groupId: id }, select: { userId: true } });
-  const userIds = members.map((m) => m.userId);
+  const userIds = (members || []).map((m) => m.userId); // sanity-fix
 
   if (userIds.length === 0) {
     return NextResponse.json({ success: true, stats: { totalXP: 0, reflections: 0, avgLevel: 0, memberCount: 0 } });
@@ -36,8 +36,8 @@ export const GET = safeAsync(async (req: NextRequest, ctx: { params: { id: strin
     select: { xp: true, level: true },
   });
 
-  const totalXP = users.reduce((sum, u) => sum + (u.xp || 0), 0);
-  const avgLevel = Math.round(users.reduce((sum, u) => sum + (u.level || 0), 0) / users.length);
+  const totalXP = (users || []).reduce((sum, u) => sum + (u.xp || 0), 0); // sanity-fix
+  const avgLevel = (users || []).length > 0 ? Math.round((users || []).reduce((sum, u) => sum + (u.level || 0), 0) / (users || []).length) : 0; // sanity-fix
 
   const reflections = await prisma.userReflection.count({ where: { userId: { in: userIds } } });
 

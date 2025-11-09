@@ -44,7 +44,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
       const latestFile = integrityFiles[0];
       const filepath = join(logsDir, latestFile);
       const content = await readFile(filepath, 'utf-8');
-      const summary = JSON.parse(content);
+      let summary; // sanity-fix
+      try { // sanity-fix
+        summary = JSON.parse(content); // sanity-fix
+      } catch { // sanity-fix
+        return successResponse({ available: false, message: 'Invalid JSON in integrity file' }); // sanity-fix
+      } // sanity-fix
       
       return successResponse({
         available: true,
@@ -58,8 +63,8 @@ export const GET = safeAsync(async (req: NextRequest) => {
           modelsWithFkBroken: summary.modelsWithFkBroken,
         },
         // Include sample results (first 10 models)
-        sampleResults: summary.results.slice(0, 10),
-        totalResults: summary.results.length,
+        sampleResults: (summary.results || []).slice(0, 10), // sanity-fix
+        totalResults: summary.results?.length || 0, // sanity-fix
       });
     } catch (dirError) {
       // Logs directory might not exist

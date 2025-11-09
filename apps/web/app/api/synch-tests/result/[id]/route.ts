@@ -29,7 +29,7 @@ export const GET = safeAsync(async (req: NextRequest, ctx: { params: { id: strin
     return NextResponse.json({
       success: true,
       status: userTest.status,
-      test: { title: userTest.test.title, description: userTest.test.description },
+      test: { title: userTest.test?.title || 'Test', description: userTest.test?.description || '' }, // sanity-fix
     });
   }
 

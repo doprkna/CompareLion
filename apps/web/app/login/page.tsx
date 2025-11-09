@@ -15,10 +15,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(false);
   
-  // Redirect if already logged in
+  // Redirect if already logged in (v0.35.9 - redirect to landing)
   useEffect(() => {
     if (status === 'authenticated' && session) {
-      router.push('/main');
+      router.push('/landing');
     }
   }, [status, session, router]);
 
@@ -71,8 +71,8 @@ export default function LoginPage() {
       }
       
       if (result?.ok) {
-        // Login successful - redirect to main
-        router.push('/main');
+        // Login successful - redirect to landing (v0.35.9)
+        router.push('/landing');
         router.refresh(); // Refresh to update session
       } else {
         setError('Login failed. Please try again.');

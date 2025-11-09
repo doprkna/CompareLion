@@ -4,6 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { UserRole, QuestionType } from "@parel/db/client";
 import { hash } from "bcryptjs";
+import { seedAchievements } from "@/lib/seed-achievements";
 
 // Utility to log audit
 async function logAudit(type: string, message: string, meta?: any, userId?: string) {
@@ -211,6 +212,10 @@ export async function POST() {
     const users = await seedUsers();
     const messagesCount = await seedMessages(users);
     const questionsCount = await seedQuestions();
+    
+    // Seed achievements (v0.35.7)
+    await seedAchievements();
+    const achievementsCount = await prisma.achievement.count();
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
@@ -222,6 +227,7 @@ export async function POST() {
         users: users.length,
         messages: messagesCount,
         questions: questionsCount,
+        achievements: achievementsCount,
         duration: `${duration}s`,
       },
       session.user.id
@@ -236,6 +242,7 @@ export async function POST() {
           users: users.length,
           messages: messagesCount,
           questions: questionsCount,
+          achievements: achievementsCount,
           duration: `${duration}s`,
         },
       },
@@ -248,6 +255,7 @@ export async function POST() {
         users: users.length,
         messages: messagesCount,
         questions: questionsCount,
+        achievements: achievementsCount,
         duration: `${duration}s`,
       },
     });

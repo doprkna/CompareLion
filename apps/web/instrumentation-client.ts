@@ -10,8 +10,8 @@ export const onRouterTransitionStart = process.env.NEXT_PUBLIC_SENTRY_DSN
   ? Sentry.captureRouterTransitionStart 
   : undefined;
 
-// Initialize Sentry for client-side monitoring
-if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
+// Initialize Sentry for client-side monitoring (production only - v0.35.7)
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
   Sentry.init({
       dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
       

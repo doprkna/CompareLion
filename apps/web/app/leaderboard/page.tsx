@@ -122,7 +122,7 @@ export default function LeaderboardPage() {
   }
 
   function renderUserTable(data: LeaderboardData | null, showStreak = false) {
-    if (!data || data.leaderboard.length === 0) {
+    if (!data || !data.leaderboard || data.leaderboard.length === 0) {
       return (
         <div className="p-12 text-center text-subtle">
           <Trophy className="h-16 w-16 mx-auto mb-4 opacity-30" />

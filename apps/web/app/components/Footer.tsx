@@ -64,22 +64,30 @@ export default function Footer() {
     fetchVersion();
   }, [refreshKey]);
 
+  const isDev = process.env.NODE_ENV === 'development';
+
   return (
-    <footer className="bg-card border-t border-border text-center py-2 text-sm text-subtle" key={`${version}-${refreshKey}-${lastFetch}`}>
-      Version: {version || 'N/A'}
-      {process.env.NODE_ENV === 'development' && (
-        <span className="ml-2">
-          <button 
-            onClick={() => setRefreshKey(prev => prev + 1)}
-            className="text-xs text-accent hover:underline"
-            title="Refresh version"
-          >
-            🔄
-          </button>
-          <span className="ml-1 text-xs text-muted">
-            (key: {refreshKey}, fetch: {lastFetch})
-          </span>
-        </span>
+    <footer 
+      className="fixed bottom-0 left-0 px-3 py-1.5 text-xs bg-white/90 text-blue-600 backdrop-blur-sm hover:opacity-80 transition-opacity z-50"
+      key={`${version}-${refreshKey}-${lastFetch}`}
+    >
+      <span className="font-medium">
+        Version: {version || 'N/A'}
+        {isDev && (
+          <>
+            <span className="mx-1.5">–</span>
+            <span className="text-blue-500">DEV MODE (check console)</span>
+          </>
+        )}
+      </span>
+      {isDev && (
+        <button 
+          onClick={() => setRefreshKey(prev => prev + 1)}
+          className="ml-2 text-blue-400 hover:text-blue-600 transition-colors"
+          title="Refresh version"
+        >
+          🔄
+        </button>
       )}
     </footer>
   );

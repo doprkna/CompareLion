@@ -96,7 +96,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
     const comparison = {
       currentUser: {
         id: currentUser.id,
-        name: currentUser.name || currentUser.email.split('@')[0],
+        name: currentUser.name || currentUser.email?.split('@')[0] || 'Unknown', // sanity-fix
         email: currentUser.email,
         image: currentUser.image,
         level: currentUser.level,
@@ -114,11 +114,11 @@ export const GET = safeAsync(async (req: NextRequest) => {
           knowledge: currentUser.statKnowledge,
           creativity: currentUser.statCreativity,
         },
-        achievementCount: currentUser.userAchievements.length,
+        achievementCount: currentUser.userAchievements?.length || 0, // sanity-fix
       },
       targetUser: {
         id: targetUser.id,
-        name: targetUser.name || targetUser.email.split('@')[0],
+        name: targetUser.name || targetUser.email?.split('@')[0] || 'Unknown', // sanity-fix
         email: targetUser.email,
         image: targetUser.image,
         level: targetUser.level,
@@ -136,7 +136,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
           knowledge: targetUser.statKnowledge,
           creativity: targetUser.statCreativity,
         },
-        achievementCount: targetUser.userAchievements.length,
+        achievementCount: targetUser.userAchievements?.length || 0, // sanity-fix
       },
   };
 

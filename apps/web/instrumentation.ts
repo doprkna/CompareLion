@@ -11,12 +11,12 @@ export async function register() {
     try {
       const { registerAllCronJobs } = await import('@/lib/cron/config');
       registerAllCronJobs();
-      logger.info('[Cron] Registered all cron jobs');
+      // logger.info('[Cron] Registered all cron jobs'); // Disabled in v0.35.7
     } catch (err) {
       logger.warn('[Cron] Failed to register cron jobs:', err);
     }
-    // Initialize Sentry for server-side monitoring
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    // Initialize Sentry for server-side monitoring (production only - v0.35.7)
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
       const Sentry = await import('@sentry/nextjs');
       
       Sentry.init({
@@ -51,21 +51,21 @@ export async function register() {
       });
     }
     
-    // Server startup message (development only)
-    if (process.env.NODE_ENV === 'development') {
-      const port = process.env.PORT || 3000;
-      const env = process.env.NODE_ENV || 'development';
-      
-      logger.info('\n🟢 ═══════════════════════════════════════════════════');
-      logger.info(`🟢 PareL App online at http://localhost:${port}`);
-      logger.info(`🟢 Environment: ${env}`);
-      logger.info('🟢 ═══════════════════════════════════════════════════\n');
-    }
+    // Server startup message (disabled in v0.35.7 to reduce console spam)
+    // if (process.env.NODE_ENV === 'development') {
+    //   const port = process.env.PORT || 3000;
+    //   const env = process.env.NODE_ENV || 'development';
+    //   
+    //   logger.info('\n🟢 ═══════════════════════════════════════════════════');
+    //   logger.info(`🟢 PareL App online at http://localhost:${port}`);
+    //   logger.info(`🟢 Environment: ${env}`);
+    //   logger.info('🟢 ═══════════════════════════════════════════════════\n');
+    // }
   }
   
-  // Edge runtime initialization
+  // Edge runtime initialization (production only - v0.35.7)
   if (process.env.NEXT_RUNTIME === 'edge') {
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
       const Sentry = await import('@sentry/nextjs');
       
       Sentry.init({

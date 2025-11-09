@@ -161,7 +161,7 @@ export default function FeedPage() {
 
   const onReact = useCallback((id: string, type: 'like' | 'laugh' | 'think') => {
     // optimistic update
-    setItems(prev => prev.map(it => {
+    setItems(prev => (prev || []).map(it => { // sanity-fix
       if (it.id !== id) return it;
       if (type === 'like') return { ...it, reactionsLike: it.reactionsLike + 1 };
       if (type === 'laugh') return { ...it, reactionsLaugh: it.reactionsLaugh + 1 };
@@ -171,8 +171,8 @@ export default function FeedPage() {
   }, [sendReaction]);
 
   const sortedItems = useMemo(() => {
-    if (sortMode === 'recent') return items;
-    return [...items].sort((a, b) => {
+    if (sortMode === 'recent') return items || []; // sanity-fix
+    return [...(items || [])].sort((a, b) => { // sanity-fix
       const sa = a.reactionsLike + a.reactionsLaugh + a.reactionsThink;
       const sb = b.reactionsLike + b.reactionsLaugh + b.reactionsThink;
       return sb - sa;
@@ -270,7 +270,7 @@ export default function FeedPage() {
                 </div>
               )}
               <ul className="mb-3 space-y-1 text-slate-700">
-                {item.answers.slice(0, 2).map((a, idx) => (
+                {(item.answers || []).slice(0, 2).map((a, idx) => ( // sanity-fix
                   <li key={idx} className="pl-2">• {a}</li>
                 ))}
               </ul>

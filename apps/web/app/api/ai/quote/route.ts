@@ -21,7 +21,13 @@ interface Quote {
 // Load quotes once at module initialization (outside hot path)
 const quotesPath = path.join(process.cwd(), 'data', 'quotes.json');
 const quotesData = fs.readFileSync(quotesPath, 'utf-8');
-const { quotes }: { quotes: Quote[] } = JSON.parse(quotesData);
+let quotes: Quote[] = []; // sanity-fix
+try { // sanity-fix
+  const parsed = JSON.parse(quotesData); // sanity-fix
+  quotes = parsed.quotes || []; // sanity-fix
+} catch { // sanity-fix
+  quotes = []; // sanity-fix
+} // sanity-fix
 
 /**
  * GET /api/ai/quote

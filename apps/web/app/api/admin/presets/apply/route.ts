@@ -51,7 +51,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
 
   // Apply modifiers to balance settings
   const modifiers = preset.modifiers as Record<string, number>;
-  const updatePromises = Object.entries(modifiers).map(([key, value]) =>
+  const updatePromises = Object.entries(modifiers || {}).map(([key, value]) => // sanity-fix
     prisma.balanceSetting.upsert({
       where: { key },
       update: { value },

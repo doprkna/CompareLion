@@ -2,6 +2,11 @@ const { withSentryConfig } = require('@sentry/nextjs');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Environment variables
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL || "http://localhost:3001",
+  },
+  
   // Transpile monorepo packages
   transpilePackages: ['@parel/db'],
   

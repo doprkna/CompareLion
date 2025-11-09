@@ -221,7 +221,7 @@ export function AmbientManager({ mode, className = '' }: AmbientManagerProps) {
   return (
     <motion.div
       className={`fixed inset-0 -z-10 ${className}`}
-      initial={previousMode ? { opacity: 1 } : false}
+      initial={{ opacity: 0 }}
       animate={{
         background: gradient,
         opacity: 1,
@@ -236,4 +236,5 @@ export function AmbientManager({ mode, className = '' }: AmbientManagerProps) {
     </motion.div>
   );
 }
+
 

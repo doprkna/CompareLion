@@ -12,10 +12,10 @@ export default function SignupPage() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   
-  // Redirect if already logged in
+  // Redirect if already logged in (v0.35.9 - redirect to landing)
   useEffect(() => {
     if (status === 'authenticated' && session) {
-      router.push('/main');
+      router.push('/landing');
     }
   }, [status, session, router]);
 

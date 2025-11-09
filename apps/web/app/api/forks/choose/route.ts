@@ -76,7 +76,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
   }
 
   const effect = parsed.data.choice === 'A' ? fork.effectA : fork.effectB;
-  const effectData = typeof effect === 'object' ? effect : JSON.parse(effect || '{}');
+  const effectData = typeof effect === 'object' ? effect : (() => { try { return JSON.parse(effect || '{}'); } catch { return {}; } })(); // sanity-fix
 
   const { summary, changes } = applyEffect(user, effectData);
 

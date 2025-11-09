@@ -14,7 +14,7 @@ export default function GroupsPage() {
       {loading && <div>Loading…</div>}
       {error && <div className="text-red-600 text-sm">{error}</div>}
       <div className="grid gap-3">
-        {groups.map((g) => (
+        {(groups || []).map((g) => ( // sanity-fix
           <GroupCard key={g.id} id={g.id} name={g.name} description={g.description} visibility={g.visibility} transparency={g.transparency} role={g.role} />
         ))}
       </div>

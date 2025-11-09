@@ -28,10 +28,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
   });
 
   // Parse metadata JSON strings
-  const parsedActivities = activities.map((activity: any) => ({
+  const parsedActivities = activities.map((activity: any) => ({ // sanity-fix
     ...activity,
     metadata: activity.metadata 
-      ? (typeof activity.metadata === 'string' ? JSON.parse(activity.metadata) : activity.metadata)
+      ? (typeof activity.metadata === 'string' 
+        ? (() => { try { return JSON.parse(activity.metadata); } catch { return null; } })() // sanity-fix
+        : activity.metadata)
       : null,
   }));
 

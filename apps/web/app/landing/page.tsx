@@ -25,15 +25,12 @@ export default function LandingPage() {
   const [email, setEmail] = useState('');
   const [userData, setUserData] = useState<any>(null);
 
-  // Check skipLandingAfterLogin preference
+  // Fetch user data when authenticated (v0.35.9 - removed auto-redirect to /main)
   useEffect(() => {
     if (status === 'authenticated' && session) {
-      const skipLanding = localStorage.getItem('skipLandingAfterLogin') === 'true';
-      if (skipLanding) {
-        router.replace('/main');
-        return;
-      }
-
+      // Note: skipLandingAfterLogin preference removed - users can now access landing page freely
+      // They can still navigate to /main via "Continue to Dashboard" button or nav menu
+      
       // Fetch user data for stats display
       fetchUserData();
     }
@@ -42,6 +39,11 @@ export default function LandingPage() {
   const fetchUserData = async () => {
     try {
       const res = await fetch('/api/me');
+      if (res.status === 401) {
+        console.warn('Session expired on landing page'); // sanity-fix
+        // Don't redirect - landing page can be accessed without auth
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         setUserData(data);
@@ -73,7 +75,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg via-card to-bg">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-lg border-b border-border">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">

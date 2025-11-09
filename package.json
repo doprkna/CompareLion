@@ -17,7 +17,7 @@
     "prisma:migrate:deploy": "prisma migrate deploy --schema=packages/db/schema.prisma",
     "prisma:db:pull": "prisma db pull --schema=packages/db/schema.prisma",
     "generate:prisma": "node scripts/gen-prisma.js",
-    "dev": "concurrently \"pnpm run dev:web\" \"pnpm run dev:worker\"",
+    "dev": "node scripts/dev-port-guard.js",
     "dev:web": "cd apps/web && pnpm run dev",
     "dev:worker": "cd apps/worker && pnpm run dev",
     "build": "pnpm run generate:prisma && pnpm run build:web",

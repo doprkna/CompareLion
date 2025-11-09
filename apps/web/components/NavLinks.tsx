@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -38,6 +38,7 @@ export default function NavLinks() {
   }, [session]);
 
   const coreLinks = [
+    { href: "/landing", label: "Landing", locked: false },
     { href: "/main", label: "Home", locked: false },
     { href: "/flow-demo", label: "Play", locked: false },
     { href: "/friends", label: "Social", locked: false },
@@ -50,11 +51,7 @@ export default function NavLinks() {
     { href: "/invite", label: "Invite Friends" },
   ];
 
-  // Experimental features - hidden for public beta v0.13.2p
-  const lockedFeatures = [
-    // { href: "/guilds", label: "Guilds", unlockLevel: 10, tooltip: "Join guilds to collaborate with others" },
-    // { href: "/market", label: "Market", unlockLevel: 5, tooltip: "Trade items with other players" },
-  ];
+  const lockedFeatures = [];
 
   const infoLinks = [
     { href: "/changelog", label: "Changelog" },
@@ -79,7 +76,6 @@ export default function NavLinks() {
   return (
     <TooltipProvider>
       <div className="flex items-center gap-4">
-        {/* Core Navigation */}
         {coreLinks.map((link) => (
           <Link
             key={link.href}
@@ -90,8 +86,7 @@ export default function NavLinks() {
           </Link>
         ))}
 
-        {/* Locked Features */}
-        {lockedFeatures.map((feature) => {
+        {lockedFeatures.map((feature: any) => {
           const isUnlocked = isDev || userLevel >= feature.unlockLevel || userRole === "ADMIN";
 
           if (isUnlocked) {
@@ -117,14 +112,13 @@ export default function NavLinks() {
               <TooltipContent className="bg-card border-border">
                 <p className="text-xs font-medium">{feature.tooltip}</p>
                 <p className="text-[10px] text-subtle mt-1">
-                  🔒 Unlock at Level {feature.unlockLevel}
+                  Unlock at Level {feature.unlockLevel}
                 </p>
               </TooltipContent>
             </Tooltip>
           );
         })}
 
-      {/* Community Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger className="text-text hover:text-accent font-medium transition-colors flex items-center gap-1">
           Community
@@ -141,7 +135,6 @@ export default function NavLinks() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Info Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger className="text-text hover:text-accent font-medium transition-colors flex items-center gap-1">
           Info
@@ -158,7 +151,6 @@ export default function NavLinks() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-        {/* Admin Links (if admin) */}
         {userRole === "ADMIN" && (
           <DropdownMenu>
             <DropdownMenuTrigger className="text-destructive hover:text-destructive/80 font-bold transition-colors flex items-center gap-1">
@@ -180,6 +172,3 @@ export default function NavLinks() {
     </TooltipProvider>
   );
 }
-
-
-

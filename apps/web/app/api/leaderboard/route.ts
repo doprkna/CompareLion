@@ -75,7 +75,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
           currentUser: currentUser ? {
             ...currentUser,
             rank: 0,
-            displayName: currentUser.name || currentUser.email.split('@')[0],
+            displayName: currentUser.name || currentUser.email?.split('@')[0] || 'Unknown', // sanity-fix
           } : null,
           type,
         });
@@ -148,7 +148,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
   const leaderboard = topUsers.map((user, index) => ({
     ...user,
     rank: index + 1,
-    displayName: user.name || user.email.split('@')[0],
+    displayName: user.name || user.email?.split('@')[0] || 'Unknown', // sanity-fix
   }));
 
   // Get current user's position if logged in
@@ -186,7 +186,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
       currentUserData = {
         ...currentUser,
         rank: usersAbove + 1,
-        displayName: currentUser.name || currentUser.email.split('@')[0],
+        displayName: currentUser.name || currentUser.email?.split('@')[0] || 'Unknown', // sanity-fix
       };
     }
   }

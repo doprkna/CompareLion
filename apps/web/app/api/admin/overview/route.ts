@@ -59,7 +59,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
     return forbiddenError("Admin access required");
   }
 
-  // Run all aggregation queries in parallel for better performance
+  // Run all aggregation queries in parallel for better performance (v0.35.9 - fixed table names)
   const [
     users,
     questions,
@@ -70,12 +70,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
     worldEvents,
   ] = await Promise.all([
     prisma.user.count(),
-    prisma.question.count(),
+    prisma.flowQuestion.count(), // Fixed: was prisma.question
     prisma.achievement.count(),
     prisma.item.count(),
     prisma.message.count(),
     prisma.notification.count(),
-    prisma.worldEvent.count(),
+    prisma.globalEvent.count({ where: { active: true } }), // Fixed: was prisma.worldEvent
   ]);
 
   const overview: AdminOverview = {

@@ -183,7 +183,7 @@ export default function AdminUsers() {
                       <td className="p-4">
                         <div>
                           <div className="font-medium">
-                            {user.name || user.email.split('@')[0]}
+                            {user.name || user.email?.split('@')[0] || 'Unknown'} {/* sanity-fix */}
                           </div>
                           <div className="text-sm text-muted-foreground">
                             {user.email}
@@ -200,10 +200,10 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td className="p-4 font-mono">
-                        {user.xp.toLocaleString()}
+                        {(user.xp ?? 0).toLocaleString()} {/* sanity-fix */}
                       </td>
                       <td className="p-4 font-mono">
-                        {Number(user.funds).toFixed(2)}
+                        {Number(user.funds ?? 0).toFixed(2)} {/* sanity-fix */}
                       </td>
                       <td className="p-4 font-mono">
                         {user.diamonds}
@@ -245,7 +245,7 @@ export default function AdminUsers() {
           <Card>
             <CardContent className="p-4">
               <div className="text-2xl font-bold">
-                {users.reduce((sum, user) => sum + user.xp, 0).toLocaleString()}
+                {(users || []).reduce((sum, user) => sum + (user.xp ?? 0), 0).toLocaleString()} {/* sanity-fix */}
               </div>
               <div className="text-sm text-muted-foreground">Total XP</div>
             </CardContent>
@@ -253,7 +253,7 @@ export default function AdminUsers() {
           <Card>
             <CardContent className="p-4">
               <div className="text-2xl font-bold">
-                {users.reduce((sum, user) => sum + user.questionsAnswered, 0)}
+                {(users || []).reduce((sum, user) => sum + (user.questionsAnswered ?? 0), 0)} {/* sanity-fix */}
               </div>
               <div className="text-sm text-muted-foreground">Questions Answered</div>
             </CardContent>

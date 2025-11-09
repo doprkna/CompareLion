@@ -53,7 +53,7 @@ export default function ChallengesPage() {
       
       // Load progress from localStorage
       const savedProgress = localStorage.getItem('challenge_progress');
-      const progressData = savedProgress ? JSON.parse(savedProgress) : {};
+      const progressData = savedProgress ? (() => { try { return JSON.parse(savedProgress); } catch { return {}; } })() : {}; // sanity-fix
 
       // Merge API data with saved progress
       const today = new Date().toDateString();
@@ -72,13 +72,13 @@ export default function ChallengesPage() {
       }
 
       // Apply saved progress
-      apiData.daily = apiData.daily.map((c: Challenge) => ({
+      apiData.daily = (apiData.daily || []).map((c: Challenge) => ({ // sanity-fix
         ...c,
         progress: progressData.daily?.[c.id] || 0,
         completed: (progressData.daily?.[c.id] || 0) >= c.target,
       }));
 
-      apiData.weekly = apiData.weekly.map((c: Challenge) => ({
+      apiData.weekly = (apiData.weekly || []).map((c: Challenge) => ({ // sanity-fix
         ...c,
         progress: progressData.weekly?.[c.id] || 0,
         completed: (progressData.weekly?.[c.id] || 0) >= c.target,

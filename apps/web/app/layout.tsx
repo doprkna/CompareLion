@@ -1,10 +1,8 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
-import NavLinks from "@/components/NavLinks";
-import AuthStatus from './components/AuthStatus';
 import Footer from './components/Footer';
 import EnvStamp from "@/components/EnvStamp";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -15,7 +13,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from 'sonner';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { XpProvider } from "@/components/XpProvider";
-import { AuthenticatedXpBar } from "@/components/AuthenticatedXpBar";
 import { StagingBanner } from "@/components/StagingBanner";
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/config';
 import { PWAProvider } from '@/components/PWAProvider';
@@ -26,6 +23,7 @@ import MiniPlayer from '@/components/media/MiniPlayer';
 import { LocaleProvider, useLocale } from '@/lib/i18n/useLocale';
 import FooterLocaleToggle from '@/components/FooterLocaleToggle';
 import LocaleHeaderChip from '@/components/LocaleHeaderChip';
+import { ConditionalNav } from '@/components/ConditionalNav';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -109,15 +107,7 @@ export default function RootLayout({
                     <StagingBanner />
                     <RouteProgress />
                     <MobileNav />
-                    <nav className="bg-card shadow-sm border-b border-border mb-6 hidden md:block">
-                      <div className="flex items-center justify-between px-6 py-3">
-                        <NavLinks />
-                        <div className="flex items-center gap-4">
-                          <AuthenticatedXpBar />
-                          <AuthStatus />
-                        </div>
-                      </div>
-                    </nav>
+                    <ConditionalNav />
                     {children}
                     <EnvStamp />
                     <div className="border-t">
@@ -143,4 +133,3 @@ export default function RootLayout({
     </html>
   );
 }
-

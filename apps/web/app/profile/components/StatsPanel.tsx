@@ -99,11 +99,11 @@ export default function StatsPanel() {
           <div className="w-full bg-bg rounded-full h-3 mb-2 overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-accent to-accent/70 transition-all duration-300"
-              style={{ width: `${xpProgress.progress * 100}%` }}
+              style={{ width: `${(xpProgress?.progress ?? 0) * 100}%` }}
             />
           </div>
           <div className="text-xs text-subtle text-center">
-            {xpProgress.currentXP} / {xpProgress.requiredXP} XP
+            {xpProgress?.currentXP ?? 0} / {xpProgress?.requiredXP ?? 100} XP {/* sanity-fix */}
           </div>
         </div>
 

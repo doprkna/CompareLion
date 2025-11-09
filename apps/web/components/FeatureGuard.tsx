@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Feature Guard Component
  * Conditionally renders content based on feature flags
- * v0.13.2p - Public Beta Release
+ * v0.35.7 - Fixed Router warning by moving redirect to useEffect
  */
 
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { FEATURES, isFeatureEnabled } from '@/lib/config';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,10 +27,18 @@ export function FeatureGuard({
   redirectTo,
 }: FeatureGuardProps) {
   const router = useRouter();
+  const featureEnabled = isFeatureEnabled(feature);
 
-  if (!isFeatureEnabled(feature)) {
+  // Handle redirect in useEffect to avoid \"Cannot update a component while rendering\" warning
+  useEffect(() => {
+    if (!featureEnabled && redirectTo) {
+      router.push(redirectTo); // sanity-fix
+    }
+  }, [featureEnabled, redirectTo, router]);
+
+  if (!featureEnabled) {
+    // If redirecting, show nothing (useEffect will handle redirect)
     if (redirectTo) {
-      router.push(redirectTo);
       return null;
     }
 
@@ -40,15 +48,15 @@ export function FeatureGuard({
 
     // Default fallback UI
     return (
-      <div className="min-h-screen bg-bg flex items-center justify-center p-6">
-        <Card className="max-w-md w-full">
-          <CardContent className="p-8 text-center space-y-4">
-            <Construction className="h-16 w-16 mx-auto text-subtle opacity-50" />
-            <h1 className="text-2xl font-bold text-text">Coming Soon</h1>
-            <p className="text-subtle">
+      <div className=\"min-h-screen bg-bg flex items-center justify-center p-6\">
+        <Card className=\"max-w-md w-full\">
+          <CardContent className=\"p-8 text-center space-y-4\">
+            <Construction className=\"h-16 w-16 mx-auto text-subtle opacity-50\" />
+            <h1 className=\"text-2xl font-bold text-text\">Coming Soon</h1>
+            <p className=\"text-subtle\">
               This feature is currently under development and not available in the public beta.
             </p>
-            <Button onClick={() => router.push('/main')} variant="outline">
+            <Button onClick={() => router.push('/main')} variant=\"outline\">
               Back to Home
             </Button>
           </CardContent>
@@ -66,4 +74,3 @@ export function FeatureGuard({
 export function useFeature(feature: keyof typeof FEATURES): boolean {
   return isFeatureEnabled(feature);
 }
-

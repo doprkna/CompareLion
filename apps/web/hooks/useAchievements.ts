@@ -53,15 +53,30 @@ export function useAchievements(): UseAchievementsReturn {
 
       // Fetch grouped by categories
       const res = await fetch('/api/achievements?categories=true');
+      
+      // Handle 401 gracefully (v0.35.7)
+      if (res.status === 401) {
+        setError('Authentication required. Please log in.');
+        return;
+      }
+      
+      if (!res.ok) {
+        setError(`Failed to fetch achievements (HTTP ${res.status})`);
+        return;
+      }
+
       const data = await res.json();
 
-      if (data.success && data.achievements) {
+      // API returns: { success: true, data: { achievements: {...} } }
+      if (data.success && data.data?.achievements) {
+        const achievementsData = data.data.achievements;
         // Flatten categories into single array
-        const allAchievements: Achievement[] = Object.values(data.achievements).flat() as Achievement[];
+        const allAchievements: Achievement[] = Object.values(achievementsData).flat() as Achievement[];
         setAchievements(allAchievements);
-        setCategories(data.achievements);
+        setCategories(achievementsData);
       } else {
         setError(data.error || 'Failed to fetch achievements');
+        console.error('[useAchievements] Invalid response:', data);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error');

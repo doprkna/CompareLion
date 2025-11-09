@@ -61,7 +61,7 @@ export const GET = safeAsync(async (
         });
 
         // Convert BigInt and Date to JSON-serializable format
-        const sanitized = records.map((record: any) => {
+        const sanitized = (records || []).map((record: any) => { // sanity-fix
           const sanitized: any = {};
           for (const [key, value] of Object.entries(record)) {
             if (typeof value === 'bigint') {

@@ -30,7 +30,7 @@ export const GET = safeAsync(async (_req: NextRequest) => {
   // Parse meta JSON strings back to objects
   const parsedLogs = logs.map(log => ({
     ...log,
-    meta: log.meta ? (typeof log.meta === 'string' ? JSON.parse(log.meta) : log.meta) : null,
+    meta: log.meta ? (typeof log.meta === 'string' ? (() => { try { return JSON.parse(log.meta); } catch { return null; } })() : log.meta) : null, // sanity-fix
   }));
 
   return NextResponse.json({

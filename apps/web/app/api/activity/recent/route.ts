@@ -33,7 +33,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
     ...activity,
     metadata: activity.metadata
       ? typeof activity.metadata === 'string'
-        ? JSON.parse(activity.metadata)
+        ? (() => { try { return JSON.parse(activity.metadata); } catch { return null; } })() // sanity-fix
         : activity.metadata
       : null,
   }));

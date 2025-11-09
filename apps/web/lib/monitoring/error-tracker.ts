@@ -53,8 +53,8 @@ export function captureError(
     ...fullContext,
   });
 
-  // Send to Sentry if configured
-  if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+  // Send to Sentry if configured (production only - v0.35.7)
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
     Sentry.captureException(error, {
       level: severity as any,
       contexts: {
@@ -89,7 +89,7 @@ export function captureMessage(
   };
 
 
-  if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
     Sentry.captureMessage(message, {
       level: severity as any,
       contexts: {

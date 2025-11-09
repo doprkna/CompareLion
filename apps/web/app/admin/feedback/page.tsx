@@ -148,9 +148,9 @@ export default function AdminFeedbackPage() {
       // Search query
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matchesTitle = item.title.toLowerCase().includes(query);
-        const matchesDescription = item.description.toLowerCase().includes(query);
-        const matchesUser = item.user?.email.toLowerCase().includes(query) || item.user?.name?.toLowerCase().includes(query);
+        const matchesTitle = item.title?.toLowerCase().includes(query); // sanity-fix
+        const matchesDescription = item.description?.toLowerCase().includes(query); // sanity-fix
+        const matchesUser = item.user?.email?.toLowerCase().includes(query) || item.user?.name?.toLowerCase().includes(query);
         
         if (!matchesTitle && !matchesDescription && !matchesUser) {
           return false;

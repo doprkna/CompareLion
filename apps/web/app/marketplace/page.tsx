@@ -24,11 +24,11 @@ export default function MarketplacePage() {
 
   // Filter items by category
   const filteredItems = activeCategory === 'all' 
-    ? items 
-    : items.filter(item => item.category === activeCategory);
+    ? (items || []) // sanity-fix
+    : (items || []).filter(item => item.category === activeCategory); // sanity-fix
 
   // Create wallet balance map
-  const walletBalances = wallets.reduce((acc, wallet) => {
+  const walletBalances = (wallets || []).reduce((acc, wallet) => { // sanity-fix
     acc[wallet.currencyKey] = wallet.balance;
     return acc;
   }, {} as Record<string, number>);

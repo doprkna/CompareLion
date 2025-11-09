@@ -20,7 +20,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
   const fs = await prisma.fireside.findUnique({ where: { id: parsed.data.firesideId } });
   if (!fs) return notFoundError('Not found');
   if (!fs.isActive || fs.expiresAt <= new Date()) return validationError('Fireside closed');
-  if (fs.creatorId !== me.id && !fs.participantIds.includes(me.id)) return unauthorizedError('Access denied');
+  if (fs.creatorId !== me.id && !(fs.participantIds || []).includes(me.id)) return unauthorizedError('Access denied'); // sanity-fix
 
   // Rate limit: one reaction per 3s per user in this fireside
   const since = new Date(Date.now() - 3000);

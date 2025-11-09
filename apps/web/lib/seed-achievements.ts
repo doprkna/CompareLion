@@ -47,6 +47,9 @@ const ACHIEVEMENTS = [
 export async function seedAchievements() {
   console.log('🌱 Seeding achievements...');
 
+  let created = 0;
+  let skipped = 0;
+
   for (const ach of ACHIEVEMENTS) {
     try {
       // Check if exists by key (if provided) or code
@@ -65,6 +68,7 @@ export async function seedAchievements() {
 
       if (existing) {
         console.log(`⏭️  Skipping ${ach.key || ach.code} (already exists)`);
+        skipped++;
         continue;
       }
 
@@ -85,11 +89,13 @@ export async function seedAchievements() {
       });
 
       console.log(`✅ Created: ${ach.title} (${ach.category}, tier ${ach.tier})`);
+      created++;
     } catch (error) {
       console.error(`❌ Error creating ${ach.key || ach.code}:`, error);
     }
   }
 
-  console.log('✨ Achievement seeding complete!');
+  console.log(`✨ Achievement seeding complete! (${created} created, ${skipped} skipped)`);
+  return { created, skipped };
 }
 

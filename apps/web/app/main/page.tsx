@@ -80,6 +80,13 @@ export default function MainPage() {
       const res = await apiFetch("/api/user/summary");
       debug('API response received', { ok: res.ok, hasUser: !!res.data?.data?.user });
       
+      // Handle 401 - session expired, redirect to login
+      if (res.status === 401) {
+        console.warn("Session expired, redirecting to login."); // sanity-fix
+        router.push("/login"); // sanity-fix
+        return;
+      }
+      
       if (res.ok && res.data?.data?.user) {
         setData(res.data.data.user);
       } else {
@@ -92,7 +99,7 @@ export default function MainPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     loadData();
@@ -100,10 +107,10 @@ export default function MainPage() {
 
   // Listen for XP updates
   useEventBus("xp:update", useCallback((eventData: any) => {
-    if (session?.user?.id && eventData.userId === session.user.id) {
+    if (session?.user?.id && eventData?.userId === session.user.id) { // sanity-fix
       setData((prev) => {
         if (!prev) return prev;
-        const newXp = eventData.newXp;
+        const newXp = eventData?.newXp ?? prev.xp; // sanity-fix
         const newCalculatedLevel = xpToLevel(newXp);
         
         // Check for level up

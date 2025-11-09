@@ -44,7 +44,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
       const latestFile = mapFiles[0];
       const filepath = join(logsDir, latestFile);
       const content = await readFile(filepath, 'utf-8');
-      const apiMap = JSON.parse(content);
+      let apiMap; // sanity-fix
+      try { // sanity-fix
+        apiMap = JSON.parse(content); // sanity-fix
+      } catch { // sanity-fix
+        return successResponse({ available: false, message: 'Invalid JSON in API map file' }); // sanity-fix
+      } // sanity-fix
       
       return successResponse({
         available: true,
@@ -53,16 +58,16 @@ export const GET = safeAsync(async (req: NextRequest) => {
         summary: {
           totalRoutes: apiMap.totalRoutes,
           routesByMethod: apiMap.routesByMethod,
-          modelsUsed: apiMap.modelsUsed.length,
-          orphanedModels: apiMap.orphanedModels.length,
-          routesWithoutFe: apiMap.routesWithoutFe.length,
+          modelsUsed: apiMap.modelsUsed?.length || 0, // sanity-fix
+          orphanedModels: apiMap.orphanedModels?.length || 0, // sanity-fix
+          routesWithoutFe: apiMap.routesWithoutFe?.length || 0, // sanity-fix
         },
         // Include top-level stats
-        orphanedModels: apiMap.orphanedModels.slice(0, 20), // First 20
-        routesWithoutFe: apiMap.routesWithoutFe.slice(0, 20), // First 20
-        systems: Object.keys(apiMap.routesBySystem).map(system => ({
+        orphanedModels: (apiMap.orphanedModels || []).slice(0, 20), // First 20 // sanity-fix
+        routesWithoutFe: (apiMap.routesWithoutFe || []).slice(0, 20), // First 20 // sanity-fix
+        systems: Object.keys(apiMap.routesBySystem || {}).map(system => ({ // sanity-fix
           system,
-          count: apiMap.routesBySystem[system].length,
+          count: apiMap.routesBySystem[system]?.length || 0, // sanity-fix
         })),
       });
     } catch (dirError) {

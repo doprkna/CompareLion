@@ -25,7 +25,7 @@ export async function GET(
     if (!clan || !clan.isActive) return notFoundError('Clan not found or inactive');
 
     // Get member details
-    const memberIds = clan.memberIds;
+    const memberIds = clan.memberIds || []; // sanity-fix
     const members = await prisma.user.findMany({
       where: {
         id: { in: memberIds },
@@ -40,7 +40,7 @@ export async function GET(
 
     // Check if buff is active (≥3 members participated in last 3 days)
     // For MVP, we'll use a simple check: if clan has ≥3 active members
-    const allMembers = [clan.leader, ...members];
+    const allMembers = [clan.leader, ...(members || [])]; // sanity-fix
     const buffActive = allMembers.length >= 3;
 
     return NextResponse.json({

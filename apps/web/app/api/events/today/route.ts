@@ -19,9 +19,13 @@ export const GET = safeAsync(async (req: NextRequest) => {
     try {
       const cached = await redis.get(k(region));
       if (cached) {
-        const res = NextResponse.json(JSON.parse(cached));
-        res.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
-        return res;
+        let parsedCache; // sanity-fix
+        try { parsedCache = JSON.parse(cached); } catch { parsedCache = null; } // sanity-fix
+        if (parsedCache) { // sanity-fix
+          const res = NextResponse.json(parsedCache); // sanity-fix
+          res.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+          return res;
+        } // sanity-fix
       }
     } catch {}
   }

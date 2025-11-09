@@ -12,16 +12,17 @@ import { logError, AppError } from "./errors";
 
 /**
  * Fetch wrapper with error handling
- * Returns null on error instead of throwing
+ * Returns { ok: boolean, data: T | null, error?: string, status?: number }
+ * Handles 401 explicitly for session expiry
  * 
  * @example
- * const data = await apiFetch<MyType>('/api/endpoint');
- * if (!data) { // handle error }
+ * const res = await apiFetch<MyType>('/api/endpoint');
+ * if (!res.ok) { // handle error }
  */
 export async function apiFetch<T>(
   path: string,
   options?: RequestInit
-): Promise<T | null> {
+): Promise<{ ok: boolean; data: T | null; error?: string; status?: number }> {
   try {
     const res = await fetch(path, {
       ...options,
@@ -31,19 +32,44 @@ export async function apiFetch<T>(
       },
     });
     
+    // Handle 401 explicitly - session expired
+    if (res.status === 401) {
+      console.warn(`[apiFetch] HTTP 401 on ${path} - Session expired`); // sanity-fix
+      return { 
+        ok: false, 
+        data: null, 
+        error: "Session expired or not authenticated", 
+        status: 401 
+      };
+    }
+    
     if (!res.ok) {
-      throw new AppError(
-        `API ${res.status}: ${res.statusText}`, 
-        "API_ERROR", 
-        { path, status: res.status }
+      const errorText = await res.text().catch(() => res.statusText);
+      logError(
+        new AppError(
+          `API ${res.status}: ${errorText}`, 
+          "API_ERROR", 
+          { path, status: res.status }
+        ),
+        `apiFetch: ${path}`
       );
+      return { 
+        ok: false, 
+        data: null, 
+        error: errorText || res.statusText, 
+        status: res.status 
+      };
     }
     
     const data = await res.json();
-    return data as T;
+    return { ok: true, data: data as T };
   } catch (err) {
     logError(err, `apiFetch: ${path}`);
-    return null;
+    return { 
+      ok: false, 
+      data: null, 
+      error: err instanceof Error ? err.message : "Unknown error" 
+    };
   }
 }
 
@@ -89,7 +115,7 @@ export async function apiPost<T, D = any>(
   path: string,
   data: D,
   options?: RequestInit
-): Promise<T | null> {
+): Promise<{ ok: boolean; data: T | null; error?: string; status?: number }> {
   return apiFetch<T>(path, {
     ...options,
     method: 'POST',
@@ -104,7 +130,7 @@ export async function apiPatch<T, D = any>(
   path: string,
   data: D,
   options?: RequestInit
-): Promise<T | null> {
+): Promise<{ ok: boolean; data: T | null; error?: string; status?: number }> {
   return apiFetch<T>(path, {
     ...options,
     method: 'PATCH',
@@ -118,7 +144,7 @@ export async function apiPatch<T, D = any>(
 export async function apiDelete<T>(
   path: string,
   options?: RequestInit
-): Promise<T | null> {
+): Promise<{ ok: boolean; data: T | null; error?: string; status?: number }> {
   return apiFetch<T>(path, {
     ...options,
     method: 'DELETE',

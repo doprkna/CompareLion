@@ -5,8 +5,9 @@
  * This file is kept for backwards compatibility and programmatic routing.
  */
 
-// Core user routes
+// Core user routes (v0.35.9 - added Landing)
 export const coreRoutes = [
+  { path: '/landing', label: 'Landing' },
   { path: '/main', label: 'Home' },
   { path: '/flow-demo', label: 'Play' },
   { path: '/friends', label: 'Social' },

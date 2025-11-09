@@ -26,7 +26,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
     select: { groupId: true, role: true, group: true },
   });
 
-  const groups = memberships.map((m) => ({
+  const groups = (memberships || []).map((m) => ({ // sanity-fix
     id: m.group.id,
     name: m.group.name,
     description: (m.group as any).description ?? null,
