@@ -5,6 +5,9 @@ import { startFlow } from '@/lib/flow/flow-skeleton';
 import { safeAsync, successResponse, authError, notFoundError } from '@/lib/api-handler';
 import { z } from 'zod';
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 const StartFlowSchema = z.object({
   categoryId: z.string().min(1)
 });

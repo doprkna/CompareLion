@@ -12,6 +12,9 @@ import { safeAsync, authError, notFoundError } from '@/lib/api-handler';
 import { recordFlowAnswer, getUserFlowStats } from '@/lib/services/flowService';
 import { z } from 'zod';
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 const FlowAnswerSchema = z.object({
   questionId: z.string().min(1),
   optionIds: z.array(z.string()).optional(),

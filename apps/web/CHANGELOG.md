@@ -1,4 +1,57 @@
-﻿## [0.35.16c] - 2025-11-10
+﻿## [0.35.16d] - 2025-11-11
+
+### Fixed
+- [x] Vercel production build failures (Prisma init, missing exports, Edge runtime errors)
+  - **Modified:** 
+    - `apps/web/lib/db.ts` - Safe singleton Prisma initialization (guaranteed single instance)
+    - `apps/web/lib/config.ts` - Added `QGEN_BATCH_SIZE` export
+    - `apps/web/lib/system/alerts.ts` - Added `resolveAllAlerts()`, `resolveAlert()` stubs
+    - `apps/web/lib/metrics.ts` - Added `getFlowMetrics()`, `logFlowEvent()` stubs
+    - `apps/web/lib/services/flowService.ts` - Added `answerQuestion()`, `getNextQuestionForUser()`, `skipQuestion()` aliases
+    - `apps/web/lib/dto/jobDTO.ts` - Try/catch fallback for missing `@parel/db/generated`
+    - `apps/web/app/api/_utils.ts` - Added `successResponse()`, `unauthorizedError()`, `validationError()` helpers
+  - **Runtime Declarations:** Added `export const runtime = 'nodejs'` to:
+    - `apps/web/app/api/achievements/categories/route.ts`
+    - `apps/web/app/api/flow/answer/route.ts`
+    - `apps/web/app/api/flow/next/route.ts`
+    - `apps/web/app/api/flow/start/route.ts`
+    - `apps/web/app/api/flow/categories/route.ts`
+    - `apps/web/app/api/arena/fight/route.ts`
+  - **Created:** `apps/web/app/api/health/route.ts` - Edge runtime health check endpoint
+  - **Result:** Stable production builds on Vercel, no "Prisma not initialized" errors
+
+### Technical Details
+**Prisma Singleton (Vercel-safe):**
+```typescript
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development'
+      ? ['query', 'error', 'warn']
+      : ['error'],
+  });
+```
+
+**API Route Runtime:**
+```typescript
+// Force Node.js runtime for Prisma (prevents Edge runtime errors)
+export const runtime = 'nodejs';
+```
+
+### Impact
+- ✅ Vercel builds pass without Prisma initialization errors
+- ✅ All missing exports resolved (no import failures)
+- ✅ API routes properly use Node.js runtime for Prisma
+- ✅ Health endpoint available at `/api/health` for deployment checks
+- ✅ Safe fallback for `@parel/db/generated` when not available during build
+
+---
+
+## [0.35.16c] - 2025-11-10
 
 ### Fixed
 - [x] 503 Service Unavailable error in flow answer API

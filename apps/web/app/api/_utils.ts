@@ -18,3 +18,15 @@ export async function getUserFromRequest(request: Request): Promise<{ userId: st
     return null;
   }
 }
+
+/**
+ * API Response Helpers (v0.35.16d - Build safety exports)
+ */
+export const successResponse = (data: any) =>
+  Response.json({ success: true, data });
+
+export const unauthorizedError = (msg = 'Unauthorized') =>
+  new Response(msg, { status: 401 });
+
+export const validationError = (msg = 'Validation failed') =>
+  new Response(msg, { status: 400 });

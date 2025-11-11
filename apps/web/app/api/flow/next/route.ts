@@ -12,6 +12,9 @@ import { safeAsync, authError, notFoundError, getSearchParam } from '@/lib/api-h
 import { getNextFlowQuestion, getAvailableQuestionCount } from '@/lib/services/flowService';
 import { logFlowEvent } from '@/lib/metrics';
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 /**
  * GET /api/flow/next?categoryId=xxx
  * Get next question in flow

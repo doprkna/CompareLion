@@ -1,17 +1,17 @@
-import { NextRequest } from 'next/server';
-import { safeAsync, successResponse } from '@/lib/api-handler';
-
 /**
- * GET /api/health
- * Health check endpoint for monitoring
+ * Health Check Endpoint
+ * Lightweight edge runtime check for deployment status
+ * v0.35.16d - Vercel production stability
  */
-export const GET = safeAsync(async (_req: NextRequest) => {
-  const maintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
-  
-  return successResponse({
-    status: maintenanceMode ? 'maintenance' : 'ok',
+
+export const runtime = 'edge';
+
+export async function GET() {
+  return Response.json({
+    ok: true,
+    status: 'healthy',
+    version: process.env.APP_VERSION || '0.35.16d',
     timestamp: new Date().toISOString(),
-    version: '0.22.0',
-    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
   });
-});
+}

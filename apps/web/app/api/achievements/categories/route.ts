@@ -5,6 +5,9 @@ import { prisma } from '@/lib/db';
 import { getAchievementsByCategory } from '@/lib/services/achievementService';
 import { safeAsync, unauthorizedError, successResponse } from '@/lib/api-handler';
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 /**
  * GET /api/achievements/categories
  * Returns achievements grouped by category

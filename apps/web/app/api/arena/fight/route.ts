@@ -11,6 +11,9 @@ import { safeAsync } from '@/lib/api-handler';
 import { successResponse, unauthorizedError, validationError } from '@/app/api/_utils';
 import { prisma } from '@/lib/db';
 import { z } from 'zod';
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 import {
   getOrCreateSession,
   attack,
