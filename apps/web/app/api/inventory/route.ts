@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Inventory API
- * v0.18.0 - Manage user cosmetic inventory
+ * v0.35.16c - Admin sees all items, users see owned items
  */
 
 import { NextRequest } from 'next/server';
@@ -8,14 +8,61 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, successResponse, unauthorizedError } from '@/lib/api-handler';
+import { isAdminViewServer } from '@/lib/utils/isAdminViewServer';
+
+// Force Node.js runtime (uses NextAuth session)
+export const runtime = 'nodejs';
 
 /**
  * GET /api/inventory
- * Get user's cosmetic inventory
+ * Get user's item inventory (admin sees ALL items for verification)
  */
 export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
+  const isAdmin = await isAdminViewServer();
   
+  // Admin/dev sees ALL items (for verification/testing)
+  if (isAdmin) {
+    const allItems = await prisma.item.findMany({
+      select: {
+        id: true,
+        key: true,
+        name: true,
+        emoji: true,
+        icon: true,
+        rarity: true,
+        goldPrice: true,
+        isShopItem: true,
+        description: true,
+        type: true,
+      },
+      orderBy: [
+        { rarity: 'desc' },
+        { goldPrice: 'asc' },
+      ],
+    });
+
+    return successResponse({
+      inventory: allItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        emoji: item.emoji || item.icon || 'ðŸ“¦',
+        icon: item.icon || item.emoji || 'ðŸ“¦',
+        description: item.description,
+        rarity: item.rarity,
+        type: item.type,
+        goldPrice: item.goldPrice || 0,
+        quantity: 1,
+        equipped: false,
+        isShopItem: item.isShopItem,
+      })),
+      cosmetics: [], // For backwards compatibility
+      totalCount: allItems.length,
+      isAdminView: true,
+    });
+  }
+
+  // Regular user - must be logged in
   if (!session?.user?.email) {
     return unauthorizedError('You must be logged in');
   }
@@ -23,86 +70,76 @@ export const GET = safeAsync(async (req: NextRequest) => {
   // Get user
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { 
-      id: true,
-      equippedTitle: true,
-      equippedIcon: true,
-      equippedBackground: true,
-    },
+    select: { id: true },
   });
 
   if (!user) {
     return unauthorizedError('User not found');
   }
 
-  const { searchParams } = new URL(req.url);
-  const type = searchParams.get('type');
-
-  // Build where clause
-  const where: any = {
-    userId: user.id,
-  };
-
-  if (type) {
-    where.cosmetic = {
-      type: type,
-    };
-  }
-
-  // Fetch user's cosmetics
-  const cosmetics = await prisma.userCosmetic.findMany({
-    where,
+  // Fetch user's owned items from UserItem table
+  const userItems = await prisma.userItem.findMany({
+    where: { userId: user.id },
     include: {
-      cosmetic: {
-        select: {
-          id: true,
-          slug: true,
-          name: true,
-          description: true,
-          type: true,
-          rarity: true,
-          imageUrl: true,
-          metadata: true,
-        },
-      },
+      item: true,
     },
     orderBy: [
-      { equipped: 'desc' },
-      { cosmetic: { rarity: 'desc' } },
-      { purchasedAt: 'desc' },
+      { quantity: 'desc' },
+      { acquiredAt: 'desc' },
     ],
   });
 
-  // Group by type
-  const groupedByType: Record<string, any[]> = {};
-  cosmetics.forEach(item => {
-    const type = item.cosmetic.type;
-    if (!groupedByType[type]) {
-      groupedByType[type] = [];
-    }
-    groupedByType[type].push({
-      id: item.id,
-      cosmeticId: item.cosmeticId,
-      equipped: item.equipped,
-      purchasedAt: item.purchasedAt,
-      ...item.cosmetic,
-    });
+  // Also check InventoryItem table
+  const inventoryItems = await prisma.inventoryItem.findMany({
+    where: { userId: user.id },
+    include: {
+      item: true,
+    },
+    orderBy: [
+      { quantity: 'desc' },
+      { createdAt: 'desc' },
+    ],
   });
 
-  return successResponse({
-    cosmetics: cosmetics.map(item => ({
-      id: item.id,
-      cosmeticId: item.cosmeticId,
-      equipped: item.equipped,
-      purchasedAt: item.purchasedAt,
-      ...item.cosmetic,
+  // Combine and deduplicate by itemId
+  const combinedItems = [
+    ...userItems.map(ui => ({
+      id: ui.id,
+      itemId: ui.item.id,
+      name: ui.item.name,
+      emoji: ui.item.emoji || ui.item.icon || 'ðŸ“¦',
+      icon: ui.item.icon || ui.item.emoji || 'ðŸ“¦',
+      description: ui.item.description,
+      rarity: ui.item.rarity,
+      type: ui.item.type,
+      goldPrice: ui.item.goldPrice || 0,
+      quantity: ui.quantity,
+      equipped: false,
     })),
-    grouped: groupedByType,
-    equipped: {
-      title: user.equippedTitle,
-      icon: user.equippedIcon,
-      background: user.equippedBackground,
-    },
-    totalCount: cosmetics.length,
+    ...inventoryItems.map(ii => ({
+      id: ii.id,
+      itemId: ii.item.id,
+      name: ii.item.name,
+      emoji: ii.item.emoji || ii.item.icon || 'ðŸ“¦',
+      icon: ii.item.icon || ii.item.emoji || 'ðŸ“¦',
+      description: ii.item.description,
+      rarity: ii.item.rarity,
+      type: ii.item.type,
+      goldPrice: ii.item.goldPrice || 0,
+      quantity: ii.quantity,
+      equipped: ii.equipped,
+    })),
+  ];
+
+  // Remove duplicates
+  const uniqueItems = combinedItems.filter((item, index, self) =>
+    index === self.findIndex(t => t.itemId === item.itemId)
+  );
+
+  return successResponse({
+    inventory: uniqueItems,
+    cosmetics: uniqueItems, // For backwards compatibility
+    totalCount: uniqueItems.length,
+    isAdminView: false,
   });
 });

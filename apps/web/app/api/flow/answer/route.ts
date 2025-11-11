@@ -10,7 +10,6 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, notFoundError } from '@/lib/api-handler';
 import { recordFlowAnswer, getUserFlowStats } from '@/lib/services/flowService';
-import { trackQuestionAnswer } from '@/lib/metrics';
 import { z } from 'zod';
 
 const FlowAnswerSchema = z.object({
@@ -55,9 +54,6 @@ export const POST = safeAsync(async (req: NextRequest) => {
     numericValue,
     skipped: skipped || false,
   });
-
-  // Track metrics
-  await trackQuestionAnswer(user.id, questionId, skipped || false);
 
   // Get updated stats
   const stats = await getUserFlowStats(user.id);

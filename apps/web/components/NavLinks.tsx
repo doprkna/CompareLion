@@ -15,8 +15,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronDown, Lock } from "lucide-react";
+import { ChevronDown, Lock, Settings } from "lucide-react";
 import { apiFetch } from "@/lib/apiBase";
+import { isAdminView } from "@/lib/utils/isAdminView";
 
 export default function NavLinks() {
   const { data: session } = useSession();
@@ -38,11 +39,11 @@ export default function NavLinks() {
   }, [session]);
 
   const coreLinks = [
-    { href: "/landing", label: "Landing", locked: false },
-    { href: "/main", label: "Home", locked: false },
-    { href: "/flow-demo", label: "Play", locked: false },
-    { href: "/friends", label: "Social", locked: false },
-    { href: "/profile", label: "Profile", locked: false },
+    { href: "/landing", label: "Landing" },
+    { href: "/main", label: "Home" },
+    { href: "/flow-demo", label: "Play" },
+    { href: "/friends", label: "Social" },
+    { href: "/profile", label: "Profile" },
   ];
 
   const communityLinks = [
@@ -68,10 +69,51 @@ export default function NavLinks() {
     { href: "/admin/categories", label: "Category Health" },
     { href: "/admin/users", label: "User Management" },
     { href: "/admin/logs", label: "System Logs" },
-    { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/challenges", label: "Challenges" },
-    { href: "/invite", label: "Invite System" },
   ];
+
+  // Admin-only extras (v0.35.12 - hidden modules)
+  const adminExtras = [
+    { href: "/lore", label: "Lore Engine" },
+    { href: "/narrative", label: "AI Narrative" },
+    { href: "/chronicle", label: "World Chronicle" },
+    { href: "/regional-events", label: "Regional Events" },
+    { href: "/timezone", label: "Timezone System" },
+    { href: "/karma", label: "Karma / Prestige" },
+    { href: "/admin/api", label: "Admin API Map" },
+    { href: "/admin/presets", label: "Admin Presets" },
+    { href: "/admin/system", label: "Admin System" },
+    { href: "/play", label: "Play (Placeholder)" },
+    { href: "/inventory", label: "Inventory" },
+    { href: "/shop", label: "Shop" },
+    { href: "/market", label: "Market" },
+    { href: "/marketplace", label: "Marketplace" },
+    { href: "/guilds", label: "Guilds" },
+    { href: "/factions", label: "Factions" },
+    { href: "/quests", label: "Quests" },
+    { href: "/duels", label: "Duels" },
+    { href: "/feed", label: "Feed" },
+    { href: "/activity", label: "Activity" },
+    { href: "/events", label: "Events" },
+    { href: "/prestige", label: "Prestige" },
+    { href: "/progression", label: "Progression" },
+    { href: "/mirror", label: "Mirror" },
+    { href: "/postcards", label: "Postcards" },
+    { href: "/polls", label: "Polls" },
+    { href: "/packs", label: "Packs" },
+    { href: "/firesides", label: "Firesides" },
+    { href: "/rewards", label: "Rewards" },
+    { href: "/tasks", label: "Tasks" },
+    { href: "/questions", label: "Questions" },
+    { href: "/quiz", label: "Quiz" },
+    { href: "/achievements", label: "Achievements" },
+    { href: "/create", label: "Create" },
+    { href: "/groups", label: "Groups" },
+    { href: "/social", label: "Social Hub" },
+    { href: "/community", label: "Community" },
+    { href: "/admin/inventory", label: "[Dev] Item Viewer" },
+  ];
+
+  const showAdminExtras = isAdminView() || userRole === 'ADMIN';
 
   return (
     <TooltipProvider>
@@ -161,6 +203,29 @@ export default function NavLinks() {
               {adminLinks.map((link) => (
                 <DropdownMenuItem key={link.href} asChild>
                   <Link href={link.href} className="text-text hover:text-accent cursor-pointer">
+                    {link.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Admin Only Section - v0.35.12 */}
+        {showAdminExtras && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-accent hover:text-accent/80 font-bold transition-colors flex items-center gap-1.5 border border-accent px-2 py-1 rounded">
+              <Settings className="h-3.5 w-3.5" />
+              Admin Only
+              <ChevronDown className="h-4 w-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-card border-accent max-h-[400px] overflow-y-auto">
+              <div className="px-2 py-1 text-xs font-bold text-accent uppercase tracking-wide border-b border-border">
+                Hidden Modules (Dev/Admin)
+              </div>
+              {adminExtras.map((link) => (
+                <DropdownMenuItem key={link.href} asChild>
+                  <Link href={link.href} className="text-text hover:text-accent cursor-pointer text-sm">
                     {link.label}
                   </Link>
                 </DropdownMenuItem>
