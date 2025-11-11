@@ -19,9 +19,22 @@
     - `apps/web/app/api/arena/fight/route.ts`
     - **54 admin routes** (`apps/web/app/api/admin/**/route.ts`) - batch updated
   - **Created:** `apps/web/app/api/health/route.ts` - Edge runtime health check endpoint
+  - **Build Safety:** 
+    - Added `DATABASE_URL` fallback guard in `lib/db.ts` for build-time initialization
+    - Disabled `instrumentationHook` in `next.config.js` to prevent OpenTelemetry warnings
+    - Sentry webpack plugins disabled in development for faster builds
   - **Result:** Stable production builds on Vercel, no "Prisma not initialized" errors
 
 ### Technical Details
+**DATABASE_URL Fallback Guard:**
+```typescript
+// Prevents build failure when DATABASE_URL is missing
+if (!process.env.DATABASE_URL) {
+  console.warn('⚠️  DATABASE_URL missing – using dummy fallback for build');
+  process.env.DATABASE_URL = 'file:./dev.db';
+}
+```
+
 **Prisma Singleton (Vercel-safe):**
 ```typescript
 const globalForPrisma = globalThis as unknown as {

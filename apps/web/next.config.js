@@ -65,6 +65,7 @@ const nextConfig = {
       'lucide-react',
       'framer-motion',
     ],
+    instrumentationHook: false, // Disable OpenTelemetry for build stability (v0.35.16d)
   },
   
   // Webpack optimizations
@@ -136,6 +137,9 @@ if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
     org: process.env.SENTRY_ORG,
     project: process.env.SENTRY_PROJECT,
     disableLogger: true, // Disable Sentry build-time warnings
+    // v0.35.16d - Additional build stability
+    disableClientWebpackPlugin: process.env.NODE_ENV === 'development',
+    disableServerWebpackPlugin: process.env.NODE_ENV === 'development',
   };
   
   module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
