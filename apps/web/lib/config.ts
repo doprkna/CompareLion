@@ -125,3 +125,6 @@ export function getAppMetadata() {
 export function getBuildTag(): string {
   return `${BUILD_INFO.VERSION}:${BUILD_INFO.BUILD_ID}:${BUILD_INFO.ENVIRONMENT}`;
 }
+
+// Question generation batch size (build safety)
+export const QGEN_BATCH_SIZE = 20;

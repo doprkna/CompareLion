@@ -274,3 +274,32 @@ export async function getAvailableQuestionCount(categoryId?: string) {
     throw error;
   }
 }
+
+/**
+ * Answer question (alias for recordFlowAnswer)
+ */
+export async function answerQuestion(answer: FlowAnswer): Promise<boolean> {
+  return recordFlowAnswer(answer);
+}
+
+/**
+ * Get next question for user (alias for getNextFlowQuestion)
+ */
+export async function getNextQuestionForUser(
+  userId: string,
+  categoryId?: string,
+  localization?: LocalizationFilter
+): Promise<FlowQuestion | null> {
+  return getNextFlowQuestion(userId, categoryId, localization);
+}
+
+/**
+ * Skip question (records a skipped answer)
+ */
+export async function skipQuestion(userId: string, questionId: string): Promise<boolean> {
+  return recordFlowAnswer({
+    questionId,
+    userId,
+    skipped: true,
+  });
+}

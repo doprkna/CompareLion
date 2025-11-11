@@ -186,3 +186,17 @@ export function getQueueSize(): number {
 export function clearQueue(): void {
   eventQueue = [];
 }
+
+/**
+ * Get flow metrics (stub for build safety)
+ */
+export async function getFlowMetrics() {
+  return { flows: 0, users: 0, questionsAnswered: 0 };
+}
+
+/**
+ * Log flow event (stub for build safety)
+ */
+export async function logFlowEvent(event: string, data?: any) {
+  return { ok: true, event, logged: Date.now() };
+}
