@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 export async function POST() {
   try {
     // Get first category or create demo one

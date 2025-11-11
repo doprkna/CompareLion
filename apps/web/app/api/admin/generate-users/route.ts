@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hash } from "bcryptjs";
 
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 export async function POST() {
   try {
     const names = ['AutoUser1', 'AutoUser2', 'AutoUser3', 'AutoUser4', 'AutoUser5'];

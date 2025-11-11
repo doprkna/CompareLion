@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import { createGlobalEvent, updateGlobalEvent, deactivateEvent } from "@/lib/events";
 
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * GET /api/admin/events
  * Get all events (active and inactive)
  */

@@ -1,4 +1,7 @@
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Queue Statistics API (v0.11.2)
  * 
  * Admin endpoint for monitoring BullMQ queue metrics.

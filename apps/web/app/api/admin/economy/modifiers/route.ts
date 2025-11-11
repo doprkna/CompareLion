@@ -1,4 +1,7 @@
-﻿/**
+/**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Economy Modifiers API
  * v0.34.2 - Manage economy modifiers (streaks, social bonuses, weekly modifiers)
  */

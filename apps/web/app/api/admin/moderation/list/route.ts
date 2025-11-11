@@ -1,4 +1,7 @@
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Moderation List API
  * 
  * GET /api/admin/moderation/list?limit=5

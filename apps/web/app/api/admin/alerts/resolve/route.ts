@@ -6,6 +6,9 @@ import { safeAsync, authError, successResponse, forbiddenError, validationError 
 import { z } from "zod";
 import { resolveAlert } from "@/lib/system/alerts";
 
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 const ResolveAlertSchema = z.object({
   id: z.string().min(1),
 });

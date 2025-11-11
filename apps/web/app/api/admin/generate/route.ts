@@ -9,6 +9,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import { GEN_CONFIG } from '@/lib/config/generator';
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 /**
  * Simple admin authentication
  * Checks for x-admin-token header

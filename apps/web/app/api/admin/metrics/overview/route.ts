@@ -6,6 +6,9 @@ import { safeAsync, authError, successResponse, forbiddenError } from "@/lib/api
 import { cached } from "@/app/api/_cache";
 
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * GET /api/admin/metrics/overview
  * Returns aggregated metrics for admin dashboard
  * Includes active users, reflections, transactions, and trends

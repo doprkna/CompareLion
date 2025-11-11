@@ -4,6 +4,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { safeAsync, authError, successResponse, forbiddenError } from "@/lib/api-handler";
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 /**
  * GET /api/admin/economy/overview
  * Returns aggregated economy dashboard data for admin

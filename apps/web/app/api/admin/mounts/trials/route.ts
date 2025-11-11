@@ -1,4 +1,7 @@
-﻿/**
+/**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Mount Trials CRUD API
  * v0.34.4 - Create, read, update, delete mount trials
  */

@@ -1,4 +1,7 @@
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Timezone List API
  * 
  * GET /api/admin/timezone/list?limit=5

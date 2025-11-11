@@ -17,6 +17,7 @@
     - `apps/web/app/api/flow/start/route.ts`
     - `apps/web/app/api/flow/categories/route.ts`
     - `apps/web/app/api/arena/fight/route.ts`
+    - **54 admin routes** (`apps/web/app/api/admin/**/route.ts`) - batch updated
   - **Created:** `apps/web/app/api/health/route.ts` - Edge runtime health check endpoint
   - **Result:** Stable production builds on Vercel, no "Prisma not initialized" errors
 

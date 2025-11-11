@@ -1,4 +1,7 @@
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Metrics API
  * Aggregated analytics data
  * v0.13.2n - Community Growth (extended with growth tracking)

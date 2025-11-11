@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

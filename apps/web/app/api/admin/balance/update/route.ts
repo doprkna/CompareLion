@@ -5,6 +5,9 @@ import { prisma } from "@/lib/db";
 import { safeAsync, authError, successResponse, forbiddenError, validationError } from "@/lib/api-handler";
 import { z } from "zod";
 
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 const UpdateSettingSchema = z.object({
   key: z.string().min(1),
   value: z.number().min(0.5).max(2.0),

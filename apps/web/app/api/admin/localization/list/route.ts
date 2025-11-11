@@ -1,4 +1,7 @@
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Localization List API
  * 
  * GET /api/admin/localization/list?limit=5

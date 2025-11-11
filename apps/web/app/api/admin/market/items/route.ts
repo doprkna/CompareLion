@@ -1,4 +1,7 @@
-﻿/**
+/**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Market Items CRUD API
  * v0.34.3 - Update item metadata (category, tag, isFeatured)
  */

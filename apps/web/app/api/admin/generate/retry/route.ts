@@ -1,4 +1,7 @@
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin API: Retry Failed Generation Jobs
  * 
  * POST - Reset FAILED jobs in a batch back to PENDING

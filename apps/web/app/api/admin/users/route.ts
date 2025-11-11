@@ -5,6 +5,9 @@ import { prisma } from "@/lib/db";
 import { ensurePrismaClient } from "@/lib/prisma-guard";
 import { handleApiError } from "@/lib/api-error-handler";
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
     ensurePrismaClient();

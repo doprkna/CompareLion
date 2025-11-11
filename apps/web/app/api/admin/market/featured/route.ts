@@ -1,4 +1,7 @@
-﻿/**
+/**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Admin Featured Items API
  * v0.34.3 - Rotate featured marketplace items
  */

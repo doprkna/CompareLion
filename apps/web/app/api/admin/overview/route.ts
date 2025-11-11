@@ -7,6 +7,9 @@ import { safeAsync, authError, forbiddenError } from "@/lib/api-handler";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
+
 interface AdminOverview {
   users: number;
   questions: number;

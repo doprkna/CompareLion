@@ -6,6 +6,9 @@ import { safeAsync, authError, successResponse, forbiddenError } from "@/lib/api
 import { resolveAllAlerts } from "@/lib/system/alerts";
 
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * POST /api/admin/alerts/resolve-all
  * Resolves all open alerts
  * Admin-only auth required

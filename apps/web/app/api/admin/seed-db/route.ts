@@ -7,6 +7,9 @@ import { hash } from "bcryptjs";
 import { seedAchievements } from "@/lib/seed-achievements";
 
 // Utility to log audit
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
 async function logAudit(type: string, message: string, meta?: any, userId?: string) {
   await prisma.auditLog.create({
     data: {

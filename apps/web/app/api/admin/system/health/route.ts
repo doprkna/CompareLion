@@ -7,6 +7,9 @@ import { promises as fs } from "fs";
 import { join } from "path";
 
 /**
+
+// Force Node.js runtime for Prisma (v0.35.16d)
+export const runtime = 'nodejs';
  * Format uptime as "Xd Xh Xm"
  */
 function formatUptime(uptimeSeconds: number): string {
