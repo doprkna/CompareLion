@@ -186,6 +186,7 @@ model User {
   taxTransactions         TaxTransaction[]
   threatBattles           ThreatBattle[]
   combatSessions          CombatSession[]
+  fights      Fight[]
   completedCollections    UserAchievementCollection[]
   userAchievements        UserAchievement[]
   archetypeHistory        UserArchetypeHistory[]
@@ -6167,6 +6168,47 @@ model CombatSession {
   @@index([lastActionAt])
   @@map("combat_sessions")
 }
+
+
+// ========================================
+// FIGHT SYSTEM (v0.36.0 - Full Fighting System MVP)
+// ========================================
+
+model Enemy {
+  id          String   @id @default(cuid())
+  name        String @unique
+  hp          Int
+  str         Int      // Strength
+  def         Int      // Defense
+  speed       Int      // Speed
+  rarity      String   @default("common")
+  xpReward    Int      @default(0)
+  goldReward  Int      @default(0)
+  sprite      String?  // Optional sprite URL
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  fights      Fight[]
+
+  @@index([rarity])
+  @@map("enemies")
+}
+
+model Fight {
+  id        String   @id @default(cuid())
+  heroId    String
+  enemyId   String
+  rounds    Json     // Array of RoundLog objects
+  winner    String   // "hero" or "enemy"
+  createdAt DateTime @default(now())
+  hero      User     @relation(fields: [heroId], references: [id], onDelete: Cascade)
+  enemy     Enemy    @relation(fields: [enemyId], references: [id], onDelete: Cascade)
+
+  @@index([heroId, createdAt(sort: Desc)])
+  @@index([enemyId])
+  @@map("fights")
+}
+
+
 
 // ========================================
 // PUBLIC COMPARISONS FEED (v0.26.15 - Phase K)

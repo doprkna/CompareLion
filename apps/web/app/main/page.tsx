@@ -26,6 +26,7 @@ import { RitualToast } from "@/components/rituals/RitualToast";
 import { useRituals, useCompleteRitual } from "@/hooks/useRituals";
 import { ClanBuffBadge } from "@/components/micro-clans/ClanBuffBadge";
 import { useClanBuff } from "@/hooks/useMicroClans";
+import RegionSelector from "@/components/ui/RegionSelector";
 
 interface UserSummary {
   name: string;
@@ -177,6 +178,11 @@ export default function MainPage() {
       />
 
       <div className="min-h-screen bg-bg p-6">
+        {/* Region/Language Selector */}
+        <div className="fixed top-2 right-2 z-50">
+          <RegionSelector />
+        </div>
+
         <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Hero Section */}

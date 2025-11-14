@@ -4,8 +4,18 @@ import { prisma } from '@/lib/db';
 import Redis from 'ioredis';
 
 const REDIS_URL = process.env.REDIS_URL;
-let redis: Redis | null = null;
-try { if (REDIS_URL) redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true }); } catch { redis = null; }
+let _redis: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (!_redis && REDIS_URL) {
+    try {
+      _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+    } catch {
+      _redis = null;
+    }
+  }
+  return _redis;
+}
 
 function k(region: string) { return `event:today:${region.toUpperCase()}`; }
 
@@ -15,6 +25,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
   const todayEnd = new Date(); todayEnd.setUTCHours(23,59,59,999);
 
   // cache first
+  const redis = getRedis();
   if (redis) {
     try {
       const cached = await redis.get(k(region));
@@ -48,6 +59,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
   });
 
   const payload = { success: true, event: event || null, region, timestamp: new Date().toISOString() };
+  const redis = getRedis();
   if (redis) { try { await redis.set(k(region), JSON.stringify(payload), 'EX', 300); } catch {} }
   const res = NextResponse.json(payload);
   res.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');

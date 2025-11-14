@@ -13,13 +13,16 @@ const REDIS_URL = process.env.REDIS_URL;
 /**
  * Redis connection for BullMQ (only if REDIS_URL is set)
  */
-let connection: Redis | null = null;
+let _connection: Redis | null = null;
 
-if (REDIS_URL) {
-  connection = new Redis(REDIS_URL, {
-    maxRetriesPerRequest: null, // BullMQ requires this
-    enableReadyCheck: false,
-  });
+function getConnection(): Redis | null {
+  if (!_connection && REDIS_URL) {
+    _connection = new Redis(REDIS_URL, {
+      maxRetriesPerRequest: null, // BullMQ requires this
+      enableReadyCheck: false,
+    });
+  }
+  return _connection;
 }
 
 /**
@@ -109,14 +112,15 @@ export const QUEUE_CONFIG = {
  * Create queue instance
  */
 export function createQueue(priority: QueuePriority): Queue {
-  if (!connection) {
+  const conn = getConnection();
+  if (!conn) {
     throw new Error("Queue system not available - REDIS_URL not configured");
   }
   
   const config = QUEUE_CONFIG[priority];
   
   return new Queue(config.name, {
-    connection,
+    connection: conn,
     defaultJobOptions: config.defaultJobOptions,
     limiter: config.limiter,
   } as QueueOptions);

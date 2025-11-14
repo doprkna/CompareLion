@@ -1,23 +1,49 @@
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
 
-let connection: IORedis | null = null;
-let runQueue: Queue | null = null;
+let _connection: IORedis | null = null;
+let _runQueue: Queue | null = null;
 
-// Only connect if REDIS_URL is set (e.g. in production with Redis provisioned)
-if (process.env.REDIS_URL) {
-  connection = new IORedis(process.env.REDIS_URL);
-  runQueue = new Queue("run-queue", { connection });
+function getConnection(): IORedis | null {
+  if (!_connection && process.env.REDIS_URL) {
+    _connection = new IORedis(process.env.REDIS_URL);
+  }
+  return _connection;
 }
 
-export { runQueue };
+function getRunQueue(): Queue | null {
+  if (!_runQueue) {
+    const conn = getConnection();
+    if (conn) {
+      _runQueue = new Queue("run-queue", { connection: conn });
+    }
+  }
+  return _runQueue;
+}
+
+export const runQueue = new Proxy({} as Queue | null, {
+  get(_target, prop) {
+    const queue = getRunQueue();
+    if (!queue) return undefined;
+    const value = (queue as any)[prop];
+    return typeof value === 'function' ? value.bind(queue) : value;
+  },
+  set(_target, prop, value) {
+    const queue = getRunQueue();
+    if (queue) {
+      (queue as any)[prop] = value;
+    }
+    return true;
+  }
+}) as Queue | null;
 
 export async function enqueueRun(taskId: string, workflowId?: string) {
-  if (!runQueue) {
+  const queue = getRunQueue();
+  if (!queue) {
     return;
   }
 
-  await runQueue.add("process-run", {
+  await queue.add("process-run", {
     taskId,
     workflowId,
   });

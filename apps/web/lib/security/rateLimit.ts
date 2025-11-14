@@ -3,7 +3,7 @@ import { LRUCache } from 'lru-cache';
 import { logger } from '@/lib/logger';
 
 // Redis client (will be null if not configured)
-let redis: Redis | null = null;
+let _redis: Redis | null = null;
 
 // LRU cache fallback
 const lruCache = new LRUCache<string, { count: number; resetTime: number }>({
@@ -11,20 +11,24 @@ const lruCache = new LRUCache<string, { count: number; resetTime: number }>({
   ttl: 1000 * 60 * 60, // 1 hour TTL
 });
 
-// Initialize Redis client if URL is available
-try {
-  const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-  
-  if (redisUrl && redisToken) {
-    redis = new Redis({
-      url: redisUrl,
-      token: redisToken,
-    });
+function getRedis(): Redis | null {
+  if (!_redis) {
+    try {
+      const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+      const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+      
+      if (redisUrl && redisToken) {
+        _redis = new Redis({
+          url: redisUrl,
+          token: redisToken,
+        });
+      }
+    } catch (error) {
+      logger.warn('Failed to initialize Redis client', error);
+      _redis = null;
+    }
   }
-} catch (error) {
-  logger.warn('Failed to initialize Redis client', error);
-  redis = null;
+  return _redis;
 }
 
 export interface RateLimitConfig {
@@ -65,6 +69,7 @@ async function checkRateLimit(
   const windowStart = now - config.windowMs;
   const resetTime = now + config.windowMs;
 
+  const redis = getRedis();
   if (redis) {
     // Use Redis for distributed rate limiting
     try {
@@ -179,6 +184,7 @@ export async function trackFailedLogin(req: Request, email: string): Promise<{
   const lockoutDuration = 15 * 60 * 1000; // 15 minutes
   const maxAttempts = 10;
 
+  const redis = getRedis();
   if (redis) {
     try {
       const pipeline = redis.pipeline();
@@ -275,6 +281,7 @@ export async function trackFailedLogin(req: Request, email: string): Promise<{
 export async function clearFailedLogins(req: Request, email: string): Promise<void> {
   const key = emailIpKeyGenerator(req, email);
   
+  const redis = getRedis();
   if (redis) {
     try {
       await redis.del(`${key}:attempts`, `${key}:lockout`);

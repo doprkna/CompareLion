@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { prisma } from '@/lib/db';
+import { safeRuntime } from '@/lib/safe-runtime';
 
 type Severity = 'info' | 'warn' | 'block';
 
@@ -26,13 +27,17 @@ export interface EvaluationResult {
 }
 
 const REDIS_URL = process.env.REDIS_URL;
-let redis: Redis | null = null;
-try {
-  if (REDIS_URL) {
-    redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+let _redis: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (!_redis && REDIS_URL) {
+    try {
+      _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+    } catch {
+      _redis = null;
+    }
   }
-} catch {
-  redis = null;
+  return _redis;
 }
 
 const LOCAL_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -45,6 +50,7 @@ function makeKey(region: string) {
 export async function invalidateFilters(region: string) {
   const key = makeKey(region);
   localCache.delete(key);
+  const redis = getRedis();
   if (redis) {
     try { await redis.del(key); } catch {}
   }
@@ -71,6 +77,7 @@ export async function loadActiveFilters(regionInput?: string | null): Promise<Cu
   const cachedLocal = await getFromLocal(key);
   if (cachedLocal) return cachedLocal;
 
+  const redis = getRedis();
   if (redis) {
     try {
       const raw = await redis.get(key);
@@ -87,6 +94,7 @@ export async function loadActiveFilters(regionInput?: string | null): Promise<Cu
     orderBy: { updatedAt: 'desc' },
   }) as unknown as CulturalFilter[];
 
+  const redis = getRedis();
   if (redis) {
     try { await redis.set(key, JSON.stringify(filters), 'EX', 300); } catch {}
   }

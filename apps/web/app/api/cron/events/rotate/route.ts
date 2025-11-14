@@ -4,10 +4,21 @@ import { prisma } from '@/lib/db';
 import Redis from 'ioredis';
 
 const REDIS_URL = process.env.REDIS_URL;
-let redis: Redis | null = null;
-try { if (REDIS_URL) redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true }); } catch { redis = null; }
+let _redis: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (!_redis && REDIS_URL) {
+    try {
+      _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+    } catch {
+      _redis = null;
+    }
+  }
+  return _redis;
+}
 
 async function invalidate(region: string) {
+  const redis = getRedis();
   if (!redis) return;
   try { await redis.del(`event:today:${region.toUpperCase()}`); } catch {}
 }
@@ -44,6 +55,7 @@ export const GET = safeAsync(async (_req: NextRequest) => {
     where: { date: { gte: nextStart, lte: nextEnd } },
     select: { id: true, region: true, date: true, title: true, description: true, rewardText: true, tags: true, isActive: true },
   });
+  const redis = getRedis();
   if (redis) {
     for (const ev of nextDayEvents) {
       try {

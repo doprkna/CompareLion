@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { prisma } from '@/lib/db';
+import { safeRuntime } from '@/lib/safe-runtime';
 
 export interface AIContextDTO {
   region: string;
@@ -11,13 +12,17 @@ export interface AIContextDTO {
 }
 
 const REDIS_URL = process.env.REDIS_URL;
-let redis: Redis | null = null;
-try {
-  if (REDIS_URL) {
-    redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+let _redis: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (!_redis && REDIS_URL) {
+    try {
+      _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+    } catch {
+      _redis = null;
+    }
   }
-} catch {
-  redis = null;
+  return _redis;
 }
 
 const ONE_DAY_SECONDS = 60 * 60 * 24;
@@ -33,6 +38,7 @@ function makeCacheKey(region: string) {
 }
 
 async function getCached(region: string): Promise<AIContextDTO | null> {
+  const redis = getRedis();
   if (!redis) return null;
   try {
     const raw = await redis.get(makeCacheKey(region));
@@ -43,6 +49,7 @@ async function getCached(region: string): Promise<AIContextDTO | null> {
 }
 
 async function setCached(region: string, value: AIContextDTO) {
+  const redis = getRedis();
   if (!redis) return;
   try {
     await redis.set(makeCacheKey(region), JSON.stringify(value), 'EX', ONE_DAY_SECONDS);
@@ -50,6 +57,7 @@ async function setCached(region: string, value: AIContextDTO) {
 }
 
 export async function invalidateAIContext(region: string) {
+  const redis = getRedis();
   if (!redis) return;
   try { await redis.del(makeCacheKey(region)); } catch {}
 }

@@ -34,12 +34,14 @@ interface EventMetadata {
 const localEmitter = new EventEmitter();
 localEmitter.setMaxListeners(100);
 
+import { env } from '@/lib/env';
+
 // Redis clients
 let redisPublisher: Redis | null = null;
 let redisSubscriber: Redis | null = null;
 let redisConnected = false;
 
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = env.REDIS_URL;
 const REDIS_CHANNEL = "parel-events";
 const MAX_RETRIES = 3;
 
@@ -53,7 +55,7 @@ const failedEvents: Array<{ event: string; error: string; timestamp: Date }> = [
 function initRedis() {
   // Skip Redis initialization if REDIS_URL is not set
   if (!REDIS_URL) {
-    if (process.env.NODE_ENV === 'development') {
+    if (env.NODE_ENV === 'development') {
     }
     return;
   }
@@ -65,7 +67,7 @@ function initRedis() {
     redisSubscriber = new Redis(REDIS_URL);
 
     redisSubscriber.subscribe(REDIS_CHANNEL, () => {
-      if (process.env.NODE_ENV === 'development') {
+      if (env.NODE_ENV === 'development') {
       }
       redisConnected = true;
     });
@@ -94,8 +96,7 @@ function initRedis() {
   }
 }
 
-// Initialize on module load only if REDIS_URL is set
-initRedis();
+// Redis initialization is now lazy - initRedis() will be called on first publish/subscribe
 
 /**
  * Publish event with retry logic
@@ -105,6 +106,11 @@ export async function publish(
   payload: any,
   options: { critical?: boolean; retries?: number } = {}
 ): Promise<void> {
+  // Lazy initialize Redis on first use
+  if (!redisConnected && typeof process !== 'undefined') {
+    initRedis();
+  }
+  
   const startTime = Date.now();
   const metadata: EventMetadata = {
     critical: options.critical || false,

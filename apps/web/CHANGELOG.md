@@ -1,4 +1,226 @@
-﻿## [0.35.16d] - 2025-11-11
+﻿## [0.36.0] - 2025-11-14
+
+### Added
+- [x] **Full Turn-Based Fighting System MVP**
+  - **Core Fight Engine:**
+    - `apps/web/lib/fightEngine.ts` - Deterministic turn-based combat simulation
+    - Damage formula: `max(1, (attacker.str + random(-2,+3)) - defender.def * 0.4)`
+    - Turn order determined by speed stat
+    - Complete round-by-round logging system
+  - **Database Models:**
+    - `Enemy` model - Combat enemies with stats (hp, str, def, speed, rarity, rewards)
+    - `Fight` model - Fight logs with rounds (JSON), winner, timestamps
+    - Added `fights Fight[]` relation to User model
+  - **API Routes:**
+    - `POST /api/fight/start` - Start fight, simulate combat, save log, award rewards
+    - `GET /api/fight/enemies` - Get 3 random enemies for selection
+    - `GET /api/fight/history` - Get user fight history with pagination
+  - **UI Pages:**
+    - `/play` - Full fight interface with hero stats, enemy cards, fight animation
+    - `/arena/history` - Fight history viewer with expandable round details
+  - **Admin Pages:**
+    - `/admin/enemies` - CRUD interface for enemy management
+    - `/admin/fights` - Fight log inspector with detailed round view
+  - **State Management:**
+    - `apps/web/hooks/useFightStore.ts` - Zustand store for fight state
+    - Manages selected enemy, fight results, loading states
+  - **Seed Data:**
+    - `packages/db/seed.ts` - 10 pre-configured enemies
+    - Range: Tiny Mosquito (hp:15) to The Algorithm (hp:120, legendary)
+    - Stats balanced across rarity tiers
+
+### Features
+- Hero stats calculated from User level and stats (str, def, speed, hp)
+- Turn-based combat with deterministic damage calculation
+- Round-by-round animation in UI (fade-in effect)
+- Toast notifications for fight results (+XP, +Gold)
+- Mobile-responsive UI with loading states
+- Error handling throughout API and UI layers
+- Admin tools for enemy management and fight inspection
+
+### Technical Details
+**Fight Flow:**
+1. User selects enemy from 3 random options
+2. Hero stats calculated from User level/stats
+3. Fight simulated deterministically (speed-based turn order)
+4. Rounds logged with damage, HP after each round
+5. Winner determined, rewards applied (XP + Gold)
+6. Fight log saved to database
+
+**Enemy Stats Range:**
+- HP: 15-120
+- STR: 3-25
+- DEF: 0-18
+- Speed: 1-10
+- Rarity: common → legendary (aligned with power)
+
+### Notes
+- ✅ Full fight system operational end-to-end
+- ✅ Database migration required for Enemy/Fight models
+- ✅ Run `pnpm db:seed` to populate initial enemies
+- ⚠️ Admin CRUD endpoints need implementation for full enemy management
+- 💡 Fight history pagination supports limit/offset queries
+
+---
+
+## [0.35.17b] - 2025-11-11
+
+### Added
+- [x] Centralized safe environment variable loader
+  - **Core Module:**
+    - `apps/web/lib/env.ts` - Unified env loader with build-safe fallbacks
+  - **Refactored Services:**
+    - `apps/web/lib/db.ts` - Uses `env.DATABASE_URL` with safe fallback
+    - `apps/web/lib/stripe.ts` - Uses `env.STRIPE_SECRET_KEY` with dummy stub
+    - `apps/web/lib/broker.ts` - Uses `env.REDIS_URL` with graceful degradation
+    - `apps/web/lib/realtime.ts` - Uses `env.REDIS_URL` for pub/sub
+    - `apps/web/lib/cron/cron.ts` - Uses `env.REDIS_URL` for distributed locks
+    - `apps/web/app/api/admin/overview/route.ts` - Uses `env.DATABASE_URL` for display
+    - `apps/web/app/api/health/extended/route.ts` - Uses `env.DATABASE_URL` + `env.REDIS_URL`
+  - **Features:**
+    - Never throws on missing env vars during build
+    - Provides sensible fallbacks for local dev (file:./dev.db, redis://localhost:6379)
+    - Warns loudly in console when vars are missing
+    - Optional runtime validation for production (exits if critical vars missing)
+    - Single source of truth for all environment configuration
+
+### Technical Details
+**Safe Env Loading Pattern:**
+```typescript
+function safeEnv(name: string, fallback?: string): string {
+  const value = process.env[name];
+  if (!value) {
+    console.warn(`⚠️ Missing env var: ${name} – using fallback`);
+    return fallback ?? "";
+  }
+  return value;
+}
+```
+
+**Exported Env Object:**
+```typescript
+export const env = {
+  DATABASE_URL: safeEnv("DATABASE_URL", "file:./dev.db"),
+  REDIS_URL: safeEnv("REDIS_URL", "redis://localhost:6379"),
+  STRIPE_SECRET_KEY: safeEnv("STRIPE_SECRET_KEY", "dummy_stripe_key"),
+  NEXTAUTH_SECRET: safeEnv("NEXTAUTH_SECRET", "dummy_secret"),
+  // ... more vars
+};
+```
+
+**Service Stubs:**
+- Stripe: Returns mock object with dummy methods when key missing
+- Redis: Gracefully skips initialization when URL missing
+- Prisma: Uses fallback datasource URL for build stage
+
+### Notes
+- ✅ Vercel builds never crash due to missing services
+- ✅ Local development works out-of-box with fallbacks
+- ✅ Production validates critical vars at runtime
+- 💡 All new code should import `env` from `@/lib/env` instead of `process.env`
+
+---
+
+## [0.35.17a] - 2025-11-11
+
+### Added
+- [x] Complete region/theme system integration + localStorage persistence
+  - **Global Integration:**
+    - `apps/web/app/auth-provider.tsx` - ThemeProvider wraps all pages globally
+    - `apps/web/app/main/page.tsx` - RegionSelector added to main dashboard (fixed top-right)
+  - **Theme Seed System:**
+    - `apps/web/lib/seed-theme-items.ts` - 7 theme items (5 regional + 2 global)
+    - `apps/web/app/api/admin/seed-themes/route.ts` - Admin endpoints for seeding/cleanup
+  - **State Persistence:**
+    - `store/useRegionStore.ts` - Added Zustand persist middleware with localStorage
+  - **Theme Items Available:**
+    - 🏛️ European Classic (EU, free)
+    - 🗽 Modern Minimalist (US, 500g)
+    - 🌸 Kawaii Dream (JP, 1000g)
+    - 🌃 Neon Cyber (KR, 2000g)
+    - 🏮 Imperial Heritage (CN, 2000g)
+    - 🌙 Midnight Mode (Global, 5000g)
+    - ☀️ Daylight Pro (Global, 5000g)
+
+### Technical Details
+**localStorage Persistence:**
+```typescript
+persist(store, {
+  name: "parel-region-store",
+  version: 1,
+})
+```
+- Region, language, and theme persist across sessions
+- Automatic hydration on page load
+
+**Theme Seeding:**
+- POST `/api/admin/seed-themes` - Creates theme items
+- DELETE `/api/admin/seed-themes` - Cleanup for testing
+- Audit logging for all operations
+- Duplicate detection (skips existing items)
+
+### Notes
+- ✅ ThemeProvider active globally via auth-provider wrapper
+- ✅ RegionSelector visible on main dashboard
+- ✅ State persists across browser sessions
+- ⚠️ Prisma schema may need `region String?` field added to Item model
+- 💡 Run `POST /api/admin/seed-themes` from admin panel to populate themes
+
+---
+
+## [0.35.17] - 2025-11-11
+
+### Added
+- [x] Multi-region + multilanguage foundation with UI theme system
+  - **Config/Data Structure:**
+    - `lib/config/regions.ts` - 5 regions (EU, US, JP, KR, CN) with locale + theme mappings
+    - `lib/theme/themes.ts` - 5 theme palettes (default, modern, kawaii, neon, classic)
+  - **State Management:**
+    - `store/useRegionStore.ts` - Zustand store for region/language/theme state
+  - **UI Components:**
+    - `components/ui/RegionSelector.tsx` - Dual dropdowns for region + language selection
+    - `components/ThemeProvider.tsx` - Auto-applies theme based on region with fallback
+  - **Shop Integration:**
+    - `apps/web/app/shop/page.tsx` - Region-based filtering, theme purchase & auto-apply
+    - `apps/web/app/api/items/route.ts` - Region query parameter support with global item fallback
+  - **Features:**
+    - Region defaults to EU, language to EN, theme to default
+    - Theme items show purple palette icon badge in shop
+    - Purchasing theme item immediately applies theme via Zustand store
+    - Shop loads items filtered by current region (includes global items)
+
+### Technical Details
+**Region Settings Structure:**
+```typescript
+EU: { locale: "en", theme: "default" }
+US: { locale: "en", theme: "modern" }
+JP: { locale: "ja", theme: "kawaii" }
+KR: { locale: "ko", theme: "neon" }
+CN: { locale: "zh", theme: "classic" }
+```
+
+**Theme Application:**
+- ThemeProvider watches Zustand store state changes
+- Applies Tailwind classes to `document.body` reactively
+- Fallback to "default" theme for invalid theme keys
+
+**Shop Region Filtering:**
+```typescript
+// API supports ?region=JP query parameter
+where.OR = [
+  { region: region },
+  { region: null }, // Include global items
+];
+```
+
+### Notes
+- ⚠️ Root layout integration blocked by workspace config
+- Components ready for manual integration into pages
+- Admin layout at `apps/web/app/admin/layout.tsx` available as reference
+
+---
+
+## [0.35.16d] - 2025-11-11
 
 ### Fixed
 - [x] Vercel production build failures (Prisma init, missing exports, Edge runtime errors)

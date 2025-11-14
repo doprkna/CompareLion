@@ -6,6 +6,7 @@ import { ensurePrismaClient } from "@/lib/prisma-guard";
 import { safeAsync, authError, forbiddenError } from "@/lib/api-handler";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
+import { env } from "@/lib/env";
 
 // Force Node.js runtime for Prisma (v0.35.16d)
 export const runtime = 'nodejs';
@@ -90,7 +91,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
     notifications,
     worldEvents,
     lastSeed: readLastSeedTimestamp(),
-    databaseUrl: process.env.DATABASE_URL || "Not configured",
+    databaseUrl: env.DATABASE_URL || "Not configured",
     timestamp: new Date().toISOString(),
   };
 

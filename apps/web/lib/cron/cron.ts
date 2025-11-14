@@ -8,9 +8,10 @@
 import { prisma } from '@/lib/db';
 import { CronJobStatus } from '@parel/db/client';
 import { logger } from '@/lib/logger';
+import { env } from '@/lib/env';
 
 // Redis connection for locking (optional) - dynamically imported to avoid webpack bundling issues
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = env.REDIS_URL;
 let redisClient: any = null;
 
 // Initialize Redis connection lazily at runtime (v0.33.4 - webpack fix)

@@ -5,9 +5,18 @@ import { questionGenQueue, QuestionGenJob } from '@/lib/jobs/questionGen.queue';
 import { QGEN_DAILY_LIMIT } from '@/lib/config';
 import { logger } from '@/lib/logger';
 
-// Redis connection for scheduler
-const redisUrl = process.env.REDIS_URL ?? '';
-const connection = new IORedis(redisUrl);
+// Redis connection for scheduler (lazy init)
+let _connection: IORedis | null = null;
+
+function getConnection(): IORedis {
+  if (!_connection) {
+    const redisUrl = process.env.REDIS_URL ?? '';
+    _connection = new IORedis(redisUrl);
+  }
+  return _connection;
+}
+
+const connection = getConnection();
 
 // Batch size from env
 const batchSize = Number(process.env.QGEN_BATCH_SIZE ?? '50');

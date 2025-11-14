@@ -7,7 +7,24 @@
 
 import { PrismaClient, Prisma } from '@parel/db/client';
 
-const prisma = new PrismaClient() as PrismaClient;
+let _prisma: PrismaClient | null = null;
+
+function getPrisma(): PrismaClient {
+  if (!_prisma) {
+    _prisma = new PrismaClient();
+  }
+  return _prisma;
+}
+
+const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    return (getPrisma() as any)[prop];
+  },
+  set(_target, prop, value) {
+    (getPrisma() as any)[prop] = value;
+    return true;
+  }
+});
 
 export interface ModelIntegrityResult {
   model: string;

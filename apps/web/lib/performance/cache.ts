@@ -9,26 +9,30 @@ import { logger } from "@/lib/logger";
 
 const REDIS_URL = process.env.REDIS_URL;
 
-let redis: Redis | null = null;
+let _redis: Redis | null = null;
 
-if (REDIS_URL) {
-  try {
-    redis = new Redis(REDIS_URL, {
-      maxRetriesPerRequest: 3,
-      enableReadyCheck: true,
-      lazyConnect: true,
-    });
-    
-    redis.on("error", (err) => {
-      logger.warn("[Cache] Redis connection error", { message: err.message });
-    });
-    
-    redis.on("ready", () => {
-      // Connected
-    });
-  } catch (error) {
-    logger.warn("[Cache] Redis initialization failed, falling back to no-cache");
+function getRedis(): Redis | null {
+  if (!_redis && REDIS_URL) {
+    try {
+      _redis = new Redis(REDIS_URL, {
+        maxRetriesPerRequest: 3,
+        enableReadyCheck: true,
+        lazyConnect: true,
+      });
+      
+      _redis.on("error", (err) => {
+        logger.warn("[Cache] Redis connection error", { message: err.message });
+      });
+      
+      _redis.on("ready", () => {
+        // Connected
+      });
+    } catch (error) {
+      logger.warn("[Cache] Redis initialization failed, falling back to no-cache");
+      _redis = null;
+    }
   }
+  return _redis;
 }
 
 export interface CacheOptions {
@@ -52,6 +56,7 @@ export const CACHE_TTL = {
  * Get cached data
  */
 export async function getCached<T>(key: string): Promise<T | null> {
+  const redis = getRedis();
   if (!redis) return null;
   
   try {
@@ -73,6 +78,7 @@ export async function setCached<T>(
   value: T,
   options: CacheOptions = {}
 ): Promise<void> {
+  const redis = getRedis();
   if (!redis) return;
   
   const { ttl = CACHE_TTL.STATIC_DATA, tags = [] } = options;
@@ -99,6 +105,7 @@ export async function setCached<T>(
  * Delete cached data
  */
 export async function deleteCached(key: string): Promise<void> {
+  const redis = getRedis();
   if (!redis) return;
   
   try {
@@ -112,6 +119,7 @@ export async function deleteCached(key: string): Promise<void> {
  * Invalidate all cache entries with a specific tag
  */
 export async function invalidateByTag(tag: string): Promise<void> {
+  const redis = getRedis();
   if (!redis) return;
   
   try {
@@ -168,6 +176,7 @@ export function getCacheKey(
  * Clear all cache
  */
 export async function clearCache(): Promise<void> {
+  const redis = getRedis();
   if (!redis) return;
   
   try {
@@ -185,6 +194,7 @@ export async function getCacheStats(): Promise<{
   keys: number;
   memory: string;
 }> {
+  const redis = getRedis();
   if (!redis) {
     return { connected: false, keys: 0, memory: "0" };
   }
@@ -204,6 +214,7 @@ export async function getCacheStats(): Promise<{
     return { connected: false, keys: 0, memory: "0" };
   }
 }
+
 
 
 

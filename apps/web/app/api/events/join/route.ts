@@ -5,10 +5,21 @@ import { requireAuth } from '@/lib/auth';
 import Redis from 'ioredis';
 
 const REDIS_URL = process.env.REDIS_URL;
-let redis: Redis | null = null;
-try { if (REDIS_URL) redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true }); } catch { redis = null; }
+let _redis: Redis | null = null;
+
+function getRedis(): Redis | null {
+  if (!_redis && REDIS_URL) {
+    try {
+      _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
+    } catch {
+      _redis = null;
+    }
+  }
+  return _redis;
+}
 
 function invalidateToday(region: string) {
+  const redis = getRedis();
   if (!redis) return;
   try { redis.del(`event:today:${region.toUpperCase()}`); } catch {}
 }

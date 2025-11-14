@@ -688,6 +688,10 @@ export const TrendingQuestionScalarFieldEnumSchema = z.enum(['id','questionId','
 
 export const CombatSessionScalarFieldEnumSchema = z.enum(['id','userId','heroHp','heroMaxHp','enemyHp','enemyMaxHp','enemyName','enemyType','xpGained','goldGained','kills','currentStreak','isActive','lastActionAt','createdAt','updatedAt']);
 
+export const EnemyScalarFieldEnumSchema = z.enum(['id','name','hp','str','def','speed','rarity','xpReward','goldReward','sprite','createdAt','updatedAt']);
+
+export const FightScalarFieldEnumSchema = z.enum(['id','heroId','enemyId','rounds','winner','createdAt']);
+
 export const PublicComparisonScalarFieldEnumSchema = z.enum(['id','question','answers','isPublic','reactionsLike','reactionsLaugh','reactionsThink','createdAt','updatedAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
@@ -6936,6 +6940,42 @@ export const CombatSessionSchema = z.object({
 })
 
 export type CombatSession = z.infer<typeof CombatSessionSchema>
+
+/////////////////////////////////////////
+// ENEMY SCHEMA
+/////////////////////////////////////////
+
+export const EnemySchema = z.object({
+  id: z.cuid(),
+  name: z.string(),
+  hp: z.number().int(),
+  str: z.number().int(),
+  def: z.number().int(),
+  speed: z.number().int(),
+  rarity: z.string(),
+  xpReward: z.number().int(),
+  goldReward: z.number().int(),
+  sprite: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type Enemy = z.infer<typeof EnemySchema>
+
+/////////////////////////////////////////
+// FIGHT SCHEMA
+/////////////////////////////////////////
+
+export const FightSchema = z.object({
+  id: z.cuid(),
+  heroId: z.string(),
+  enemyId: z.string(),
+  rounds: JsonValueSchema,
+  winner: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type Fight = z.infer<typeof FightSchema>
 
 /////////////////////////////////////////
 // PUBLIC COMPARISON SCHEMA

@@ -14,6 +14,7 @@ import { prisma } from '@/lib/db';
 import { getRuntimeInfo } from '@/lib/build-info';
 import { safeAsync } from '@/lib/api-handler';
 import { getFlags } from '@/lib/config/flags';
+import { env } from '@/lib/env';
 
 // Track startup time for uptime calculation
 const startTime = Date.now();
@@ -22,7 +23,7 @@ const startTime = Date.now();
  * Check database connectivity and measure latency
  */
 async function checkDatabase() {
-  if (!process.env.DATABASE_URL) {
+  if (!env.DATABASE_URL) {
     return {
       status: 'unavailable',
       error: 'DATABASE_URL not configured',
@@ -193,8 +194,8 @@ export const GET = safeAsync(async (req: NextRequest) => {
     
     // Features
     features: {
-      sentry: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
-      redis: !!process.env.REDIS_URL,
+      sentry: !!process.env.NEXT_PUBLIC_SENTRY_DSN, // Public env var - keep as-is
+      redis: !!env.REDIS_URL,
       analytics: getFlags().enableAnalytics,
     },
   };

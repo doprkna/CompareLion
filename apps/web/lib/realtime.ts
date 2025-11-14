@@ -13,8 +13,9 @@
 import { eventBus } from "@/lib/eventBus";
 import Redis from "ioredis";
 import { logger } from "@/lib/logger";
+import { env } from "@/lib/env";
 
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = env.REDIS_URL;
 const CHANNEL_NAME = "parel-events";
 
 // Redis clients (pub/sub require separate connections)
@@ -33,7 +34,7 @@ function initializeRedis() {
   }
 
   if (!REDIS_URL) {
-    if (process.env.NODE_ENV === 'development') {
+    if (env.NODE_ENV === 'development') {
     }
     return;
   }
@@ -115,8 +116,7 @@ function initializeRedis() {
   }
 }
 
-// Initialize on module load (server-side only)
-initializeRedis();
+// Redis initialization is now lazy - initializeRedis() will be called on first publishEvent
 
 /**
  * Publish an event to both local and Redis
@@ -125,6 +125,11 @@ initializeRedis();
  * @param payload Event data
  */
 export async function publishEvent(event: string, payload: any) {
+  // Lazy initialize Redis on first use
+  if (!redisConnected && typeof process !== 'undefined') {
+    initializeRedis();
+  }
+  
   // Always emit locally first (immediate)
   eventBus.emit(event, payload);
 

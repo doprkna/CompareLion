@@ -6,6 +6,7 @@
 
 import { PrismaClient } from "@parel/db/client";
 import { logger } from "@/lib/logger";
+import { safeRuntime } from "@/lib/safe-runtime";
 
 const DATABASE_URL = process.env.DATABASE_URL || "";
 const isProduction = process.env.NODE_ENV === "production";
@@ -77,37 +78,56 @@ declare global {
   var __prisma: PrismaClient | undefined;
 }
 
-let prisma: PrismaClient;
+let _prisma: PrismaClient | null = null;
 
-if (isProduction) {
-  prisma = new PrismaClient(prismaOptions);
-} else {
-  if (!global.__prisma) {
-    global.__prisma = new PrismaClient(prismaOptions);
-  }
-  prisma = global.__prisma;
-}
+function getPrisma(): PrismaClient {
+  if (!_prisma) {
+    let client: PrismaClient;
 
-/**
- * Slow query logging (development only)
- */
-if (!isProduction) {
-  // @ts-ignore
-  prisma.$on("query", (e: any) => {
-    if (e.duration > 100) {
-      logger.warn('[DB] Slow query detected', { duration: e.duration, query: e.query });
+    if (isProduction) {
+      client = new PrismaClient(prismaOptions);
+    } else {
+      if (!global.__prisma) {
+        global.__prisma = new PrismaClient(prismaOptions);
+      }
+      client = global.__prisma;
     }
-  });
+
+    /**
+     * Slow query logging (development only)
+     */
+    if (!isProduction && typeof process !== 'undefined') {
+      // @ts-ignore
+      client.$on("query", (e: any) => {
+        if (e.duration > 100) {
+          logger.warn('[DB] Slow query detected', { duration: e.duration, query: e.query });
+        }
+      });
+    }
+
+    /**
+     * Graceful shutdown
+     */
+    if (isProduction && typeof process !== 'undefined') {
+      process.on("beforeExit", async () => {
+        await client.$disconnect();
+      });
+    }
+
+    _prisma = client;
+  }
+  return _prisma;
 }
 
-/**
- * Graceful shutdown
- */
-if (isProduction) {
-  process.on("beforeExit", async () => {
-    await prisma.$disconnect();
-  });
-}
+const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    return (getPrisma() as any)[prop];
+  },
+  set(_target, prop, value) {
+    (getPrisma() as any)[prop] = value;
+    return true;
+  }
+});
 
 /**
  * Connection pool statistics

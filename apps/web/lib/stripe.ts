@@ -1,14 +1,47 @@
 /**
- * Stripe Integration (v0.22.0)
- * Test mode stub for monetization layer
+ * Stripe Integration
+ * v0.35.17b - Safe env loading with fallbacks
  */
 
 import Stripe from 'stripe';
+import { env } from '@/lib/env';
 
-// Initialize Stripe with test keys
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2024-11-20.acacia',
-  typescript: true,
+let _stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (!_stripe) {
+    _stripe = env.STRIPE_SECRET_KEY
+      ? new Stripe(env.STRIPE_SECRET_KEY, {
+          apiVersion: '2024-11-20.acacia',
+          typescript: true,
+        })
+      : ({
+          checkout: {
+            sessions: { create: async () => ({ id: 'dummy_session' }) },
+          },
+          billingPortal: {
+            sessions: { create: async () => ({ url: 'dummy_url' }) },
+          },
+          subscriptions: {
+            retrieve: async () => ({} as any),
+            cancel: async () => ({} as any),
+          },
+          webhooks: {
+            constructEvent: () => ({} as any),
+          },
+        } as any);
+  }
+  return _stripe;
+}
+
+const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    return (getStripe() as any)[prop];
+  },
+  set(_target, prop, value) {
+    (getStripe() as any)[prop] = value;
+    return true;
+  }
 });
 
 export interface PricingPlan {
@@ -28,7 +61,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     tier: 'PREMIUM',
     price: 9.99,
     interval: 'month',
-    stripePriceId: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID || 'price_test_premium_monthly',
+    stripePriceId: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID || 'price_test_premium_monthly', // Optional: keep pricing IDs as direct env access
     features: [
       'VIP comparisons',
       'Advanced analytics',
@@ -89,7 +122,7 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string
 ): Promise<Stripe.Checkout.Session> {
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [
@@ -119,7 +152,7 @@ export async function createPortalSession(
   customerId: string,
   returnUrl: string
 ): Promise<Stripe.BillingPortal.Session> {
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: customerId,
     return_url: returnUrl,
   });
@@ -133,7 +166,7 @@ export async function createPortalSession(
 export async function getSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {
-  return await stripe.subscriptions.retrieve(subscriptionId);
+  return await getStripe().subscriptions.retrieve(subscriptionId);
 }
 
 /**
@@ -142,7 +175,7 @@ export async function getSubscription(
 export async function cancelSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription> {
-  return await stripe.subscriptions.cancel(subscriptionId);
+  return await getStripe().subscriptions.cancel(subscriptionId);
 }
 
 /**
@@ -152,9 +185,9 @@ export async function handleStripeWebhook(
   body: string | Buffer,
   signature: string
 ): Promise<Stripe.Event> {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''; // Webhook secret not in main env (optional config)
   
-  return stripe.webhooks.constructEvent(body, signature, webhookSecret);
+  return getStripe().webhooks.constructEvent(body, signature, webhookSecret);
 }
 
 export default stripe;

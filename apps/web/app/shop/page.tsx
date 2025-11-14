@@ -2,18 +2,19 @@
 
 /**
  * Shop Page
- * v0.35.15 - Real database items
+ * v0.35.17 - Region-based theme support
  */
 
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/apiBase';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Coins, Package } from 'lucide-react';
+import { ShoppingBag, Coins, Package, Palette } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { FeatureGuard } from '@/components/FeatureGuard';
 import PlaceholderPage from '@/components/PlaceholderPage';
 import { isAdminView } from '@/lib/utils/isAdminView';
+import { useRegionStore } from '@/store/useRegionStore';
 
 interface ShopItem {
   id: string;
@@ -26,6 +27,7 @@ interface ShopItem {
   goldPrice: number;
   power: number | null;
   defense: number | null;
+  region?: string | null;
 }
 
 export default function ShopPage() {
@@ -41,16 +43,17 @@ function ShopPageContent() {
   const [loading, setLoading] = useState(true);
   const [userFunds, setUserFunds] = useState(0);
   const { toast } = useToast();
+  const { region, setTheme } = useRegionStore();
 
   useEffect(() => {
     loadShop();
     loadUserFunds();
-  }, []);
+  }, [region]);
 
   async function loadShop() {
     setLoading(true);
     try {
-      const res = await apiFetch('/api/items');
+      const res = await apiFetch(`/api/items?region=${region}`);
       if ((res as any).ok && (res as any).data?.items) {
         setItems((res as any).data.items);
       }
@@ -76,7 +79,7 @@ function ShopPageContent() {
     if (userFunds < item.goldPrice) {
       toast({
         title: 'Insufficient Funds',
-        description: `You need  gold but only have  gold.`,
+        description: `You need ${item.goldPrice} gold but only have ${userFunds} gold.`,
         variant: 'destructive',
       });
       return;
@@ -93,10 +96,19 @@ function ShopPageContent() {
         const { newBalance } = (res as any).data;
         setUserFunds(newBalance);
         
-        toast({
-          title: 'Purchase Successful!',
-          description: `Bought   for  gold`,
-        });
+        // If it's a theme item, apply it immediately
+        if (item.type === 'theme') {
+          setTheme(item.name.toLowerCase());
+          toast({
+            title: 'Theme Applied!',
+            description: `${item.emoji} ${item.name} theme is now active`,
+          });
+        } else {
+          toast({
+            title: 'Purchase Successful!',
+            description: `Bought ${item.emoji} ${item.name} for ${item.goldPrice} gold`,
+          });
+        }
         
         // Reload shop to update inventory
         loadShop();
@@ -163,12 +175,20 @@ function ShopPageContent() {
                 {items.map((item) => (
                   <Card 
                     key={item.id} 
-                    className={`p-4 flex flex-col items-center justify-between space-y-3 border-2  hover:scale-105 transition-transform`}
+                    className={`p-4 flex flex-col items-center justify-between space-y-3 border-2 ${rarityColors[item.rarity?.toLowerCase()] || 'border-gray-500'} hover:scale-105 transition-transform`}
                   >
-                    <div className="text-5xl">{item.emoji || item.icon || 'ðŸ“¦'}</div>
+                    <div className="relative">
+                      <div className="text-5xl">{item.emoji || item.icon || 'ðŸ"¦'}</div>
+                      {item.type === 'theme' && (
+                        <Palette className="absolute -top-1 -right-1 h-4 w-4 text-purple-500" />
+                      )}
+                    </div>
                     <div className="text-center space-y-1">
                       <div className="font-bold text-text">{item.name}</div>
                       <div className="text-xs text-subtle capitalize">{item.rarity}</div>
+                      {item.type === 'theme' && (
+                        <div className="text-xs text-purple-500 font-semibold">UI Theme</div>
+                      )}
                       {item.description && (
                         <div className="text-xs text-subtle line-clamp-2">{item.description}</div>
                       )}
