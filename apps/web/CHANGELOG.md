@@ -16,4 +16,5 @@
   - Fixed - Missing hooks build: Added "hooks" to packages/core/tsconfig.json include array so useCommunity, useSocial, useFactions are compiled and available in dist/
   - Fixed - Node version: Changed engines.node from ">=20.10.0" to "22.x" in root package.json to prevent Vercel from using Node 24.x
   - Fixed - Vercel build module resolution: Updated all deep imports from "@parel/core/hooks/*" to "@parel/core" barrel export in community, duels, factions, and social pages/components
-  - Fixed - Vercel monorepo deployment: Added @parel/core, @parel/api, @parel/types as workspace dependencies in apps/web/package.json, updated apps/web engines.node to "22.x", added build:vercel script to root package.json 
+  - Fixed - Vercel monorepo deployment: Added @parel/core, @parel/api, @parel/types as workspace dependencies in apps/web/package.json, updated apps/web engines.node to "22.x", added build:vercel script to root package.json
+  - Fixed - Vercel Hobby cron limit: Removed cron definition from vercel.json (was running every 5 minutes, exceeds Hobby plan once-per-day limit) 
