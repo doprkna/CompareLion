@@ -11,4 +11,5 @@
   - Fixed - Hydration mismatch: Added `suppressHydrationWarning` to `<body>` tag in `app/layout.tsx` to silence warnings from browser extension-injected classes like "vsc-initialized"
   - Fixed - Realtime SSE hardening: Improved headers, flush handling, cleanup, and client-side backoff (60s when disabled, 10s on errors)
   - Fixed - Vercel deployment analysis: Documented root directory (repo root), build process, required env vars (60+), and identified 10 blockers (filesystem reads, SSE timeouts, edge runtime issues)
-  - Fixed - Neon Postgres + Upstash Redis support: Added env helpers (isProd, hasDb, hasRedis), conditional Prisma/Redis initialization, requireDb/requireRedis helpers in api-handler, updated /api/health to show env status 
+  - Fixed - Neon Postgres + Upstash Redis support: Added env helpers (isProd, hasDb, hasRedis), conditional Prisma/Redis initialization, requireDb/requireRedis helpers in api-handler, updated /api/health to show env status
+  - Fixed - Prisma schema validation: Removed missing `Fight` model references from User and Enemy models, fixed duplicate field definitions (region, isTradable, userItems), fixed Notification relation name mismatch, removed invalid ItemEffect->UserItem relation 
