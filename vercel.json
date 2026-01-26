@@ -4,19 +4,15 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "outputDirectory": "apps/web/.next",
-  "crons": [
-    {
-      "path": "/api/health/extended",
-      "schedule": "*/5 * * * *"
-    }
-  ],
   "functions": {
     "apps/web/app/api/**/*.ts": {
       "memory": 1024,
       "maxDuration": 10
     }
   },
-  "regions": ["iad1"],
+  "regions": [
+    "iad1"
+  ],
   "env": {
     "NEXT_PUBLIC_ENV": "beta",
     "ENABLE_ANALYTICS": "1"
@@ -59,4 +55,3 @@
     }
   ]
 }
-

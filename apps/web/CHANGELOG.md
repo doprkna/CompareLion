@@ -1,4 +1,9 @@
 
+## [0.42.34] - 2026-01-26
+
+### Fixed
+  - Fixed - Vercel Hobby cron limit: Removed cron section from vercel.json (was blocking redeploy with "*/5 * * * *" schedule)
+
 ## [0.42.33] - 2026-01-26
 
 ### Changed
