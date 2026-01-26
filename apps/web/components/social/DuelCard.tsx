@@ -1,6 +1,6 @@
 'use client';
 
-import { Duel } from '@parel/core/hooks/useSocial';
+import { Duel } from '@parel/core';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trophy, Sword, Users } from 'lucide-react';

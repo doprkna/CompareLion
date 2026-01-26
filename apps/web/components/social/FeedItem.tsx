@@ -1,6 +1,6 @@
 'use client';
 
-import { FeedItem as FeedItemType } from '@parel/core/hooks/useSocial';
+import { FeedItem as FeedItemType } from '@parel/core';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, Award, Target, Users } from 'lucide-react';
 // Format time ago - simple implementation for MVP

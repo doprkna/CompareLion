@@ -1,9 +1,8 @@
 "use client";
 import { useState } from 'react';
-import { useFactions, useJoinFaction } from '@parel/core/hooks/useFactions';
+import { useFactions, useJoinFaction, useFactionMap } from '@parel/core';
 import { FactionCard } from '@/components/factions/FactionCard';
 import { FactionBuffBar } from '@/components/factions/FactionBuffBar';
-import { useFactionMap } from '@parel/core/hooks/useFactions';
 import { FactionInfluenceMap } from '@/components/factions/FactionInfluenceMap';
 
 export default function FactionsPage() {

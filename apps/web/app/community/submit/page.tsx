@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from 'next/navigation';
-import { useSubmitCreation } from '@parel/core/hooks/useCommunity';
+import { useSubmitCreation } from '@parel/core';
 import { CommunitySubmitForm } from '@/components/community/CommunitySubmitForm';
 
 export default function CommunitySubmitPage() {

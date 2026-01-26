@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { useCommunityCreations, useLikeCreation } from '@parel/core/hooks/useCommunity';
+import { useCommunityCreations, useLikeCreation } from '@parel/core';
 import { CommunityCard } from '@/components/community/CommunityCard';
 
 export default function CommunityPage() {

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FriendCard } from '@/components/social/FriendCard';
 import { FeedItem } from '@/components/social/FeedItem';
-import { useFriends, useSocialFeed, useFriendRequest, Friend } from '@parel/core/hooks/useSocial';
+import { useFriends, useSocialFeed, useFriendRequest, Friend } from '@parel/core';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, Loader2, RefreshCw, UserPlus } from 'lucide-react';
