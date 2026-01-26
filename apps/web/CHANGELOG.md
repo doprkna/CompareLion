@@ -2,7 +2,7 @@
 ## [0.42.33] - 2026-01-26
 
 ### Changed
-  - Deployment: Configuration updates for Vercel deployment asdf
+  - Deployment: Configuration updates for Vercel deployment
 
 ## [0.42.32] - 2026-01-26
 
