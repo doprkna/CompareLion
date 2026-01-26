@@ -1,4 +1,9 @@
 
+## [0.42.32] - 2026-01-26
+
+### Changed
+  - Deployment: Updated Vercel configuration for Hobby plan compatibility
+
 ## [0.42.31] - 2026-01-26
 
 ### Fixed
