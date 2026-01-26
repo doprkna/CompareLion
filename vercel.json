@@ -4,12 +4,6 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "outputDirectory": "apps/web/.next",
-  "functions": {
-    "apps/web/app/api/**/*.ts": {
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
   "regions": [
     "iad1"
   ],

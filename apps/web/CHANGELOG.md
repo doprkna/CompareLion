@@ -1,4 +1,9 @@
 
+## [0.42.35] - 2026-01-26
+
+### Fixed
+  - Fixed - Vercel functions pattern: Removed functions block from vercel.json (Next.js App Router handles API routes automatically, pattern was invalid)
+
 ## [0.42.34] - 2026-01-26
 
 ### Fixed
