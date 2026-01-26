@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { Prisma as PrismaRuntime } from '@prisma/client/runtime/library';
-
-// Re-export Prisma namespace for runtime usage
-const Prisma = PrismaRuntime;
+import { Prisma } from '@prisma/client';
 import Decimal from 'decimal.js';
 
 /////////////////////////////////////////
@@ -82,7 +78,7 @@ export const isValidDecimalInput =
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const UserScalarFieldEnumSchema = z.enum(['id','email','passwordHash','name','phone','language','country','dateOfBirth','avatarUrl','username','bio','visibility','banned','motto','theme','funds','diamonds','xp','level','lastLoginAt','lastActiveAt','createdAt','image','streakCount','lastAnsweredAt','score','questionsAnswered','questionsCreated','emailVerified','emailVerifiedAt','newsletterOptIn','role','archetype','archetypeKey','stats','lastArchetypeReroll','settings','lang','localeCode','ageGroup','region','interests','tone','onboardingCompleted','combatKills','combatBattles','combatHighestStreak','statCreativity','statHealth','statKnowledge','statSleep','statSocial','allowPublicCompare','canBeAdded','badgeType','karmaScore','prestigeScore','showBadges','coins','seasonalXP','seasonLevel','seasonXP','prestigeCount','legacyPerk','prestigeTitle','prestigeBadgeId','prestigeColorTheme','currentGeneration','avatarTheme','moodFeed','equippedTitle','equippedIcon','equippedBackground']);
+export const UserScalarFieldEnumSchema = z.enum(['id','email','passwordHash','name','phone','language','country','dateOfBirth','avatarUrl','username','bio','statusMessage','karma','avatarFrameId','isPublicProfile','visibility','banned','motto','theme','funds','diamonds','xp','level','lastLoginAt','lastActiveAt','createdAt','image','streakCount','lastAnsweredAt','score','questionsAnswered','questionsCreated','emailVerified','emailVerifiedAt','newsletterOptIn','role','archetype','archetypeKey','stats','lastArchetypeReroll','settings','lang','localeCode','ageGroup','region','interests','tone','onboardingCompleted','combatKills','combatBattles','combatHighestStreak','statCreativity','statHealth','statKnowledge','statSleep','statSocial','allowPublicCompare','canBeAdded','badgeType','karmaScore','prestigeScore','showBadges','coins','seasonalXP','seasonLevel','seasonXP','prestigeCount','legacyPerk','prestigeTitle','prestigeBadgeId','prestigeColorTheme','currentGeneration','avatarTheme','moodFeed','equippedTitle','equippedIcon','equippedBackground']);
 
 export const AffinityScalarFieldEnumSchema = z.enum(['id','sourceId','targetId','type','strength','mutual','visibility','createdAt','updatedAt']);
 
@@ -90,7 +86,7 @@ export const OrgScalarFieldEnumSchema = z.enum(['id','name','createdAt']);
 
 export const MembershipScalarFieldEnumSchema = z.enum(['id','userId','orgId','role']);
 
-export const TaskScalarFieldEnumSchema = z.enum(['id','orgId','createdById','title','description','status','priority','source','assigneeType','assigneeId','dueAt','createdAt','updatedAt']);
+export const TaskScalarFieldEnumSchema = z.enum(['id','orgId','createdById','title','description','region','status','priority','source','assigneeType','assigneeId','dueAt','createdAt','updatedAt']);
 
 export const AttachmentScalarFieldEnumSchema = z.enum(['id','taskId','name','url','mimeType','size']);
 
@@ -106,7 +102,7 @@ export const QuestionScalarFieldEnumSchema = z.enum(['text','normalizedText','di
 
 export const QuestionVersionScalarFieldEnumSchema = z.enum(['id','questionId','text','displayText','type','options','metadata','createdAt','version']);
 
-export const QuestionTagScalarFieldEnumSchema = z.enum(['id','name','type','description']);
+export const QuestionTagScalarFieldEnumSchema = z.enum(['id','name','type','description','region']);
 
 export const QuestionVersionTagScalarFieldEnumSchema = z.enum(['id','questionVersionId','tagId']);
 
@@ -118,11 +114,11 @@ export const FlowQuestionOptionScalarFieldEnumSchema = z.enum(['id','questionId'
 
 export const UserResponseScalarFieldEnumSchema = z.enum(['id','userId','questionId','optionIds','numericVal','textVal','skipped','createdAt','updatedAt']);
 
-export const SynchTestScalarFieldEnumSchema = z.enum(['id','key','title','description','questions','resultTextTemplates','rewardXP','rewardKarma','isActive','createdAt']);
+export const SynchTestScalarFieldEnumSchema = z.enum(['id','key','title','description','region','questions','resultTextTemplates','rewardXP','rewardKarma','isActive','createdAt']);
 
 export const UserSynchTestScalarFieldEnumSchema = z.enum(['id','testId','userA','userB','answersA','answersB','compatibilityScore','shared','status','createdAt']);
 
-export const FactionScalarFieldEnumSchema = z.enum(['id','key','name','motto','description','colorPrimary','colorSecondary','buffType','buffValue','regionScope','isActive','createdAt']);
+export const FactionScalarFieldEnumSchema = z.enum(['id','key','name','motto','description','region','colorPrimary','colorSecondary','buffType','buffValue','regionScope','isActive','createdAt']);
 
 export const FactionInfluenceScalarFieldEnumSchema = z.enum(['id','factionId','region','influenceScore','lastUpdated','dailyDelta','contributionsCount']);
 
@@ -134,9 +130,9 @@ export const CommunityCreationLikeScalarFieldEnumSchema = z.enum(['id','userId',
 
 export const PostcardScalarFieldEnumSchema = z.enum(['id','senderId','receiverId','message','status','deliveryAt','createdAt']);
 
-export const RarityTierScalarFieldEnumSchema = z.enum(['id','key','name','colorPrimary','colorGlow','frameStyle','rankOrder','description','isActive','createdAt']);
+export const RarityTierScalarFieldEnumSchema = z.enum(['id','key','name','colorPrimary','colorGlow','frameStyle','rankOrder','description','region','isActive','createdAt']);
 
-export const DailyForkScalarFieldEnumSchema = z.enum(['id','key','title','description','optionA','optionB','effectA','effectB','rarity','createdAt','isActive']);
+export const DailyForkScalarFieldEnumSchema = z.enum(['id','key','title','description','region','optionA','optionB','effectA','effectB','rarity','createdAt','isActive']);
 
 export const UserDailyForkScalarFieldEnumSchema = z.enum(['id','userId','forkId','choice','resultSummary','createdAt']);
 
@@ -148,7 +144,7 @@ export const RitualScalarFieldEnumSchema = z.enum(['id','key','title','descripti
 
 export const UserRitualScalarFieldEnumSchema = z.enum(['id','userId','ritualId','lastCompleted','streakCount','totalCompleted']);
 
-export const MicroClanScalarFieldEnumSchema = z.enum(['id','name','description','leaderId','memberIds','buffType','buffValue','seasonId','createdAt','isActive']);
+export const MicroClanScalarFieldEnumSchema = z.enum(['id','name','description','region','leaderId','memberIds','buffType','buffValue','seasonId','createdAt','isActive']);
 
 export const MicroClanStatsScalarFieldEnumSchema = z.enum(['id','clanId','xpTotal','activityScore','rank','updatedAt']);
 
@@ -176,21 +172,21 @@ export const AchievementScalarFieldEnumSchema = z.enum(['id','code','key','categ
 
 export const UserAchievementScalarFieldEnumSchema = z.enum(['id','userId','achievementId','tier','earnedAt','unlockedAt','animationShownAt']);
 
-export const EventLogScalarFieldEnumSchema = z.enum(['id','userId','type','title','description','metadata','visibility','reactionsCount','createdAt','eventType','eventData']);
+export const EventLogScalarFieldEnumSchema = z.enum(['id','userId','type','title','description','region','metadata','visibility','reactionsCount','createdAt','eventType','eventData']);
 
 export const WaitlistScalarFieldEnumSchema = z.enum(['id','email','refCode','source','status','createdAt','updatedAt']);
 
 export const MarketingCampaignScalarFieldEnumSchema = z.enum(['id','title','content','link','status','sentAt','deliveredCount','openedCount','clickedCount','createdAt','updatedAt']);
 
-export const ActivityScalarFieldEnumSchema = z.enum(['id','userId','type','title','description','metadata','createdAt']);
-
-export const NotificationScalarFieldEnumSchema = z.enum(['id','userId','senderId','type','title','body','isRead','createdAt']);
+export const ActivityScalarFieldEnumSchema = z.enum(['id','userId','type','title','description','region','metadata','createdAt']);
 
 export const PresenceScalarFieldEnumSchema = z.enum(['userId','status','lastActive','updatedAt']);
 
-export const ItemScalarFieldEnumSchema = z.enum(['id','name','type','rarity','description','power','defense','effect','bonus','icon','key','emoji','createdAt','availableUntil','cosmeticSubtype','cosmeticType','diamondPrice','eventCurrency','eventPrice','goldPrice','isFeatured','isLimited','isShopItem','visualConfig','rarityId']);
+export const ItemScalarFieldEnumSchema = z.enum(['id','name','type','slot','rarity','description','region','power','defense','effect','bonus','icon','key','emoji','createdAt','availableUntil','cosmeticSubtype','cosmeticType','diamondPrice','eventCurrency','eventPrice','goldPrice','isFeatured','isLimited','isShopItem','isTradable','visualConfig','rarityId']);
 
 export const InventoryItemScalarFieldEnumSchema = z.enum(['id','userId','itemId','itemKey','rarity','power','effectKey','quantity','equipped','createdAt','updatedAt']);
+
+export const UserItemScalarFieldEnumSchema = z.enum(['id','userId','itemId','quantity','equipped','durability','createdAt']);
 
 export const ItemEffectScalarFieldEnumSchema = z.enum(['key','name','description','type','magnitude','trigger','createdAt','updatedAt']);
 
@@ -202,7 +198,7 @@ export const DuelScalarFieldEnumSchema = z.enum(['id','initiatorId','receiverId'
 
 export const ChallengeScalarFieldEnumSchema = z.enum(['id','initiatorId','receiverId','type','categoryId','status','message','createdAt','respondedAt','completedAt','prompt','response','rewardKarma','rewardXp']);
 
-export const GlobalEventScalarFieldEnumSchema = z.enum(['id','title','description','emoji','type','bonusType','bonusValue','targetScope','startAt','endAt','active','createdBy','createdAt','updatedAt']);
+export const GlobalEventScalarFieldEnumSchema = z.enum(['id','title','description','region','emoji','type','bonusType','bonusValue','targetScope','startAt','endAt','active','createdBy','createdAt','updatedAt']);
 
 export const WeeklyChallengeScalarFieldEnumSchema = z.enum(['id','weekNumber','year','type','prompt','dareVariant','truthVariant','generationSource','trendingTopics','rewardXp','rewardKarma','participantCount','status','publishedAt','createdAt']);
 
@@ -218,7 +214,7 @@ export const MarketListingScalarFieldEnumSchema = z.enum(['id','sellerId','itemI
 
 export const GlobalPoolScalarFieldEnumSchema = z.enum(['id','poolType','goldAmount','diamondAmount','updatedAt']);
 
-export const CraftingRecipeScalarFieldEnumSchema = z.enum(['id','name','description','inputItemIds','outputItemId','goldCost','requiresToken','rarityBoost','successRate','craftingTime','unlockLevel','createdAt']);
+export const CraftingRecipeScalarFieldEnumSchema = z.enum(['id','name','description','region','inputItemIds','outputItemId','goldCost','requiresToken','rarityBoost','successRate','craftingTime','unlockLevel','createdAt']);
 
 export const CraftingLogScalarFieldEnumSchema = z.enum(['id','userId','recipeId','inputItems','outputItem','success','goldSpent','rarityAchieved','statVariance','craftedAt']);
 
@@ -228,7 +224,7 @@ export const DailyQuizCompletionScalarFieldEnumSchema = z.enum(['id','userId','q
 
 export const UserEnergyScalarFieldEnumSchema = z.enum(['id','userId','hearts','maxHearts','lastRegenAt','updatedAt']);
 
-export const GlobalFeedItemScalarFieldEnumSchema = z.enum(['id','type','title','description','userId','metadata','reactionsCount','createdAt']);
+export const GlobalFeedItemScalarFieldEnumSchema = z.enum(['id','type','title','description','region','userId','metadata','reactionsCount','createdAt']);
 
 export const ProfileThemeScalarFieldEnumSchema = z.enum(['id','userId','themeId','isActive','unlockedAt','rarityId']);
 
@@ -244,7 +240,7 @@ export const NarrativeChoiceScalarFieldEnumSchema = z.enum(['id','questId','step
 
 export const NarrativeOutcomeScalarFieldEnumSchema = z.enum(['id','questId','conclusion','karmaChange','prestigeChange','xpReward','goldReward','archetypeShift','itemsGranted','createdAt']);
 
-export const LoreEraScalarFieldEnumSchema = z.enum(['id','name','displayName','description','order','startYear','endYear','isActive','isCurrent','icon','color','createdAt','updatedAt']);
+export const LoreEraScalarFieldEnumSchema = z.enum(['id','name','displayName','description','region','order','startYear','endYear','isActive','isCurrent','icon','color','createdAt','updatedAt']);
 
 export const LoreEntryScalarFieldEnumSchema = z.enum(['id','title','slug','summary','content','eraId','author','publishedAt','category','importance','relatedFactions','relatedEvents','relatedCharacters','isPublished','isSecret','viewCount','createdAt','updatedAt']);
 
@@ -274,19 +270,19 @@ export const TaxTransactionScalarFieldEnumSchema = z.enum(['id','sourceType','so
 
 export const CreatorWalletScalarFieldEnumSchema = z.enum(['id','userId','pendingBalance','paidBalance','totalEarned','stripeAccountId','lastPayoutAt','nextPayoutAt','isActive','createdAt','updatedAt']);
 
-export const CreatorTransactionScalarFieldEnumSchema = z.enum(['id','walletId','type','amount','sourceType','sourceId','payoutPoolId','stripeTransferId','description','metadata','createdAt']);
+export const CreatorTransactionScalarFieldEnumSchema = z.enum(['id','walletId','type','amount','sourceType','sourceId','payoutPoolId','stripeTransferId','description','region','metadata','createdAt']);
 
 export const PayoutPoolScalarFieldEnumSchema = z.enum(['id','weekStart','weekEnd','totalPool','fromSubscriptions','fromCosmetics','fromDonations','totalDistributed','totalCreators','status','calculatedAt','distributedAt','createdAt']);
 
 export const EngagementMetricScalarFieldEnumSchema = z.enum(['id','contentType','contentId','creatorId','userId','type','value','weekStart','fingerprint','createdAt']);
 
-export const SubscriptionPlanScalarFieldEnumSchema = z.enum(['id','name','displayName','description','price','currency','interval','stripeProductId','stripePriceId','xpMultiplier','features','isActive','createdAt','updatedAt']);
+export const SubscriptionPlanScalarFieldEnumSchema = z.enum(['id','name','displayName','description','region','price','currency','interval','stripeProductId','stripePriceId','xpMultiplier','features','isActive','createdAt','updatedAt']);
 
 export const UserSubscriptionScalarFieldEnumSchema = z.enum(['id','userId','planId','stripeSubscriptionId','stripeCustomerId','status','startedAt','renewsAt','cancelledAt','expiresAt','trialEndsAt','createdAt','updatedAt']);
 
-export const PaymentLogScalarFieldEnumSchema = z.enum(['id','subscriptionId','userId','amount','currency','status','stripePaymentIntentId','stripeChargeId','description','metadata','failureReason','refundedAt','createdAt']);
+export const PaymentLogScalarFieldEnumSchema = z.enum(['id','subscriptionId','userId','amount','currency','status','stripePaymentIntentId','stripeChargeId','description','region','metadata','failureReason','refundedAt','createdAt']);
 
-export const ReportScalarFieldEnumSchema = z.enum(['id','reporterId','reportedUserId','contentType','contentId','reason','description','status','priority','resolvedBy','resolvedAt','resolution','createdAt']);
+export const ReportScalarFieldEnumSchema = z.enum(['id','reporterId','reportedUserId','contentType','contentId','reason','description','region','status','priority','resolvedBy','resolvedAt','resolution','createdAt']);
 
 export const ReputationScoreScalarFieldEnumSchema = z.enum(['id','userId','score','reportsReceived','reportsDismissed','positiveReactions','negativeReactions','challengesCompleted','helpfulVotes','trustLevel','isRestricted','canMessage','canChallenge','canPost','updatedAt']);
 
@@ -318,7 +314,7 @@ export const TelemetryAggregateScalarFieldEnumSchema = z.enum(['id','date','type
 
 export const UserPreferencesScalarFieldEnumSchema = z.enum(['id','userId','soundEnabled','soundVolume','levelUpSound','purchaseSound','challengeSound','notificationSound','ambientMusicEnabled','ambientTheme','animationsEnabled','reducedMotion','particleEffects','backgroundAnimation','transitionSpeed','glowEffects','shimmerEffects','confettiEnabled','createdAt','updatedAt']);
 
-export const SoundAssetScalarFieldEnumSchema = z.enum(['id','assetId','name','description','filePath','fileSize','duration','category','eventType','defaultVolume','loop','isActive','createdAt']);
+export const SoundAssetScalarFieldEnumSchema = z.enum(['id','assetId','name','description','region','filePath','fileSize','duration','category','eventType','defaultVolume','loop','isActive','createdAt']);
 
 export const OnboardingProgressScalarFieldEnumSchema = z.enum(['id','userId','sawWelcomeOverlay','sawDashboard','completedAnswer','completedCompare','completedChallenge','completedTutorial','tutorialStarted','tutorialStep','tutorialCompleted','tutorialReward','tooltipsSeen','showTooltips','skipOnboarding','startedAt','completedAt','lastStepAt']);
 
@@ -380,7 +376,7 @@ export const NpcAffinityScalarFieldEnumSchema = z.enum(['id','userId','npcId','l
 
 export const NPCDialogueScalarFieldEnumSchema = z.enum(['id','npcId','triggerType','text','moodTag','rarity','createdAt']);
 
-export const NpcDialogueTreeScalarFieldEnumSchema = z.enum(['id','npcId','treeId','name','description','triggerType','conditions','nodes','category','priority','isActive','createdAt']);
+export const NpcDialogueTreeScalarFieldEnumSchema = z.enum(['id','npcId','treeId','name','description','region','triggerType','conditions','nodes','category','priority','isActive','createdAt']);
 
 export const RewardOfferScalarFieldEnumSchema = z.enum(['id','offerId','name','description','type','partnerId','partnerName','partnerLogo','minPrestige','minLevel','requiredBadges','requiredTitles','value','rewardCode','qrCodeUrl','externalUrl','totalStock','remainingStock','maxPerUser','isActive','startsAt','expiresAt','category','imageUrl','termsUrl','nftEnabled','nftContract','nftMetadata','createdAt','updatedAt']);
 
@@ -388,7 +384,7 @@ export const RewardRedemptionScalarFieldEnumSchema = z.enum(['id','offerId','use
 
 export const RewardProofScalarFieldEnumSchema = z.enum(['id','redemptionId','proofType','proofData','uploadedAt','verifiedAt','isVerified']);
 
-export const PartnerAppScalarFieldEnumSchema = z.enum(['id','name','description','website','contactEmail','clientId','clientSecret','status','tier','rateLimit','dailyLimit','webhookUrl','webhookSecret','webhookEvents','canEmbed','canAccessData','canCreateContent','logoUrl','industry','createdAt','updatedAt','lastUsedAt']);
+export const PartnerAppScalarFieldEnumSchema = z.enum(['id','name','description','region','website','contactEmail','clientId','clientSecret','status','tier','rateLimit','dailyLimit','webhookUrl','webhookSecret','webhookEvents','canEmbed','canAccessData','canCreateContent','logoUrl','industry','createdAt','updatedAt','lastUsedAt']);
 
 export const PartnerApiKeyScalarFieldEnumSchema = z.enum(['id','partnerId','keyHash','keyPreview','name','scopes','isActive','expiresAt','lastUsedAt','usageCount','createdAt','revokedAt']);
 
@@ -410,13 +406,13 @@ export const MiniEventRewardScalarFieldEnumSchema = z.enum(['id','eventId','user
 
 export const CreatorProfileScalarFieldEnumSchema = z.enum(['id','userId','displayName','bio','avatar','bannerImage','isVerified','badge','tier','totalFlows','totalEngagement','totalEarnings','followerCount','revenueShare','goldPerPlay','isActive','allowComments','createdAt','updatedAt']);
 
-export const CreatorFlowScalarFieldEnumSchema = z.enum(['id','creatorId','title','description','coverImage','difficulty','category','tags','questions','questionCount','status','approvedBy','approvedAt','publishedAt','rejectionReason','playCount','completionCount','avgRating','ratingCount','xpReward','goldReward','isFeatured','isPremium','createdAt','updatedAt']);
+export const CreatorFlowScalarFieldEnumSchema = z.enum(['id','creatorId','title','description','region','coverImage','difficulty','category','tags','questions','questionCount','status','approvedBy','approvedAt','publishedAt','rejectionReason','playCount','completionCount','avgRating','ratingCount','xpReward','goldReward','isFeatured','isPremium','createdAt','updatedAt']);
 
 export const CreatorFollowerScalarFieldEnumSchema = z.enum(['id','creatorId','userId','followedAt']);
 
 export const CreatorRewardScalarFieldEnumSchema = z.enum(['id','creatorId','flowId','type','amount','source','description','earnedAt']);
 
-export const ClanScalarFieldEnumSchema = z.enum(['id','name','tag','description','emblem','color','leaderId','totalXp','weeklyXp','clanGold','level','memberCount','maxMembers','isPublic','requireApproval','minLevel','lastXpReset','totalChestsEarned','createdAt','updatedAt']);
+export const ClanScalarFieldEnumSchema = z.enum(['id','name','tag','description','region','emblem','color','leaderId','totalXp','weeklyXp','clanGold','level','memberCount','maxMembers','isPublic','requireApproval','minLevel','lastXpReset','totalChestsEarned','createdAt','updatedAt']);
 
 export const ClanMemberScalarFieldEnumSchema = z.enum(['id','clanId','userId','role','xpContributed','weeklyXpContributed','goldContributed','rank','title','joinedAt','lastActive']);
 
@@ -434,23 +430,23 @@ export const CronJobLogScalarFieldEnumSchema = z.enum(['id','jobKey','status','s
 
 export const ErrorAlertScalarFieldEnumSchema = z.enum(['id','severity','source','message','stackTrace','metadata','notifiedAt','resolvedAt','isResolved','createdAt']);
 
-export const JobQueueScalarFieldEnumSchema = z.enum(['id','queueName','displayName','description','priority','concurrency','maxRetries','backoffStrategy','backoffDelay','isEnabled','createdAt','updatedAt']);
+export const JobQueueScalarFieldEnumSchema = z.enum(['id','queueName','displayName','description','region','priority','concurrency','maxRetries','backoffStrategy','backoffDelay','isEnabled','createdAt','updatedAt']);
 
 export const JobQueueMetricsScalarFieldEnumSchema = z.enum(['id','queueName','date','processed','completed','failed','retried','stalled','avgProcessTime','maxProcessTime','minProcessTime','processedPerSec','failureRate']);
 
 export const JobFailureScalarFieldEnumSchema = z.enum(['id','queueName','jobId','jobName','payload','error','stackTrace','attempts','maxRetries','willRetry','nextRetryAt','failedAt','resolvedAt','isResolved']);
 
-export const CacheConfigScalarFieldEnumSchema = z.enum(['id','key','name','description','ttlSeconds','isEnabled','strategy','invalidateOn','createdAt','updatedAt']);
+export const CacheConfigScalarFieldEnumSchema = z.enum(['id','key','name','description','region','ttlSeconds','isEnabled','strategy','invalidateOn','createdAt','updatedAt']);
 
 export const CacheMetricsScalarFieldEnumSchema = z.enum(['id','cacheKey','endpoint','hitCount','missCount','avgHitTime','avgMissTime','lastHitAt','lastMissAt','date']);
 
-export const AchievementCollectionScalarFieldEnumSchema = z.enum(['id','collectionId','name','description','theme','icon','rarity','titleReward','xpReward','goldReward','diamondReward','auraUnlock','themeUnlock','isSeasonal','seasonType','isEvent','eventId','availableFrom','availableUntil','isActive','createdAt']);
+export const AchievementCollectionScalarFieldEnumSchema = z.enum(['id','collectionId','name','description','region','theme','icon','rarity','titleReward','xpReward','goldReward','diamondReward','auraUnlock','themeUnlock','isSeasonal','seasonType','isEvent','eventId','availableFrom','availableUntil','isActive','createdAt']);
 
 export const AchievementCollectionMemberScalarFieldEnumSchema = z.enum(['id','collectionId','achievementId','sortOrder']);
 
 export const UserAchievementCollectionScalarFieldEnumSchema = z.enum(['id','userId','collectionId','progress','totalRequired','isCompleted','completedAt','rewardClaimed','claimedAt']);
 
-export const ThemePackScalarFieldEnumSchema = z.enum(['id','themeId','name','description','type','rarity','isSeasonal','seasonType','gradientConfig','particleConfig','animationConfig','unlockLevel','unlockCondition','goldCost','diamondCost','vipOnly','isActive','availableFrom','availableUntil','createdAt']);
+export const ThemePackScalarFieldEnumSchema = z.enum(['id','themeId','name','description','region','type','rarity','isSeasonal','seasonType','gradientConfig','particleConfig','animationConfig','unlockLevel','unlockCondition','goldCost','diamondCost','vipOnly','isActive','availableFrom','availableUntil','createdAt']);
 
 export const UserThemeSettingsScalarFieldEnumSchema = z.enum(['id','userId','autoSeasonalTheme','preferredThemeId','lastAutoSwitchAt']);
 
@@ -460,7 +456,7 @@ export const UserArchetypeFusionScalarFieldEnumSchema = z.enum(['id','userId','b
 
 export const UserArchetypeHistoryScalarFieldEnumSchema = z.enum(['id','userId','previousType','newType','reason','statSnapshot','xpBonus','evolvedAt']);
 
-export const AvatarLayerScalarFieldEnumSchema = z.enum(['id','layerType','name','description','rarity','unlockLevel','unlockCondition','goldCost','diamondCost','imageUrl','zIndex','createdAt']);
+export const AvatarLayerScalarFieldEnumSchema = z.enum(['id','layerType','name','description','region','rarity','unlockLevel','unlockCondition','goldCost','diamondCost','imageUrl','zIndex','createdAt']);
 
 export const UserAvatarItemScalarFieldEnumSchema = z.enum(['id','userId','layerId','unlockedAt']);
 
@@ -470,7 +466,7 @@ export const DuelSpectatorScalarFieldEnumSchema = z.enum(['id','duelId','userId'
 
 export const DuelHighlightScalarFieldEnumSchema = z.enum(['id','duelId','initiatorName','receiverName','scoreDiff','finalScore','category','isTopOfDay','viewCount','reactionsCount','createdAt']);
 
-export const CoopMissionScalarFieldEnumSchema = z.enum(['id','type','title','description','questionIds','minMembers','maxMembers','rewardXp','rewardGold','timeLimit','requiresSync','status','createdBy','startedAt','completedAt','expiresAt','createdAt']);
+export const CoopMissionScalarFieldEnumSchema = z.enum(['id','type','title','description','region','questionIds','minMembers','maxMembers','rewardXp','rewardGold','timeLimit','requiresSync','status','createdBy','startedAt','completedAt','expiresAt','createdAt']);
 
 export const CoopMemberScalarFieldEnumSchema = z.enum(['id','missionId','userId','role','joinedAt','isReady']);
 
@@ -484,7 +480,7 @@ export const GroupMemberScalarFieldEnumSchema = z.enum(['id','userId','groupId',
 
 export const GroupActivityScalarFieldEnumSchema = z.enum(['id','groupId','userId','type','message','metadata','createdAt']);
 
-export const FlowScalarFieldEnumSchema = z.enum(['id','name','description','createdAt','metadata']);
+export const FlowScalarFieldEnumSchema = z.enum(['id','name','description','region','createdAt','metadata']);
 
 export const FlowStepScalarFieldEnumSchema = z.enum(['id','flowId','questionVersionId','order','section','branchCondition','randomGroup','isOptional','metadata']);
 
@@ -514,7 +510,7 @@ export const BattleAchievementScalarFieldEnumSchema = z.enum(['id','key','title'
 
 export const UserBattleAchievementScalarFieldEnumSchema = z.enum(['id','userId','achievementId','progress','isUnlocked','isClaimed','unlockedAt','claimedAt','createdAt','updatedAt']);
 
-export const GroupScalarFieldEnumSchema = z.enum(['id','name','emblem','motto','ownerId','description','visibility','transparency','maxMembers','totalXp','avgKarma','avgPrestige','cost','weeklyBonus','createdAt','updatedAt']);
+export const GroupScalarFieldEnumSchema = z.enum(['id','name','emblem','motto','ownerId','description','region','visibility','transparency','maxMembers','totalXp','avgKarma','avgPrestige','cost','weeklyBonus','createdAt','updatedAt']);
 
 export const GroupStatScalarFieldEnumSchema = z.enum(['id','groupId','totalXP','reflections','avgLevel','updatedAt']);
 
@@ -526,7 +522,7 @@ export const PollResponseScalarFieldEnumSchema = z.enum(['id','pollId','userId',
 
 export const PublicChallengeScalarFieldEnumSchema = z.enum(['id','title','description','region','rewardXP','rewardItem','activeFrom','activeTo','isActive','createdAt']);
 
-export const ContentPackScalarFieldEnumSchema = z.enum(['id','key','title','description','category','price','premiumOnly','isActive','themeColor','icon','createdAt','updatedAt']);
+export const ContentPackScalarFieldEnumSchema = z.enum(['id','key','title','description','region','category','price','premiumOnly','isActive','themeColor','icon','createdAt','updatedAt']);
 
 export const PackItemScalarFieldEnumSchema = z.enum(['id','packId','type','refId','data','createdAt']);
 
@@ -550,7 +546,7 @@ export const GlobalMoodScalarFieldEnumSchema = z.enum(['id','calmScore','chaosSc
 
 export const UserMoodLogScalarFieldEnumSchema = z.enum(['id','userId','reflectionId','mood','loggedAt']);
 
-export const MoodPresetScalarFieldEnumSchema = z.enum(['key','title','description','toneProfile','createdAt','isActive']);
+export const MoodPresetScalarFieldEnumSchema = z.enum(['key','title','description','region','toneProfile','createdAt','isActive']);
 
 export const MentorNPCScalarFieldEnumSchema = z.enum(['id','key','name','archetypeAffinity','personality','introText','tips','voiceTone','isActive','createdAt']);
 
@@ -564,7 +560,7 @@ export const WalletScalarFieldEnumSchema = z.enum(['id','userId','tenantId','fun
 
 export const LedgerEntryScalarFieldEnumSchema = z.enum(['id','walletId','tenantId','kind','amount','refType','refId','note','createdAt','currencyId']);
 
-export const ProductScalarFieldEnumSchema = z.enum(['id','slug','title','description','kind','payload','stackable','active','createdAt']);
+export const ProductScalarFieldEnumSchema = z.enum(['id','slug','title','description','region','kind','payload','stackable','active','createdAt']);
 
 export const PriceScalarFieldEnumSchema = z.enum(['id','productId','stripePriceId','currencyCode','unitAmount','active']);
 
@@ -600,7 +596,7 @@ export const SessionScalarFieldEnumSchema = z.enum(['id','sessionToken','userId'
 
 export const VerificationTokenScalarFieldEnumSchema = z.enum(['identifier','token','expires']);
 
-export const UserSubmissionScalarFieldEnumSchema = z.enum(['id','userId','type','status','title','content','description','categoryId','languageId','tags','imageUrl','metadata','upvotes','downvotes','score','moderatorId','moderatorNote','reviewedAt','approvedAt','rejectedAt','createdAt','updatedAt']);
+export const UserSubmissionScalarFieldEnumSchema = z.enum(['id','userId','type','status','title','content','description','region','categoryId','languageId','tags','imageUrl','metadata','upvotes','downvotes','score','moderatorId','moderatorNote','reviewedAt','approvedAt','rejectedAt','createdAt','updatedAt']);
 
 export const EventScalarFieldEnumSchema = z.enum(['id','title','description','type','status','startDate','endDate','rewardXP','rewardDiamonds','imageUrl','metadata','participants','creatorId','createdAt','updatedAt','localeCode','isFlagged','flagReason','visibility']);
 
@@ -610,7 +606,7 @@ export const SeasonScalarFieldEnumSchema = z.enum(['id','name','displayName','nu
 
 export const SeasonArchiveScalarFieldEnumSchema = z.enum(['id','userId','seasonId','finalXP','finalCoins','finalRank','finalKarma','achievements','createdAt']);
 
-export const CosmeticItemScalarFieldEnumSchema = z.enum(['id','slug','name','description','type','rarity','price','imageUrl','metadata','active','seasonOnly','seasonId','createdAt','rarityId']);
+export const CosmeticItemScalarFieldEnumSchema = z.enum(['id','slug','name','description','region','type','rarity','price','imageUrl','metadata','active','seasonOnly','seasonId','createdAt','rarityId']);
 
 export const UserCosmeticScalarFieldEnumSchema = z.enum(['id','userId','cosmeticId','equipped','purchasedAt']);
 
@@ -634,7 +630,7 @@ export const GenerationRecordScalarFieldEnumSchema = z.enum(['id','userId','gene
 
 export const FeedbackScalarFieldEnumSchema = z.enum(['id','userId','message','screenshotUrl','context','status','createdAt','reviewedAt','reviewedBy']);
 
-export const CreatorPackScalarFieldEnumSchema = z.enum(['id','creatorId','title','description','type','status','metadata','createdAt','approvedAt','approvedBy','rewardType','rewardValue','publishedAt','downloadsCount']);
+export const CreatorPackScalarFieldEnumSchema = z.enum(['id','creatorId','title','description','region','type','status','metadata','createdAt','approvedAt','approvedBy','rewardType','rewardValue','publishedAt','downloadsCount']);
 
 export const UserCreatedPackScalarFieldEnumSchema = z.enum(['id','userId','packId','isPublished','earnedRewards','createdAt','updatedAt']);
 
@@ -684,19 +680,39 @@ export const SystemAlertScalarFieldEnumSchema = z.enum(['id','type','level','mes
 
 export const AlertWebhookScalarFieldEnumSchema = z.enum(['id','name','url','isActive','type','createdAt','updatedAt']);
 
-export const MetaSeasonScalarFieldEnumSchema = z.enum(['id','key','title','description','startDate','endDate','isActive','createdAt']);
+export const MetaSeasonScalarFieldEnumSchema = z.enum(['id','key','title','description','region','startDate','endDate','isActive','createdAt']);
 
 export const PrestigeRecordScalarFieldEnumSchema = z.enum(['id','userId','seasonId','oldLevel','legacyXP','prestigeCount','rewardBadgeId','prestigeTitle','prestigeBadgeId','prestigeColorTheme','createdAt']);
 
 export const TrendingQuestionScalarFieldEnumSchema = z.enum(['id','questionId','region','windowStart','windowEnd','reactions24h','score','updatedAt']);
 
+export const SkillScalarFieldEnumSchema = z.enum(['id','name','type','description','power','cooldown','icon','scaling']);
+
+export const UserSkillScalarFieldEnumSchema = z.enum(['id','userId','skillId','level','equipped','cooldownRemaining']);
+
+export const PetScalarFieldEnumSchema = z.enum(['id','name','type','rarity','bonus','icon','description','region']);
+
+export const UserPetScalarFieldEnumSchema = z.enum(['id','userId','petId','level','xp','equipped','nickname','createdAt']);
+
 export const CombatSessionScalarFieldEnumSchema = z.enum(['id','userId','heroHp','heroMaxHp','enemyHp','enemyMaxHp','enemyName','enemyType','xpGained','goldGained','kills','currentStreak','isActive','lastActionAt','createdAt','updatedAt']);
 
-export const EnemyScalarFieldEnumSchema = z.enum(['id','name','hp','str','def','speed','rarity','xpReward','goldReward','sprite','createdAt','updatedAt']);
-
-export const FightScalarFieldEnumSchema = z.enum(['id','heroId','enemyId','rounds','winner','createdAt']);
+export const EnemyScalarFieldEnumSchema = z.enum(['id','name','level','power','defense','maxHp','rarity','lootTable','icon','createdAt','updatedAt']);
 
 export const PublicComparisonScalarFieldEnumSchema = z.enum(['id','question','answers','isPublic','reactionsLike','reactionsLaugh','reactionsThink','createdAt','updatedAt']);
+
+export const FeedPostScalarFieldEnumSchema = z.enum(['id','userId','type','content','refId','createdAt','visibility']);
+
+export const FeedCommentScalarFieldEnumSchema = z.enum(['id','postId','userId','content','createdAt']);
+
+export const FeedReactionScalarFieldEnumSchema = z.enum(['id','postId','userId','emoji','createdAt']);
+
+export const ComparePostScalarFieldEnumSchema = z.enum(['id','userId','questionId','content','value','createdAt','updatedAt','visibility']);
+
+export const CompareReactionScalarFieldEnumSchema = z.enum(['id','postId','userId','type','createdAt']);
+
+export const CompareCommentScalarFieldEnumSchema = z.enum(['id','postId','userId','content','createdAt']);
+
+export const NotificationScalarFieldEnumSchema = z.enum(['id','userId','type','title','body','refId','isRead','createdAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -1065,10 +1081,14 @@ export const UserSchema = z.object({
   avatarUrl: z.string().nullable(),
   username: z.string().nullable(),
   bio: z.string().nullable(),
+  statusMessage: z.string().nullable(),
+  karma: z.number().int(),
+  avatarFrameId: z.string().nullable(),
+  isPublicProfile: z.boolean(),
   banned: z.boolean(),
   motto: z.string().nullable(),
   theme: z.string().nullable(),
-  funds: z.instanceof(Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'User']"}),
+  funds: z.instanceof(Prisma.Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'User']"}),
   diamonds: z.number().int(),
   xp: z.number().int(),
   level: z.number().int(),
@@ -1136,7 +1156,7 @@ export const AffinitySchema = z.object({
   id: z.cuid(),
   sourceId: z.string(),
   targetId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   strength: z.number(),
   mutual: z.boolean(),
   visibility: z.string(),
@@ -1184,6 +1204,7 @@ export const TaskSchema = z.object({
   createdById: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   priority: z.string(),
   assigneeId: z.string().nullable(),
   dueAt: z.coerce.date().nullable(),
@@ -1202,7 +1223,7 @@ export const AttachmentSchema = z.object({
   taskId: z.string(),
   name: z.string(),
   url: z.string(),
-  mimeType: z.string(),
+  mimeType: z.string().nullable(),
   size: z.number().int(),
 })
 
@@ -1317,7 +1338,7 @@ export const QuestionVersionSchema = z.object({
   questionId: z.string(),
   text: z.string(),
   displayText: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   options: JsonValueSchema.nullable(),
   metadata: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
@@ -1335,6 +1356,7 @@ export const QuestionTagSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
 })
 
 export type QuestionTag = z.infer<typeof QuestionTagSchema>
@@ -1428,6 +1450,7 @@ export const SynchTestSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   questions: JsonValueSchema,
   resultTextTemplates: JsonValueSchema,
   rewardXP: z.number().int(),
@@ -1469,6 +1492,7 @@ export const FactionSchema = z.object({
   name: z.string(),
   motto: z.string().nullable(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   colorPrimary: z.string(),
   colorSecondary: z.string().nullable(),
   buffValue: z.number(),
@@ -1569,6 +1593,7 @@ export const RarityTierSchema = z.object({
   frameStyle: z.string().nullable(),
   rankOrder: z.number().int(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   isActive: z.boolean(),
   createdAt: z.coerce.date(),
 })
@@ -1585,6 +1610,7 @@ export const DailyForkSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   optionA: z.string(),
   optionB: z.string(),
   effectA: JsonValueSchema,
@@ -1689,6 +1715,7 @@ export const MicroClanSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   leaderId: z.string(),
   memberIds: z.string().array(),
   buffValue: z.number(),
@@ -1773,7 +1800,7 @@ export const CommentSchema = z.object({
   visibility: ContentVisibilitySchema,
   id: z.cuid(),
   userId: z.string(),
-  targetType: z.string(),
+  targetType: z.string().nullable(),
   targetId: z.string(),
   content: z.string(),
   flagged: z.boolean(),
@@ -1806,7 +1833,7 @@ export const ModerationLogSchema = z.object({
   id: z.cuid(),
   moderatorId: z.string(),
   action: z.string(),
-  targetType: z.string(),
+  targetType: z.string().nullable(),
   targetId: z.string(),
   reason: z.string().nullable(),
   createdAt: z.coerce.date(),
@@ -1935,6 +1962,7 @@ export const EventLogSchema = z.object({
   type: z.string().nullable(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   metadata: JsonValueSchema.nullable(),
   visibility: z.string(),
   reactionsCount: z.number().int(),
@@ -1991,28 +2019,12 @@ export const ActivitySchema = z.object({
   userId: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   metadata: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
 })
 
 export type Activity = z.infer<typeof ActivitySchema>
-
-/////////////////////////////////////////
-// NOTIFICATION SCHEMA
-/////////////////////////////////////////
-
-export const NotificationSchema = z.object({
-  type: NotificationTypeSchema,
-  id: z.cuid(),
-  userId: z.string(),
-  senderId: z.string().nullable(),
-  title: z.string(),
-  body: z.string().nullable(),
-  isRead: z.boolean(),
-  createdAt: z.coerce.date(),
-})
-
-export type Notification = z.infer<typeof NotificationSchema>
 
 /////////////////////////////////////////
 // PRESENCE SCHEMA
@@ -2034,13 +2046,15 @@ export type Presence = z.infer<typeof PresenceSchema>
 export const ItemSchema = z.object({
   id: z.cuid(),
   name: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
+  slot: z.string().nullable(),
   rarity: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   power: z.number().int().nullable(),
   defense: z.number().int().nullable(),
   effect: z.string().nullable(),
-  bonus: z.string().nullable(),
+  bonus: JsonValueSchema.nullable(),
   icon: z.string().nullable(),
   key: z.string().nullable(),
   emoji: z.string().nullable(),
@@ -2055,6 +2069,7 @@ export const ItemSchema = z.object({
   isFeatured: z.boolean(),
   isLimited: z.boolean(),
   isShopItem: z.boolean(),
+  isTradable: z.boolean(),
   visualConfig: JsonValueSchema.nullable(),
   rarityId: z.string().nullable(),
 })
@@ -2082,6 +2097,22 @@ export const InventoryItemSchema = z.object({
 export type InventoryItem = z.infer<typeof InventoryItemSchema>
 
 /////////////////////////////////////////
+// USER ITEM SCHEMA
+/////////////////////////////////////////
+
+export const UserItemSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  itemId: z.string(),
+  quantity: z.number().int(),
+  equipped: z.boolean(),
+  durability: z.number().int().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type UserItem = z.infer<typeof UserItemSchema>
+
+/////////////////////////////////////////
 // ITEM EFFECT SCHEMA
 /////////////////////////////////////////
 
@@ -2089,7 +2120,7 @@ export const ItemEffectSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   magnitude: z.number(),
   trigger: z.string().nullable(),
   createdAt: z.coerce.date(),
@@ -2120,7 +2151,7 @@ export type Friend = z.infer<typeof FriendSchema>
 export const ReactionSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  targetType: z.string(),
+  targetType: z.string().nullable(),
   targetId: z.string(),
   emoji: z.string(),
   createdAt: z.coerce.date(),
@@ -2156,7 +2187,7 @@ export const ChallengeSchema = z.object({
   id: z.cuid(),
   initiatorId: z.string(),
   receiverId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   categoryId: z.string().nullable(),
   status: z.string(),
   message: z.string().nullable(),
@@ -2179,9 +2210,10 @@ export const GlobalEventSchema = z.object({
   id: z.cuid(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   emoji: z.string().nullable(),
-  type: z.string(),
-  bonusType: z.string(),
+  type: z.string().nullable(),
+  bonusType: z.string().nullable(),
   bonusValue: z.number().int(),
   targetScope: z.string().nullable(),
   startAt: z.coerce.date(),
@@ -2202,7 +2234,7 @@ export const WeeklyChallengeSchema = z.object({
   id: z.cuid(),
   weekNumber: z.number().int(),
   year: z.number().int(),
-  type: z.string(),
+  type: z.string().nullable(),
   prompt: z.string(),
   dareVariant: z.string().nullable(),
   truthVariant: z.string().nullable(),
@@ -2261,7 +2293,7 @@ export type UserInsight = z.infer<typeof UserInsightSchema>
 export const DailyQuestSchema = z.object({
   id: z.cuid(),
   date: z.coerce.date(),
-  type: z.string(),
+  type: z.string().nullable(),
   title: z.string(),
   objective: z.string(),
   targetCount: z.number().int(),
@@ -2316,7 +2348,7 @@ export type MarketListing = z.infer<typeof MarketListingSchema>
 
 export const GlobalPoolSchema = z.object({
   id: z.cuid(),
-  poolType: z.string(),
+  poolType: z.string().nullable(),
   goldAmount: z.number().int(),
   diamondAmount: z.number().int(),
   updatedAt: z.coerce.date(),
@@ -2332,6 +2364,7 @@ export const CraftingRecipeSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   inputItemIds: z.string().array(),
   outputItemId: z.string(),
   goldCost: z.number().int(),
@@ -2415,9 +2448,10 @@ export type UserEnergy = z.infer<typeof UserEnergySchema>
 
 export const GlobalFeedItemSchema = z.object({
   id: z.cuid(),
-  type: z.string(),
+  type: z.string().nullable(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   userId: z.string(),
   metadata: JsonValueSchema.nullable(),
   reactionsCount: z.number().int(),
@@ -2580,6 +2614,7 @@ export const LoreEraSchema = z.object({
   name: z.string(),
   displayName: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   order: z.number().int(),
   startYear: z.number().int().nullable(),
   endYear: z.number().int().nullable(),
@@ -2677,12 +2712,12 @@ export const RegionalEventSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string().nullable(),
-  region: z.string(),
+  region: z.string().nullable(),
   country: z.string().nullable(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date(),
   timezone: z.string().nullable(),
-  eventType: z.string(),
+  eventType: z.string().nullable(),
   theme: z.string().nullable(),
   rewardXp: z.number().int(),
   rewardGold: z.number().int(),
@@ -2837,7 +2872,7 @@ export type DynamicPrice = z.infer<typeof DynamicPriceSchema>
 
 export const TaxTransactionSchema = z.object({
   id: z.cuid(),
-  sourceType: z.string(),
+  sourceType: z.string().nullable(),
   sourceId: z.string().nullable(),
   amount: z.bigint(),
   taxAmount: z.bigint(),
@@ -2876,13 +2911,14 @@ export type CreatorWallet = z.infer<typeof CreatorWalletSchema>
 export const CreatorTransactionSchema = z.object({
   id: z.cuid(),
   walletId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   amount: z.number().int(),
   sourceType: z.string().nullable(),
   sourceId: z.string().nullable(),
   payoutPoolId: z.string().nullable(),
   stripeTransferId: z.string().nullable(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   metadata: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
 })
@@ -2917,11 +2953,11 @@ export type PayoutPool = z.infer<typeof PayoutPoolSchema>
 
 export const EngagementMetricSchema = z.object({
   id: z.cuid(),
-  contentType: z.string(),
+  contentType: z.string().nullable(),
   contentId: z.string(),
   creatorId: z.string(),
   userId: z.string().nullable(),
-  type: z.string(),
+  type: z.string().nullable(),
   value: z.number(),
   weekStart: z.coerce.date(),
   fingerprint: z.string().nullable(),
@@ -2939,6 +2975,7 @@ export const SubscriptionPlanSchema = z.object({
   name: z.string(),
   displayName: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   price: z.number().int(),
   currency: z.string(),
   interval: z.string(),
@@ -2989,6 +3026,7 @@ export const PaymentLogSchema = z.object({
   stripePaymentIntentId: z.string().nullable(),
   stripeChargeId: z.string().nullable(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   metadata: JsonValueSchema.nullable(),
   failureReason: z.string().nullable(),
   refundedAt: z.coerce.date().nullable(),
@@ -3009,6 +3047,7 @@ export const ReportSchema = z.object({
   contentId: z.string().nullable(),
   reason: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   status: z.string(),
   priority: z.string(),
   resolvedBy: z.string().nullable(),
@@ -3051,7 +3090,7 @@ export const ModerationActionSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   moderatorId: z.string(),
-  actionType: z.string(),
+  actionType: z.string().nullable(),
   reason: z.string(),
   duration: z.number().int().nullable(),
   reportId: z.string().nullable(),
@@ -3085,7 +3124,7 @@ export type BlockedUser = z.infer<typeof BlockedUserSchema>
 
 export const ContentReviewSchema = z.object({
   id: z.cuid(),
-  contentType: z.string(),
+  contentType: z.string().nullable(),
   contentId: z.string(),
   content: z.string(),
   flagged: z.boolean(),
@@ -3129,9 +3168,9 @@ export type UserStreak = z.infer<typeof UserStreakSchema>
 export const RewardCalendarSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  calendarType: z.string(),
+  calendarType: z.string().nullable(),
   day: z.number().int(),
-  rewardType: z.string(),
+  rewardType: z.string().nullable(),
   rewardAmount: z.number().int().nullable(),
   rewardItemId: z.string().nullable(),
   claimed: z.boolean(),
@@ -3268,7 +3307,7 @@ export type BetaUser = z.infer<typeof BetaUserSchema>
 
 export const TelemetryEventSchema = z.object({
   id: z.cuid(),
-  type: z.string(),
+  type: z.string().nullable(),
   page: z.string().nullable(),
   action: z.string().nullable(),
   duration: z.number().int().nullable(),
@@ -3292,7 +3331,7 @@ export type TelemetryEvent = z.infer<typeof TelemetryEventSchema>
 export const TelemetryAggregateSchema = z.object({
   id: z.cuid(),
   date: z.coerce.date(),
-  type: z.string(),
+  type: z.string().nullable(),
   count: z.number().int(),
   avgDuration: z.number().nullable(),
   p50Duration: z.number().nullable(),
@@ -3345,11 +3384,12 @@ export const SoundAssetSchema = z.object({
   assetId: z.string(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   filePath: z.string(),
   fileSize: z.number().int().nullable(),
   duration: z.number().nullable(),
   category: z.string(),
-  eventType: z.string(),
+  eventType: z.string().nullable(),
   defaultVolume: z.number(),
   loop: z.boolean(),
   isActive: z.boolean(),
@@ -3392,7 +3432,7 @@ export type OnboardingProgress = z.infer<typeof OnboardingProgressSchema>
 export const FeedbackSubmissionSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   category: z.string().nullable(),
   title: z.string(),
   description: z.string(),
@@ -3415,7 +3455,7 @@ export type FeedbackSubmission = z.infer<typeof FeedbackSubmissionSchema>
 
 export const ErrorLogSchema = z.object({
   id: z.cuid(),
-  errorType: z.string(),
+  errorType: z.string().nullable(),
   message: z.string(),
   stack: z.string().nullable(),
   page: z.string().nullable(),
@@ -3532,7 +3572,7 @@ export type LegacyRecord = z.infer<typeof LegacyRecordSchema>
 export const UserLegacyBonusSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  bonusType: z.string(),
+  bonusType: z.string().nullable(),
   prestigeCarry: z.number().int().nullable(),
   legacyTitle: z.string().nullable(),
   xpBoostPercent: z.number().nullable(),
@@ -3578,7 +3618,7 @@ export const WorldThreatSchema = z.object({
   description: z.string(),
   loreText: z.string().nullable(),
   avatar: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   difficulty: z.string(),
   maxHealth: z.number().int(),
   currentHealth: z.number().int(),
@@ -3612,7 +3652,7 @@ export const ThreatBattleSchema = z.object({
   threatId: z.string(),
   userId: z.string().nullable(),
   factionId: z.string().nullable(),
-  attackType: z.string(),
+  attackType: z.string().nullable(),
   damageDealt: z.number().int(),
   isCritical: z.boolean(),
   attackerLevel: z.number().int(),
@@ -3635,7 +3675,7 @@ export const FactionTerritorySchema = z.object({
   territoryId: z.string(),
   name: z.string(),
   description: z.string().nullable(),
-  region: z.string(),
+  region: z.string().nullable(),
   mapPosition: JsonValueSchema.nullable(),
   controlledBy: z.string().nullable(),
   controlStrength: z.number().int(),
@@ -3740,7 +3780,7 @@ export const FactionChangeLogSchema = z.object({
   userId: z.string(),
   fromFactionId: z.string().nullable(),
   toFactionId: z.string().nullable(),
-  changeType: z.string(),
+  changeType: z.string().nullable(),
   reason: z.string().nullable(),
   penaltyType: z.string().nullable(),
   penaltyAmount: z.number().int().nullable(),
@@ -3758,7 +3798,7 @@ export const FactionVoteSchema = z.object({
   id: z.cuid(),
   factionId: z.string(),
   userId: z.string(),
-  voteType: z.string(),
+  voteType: z.string().nullable(),
   proposalId: z.string(),
   vote: z.string(),
   votingPower: z.number().int(),
@@ -3778,7 +3818,7 @@ export const FactionProposalSchema = z.object({
   factionId: z.string().nullable(),
   title: z.string(),
   description: z.string(),
-  proposalType: z.string(),
+  proposalType: z.string().nullable(),
   status: z.string(),
   votesFor: z.number().int(),
   votesAgainst: z.number().int(),
@@ -3826,7 +3866,7 @@ export type MentorProfile = z.infer<typeof MentorProfileSchema>
 export const MentorLogSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  logType: z.string(),
+  logType: z.string().nullable(),
   title: z.string(),
   message: z.string(),
   category: z.string().nullable(),
@@ -3935,7 +3975,7 @@ export const WorldEventSchema = z.object({
   name: z.string(),
   description: z.string(),
   loreText: z.string().nullable(),
-  triggerType: z.string(),
+  triggerType: z.string().nullable(),
   triggerConditions: JsonValueSchema,
   variableImpacts: JsonValueSchema,
   duration: z.number().int().nullable(),
@@ -4017,7 +4057,7 @@ export const NpcInteractionSchema = z.object({
   id: z.cuid(),
   npcId: z.string(),
   userId: z.string(),
-  interactionType: z.string(),
+  interactionType: z.string().nullable(),
   userArchetype: z.string().nullable(),
   userKarma: z.number().int().nullable(),
   userPrestige: z.number().int().nullable(),
@@ -4041,7 +4081,7 @@ export const NpcMemorySchema = z.object({
   id: z.cuid(),
   npcId: z.string(),
   userId: z.string(),
-  memoryType: z.string(),
+  memoryType: z.string().nullable(),
   key: z.string(),
   value: JsonValueSchema,
   importance: z.number().int(),
@@ -4096,7 +4136,8 @@ export const NpcDialogueTreeSchema = z.object({
   treeId: z.string(),
   name: z.string(),
   description: z.string().nullable(),
-  triggerType: z.string(),
+  region: z.string().nullable(),
+  triggerType: z.string().nullable(),
   conditions: JsonValueSchema,
   nodes: JsonValueSchema,
   category: z.string().nullable(),
@@ -4116,7 +4157,7 @@ export const RewardOfferSchema = z.object({
   offerId: z.string(),
   name: z.string(),
   description: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   partnerId: z.string().nullable(),
   partnerName: z.string(),
   partnerLogo: z.string().nullable(),
@@ -4179,7 +4220,7 @@ export type RewardRedemption = z.infer<typeof RewardRedemptionSchema>
 export const RewardProofSchema = z.object({
   id: z.cuid(),
   redemptionId: z.string(),
-  proofType: z.string(),
+  proofType: z.string().nullable(),
   proofData: JsonValueSchema,
   uploadedAt: z.coerce.date(),
   verifiedAt: z.coerce.date().nullable(),
@@ -4196,6 +4237,7 @@ export const PartnerAppSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   website: z.string().nullable(),
   contactEmail: z.string(),
   clientId: z.string(),
@@ -4271,7 +4313,7 @@ export type PartnerStats = z.infer<typeof PartnerStatsSchema>
 export const PartnerWebhookSchema = z.object({
   id: z.cuid(),
   partnerId: z.string(),
-  eventType: z.string(),
+  eventType: z.string().nullable(),
   payload: JsonValueSchema,
   signature: z.string(),
   status: z.string(),
@@ -4311,7 +4353,7 @@ export type PushSubscription = z.infer<typeof PushSubscriptionSchema>
 export const OfflineActionSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  actionType: z.string(),
+  actionType: z.string().nullable(),
   payload: JsonValueSchema,
   status: z.string(),
   retryCount: z.number().int(),
@@ -4357,8 +4399,8 @@ export const MiniEventSchema = z.object({
   name: z.string(),
   description: z.string(),
   icon: z.string(),
-  eventType: z.string(),
-  goalType: z.string(),
+  eventType: z.string().nullable(),
+  goalType: z.string().nullable(),
   targetCount: z.number().int(),
   currentProgress: z.number().int(),
   duration: z.number().int(),
@@ -4398,7 +4440,7 @@ export const MiniEventRewardSchema = z.object({
   id: z.cuid(),
   eventId: z.string(),
   userId: z.string(),
-  rewardType: z.string(),
+  rewardType: z.string().nullable(),
   rewardId: z.string().nullable(),
   amount: z.number().int().nullable(),
   description: z.string(),
@@ -4444,6 +4486,7 @@ export const CreatorFlowSchema = z.object({
   creatorId: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   coverImage: z.string().nullable(),
   difficulty: z.string(),
   category: z.string(),
@@ -4490,7 +4533,7 @@ export const CreatorRewardSchema = z.object({
   id: z.cuid(),
   creatorId: z.string(),
   flowId: z.string().nullable(),
-  type: z.string(),
+  type: z.string().nullable(),
   amount: z.number().int(),
   source: z.string(),
   description: z.string(),
@@ -4508,6 +4551,7 @@ export const ClanSchema = z.object({
   name: z.string(),
   tag: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   emblem: z.string(),
   color: z.string(),
   leaderId: z.string(),
@@ -4555,7 +4599,7 @@ export type ClanMember = z.infer<typeof ClanMemberSchema>
 export const ClanUpgradeSchema = z.object({
   id: z.cuid(),
   clanId: z.string(),
-  upgradeType: z.string(),
+  upgradeType: z.string().nullable(),
   name: z.string(),
   level: z.number().int(),
   maxLevel: z.number().int(),
@@ -4574,7 +4618,7 @@ export type ClanUpgrade = z.infer<typeof ClanUpgradeSchema>
 export const ClanActivitySchema = z.object({
   id: z.cuid(),
   clanId: z.string(),
-  activityType: z.string(),
+  activityType: z.string().nullable(),
   userId: z.string().nullable(),
   message: z.string(),
   metadata: JsonValueSchema.nullable(),
@@ -4589,7 +4633,7 @@ export type ClanActivity = z.infer<typeof ClanActivitySchema>
 
 export const SystemMetricSchema = z.object({
   id: z.cuid(),
-  metricType: z.string(),
+  metricType: z.string().nullable(),
   name: z.string(),
   value: z.number(),
   unit: z.string(),
@@ -4605,7 +4649,7 @@ export type SystemMetric = z.infer<typeof SystemMetricSchema>
 
 export const HealthLogSchema = z.object({
   id: z.cuid(),
-  checkType: z.string(),
+  checkType: z.string().nullable(),
   status: z.string(),
   message: z.string().nullable(),
   responseTime: z.number().nullable(),
@@ -4621,7 +4665,7 @@ export type HealthLog = z.infer<typeof HealthLogSchema>
 
 export const AutoHealLogSchema = z.object({
   id: z.cuid(),
-  healType: z.string(),
+  healType: z.string().nullable(),
   description: z.string(),
   itemsAffected: z.number().int(),
   success: z.boolean(),
@@ -4675,6 +4719,7 @@ export const JobQueueSchema = z.object({
   queueName: z.string(),
   displayName: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   priority: z.number().int(),
   concurrency: z.number().int(),
   maxRetries: z.number().int(),
@@ -4741,6 +4786,7 @@ export const CacheConfigSchema = z.object({
   key: z.string(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   ttlSeconds: z.number().int(),
   isEnabled: z.boolean(),
   strategy: z.string(),
@@ -4779,6 +4825,7 @@ export const AchievementCollectionSchema = z.object({
   collectionId: z.string(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   theme: z.string(),
   icon: z.string().nullable(),
   rarity: z.string(),
@@ -4840,7 +4887,8 @@ export const ThemePackSchema = z.object({
   themeId: z.string(),
   name: z.string(),
   description: z.string().nullable(),
-  type: z.string(),
+  region: z.string().nullable(),
+  type: z.string().nullable(),
   rarity: z.string(),
   isSeasonal: z.boolean(),
   seasonType: z.string().nullable(),
@@ -4918,7 +4966,7 @@ export const UserArchetypeHistorySchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   previousType: z.string().nullable(),
-  newType: z.string(),
+  newType: z.string().nullable(),
   reason: z.string(),
   statSnapshot: JsonValueSchema.nullable(),
   xpBonus: z.number().int(),
@@ -4933,9 +4981,10 @@ export type UserArchetypeHistory = z.infer<typeof UserArchetypeHistorySchema>
 
 export const AvatarLayerSchema = z.object({
   id: z.cuid(),
-  layerType: z.string(),
+  layerType: z.string().nullable(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   rarity: z.string(),
   unlockLevel: z.number().int(),
   unlockCondition: z.string().nullable(),
@@ -5015,9 +5064,10 @@ export type DuelHighlight = z.infer<typeof DuelHighlightSchema>
 
 export const CoopMissionSchema = z.object({
   id: z.cuid(),
-  type: z.string(),
+  type: z.string().nullable(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   questionIds: z.string().array(),
   minMembers: z.number().int(),
   maxMembers: z.number().int(),
@@ -5131,7 +5181,7 @@ export const GroupActivitySchema = z.object({
   id: z.cuid(),
   groupId: z.string(),
   userId: z.string().nullable(),
-  type: z.string(),
+  type: z.string().nullable(),
   message: z.string(),
   metadata: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
@@ -5147,6 +5197,7 @@ export const FlowSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   createdAt: z.coerce.date(),
   metadata: JsonValueSchema.nullable(),
 })
@@ -5391,6 +5442,7 @@ export const GroupSchema = z.object({
   motto: z.string().nullable(),
   ownerId: z.string().nullable(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   visibility: z.string(),
   transparency: z.string(),
   maxMembers: z.number().int(),
@@ -5497,6 +5549,7 @@ export const ContentPackSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   category: z.string().nullable(),
   price: z.number().int(),
   premiumOnly: z.boolean(),
@@ -5516,7 +5569,7 @@ export type ContentPack = z.infer<typeof ContentPackSchema>
 export const PackItemSchema = z.object({
   id: z.cuid(),
   packId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   refId: z.string().nullable(),
   data: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
@@ -5610,7 +5663,7 @@ export const MicroMissionSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   rarity: z.string(),
   durationSec: z.number().int(),
   rewardXP: z.number().int(),
@@ -5694,6 +5747,7 @@ export const MoodPresetSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   toneProfile: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
   isActive: z.boolean(),
@@ -5781,7 +5835,7 @@ export const WalletSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   tenantId: z.string(),
-  funds: z.instanceof(Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'Wallet']"}),
+  funds: z.instanceof(Prisma.Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'Wallet']"}),
   diamonds: z.number().int(),
   badgesClaimedCount: z.number().int(),
 })
@@ -5798,7 +5852,7 @@ export const LedgerEntrySchema = z.object({
   walletId: z.string(),
   tenantId: z.string(),
   amount: z.number().int(),
-  refType: z.string(),
+  refType: z.string().nullable(),
   refId: z.string().nullable(),
   note: z.string().nullable(),
   createdAt: z.coerce.date(),
@@ -5817,6 +5871,7 @@ export const ProductSchema = z.object({
   slug: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   payload: JsonValueSchema,
   stackable: z.boolean(),
   active: z.boolean(),
@@ -6072,7 +6127,7 @@ export type AIResponseLog = z.infer<typeof AIResponseLogSchema>
 export const AccountSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   provider: z.string(),
   providerAccountId: z.string(),
   refresh_token: z.string().nullable(),
@@ -6123,6 +6178,7 @@ export const UserSubmissionSchema = z.object({
   title: z.string(),
   content: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   categoryId: z.string().nullable(),
   languageId: z.string().nullable(),
   tags: z.string().array(),
@@ -6233,6 +6289,7 @@ export const CosmeticItemSchema = z.object({
   slug: z.string(),
   name: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   price: z.number().int(),
   imageUrl: z.string().nullable(),
   metadata: JsonValueSchema.nullable(),
@@ -6270,7 +6327,7 @@ export const SeasonalEventSchema = z.object({
   description: z.string(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date(),
-  bonusType: z.string(),
+  bonusType: z.string().nullable(),
   bonusValue: z.number().int(),
   metadata: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
@@ -6307,7 +6364,7 @@ export const WildcardEventSchema = z.object({
   id: z.cuid(),
   title: z.string(),
   description: z.string(),
-  triggerType: z.string(),
+  triggerType: z.string().nullable(),
   rewardXP: z.number().int(),
   rewardKarma: z.number().int(),
   flavorText: z.string(),
@@ -6338,7 +6395,7 @@ export type UserWildcardEvent = z.infer<typeof UserWildcardEventSchema>
 export const ShareCardSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
-  type: z.string(),
+  type: z.string().nullable(),
   imageUrl: z.string().nullable(),
   caption: z.string().nullable(),
   createdAt: z.coerce.date(),
@@ -6371,7 +6428,7 @@ export const DreamEventSchema = z.object({
   id: z.cuid(),
   title: z.string(),
   description: z.string(),
-  triggerType: z.string(),
+  triggerType: z.string().nullable(),
   effect: JsonValueSchema,
   flavorTone: z.string(),
   createdAt: z.coerce.date(),
@@ -6441,6 +6498,7 @@ export const CreatorPackSchema = z.object({
   creatorId: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   metadata: JsonValueSchema.nullable(),
   createdAt: z.coerce.date(),
   approvedAt: z.coerce.date().nullable(),
@@ -6763,7 +6821,7 @@ export const UserWalletSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   currencyKey: z.string(),
-  balance: z.instanceof(Decimal, { message: "Field 'balance' must be a Decimal. Location: ['Models', 'UserWallet']"}),
+  balance: z.instanceof(Prisma.Decimal, { message: "Field 'balance' must be a Decimal. Location: ['Models', 'UserWallet']"}),
   updatedAt: z.coerce.date(),
 })
 
@@ -6778,7 +6836,7 @@ export const MarketItemSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string(),
-  price: z.instanceof(Decimal, { message: "Field 'price' must be a Decimal. Location: ['Models', 'MarketItem']"}),
+  price: z.instanceof(Prisma.Decimal, { message: "Field 'price' must be a Decimal. Location: ['Models', 'MarketItem']"}),
   currencyKey: z.string(),
   rarity: z.string().nullable(),
   stock: z.number().int().nullable(),
@@ -6797,7 +6855,7 @@ export const TransactionSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   itemId: z.string().nullable(),
-  amount: z.instanceof(Decimal, { message: "Field 'amount' must be a Decimal. Location: ['Models', 'Transaction']"}),
+  amount: z.instanceof(Prisma.Decimal, { message: "Field 'amount' must be a Decimal. Location: ['Models', 'Transaction']"}),
   currencyKey: z.string(),
   note: z.string().nullable(),
   createdAt: z.coerce.date(),
@@ -6875,6 +6933,7 @@ export const MetaSeasonSchema = z.object({
   key: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  region: z.string().nullable(),
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable(),
   isActive: z.boolean(),
@@ -6921,6 +6980,72 @@ export const TrendingQuestionSchema = z.object({
 export type TrendingQuestion = z.infer<typeof TrendingQuestionSchema>
 
 /////////////////////////////////////////
+// SKILL SCHEMA
+/////////////////////////////////////////
+
+export const SkillSchema = z.object({
+  id: z.cuid(),
+  name: z.string(),
+  type: z.string().nullable(),
+  description: z.string(),
+  power: z.number().int(),
+  cooldown: z.number().int().nullable(),
+  icon: z.string().nullable(),
+  scaling: JsonValueSchema.nullable(),
+})
+
+export type Skill = z.infer<typeof SkillSchema>
+
+/////////////////////////////////////////
+// USER SKILL SCHEMA
+/////////////////////////////////////////
+
+export const UserSkillSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  skillId: z.string(),
+  level: z.number().int(),
+  equipped: z.boolean(),
+  cooldownRemaining: z.number().int(),
+})
+
+export type UserSkill = z.infer<typeof UserSkillSchema>
+
+/////////////////////////////////////////
+// PET SCHEMA
+/////////////////////////////////////////
+
+export const PetSchema = z.object({
+  id: z.cuid(),
+  name: z.string(),
+  type: z.string().nullable(),
+  rarity: z.string(),
+  bonus: JsonValueSchema.nullable(),
+  icon: z.string().nullable(),
+  description: z.string().nullable(),
+  region: z.string().nullable(),
+})
+
+export type Pet = z.infer<typeof PetSchema>
+
+/////////////////////////////////////////
+// USER PET SCHEMA
+/////////////////////////////////////////
+
+export const UserPetSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  petId: z.string(),
+  level: z.number().int(),
+  xp: z.number().int(),
+  equipped: z.boolean(),
+  nickname: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type UserPet = z.infer<typeof UserPetSchema>
+
+/////////////////////////////////////////
 // COMBAT SESSION SCHEMA
 /////////////////////////////////////////
 
@@ -6932,7 +7057,7 @@ export const CombatSessionSchema = z.object({
   enemyHp: z.number().int(),
   enemyMaxHp: z.number().int(),
   enemyName: z.string(),
-  enemyType: z.string(),
+  enemyType: z.string().nullable(),
   xpGained: z.number().int(),
   goldGained: z.number().int(),
   kills: z.number().int(),
@@ -6952,34 +7077,18 @@ export type CombatSession = z.infer<typeof CombatSessionSchema>
 export const EnemySchema = z.object({
   id: z.cuid(),
   name: z.string(),
-  hp: z.number().int(),
-  str: z.number().int(),
-  def: z.number().int(),
-  speed: z.number().int(),
+  level: z.number().int(),
+  power: z.number().int(),
+  defense: z.number().int(),
+  maxHp: z.number().int(),
   rarity: z.string(),
-  xpReward: z.number().int(),
-  goldReward: z.number().int(),
-  sprite: z.string().nullable(),
+  lootTable: JsonValueSchema,
+  icon: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })
 
 export type Enemy = z.infer<typeof EnemySchema>
-
-/////////////////////////////////////////
-// FIGHT SCHEMA
-/////////////////////////////////////////
-
-export const FightSchema = z.object({
-  id: z.cuid(),
-  heroId: z.string(),
-  enemyId: z.string(),
-  rounds: JsonValueSchema,
-  winner: z.string(),
-  createdAt: z.coerce.date(),
-})
-
-export type Fight = z.infer<typeof FightSchema>
 
 /////////////////////////////////////////
 // PUBLIC COMPARISON SCHEMA
@@ -6998,3 +7107,109 @@ export const PublicComparisonSchema = z.object({
 })
 
 export type PublicComparison = z.infer<typeof PublicComparisonSchema>
+
+/////////////////////////////////////////
+// FEED POST SCHEMA
+/////////////////////////////////////////
+
+export const FeedPostSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  type: z.string().nullable(),
+  content: z.string().nullable(),
+  refId: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  visibility: z.string(),
+})
+
+export type FeedPost = z.infer<typeof FeedPostSchema>
+
+/////////////////////////////////////////
+// FEED COMMENT SCHEMA
+/////////////////////////////////////////
+
+export const FeedCommentSchema = z.object({
+  id: z.cuid(),
+  postId: z.string(),
+  userId: z.string(),
+  content: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type FeedComment = z.infer<typeof FeedCommentSchema>
+
+/////////////////////////////////////////
+// FEED REACTION SCHEMA
+/////////////////////////////////////////
+
+export const FeedReactionSchema = z.object({
+  id: z.cuid(),
+  postId: z.string(),
+  userId: z.string(),
+  emoji: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type FeedReaction = z.infer<typeof FeedReactionSchema>
+
+/////////////////////////////////////////
+// COMPARE POST SCHEMA
+/////////////////////////////////////////
+
+export const ComparePostSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  questionId: z.string().nullable(),
+  content: z.string().nullable(),
+  value: JsonValueSchema.nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  visibility: z.string(),
+})
+
+export type ComparePost = z.infer<typeof ComparePostSchema>
+
+/////////////////////////////////////////
+// COMPARE REACTION SCHEMA
+/////////////////////////////////////////
+
+export const CompareReactionSchema = z.object({
+  id: z.cuid(),
+  postId: z.string(),
+  userId: z.string(),
+  type: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type CompareReaction = z.infer<typeof CompareReactionSchema>
+
+/////////////////////////////////////////
+// COMPARE COMMENT SCHEMA
+/////////////////////////////////////////
+
+export const CompareCommentSchema = z.object({
+  id: z.cuid(),
+  postId: z.string(),
+  userId: z.string(),
+  content: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type CompareComment = z.infer<typeof CompareCommentSchema>
+
+/////////////////////////////////////////
+// NOTIFICATION SCHEMA
+/////////////////////////////////////////
+
+export const NotificationSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  type: z.string().nullable(),
+  title: z.string(),
+  body: z.string().nullable(),
+  refId: z.string().nullable(),
+  isRead: z.boolean(),
+  createdAt: z.coerce.date(),
+})
+
+export type Notification = z.infer<typeof NotificationSchema>
