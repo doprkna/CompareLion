@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Shop Page
@@ -13,7 +13,7 @@ import { ShoppingBag, Coins, Package, Palette } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { FeatureGuard } from '@/components/FeatureGuard';
 import PlaceholderPage from '@/components/PlaceholderPage';
-import { isAdminView } from '@/lib/utils/isAdminView';
+import { isAdminView } from '@parel/core/utils/isAdminView';
 import { useRegionStore } from '@/store/useRegionStore';
 
 interface ShopItem {
@@ -178,7 +178,7 @@ function ShopPageContent() {
                     className={`p-4 flex flex-col items-center justify-between space-y-3 border-2 ${rarityColors[item.rarity?.toLowerCase()] || 'border-gray-500'} hover:scale-105 transition-transform`}
                   >
                     <div className="relative">
-                      <div className="text-5xl">{item.emoji || item.icon || 'ðŸ"¦'}</div>
+                      <div className="text-5xl">{item.emoji || item.icon || '�"�'}</div>
                       {item.type === 'theme' && (
                         <Palette className="absolute -top-1 -right-1 h-4 w-4 text-purple-500" />
                       )}
@@ -224,7 +224,7 @@ function ShopPageContent() {
         {/* Shop Info */}
         <Card className="bg-card border border-border text-text">
           <CardContent className="p-4 text-center text-subtle text-sm">
-            ðŸ’¡ Items are permanent and can be equipped in your Profile. Earn gold by completing flows and achievements!
+            💡 Items are permanent and can be equipped in your Profile. Earn gold by completing flows and achievements!
           </CardContent>
         </Card>
       </div>

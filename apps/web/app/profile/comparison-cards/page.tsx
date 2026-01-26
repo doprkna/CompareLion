@@ -1,6 +1,6 @@
 "use client";
 import { ComparisonCardView } from '@/components/comparison/ComparisonCardView';
-import { useLatestCard, useGenerateCard } from '@/hooks/useComparisonCards';
+import { useLatestCard, useGenerateCard } from '@parel/core/hooks/useComparisonCards';
 
 export default function ComparisonCardsPage() {
   const { card, loading, error, reload } = useLatestCard();

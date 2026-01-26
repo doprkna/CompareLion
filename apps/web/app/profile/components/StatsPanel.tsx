@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
-import { ARCHETYPES, getArchetype } from '@/lib/config/archetypeConfig';
+import { ARCHETYPES, getArchetype } from '@parel/core/config/archetypeConfig';
 import { getUserStats } from '@/lib/services/progressionService';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';

@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, unauthorizedError, validationError, successResponse, notFoundError } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 import { z } from 'zod';
 
 const SubmitReflectionSchema = z.object({
@@ -18,11 +19,12 @@ const SubmitReflectionSchema = z.object({
  * Store user's answers for active mirror event
  * Auth required
  * v0.29.12 - Mirror Events
+ * v0.41.6 - C3 Step 7: Unified API envelope
  */
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return unauthorizedError('Unauthorized');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Unauthorized');
   }
 
   const user = await prisma.user.findUnique({
@@ -35,13 +37,19 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return unauthorizedError('User not found');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
   const body = await req.json().catch(() => ({}));
   const parsed = SubmitReflectionSchema.safeParse(body);
   if (!parsed.success) {
-    return validationError('Invalid payload');
+    const details: Record<string, string[]> = {};
+    parsed.error.errors.forEach((err) => {
+      const path = err.path.join('.') || 'root';
+      if (!details[path]) details[path] = [];
+      details[path].push(err.message);
+    });
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Invalid payload', { details });
   }
 
   const { mirrorEventId, answers } = parsed.data;
@@ -53,11 +61,11 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (!mirrorEvent) {
-    return notFoundError('Mirror event not found');
+    return buildError(req, ApiErrorCode.NOT_FOUND, 'Mirror event not found');
   }
 
   if (!mirrorEvent.active || mirrorEvent.startDate > now || mirrorEvent.endDate < now) {
-    return validationError('Event is not currently active');
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Event is not currently active');
   }
 
   // Check if user already submitted for this event
@@ -69,16 +77,16 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (existingSubmission) {
-    return validationError('Already submitted reflection for this event');
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Already submitted reflection for this event');
   }
 
   // Validate answers match question set
   if (answers.length !== mirrorEvent.questionSet.length) {
-    return validationError(`Expected ${mirrorEvent.questionSet.length} answers, got ${answers.length}`);
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Expected answers, got ' + answers.length + ', but question set has ' + mirrorEvent.questionSet.length);
   }
 
   // Create reflection(s) for each answer
-  const createdReflections = await prisma.$transaction(
+  const createdReflections = await Promise.all(
     answers.map((answer, index) =>
       prisma.userReflection.create({
         data: {
@@ -137,8 +145,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     });
   }
 
-  return successResponse({
-    success: true,
+  return buildSuccess(req, {
     reflections: createdReflections.map((r) => ({
       id: r.id,
       content: r.content,
@@ -149,8 +156,9 @@ export const POST = safeAsync(async (req: NextRequest) => {
       badgeGranted,
     },
     message: badgeGranted
-      ? `🎉 Reflection submitted! Earned ${mirrorEvent.rewardXP} XP and a badge!`
-      : `✅ Reflection submitted! Earned ${mirrorEvent.rewardXP} XP!`,
+      ? `dYZ% Reflection submitted! Earned ${mirrorEvent.rewardXP} XP and a badge!`
+      : `�o. Reflection submitted! Earned ${mirrorEvent.rewardXP} XP!`,
   });
 });
+
 

@@ -6,7 +6,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { INTERESTS, type InterestId } from '@/lib/types/onboarding';
+import { INTERESTS, type InterestId } from '@parel/types/onboarding';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 

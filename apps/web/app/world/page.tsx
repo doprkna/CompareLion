@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { RegionCard } from '@/components/region/RegionCard';
 import { TravelModal } from '@/components/region/TravelModal';
-import { useRegions, useTravel, useUnlockRegion, Region } from '@/hooks/useRegions';
+import { useRegions, useTravel, useUnlockRegion, Region } from '@parel/core/hooks/useRegions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Map, Loader2, Sparkles } from 'lucide-react';

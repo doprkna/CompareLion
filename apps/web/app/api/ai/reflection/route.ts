@@ -10,7 +10,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { cache } from '@/lib/cache';
 import { safeAsync, successResponse, validationError, unauthorizedError } from '@/lib/api-handler';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 import { z } from 'zod';
 import { generateReflection, storeReflection } from '@/lib/ai-reflection';
 import { getAIContext } from '@/lib/ai/context';

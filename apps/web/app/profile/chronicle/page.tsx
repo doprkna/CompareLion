@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { ChronicleCard } from '@/components/chronicle/ChronicleCard';
-import { useChronicle, useGenerateChronicle } from '@/hooks/useChronicle';
+import { useChronicle, useGenerateChronicle } from '@parel/core/hooks/useChronicle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollText, Loader2, Sparkles } from 'lucide-react';

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Feature Guard Component
  * Conditionally renders content based on feature flags
  * v0.35.12 - Admin/dev bypass with isAdminView
@@ -12,7 +12,7 @@ import { FEATURES, isFeatureEnabled } from '@/lib/config';
 import { Card, CardContent } from '@/components/ui/card';
 import { Construction } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { isAdminView } from '@/lib/utils/isAdminView';
+import { isAdminView } from '@parel/core/utils/isAdminView';
 
 interface FeatureGuardProps {
   feature: keyof typeof FEATURES;

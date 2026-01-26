@@ -8,8 +8,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AmbientMode, getAmbientScene } from '@/lib/config/ambientConfig';
-import { useCombatPreferences } from '@/hooks/useCombatPreferences';
+import { AmbientMode, getAmbientScene } from '@parel/core/config/ambientConfig';
+import { useCombatPreferences } from '@parel/core/hooks/useCombatPreferences';
 
 interface AmbientManagerProps {
   mode: AmbientMode;

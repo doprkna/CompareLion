@@ -8,7 +8,7 @@
 
 'use client';
 
-import { useLocalization } from '@/hooks/useLocalization';
+import { useLocalization } from '@parel/core/hooks/useLocalization';
 import { Globe, MapPin } from 'lucide-react';
 
 const LANGUAGES = [

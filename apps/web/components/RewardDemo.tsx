@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useFlowRewardScreen } from '@/hooks/useFlowRewardScreen';
-import { useLifeRewardScreen } from '@/hooks/useLifeRewardScreen';
+import { useFlowRewardScreen } from '@parel/core/hooks/useFlowRewardScreen';
+import { useLifeRewardScreen } from '@parel/core/hooks/useLifeRewardScreen';
 
 /**
  * Demo component for testing reward screens

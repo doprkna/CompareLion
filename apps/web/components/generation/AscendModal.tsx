@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Crown, Sparkles, AlertTriangle, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useAscend } from '@/hooks/useAscend';
+import { useAscend } from '@parel/core/hooks/useAscend';
 
 interface AscendModalProps {
   open: boolean;

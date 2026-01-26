@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from 'next/navigation';
-import { usePack } from '@/hooks/usePacks';
+import { usePack } from '@parel/core/hooks/usePacks';
 
 export default function PackDetailPage() {
   const params = useParams<{ id: string }>();

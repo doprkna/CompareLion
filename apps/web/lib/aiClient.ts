@@ -4,7 +4,7 @@
  * Handles communication with the GPT API endpoint for generating questions
  */
 
-import { GEN_CONFIG } from '@/lib/config/generator';
+import { GEN_CONFIG } from '@parel/core/config/generator';
 import { logError } from '@/lib/errors';
 
 export type GenRequest = {

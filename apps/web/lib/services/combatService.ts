@@ -7,7 +7,7 @@
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { unlockAchievement } from '@/lib/services/achievementService';
-import { RewardConfig } from '@/lib/config/rewardConfig';
+import { RewardConfig } from '@parel/core/config/rewardConfig';
 import { calculateCombatKillReward } from '@/lib/services/rewardService';
 import { applyItemEffects, getTotalItemPower, generateItem, createInventoryItem } from '@/lib/services/itemService'; // v0.26.5
 import {
@@ -19,7 +19,7 @@ import {
   calculateGoldBonus,
   UserStats,
 } from '@/lib/services/combatMath'; // v0.26.10
-import { getArchetype } from '@/lib/config/archetypeConfig'; // v0.26.6
+import { getArchetype } from '@parel/core/config/archetypeConfig'; // v0.26.6
 import { addXP } from '@/lib/services/progressionService'; // v0.26.6
 
 // ========================================
@@ -48,11 +48,13 @@ export interface CombatResult {
 }
 
 export interface CombatLogEntry {
-  type: 'attack' | 'enemyHit' | 'kill' | 'respawn' | 'gameOver' | 'rest' | 'heal';
+  type: 'attack' | 'enemyHit' | 'kill' | 'respawn' | 'gameOver' | 'rest' | 'heal' | 'skill';
   damage?: number;
+  heal?: number;
   isCrit?: boolean;
   message: string;
   timestamp: Date;
+  icon?: string; // For skill icons
 }
 
 export interface RewardResult {
@@ -615,6 +617,32 @@ export async function handleKill(userId: string, session: any, powerBonus: numbe
     
     // Add XP via progression service (v0.26.6)
     const xpResult = await addXP(userId, session.xpGained + finalXpReward, 'combat-kill');
+
+    // Create feed post for fight win (v0.36.25)
+    try {
+      const { postFightWin } = await import('@/lib/services/feedService');
+      await postFightWin(userId, session.id, session.enemyName);
+    } catch (error) {
+      // Don't fail fight if feed post fails
+      logger.debug('[CombatService] Feed post failed', error);
+    }
+
+    // Create notification for fight win (v0.36.26)
+    try {
+      const { notifyFightResult } = await import('@/lib/services/notificationService');
+      await notifyFightResult(userId, true, session.enemyName, session.id);
+    } catch (error) {
+      // Don't fail fight if notification fails
+      logger.debug('[CombatService] Notification failed', error);
+    }
+
+    // Grant pet XP (v0.36.32) - +2 XP for any fight result
+    try {
+      const { grantXPToAllUserPets } = await import('@/lib/services/petService');
+      await grantXPToAllUserPets(userId, 2);
+    } catch (error) {
+      logger.debug('[CombatService] Pet XP grant failed', error);
+    }
 
     // Check if user's new streak is higher
     if (newStreak > user.combatHighestStreak) {

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { usePostcards, useSendPostcard, useReadPostcard } from '@/hooks/usePostcards';
+import { usePostcards, useSendPostcard, useReadPostcard } from '@parel/core/hooks/usePostcards';
 import { PostcardList } from '@/components/postcards/PostcardList';
 import { PostcardSendModal } from '@/components/postcards/PostcardSendModal';
 import { PostcardViewer } from '@/components/postcards/PostcardViewer';

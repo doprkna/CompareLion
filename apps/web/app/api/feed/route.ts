@@ -1,203 +1,386 @@
-import { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
+/**
+ * Feed API
+ * GET /api/feed - Get feed posts with pagination and filters
+ * v0.36.25 - Community Feed 1.0
+ * v0.36.31 - Social Compare Feed 2.0
+ * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3 - Added ComparePost support with ranking
+ * v0.41.6 - C3 Step 7: Unified API envelope
+ */
+
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import type { FeedPostDTO, ComparePostDTO, FeedResponseDTO } from '@parel/types/dto';
 import {
-  createFeedItem,
-  addFeedReaction,
-  removeFeedReaction,
-  getTrendingFeedItems,
-  getFriendsFeedItems,
-} from "@/lib/feed";
-import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError } from "@/lib/api-handler";
+  getGlobalComparePosts,
+  getTrendingComparePosts,
+  getSimilarComparePosts,
+} from '@/lib/services/compareFeedService';
 
-/**
- * GET /api/feed
- * Get feed items with optional filters
- */
 export const GET = safeAsync(async (req: NextRequest) => {
-  const { searchParams } = new URL(req.url);
-  const filter = searchParams.get("filter") || "all"; // all, friends, trending
-  const limit = parseInt(searchParams.get("limit") || "50");
-
-  const session = await getServerSession(authOptions);
-  let feedItems;
-
-  if (filter === "trending") {
-    // Get trending items (most reactions in last 24h)
-    feedItems = await getTrendingFeedItems(limit);
-  } else if (filter === "friends" && session?.user?.email) {
-    // Get items from friends only
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return notFoundError('User');
-    }
-
-    feedItems = await getFriendsFeedItems(user.id, limit);
-  } else {
-      // Get all feed items (public feed)
-      feedItems = await prisma.globalFeedItem.findMany({
-        orderBy: { createdAt: "desc" },
-        take: limit,
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true,
-              level: true,
-            },
-          },
-          reactions: {
-            select: {
-              id: true,
-              emoji: true,
-              userId: true,
-            },
-          },
-        },
-      });
-    }
-
-    // Get current user's reactions if logged in
-    let userReactions: Record<string, string> = {};
-    if (session?.user?.email) {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-      });
-
-      if (user) {
-        const reactions = await prisma.reaction.findMany({
-          where: {
-            userId: user.id,
-            targetType: "feed",
-            targetId: {
-              in: feedItems.map((item) => item.id),
-            },
-          },
-        });
-
-        userReactions = (reactions || []).reduce((acc, r) => { // sanity-fix
-          acc[r.targetId] = r.emoji;
-          return acc;
-        }, {} as Record<string, string>);
-      }
-    }
-
-    // Format feed items with reaction summary
-    const formattedItems = feedItems.map((item) => {
-      // Group reactions by emoji
-      const reactionSummary = (item.reactions || []).reduce((acc, r) => { // sanity-fix
-        acc[r.emoji] = (acc[r.emoji] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      return {
-        id: item.id,
-        type: item.type,
-        title: item.title,
-        description: item.description,
-        metadata: item.metadata,
-        createdAt: item.createdAt,
-        user: {
-          id: item.user.id,
-          name: item.user.name || item.user.email?.split("@")[0] || 'Unknown', // sanity-fix
-          image: item.user.image,
-          level: item.user.level,
-        },
-        reactions: reactionSummary,
-        totalReactions: item.reactionsCount,
-        userReaction: userReactions[item.id] || null,
-    };
-  });
-
-  return successResponse({
-    items: formattedItems,
-    filter,
-    count: formattedItems.length,
-  });
-});
-
-/**
- * POST /api/feed
- * Create a new feed item or add reaction
- */
-export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return unauthorizedError('Unauthorized');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Unauthorized');
   }
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
+    select: { id: true },
   });
 
   if (!user) {
-    return notFoundError('User');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
-  const body = await req.json();
-  const { action, feedItemId, emoji, type, title, description, metadata } = body;
+  const { searchParams } = new URL(req.url);
+  const cursor = searchParams.get('cursor');
+  const limit = parseInt(searchParams.get('limit') || '20', 10);
+  const filter = searchParams.get('filter') || 'all';
+  const feedType = searchParams.get('feedType') || 'feed'; // 'feed' | 'compare' | 'all'
+  const type = searchParams.get('type') || 'global'; // 'global' | 'trending' | 'similar' (for compare feed)
 
-  // Add or remove reaction
-  if (action === "react") {
-    if (!feedItemId || !emoji) {
-      return validationError('feedItemId and emoji required');
+  // Validate limit
+  if (limit > 50) {
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Limit cannot exceed 50');
+  }
+
+  // Handle ComparePost feed (v0.36.31)
+  if (feedType === 'compare' || feedType === 'all') {
+    let comparePosts: any[] = [];
+    
+    try {
+      if (type === 'trending') {
+        comparePosts = await getTrendingComparePosts(limit);
+      } else if (type === 'similar') {
+        comparePosts = await getSimilarComparePosts(user.id, limit);
+      } else {
+        // global
+        comparePosts = await getGlobalComparePosts(limit, cursor);
+      }
+      
+      // Format compare posts
+      const formattedComparePosts: ComparePostDTO[] = await Promise.all(
+        comparePosts.map(async (post) => {
+          // Aggregate reactions by type
+          const reactionCounts: Record<string, number> = {};
+          const userReactions: string[] = [];
+          post.reactions.forEach((reaction: any) => {
+            reactionCounts[reaction.type] = (reactionCounts[reaction.type] || 0) + 1;
+            if (reaction.userId === user.id) {
+              userReactions.push(reaction.type);
+            }
+          });
+          
+          // Get question context if questionId exists
+          let questionContext: any = null;
+          if (post.questionId) {
+            try {
+              const question = await prisma.questionTemplate.findUnique({
+                where: { id: post.questionId },
+                select: { text: true, id: true },
+              });
+              if (question) {
+                questionContext = {
+                  id: question.id,
+                  text: question.text,
+                };
+              }
+            } catch (error) {
+              // Ignore if question not found
+            }
+          }
+          
+          return {
+            id: post.id,
+            userId: post.userId,
+            postType: 'compare', // Mark as compare post
+            user: {
+              id: post.user.id,
+              username: post.user.username,
+              name: post.user.name,
+              avatarUrl: post.user.avatarUrl,
+              level: post.user.level,
+            },
+            questionId: post.questionId,
+            questionContext,
+            content: post.content,
+            value: post.value,
+            createdAt: post.createdAt,
+            reactions: {
+              counts: reactionCounts,
+              userReactions,
+              total: post._count.reactions,
+            },
+            comments: {
+              preview: post.comments?.slice(0, 2).map((c: any) => ({
+                id: c.id,
+                userId: c.userId,
+                user: {
+                  id: c.user.id,
+                  username: c.user.username,
+                  name: c.user.name,
+                  avatarUrl: c.user.avatarUrl,
+                },
+                content: c.content,
+                createdAt: c.createdAt,
+              })) || [],
+              total: post._count.comments,
+            },
+          };
+        })
+      );
+      
+      // If feedType is 'compare', return only compare posts
+      if (feedType === 'compare') {
+        const hasMore = comparePosts.length >= limit;
+        const nextCursor =
+          hasMore && formattedComparePosts.length > 0
+            ? `_`
+            : null;
+        
+        const response: FeedResponseDTO = {
+          posts: formattedComparePosts,
+          nextCursor,
+          hasMore,
+        };
+        return buildSuccess(req, response);
+      }
+      
+      // If feedType is 'all', we'll merge with FeedPost below
+      // For now, return compare posts (FeedPost merging can be added later)
+      const hasMore = comparePosts.length >= limit;
+      const nextCursor =
+        hasMore && formattedComparePosts.length > 0
+          ? `${formattedComparePosts[formattedComparePosts.length - 1].createdAt.toISOString()}_`
+          : null;
+      
+      const response: FeedResponseDTO = {
+        posts: formattedComparePosts,
+        nextCursor,
+        hasMore,
+      };
+      return buildSuccess(req, response);
+    } catch (error) {
+      // Fall through to FeedPost if compare feed fails
+      console.error('[FeedAPI] Compare feed error', error);
     }
-
-    await addFeedReaction(feedItemId, user.id, emoji);
-
-    return successResponse(undefined, 'Reaction added');
   }
 
-  if (action === "unreact") {
-    if (!feedItemId) {
-      return validationError('feedItemId required');
-    }
+  // Original FeedPost logic (v0.36.25)
+  // Build where clause based on filter
+  const where: any = {
+    visibility: 'public', // Only show public posts for now
+  };
 
-    await removeFeedReaction(feedItemId, user.id);
+  if (filter === 'me') {
+    where.userId = user.id;
+  } else if (filter === 'fights') {
+    where.type = 'fight';
+  } else if (filter === 'achievements') {
+    where.type = 'achievement';
+  } else if (filter === 'questions') {
+    where.type = 'question';
+  }
+  // 'all' and 'friends' (future) show all public posts
 
-    return successResponse(undefined, 'Reaction removed');
+  // Build cursor pagination
+  const cursorClause: any = {};
+  if (cursor) {
+    const [createdAt, id] = cursor.split('_');
+    cursorClause.OR = [
+      { createdAt: { lt: new Date(createdAt) } },
+      { createdAt: new Date(createdAt), id: { lt: id } },
+    ];
   }
 
-  // Create new feed item
-  if (!type || !title) {
-    return validationError('type and title required');
-  }
-
-  const feedItem = await createFeedItem({
-    type,
-    title,
-    description,
-    userId: user.id,
-    metadata,
+  // Fetch posts
+  const posts = await prisma.feedPost.findMany({
+    where: {
+      ...where,
+      ...cursorClause,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          name: true,
+          avatarUrl: true,
+          level: true,
+        },
+      },
+      reactions: {
+        select: {
+          id: true,
+          emoji: true,
+          userId: true,
+        },
+      },
+      comments: {
+        take: 2, // Preview last 2 comments
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          comments: true,
+          reactions: true,
+        },
+      },
+    },
+    orderBy: [
+      { createdAt: 'desc' },
+      { id: 'desc' },
+    ],
+    take: limit + 1, // Fetch one extra to check if there's more
   });
 
-  return successResponse({
-    feedItem: {
-      id: feedItem.id,
-      type: feedItem.type,
-      title: feedItem.title,
-      description: feedItem.description,
-      createdAt: feedItem.createdAt,
-    },
-  }, 'Feed item created');
+  // Check if there are more posts
+  const hasMore = posts.length > limit;
+  const feedPosts = hasMore ? posts.slice(0, limit) : posts;
+
+  // Format posts with rich preview data
+  const formattedPosts: FeedPostDTO[] = await Promise.all(
+    feedPosts.map(async (post) => {
+      // Get rich preview data based on type
+      let preview: any = null;
+
+      if (post.type === 'fight' && post.refId) {
+        // Try to get fight details
+        try {
+          const fight = await prisma.fight.findUnique({
+            where: { id: post.refId },
+            select: {
+              winner: true,
+              rounds: true,
+            },
+          });
+          if (fight) {
+            preview = {
+              won: fight.winner === 'hero',
+              rounds: Array.isArray(fight.rounds) ? fight.rounds.length : 0,
+            };
+          }
+        } catch (error) {
+          // Ignore if fight not found
+        }
+      } else if (post.type === 'loot' && post.refId) {
+        // Get item details
+        try {
+          const item = await prisma.item.findUnique({
+            where: { id: post.refId },
+            select: {
+              name: true,
+              icon: true,
+              rarity: true,
+            },
+          });
+          if (item) {
+            preview = {
+              itemName: item.name,
+              icon: item.icon,
+              rarity: item.rarity,
+            };
+          }
+        } catch (error) {
+          // Ignore if item not found
+        }
+      } else if (post.type === 'achievement' && post.refId) {
+        // Get achievement details
+        try {
+          const achievement = await prisma.achievement.findUnique({
+            where: { id: post.refId },
+            select: {
+              title: true,
+              icon: true,
+            },
+          });
+          if (achievement) {
+            preview = {
+              title: achievement.title,
+              icon: achievement.icon,
+            };
+          }
+        } catch (error) {
+          // Ignore if achievement not found
+        }
+      }
+
+      // Aggregate reactions by emoji
+      const reactionCounts: Record<string, number> = {};
+      const userReactions: string[] = [];
+      post.reactions.forEach((reaction) => {
+        reactionCounts[reaction.emoji] = (reactionCounts[reaction.emoji] || 0) + 1;
+        if (reaction.userId === user.id) {
+          userReactions.push(reaction.emoji);
+        }
+      });
+
+      return {
+        id: post.id,
+        userId: post.userId,
+        postType: 'feed', // Mark as feed post
+        user: {
+          id: post.user.id,
+          username: post.user.username,
+          name: post.user.name,
+          avatarUrl: post.user.avatarUrl,
+          level: post.user.level,
+        },
+        type: post.type,
+        content: post.content,
+        refId: post.refId,
+        preview,
+        createdAt: post.createdAt,
+        reactions: {
+          counts: reactionCounts,
+          userReactions,
+          total: post._count.reactions,
+        },
+        comments: {
+          preview: post.comments.map((c) => ({
+            id: c.id,
+            userId: c.userId,
+            user: {
+              id: c.user.id,
+              username: c.user.username,
+              name: c.user.name,
+              avatarUrl: c.user.avatarUrl,
+            },
+            content: c.content,
+            createdAt: c.createdAt,
+          })),
+          total: post._count.comments,
+        },
+      };
+    })
+  );
+
+  // Generate next cursor
+  const nextCursor =
+    hasMore && formattedPosts.length > 0
+      ? `${formattedPosts[formattedPosts.length - 1].createdAt.toISOString()}_`
+      : null;
+
+  const response: FeedResponseDTO = {
+    posts: formattedPosts,
+    nextCursor,
+    hasMore,
+  };
+
+  return buildSuccess(req, response);
 });
-
-
-
-
-
-
-
-
-
-
-
-
 

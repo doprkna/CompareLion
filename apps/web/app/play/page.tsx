@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Play Page - Turn-based Fighting System
  * v0.36.0 - Full Fighting System MVP
  */
@@ -12,10 +12,10 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { useFightStore, Enemy } from "@/hooks/useFightStore";
-import { useRewardToast } from "@/hooks/useRewardToast";
+import { useFightStore, Enemy } from '@parel/core/hooks/useFightStore";
+import { useRewardToast } from '@parel/core/hooks/useRewardToast";
 import { apiFetch } from "@/lib/apiBase";
-import { Swords, Shield, Zap, Heart, Loader2, Trophy, Coins, Sparkles } from "lucide-react";
+import { Icon } from '@parel/ui/atoms';
 
 interface HeroStats {
   hp: number;
@@ -39,6 +39,9 @@ export default function PlayPage() {
   const [heroStats, setHeroStats] = useState<HeroStats | null>(null);
   const [loadingHero, setLoadingHero] = useState(true);
   const [animatingRound, setAnimatingRound] = useState<number | null>(null);
+  const [activeEvents, setActiveEvents] = useState<any[]>([]);
+  const [adventureState, setAdventureState] = useState<any>(null);
+  const [resettingAdventure, setResettingAdventure] = useState(false);
 
   // Load hero stats
   useEffect(() => {
@@ -86,6 +89,61 @@ export default function PlayPage() {
     }
     loadEnemies();
   }, [pushToast]);
+
+  // Load active events (v0.36.15)
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const res = await apiFetch("/api/rpg/events");
+        if ((res as any).ok && (res as any).data?.events) {
+          setActiveEvents((res as any).data.events || []);
+        }
+      } catch (error) {
+        console.error("[Play] Failed to load events:", error);
+      }
+    }
+    loadEvents();
+  }, []);
+
+  // Load adventure state (v0.36.16)
+  useEffect(() => {
+    async function loadAdventure() {
+      try {
+        const res = await apiFetch("/api/adventure");
+        if ((res as any).ok && (res as any).data?.state) {
+          setAdventureState((res as any).data.state);
+        }
+      } catch (error) {
+        console.error("[Play] Failed to load adventure:", error);
+      }
+    }
+    loadAdventure();
+  }, []);
+
+  async function handleResetAdventure() {
+    if (!confirm('Are you sure you want to reset your adventure? This will start from the beginning.')) {
+      return;
+    }
+
+    setResettingAdventure(true);
+    try {
+      const res = await apiFetch("/api/adventure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reset" }),
+      });
+
+      if ((res as any).ok && (res as any).data?.state) {
+        setAdventureState((res as any).data.state);
+        pushToast({ type: "success", message: "Adventure reset!" });
+      }
+    } catch (error) {
+      console.error("[Play] Failed to reset adventure:", error);
+      pushToast({ type: "error", message: "Failed to reset adventure" });
+    } finally {
+      setResettingAdventure(false);
+    }
+  }
 
   // Handle fight result
   useEffect(() => {
@@ -143,7 +201,7 @@ export default function PlayPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Icon name="spinner" className="h-8 w-8 animate-spin text-primary" />
         </div>
       </div>
     );
@@ -153,18 +211,90 @@ export default function PlayPage() {
     <div className="container mx-auto p-6 max-w-6xl">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-          <Swords className="h-8 w-8" />
+          <Icon name="swords" className="h-8 w-8" size="md" />
           Arena
         </h1>
         <p className="text-muted-foreground">Challenge enemies in turn-based combat</p>
       </div>
+
+      {/* Active Events Banner (v0.36.15) */}
+      {activeEvents.length > 0 && (
+        <Card className="mb-6 border-2 border-accent bg-accent/10">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="calendar" className="h-5 w-5 text-accent" />
+              <span className="font-semibold text-accent">Active Events</span>
+            </div>
+            <div className="space-y-2">
+              {activeEvents.map((event) => (
+                <div key={event.id} className="flex items-center gap-2 text-sm">
+                  <Icon name="xp" className="h-4 w-4 text-accent" />
+                  <span className="font-medium">{event.name}</span>
+                  {event.description && (
+                    <span className="text-muted-foreground">� {event.description}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Adventure Mode Section (v0.36.16) */}
+      {adventureState && (
+        <Card className="mb-6 border-2 border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Icon name="map" className="h-5 w-5" size="md" />
+              Adventure Mode
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Chapter 1: The Beginning</p>
+                {adventureState.isFinished ? (
+                  <p className="text-lg font-bold text-accent">Completed!</p>
+                ) : (
+                  <p className="text-lg font-bold">
+                    Stage {adventureState.currentStage} / {adventureState.totalStages}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => router.push("/play/adventure")}
+                  variant="default"
+                >
+                  <Icon name="map" className="h-4 w-4 mr-2" size="md" />
+                  {adventureState.isFinished ? "View" : "Resume"}
+                </Button>
+                {!adventureState.isFinished && (
+                  <Button
+                    onClick={handleResetAdventure}
+                    variant="outline"
+                    size="sm"
+                    disabled={resettingAdventure}
+                  >
+                    {resettingAdventure ? (
+                      <Icon name="spinner" className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Icon name="refresh" className="h-4 w-4" />
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Hero Stats */}
       {heroStats && (
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
+              <Icon name="shield" className="h-5 w-5" size="md" />
               Your Hero
             </CardTitle>
           </CardHeader>
@@ -177,7 +307,7 @@ export default function PlayPage() {
               <div>
                 <div className="text-sm text-muted-foreground mb-1">HP</div>
                 <div className="flex items-center gap-2">
-                  <Heart className="h-4 w-4 text-red-500" />
+                  <Icon name="heart" className="h-4 w-4 text-red-500" />
                   <span className="text-lg font-semibold">
                     {heroStats.hp}/{heroStats.maxHp}
                   </span>
@@ -190,21 +320,21 @@ export default function PlayPage() {
               <div>
                 <div className="text-sm text-muted-foreground mb-1">Strength</div>
                 <div className="text-lg font-semibold flex items-center gap-1">
-                  <Swords className="h-4 w-4" />
+                  <Icon name="swords" className="h-4 w-4" size="md" />
                   {heroStats.str}
                 </div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground mb-1">Defense</div>
                 <div className="text-lg font-semibold flex items-center gap-1">
-                  <Shield className="h-4 w-4" />
+                  <Icon name="shield" className="h-4 w-4" size="md" />
                   {heroStats.def}
                 </div>
               </div>
               <div>
                 <div className="text-sm text-muted-foreground mb-1">Speed</div>
                 <div className="text-lg font-semibold flex items-center gap-1">
-                  <Zap className="h-4 w-4" />
+                  <Icon name="zap" className="h-4 w-4" />
                   {heroStats.speed}
                 </div>
               </div>
@@ -220,7 +350,7 @@ export default function PlayPage() {
         <h2 className="text-2xl font-bold mb-4">Choose Your Opponent</h2>
         {loadingEnemies ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Icon name="spinner" className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : enemies.length === 0 ? (
           <Card>
@@ -266,14 +396,14 @@ export default function PlayPage() {
                     <Separator />
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground flex items-center gap-1">
-                        <Sparkles className="h-3 w-3" />
+                        <Icon name="xp" className="h-3 w-3" />
                         XP:
                       </span>
                       <span className="font-semibold">{enemy.xpReward}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground flex items-center gap-1">
-                        <Coins className="h-3 w-3" />
+                        <Icon name="coins" className="h-3 w-3" size="md" />
                         Gold:
                       </span>
                       <span className="font-semibold">{enemy.goldReward}</span>
@@ -287,12 +417,12 @@ export default function PlayPage() {
                   >
                     {isFighting && selectedEnemy?.id === enemy.id ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Icon name="spinner" className="h-4 w-4 mr-2 animate-spin" />
                         Fighting...
                       </>
                     ) : (
                       <>
-                        <Swords className="h-4 w-4 mr-2" />
+                        <Icon name="swords" className="h-4 w-4 mr-2" size="md" />
                         Fight
                       </>
                     )}
@@ -309,7 +439,7 @@ export default function PlayPage() {
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5" />
+              <Icon name="trophy" className="h-5 w-5" />
               Fight Log
             </CardTitle>
           </CardHeader>
@@ -334,7 +464,7 @@ export default function PlayPage() {
             {animatingRound === fightResult.rounds.length - 1 && (
               <div className="mt-4 p-4 rounded-lg bg-primary/10 text-center">
                 <div className="text-lg font-bold">
-                  {fightResult.winner === "hero" ? "🎉 Victory!" : "💀 Defeat"}
+                  {fightResult.winner === "hero" ? "?? Victory!" : "?? Defeat"}
                 </div>
                 {fightResult.winner === "hero" && (
                   <div className="text-sm text-muted-foreground mt-2">

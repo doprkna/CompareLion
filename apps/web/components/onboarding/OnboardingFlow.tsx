@@ -15,7 +15,7 @@ import { StepRegion } from './StepRegion';
 import { StepInterests } from './StepInterests';
 import { StepTone } from './StepTone';
 import { StepFinish } from './StepFinish';
-import type { OnboardingData } from '@/lib/types/onboarding';
+import type { OnboardingData } from '@parel/types/onboarding';
 
 interface OnboardingFlowProps {
   initialData?: OnboardingData;

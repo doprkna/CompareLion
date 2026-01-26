@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Moon, Sparkles, Check } from 'lucide-react';
-import { useDreamspace } from '@/hooks/useDreamspace';
+import { useDreamspace } from '@parel/core/hooks/useDreamspace';
 import { Loader2 } from 'lucide-react';
 
 const toneEmojis: Record<string, string> = {

@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trackEvent, TelemetryEventType } from "@/lib/telemetry/telemetry-tracker";
 import { safeAsync, validationError } from "@/lib/api-handler";
-import { logger } from "@/lib/utils/debug";
+import { logger } from '@parel/core/utils/debug";
 import { z } from "zod";
 
 const TelemetryEventSchema = z.object({

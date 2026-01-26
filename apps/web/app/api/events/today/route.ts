@@ -59,8 +59,8 @@ export const GET = safeAsync(async (req: NextRequest) => {
   });
 
   const payload = { success: true, event: event || null, region, timestamp: new Date().toISOString() };
-  const redis = getRedis();
-  if (redis) { try { await redis.set(k(region), JSON.stringify(payload), 'EX', 300); } catch {} }
+  const redis2 = getRedis();
+  if (redis2) { try { await redis2.set(k(region), JSON.stringify(payload), 'EX', 300); } catch {} }
   const res = NextResponse.json(payload);
   res.headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
   return res;

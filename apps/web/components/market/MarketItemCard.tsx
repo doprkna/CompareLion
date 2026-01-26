@@ -1,6 +1,6 @@
 'use client';
 
-import { MarketItem } from '@/hooks/useMarket';
+import { MarketItem } from '@parel/core/hooks/useMarket';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Gift, Sparkles, Zap } from 'lucide-react';

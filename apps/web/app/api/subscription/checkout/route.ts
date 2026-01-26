@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { createCheckoutSession, PRICING_PLANS } from '@/lib/stripe';
+import { createCheckoutSession } from '@/lib/stripe/server';
+import { PRICING_PLANS } from '@/lib/stripe';
 import { logEvent, TelemetryEvents } from '@/lib/telemetry';
-import prisma from '@/lib/db';
-import { safeAsync, unauthorizedError, notFoundError, validationError } from '@/lib/api-handler';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError, notFoundError, validationError, successResponse } from '@/lib/api-handler';
+
+export const runtime = 'nodejs';
 
 /**
  * POST /api/subscription/checkout
@@ -57,7 +60,7 @@ export const POST = safeAsync(async (request: NextRequest) => {
     },
   });
 
-  return NextResponse.json({
+  return successResponse({
     sessionId: checkoutSession.id,
     url: checkoutSession.url,
   });

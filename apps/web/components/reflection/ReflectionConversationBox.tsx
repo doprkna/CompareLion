@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useReflectionConverse, useReflectionConversation } from '@/hooks/useReflectionConverse';
+import { useReflectionConverse, useReflectionConversation } from '@parel/core/hooks/useReflectionConverse';
 import { AIResponseBubble } from './AIResponseBubble';
 import { Button } from '@/components/ui/button';
 import { Loader2, MessageSquare } from 'lucide-react';

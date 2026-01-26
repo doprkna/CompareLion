@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
+import { Prisma as PrismaRuntime } from '@prisma/client/runtime/library';
+
+// Re-export Prisma namespace for runtime usage
+const Prisma = PrismaRuntime;
 import Decimal from 'decimal.js';
 
 /////////////////////////////////////////
@@ -1064,7 +1068,7 @@ export const UserSchema = z.object({
   banned: z.boolean(),
   motto: z.string().nullable(),
   theme: z.string().nullable(),
-  funds: z.instanceof(Prisma.Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'User']"}),
+  funds: z.instanceof(Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'User']"}),
   diamonds: z.number().int(),
   xp: z.number().int(),
   level: z.number().int(),
@@ -5777,7 +5781,7 @@ export const WalletSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   tenantId: z.string(),
-  funds: z.instanceof(Prisma.Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'Wallet']"}),
+  funds: z.instanceof(Decimal, { message: "Field 'funds' must be a Decimal. Location: ['Models', 'Wallet']"}),
   diamonds: z.number().int(),
   badgesClaimedCount: z.number().int(),
 })
@@ -6759,7 +6763,7 @@ export const UserWalletSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   currencyKey: z.string(),
-  balance: z.instanceof(Prisma.Decimal, { message: "Field 'balance' must be a Decimal. Location: ['Models', 'UserWallet']"}),
+  balance: z.instanceof(Decimal, { message: "Field 'balance' must be a Decimal. Location: ['Models', 'UserWallet']"}),
   updatedAt: z.coerce.date(),
 })
 
@@ -6774,7 +6778,7 @@ export const MarketItemSchema = z.object({
   id: z.cuid(),
   name: z.string(),
   description: z.string(),
-  price: z.instanceof(Prisma.Decimal, { message: "Field 'price' must be a Decimal. Location: ['Models', 'MarketItem']"}),
+  price: z.instanceof(Decimal, { message: "Field 'price' must be a Decimal. Location: ['Models', 'MarketItem']"}),
   currencyKey: z.string(),
   rarity: z.string().nullable(),
   stock: z.number().int().nullable(),
@@ -6793,7 +6797,7 @@ export const TransactionSchema = z.object({
   id: z.cuid(),
   userId: z.string(),
   itemId: z.string().nullable(),
-  amount: z.instanceof(Prisma.Decimal, { message: "Field 'amount' must be a Decimal. Location: ['Models', 'Transaction']"}),
+  amount: z.instanceof(Decimal, { message: "Field 'amount' must be a Decimal. Location: ['Models', 'Transaction']"}),
   currencyKey: z.string(),
   note: z.string().nullable(),
   createdAt: z.coerce.date(),

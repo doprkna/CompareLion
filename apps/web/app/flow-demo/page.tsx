@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Flow Demo Page
@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Loader2, CheckCircle2, XCircle, ArrowRight, SkipForward } from 'lucide-react';
+import { Icon } from '../../../../packages/ui/atoms/icon'; // sanity-fix
 import { useToast } from '@/components/ui/use-toast';
 
 interface FlowCategory {
@@ -257,7 +257,7 @@ export default function FlowDemoPage() {
           
           {loading ? (
             <div className="flex items-center justify-center p-12">
-              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+              <Icon name="spinner" className="h-8 w-8 animate-spin text-accent" />
             </div>
           ) : categories.length === 0 ? (
             <Card>
@@ -290,7 +290,7 @@ export default function FlowDemoPage() {
                 disabled={!selectedCategory || loading}
                 className="w-full bg-accent text-white hover:bg-accent/90"
               >
-                Start Flow <ArrowRight className="ml-2 h-4 w-4" />
+                Start Flow <Icon name="arrow-right" className="ml-2 h-4 w-4" />
               </Button>
             </div>
           )}
@@ -396,7 +396,7 @@ export default function FlowDemoPage() {
                   disabled={!canSubmit || loading}
                   className="flex-1 bg-accent text-white hover:bg-accent/90"
                 >
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
+                  {loading ? <Icon name="spinner" className="h-4 w-4 animate-spin" /> : <Icon name="check-circle" className="h-4 w-4 mr-2" />}
                   Submit Answer
                 </Button>
                 <Button
@@ -405,7 +405,7 @@ export default function FlowDemoPage() {
                   variant="outline"
                   className="flex-1"
                 >
-                  <SkipForward className="h-4 w-4 mr-2" />
+                  <Icon name="skip" className="h-4 w-4 mr-2" size="md" />
                   Skip
                 </Button>
               </div>

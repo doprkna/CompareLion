@@ -1,87 +1,67 @@
 /**
  * Market API - List active listings
- * v0.26.4 - Marketplace Foundations
+ * v0.36.29 - Marketplace 2.0
+ * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3
+ * v0.41.4 - C3 Step 5: Unified API envelope
  */
 
 import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/db';
-import { safeAsync, successResponse, parseQuery } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import type { MarketListingDTO, MarketResponseDTO } from '@parel/types/dto';
+import { getMarketplaceListings } from '@/lib/services/marketplaceService';
 
 /**
  * GET /api/market
- * List all active listings with pagination and currency filter
+ * List all active listings with cursor pagination, sorting, and filters
  */
 export const GET = safeAsync(async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
-  const currencyKey = searchParams.get('currencyKey');
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '20');
-  const skip = (page - 1) * limit;
+  const cursor = searchParams.get('cursor') || undefined;
+  const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 50);
+  const sort = (searchParams.get('sort') || 'price_asc') as 'price_asc' | 'price_desc' | 'newest';
+  const category = searchParams.get('category') || undefined;
+  const itemId = searchParams.get('itemId') || undefined;
 
-  const where: any = {
-    status: 'active',
-  };
-
-  if (currencyKey) {
-    where.currencyKey = currencyKey;
+  if (!['price_asc', 'price_desc', 'newest'].includes(sort)) {
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Invalid sort parameter');
   }
 
-  const [listings, total] = await Promise.all([
-    prisma.marketListing.findMany({
-      where,
-      include: {
-        item: {
-          include: {
-            item: true, // Item details
-          },
-        },
-        seller: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            username: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      skip,
-      take: limit,
-    }),
-    prisma.marketListing.count({ where }),
-  ]);
+  const result = await getMarketplaceListings({
+    cursor,
+    limit,
+    sort,
+    category,
+    itemId,
+  });
 
-  // Format listings for frontend
-  const formatted = listings.map(listing => ({
+  // Anonymize seller names
+  const formatted: MarketListingDTO[] = result.listings.map(listing => ({
     id: listing.id,
     price: listing.price,
-    currencyKey: listing.currencyKey,
+    quantity: listing.quantity,
     createdAt: listing.createdAt,
     item: {
-      id: listing.item.item.id,
-      name: listing.item.item.name,
-      emoji: listing.item.item.emoji || listing.item.item.icon || '📦',
-      rarity: listing.item.item.rarity,
-      type: listing.item.item.type,
-      power: listing.item.item.power,
-      defense: listing.item.item.defense,
+      id: listing.item.id,
+      name: listing.item.name,
+      emoji: listing.item.emoji || listing.item.icon || 'dY"�',
+      icon: listing.item.icon || listing.item.emoji || 'dY"�',
+      rarity: listing.item.rarity,
+      type: listing.item.type,
+      description: listing.item.description,
     },
     seller: {
       id: listing.seller.id,
-      name: listing.seller.name,
-      username: listing.seller.username,
+      name: Player, // Anonymized
+      username: listing.seller.username ? Player : undefined,
     },
   }));
 
-  return successResponse({
+  const response: MarketResponseDTO = {
     listings: formatted,
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    },
-  });
+    nextCursor: result.nextCursor,
+  };
+
+  return buildSuccess(req, response);
 });
+

@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { useSynchTests, useStartSynchTest } from '@/hooks/useSynchTests';
+import { useSynchTests, useStartSynchTest } from '@parel/core/hooks/useSynchTests';
 import { SynchInviteModal } from '@/components/synch-tests/SynchInviteModal';
 import { useState } from 'react';
 

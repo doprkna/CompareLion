@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ARCHETYPES } from '@/lib/config/archetypeConfig';
-import { useRewardToast } from '@/hooks/useRewardToast';
+import { ARCHETYPES } from '@parel/core/config/archetypeConfig';
+import { useRewardToast } from '@parel/core/hooks/useRewardToast';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles } from 'lucide-react';
-import { useFusionOptions, useArchetypeFusion } from '@/hooks/useArchetypeFusion';
+import { useFusionOptions, useArchetypeFusion } from '@parel/core/hooks/useArchetypeFusion';
 import { FusionPreviewCard } from '@/components/fusion/FusionPreviewCard';
 
 export default function ArchetypeSelectionPage() {

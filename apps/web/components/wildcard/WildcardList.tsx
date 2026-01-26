@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, Gift, Clock } from 'lucide-react';
-import { useWildcards } from '@/hooks/useWildcards';
+import { useWildcards } from '@parel/core/hooks/useWildcards';
 import { Loader2 } from 'lucide-react';
 
 export function WildcardList() {

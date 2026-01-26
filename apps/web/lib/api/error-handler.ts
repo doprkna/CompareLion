@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 import { Prisma } from '@parel/db/client';
-import { error as logError } from '@/lib/utils/debug';
+import { error as logError } from '@parel/core/utils/debug';
 
 export interface ApiError {
   success: false;

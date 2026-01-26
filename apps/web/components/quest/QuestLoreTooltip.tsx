@@ -1,6 +1,6 @@
 'use client';
 
-import { QuestLore } from '@/hooks/useQuestLore';
+import { QuestLore } from '@parel/core/hooks/useQuestLore';
 import { ScrollText, Zap, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';

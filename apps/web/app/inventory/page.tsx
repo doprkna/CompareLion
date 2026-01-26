@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
 /**
- * Inventory Page
- * v0.35.15 - Display real user items from database
+ * Inventory Page 2.0
+ * v0.36.34 - Standardized inventory system with tabs and item cards
  */
 
 import { useState, useEffect } from 'react';
@@ -10,28 +10,44 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Package, Sparkles, ShoppingBag } from 'lucide-react';
+import { toast } from 'sonner';
 import { apiFetch } from '@/lib/apiBase';
-import PlaceholderPage from '@/components/PlaceholderPage';
-import { isAdminView } from '@/lib/utils/isAdminView';
+import { getRarityColorClass, getRarityDisplayName, getRarityBgClass } from '@/lib/rpg/rarity';
 
+// Icon component stub
+const Icon = ({ name, className }: { name: string; className?: string; size?: string }) => <span className={'icon-' + name + ' ' + (className || '')} />;
 interface InventoryItem {
   id: string;
+  itemId: string;
   name: string;
-  emoji: string;
+  emoji?: string;
+  icon?: string;
   description: string | null;
   rarity: string;
   type: string;
-  goldPrice: number;
-  quantity?: number;
-  equipped?: boolean;
+  slot?: string | null;
+  power?: number | null;
+  bonus?: any;
+  region?: string | null;
+  isTradable?: boolean;
+  goldPrice?: number;
+  quantity: number;
+  equipped: boolean;
+  durability?: number | null;
+  createdAt: string;
 }
+
+const SLOTS = ['head', 'body', 'legs', 'weapon', 'accessories'] as const;
+type SlotType = typeof SLOTS[number];
 
 export default function InventoryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<string>('equipment');
+  const [equipping, setEquipping] = useState<string | null>(null);
+  const [using, setUsing] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -53,34 +69,196 @@ export default function InventoryPage() {
       }
     } catch (error) {
       console.error('Error loading inventory:', error);
+      toast.error('Failed to load inventory');
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleEquip(itemId: string) {
+    if (equipping) return;
+    setEquipping(itemId);
+    try {
+      const res = await apiFetch('/api/inventory/equip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId }),
+      });
+
+      if ((res as any).ok) {
+        toast.success('Item equipped!');
+        loadInventory();
+      } else {
+        throw new Error((res as any).error || 'Failed to equip item');
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to equip item');
+    } finally {
+      setEquipping(null);
+    }
+  }
+
+  async function handleUnequip(itemId: string) {
+    if (equipping) return;
+    setEquipping(itemId);
+    try {
+      const res = await apiFetch('/api/inventory/unequip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId }),
+      });
+
+      if ((res as any).ok) {
+        toast.success('Item unequipped!');
+        loadInventory();
+      } else {
+        throw new Error((res as any).error || 'Failed to unequip item');
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to unequip item');
+    } finally {
+      setEquipping(null);
+    }
+  }
+
+  async function handleUse(itemId: string) {
+    if (using) return;
+    setUsing(itemId);
+    try {
+      const res = await apiFetch('/api/inventory/use', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId }),
+      });
+
+      if ((res as any).ok) {
+        const data = (res as any).data;
+        toast.success(data.message || 'Item used!');
+        loadInventory();
+      } else {
+        throw new Error((res as any).error || 'Failed to use item');
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to use item');
+    } finally {
+      setUsing(null);
+    }
+  }
+
+  // Filter items by type
+  const equipmentItems = items.filter(item => 
+    ['weapon', 'armor'].includes(item.type) && item.slot
+  );
+  const consumableItems = items.filter(item => item.type === 'consumable');
+  const materialItems = items.filter(item => item.type === 'material');
+  const themeItems = items.filter(item => item.type === 'theme');
+  const miscItems = items.filter(item => 
+    !['weapon', 'armor', 'consumable', 'material', 'theme'].includes(item.type)
+  );
+
+  // Group equipment by slot
+  const equipmentBySlot: Record<SlotType, InventoryItem[]> = {
+    head: equipmentItems.filter(item => item.slot === 'head'),
+    body: equipmentItems.filter(item => item.slot === 'body'),
+    legs: equipmentItems.filter(item => item.slot === 'legs'),
+    weapon: equipmentItems.filter(item => item.slot === 'weapon'),
+    accessories: equipmentItems.filter(item => item.slot === 'accessories'),
+  };
+
+  function ItemCard({ item }: { item: InventoryItem }) {
+    const displayIcon = item.icon || item.emoji || '??';
+    const rarityColor = getRarityColorClass(item.rarity);
+    const rarityBg = getRarityBgClass(item.rarity);
+    const canEquip = item.slot && ['weapon', 'armor'].includes(item.type);
+    const canUse = ['consumable', 'pet_egg'].includes(item.type);
+
+    return (
+      <Card className={`p-4 flex flex-col space-y-3 border-2 ${item.equipped ? 'border-accent bg-accent/10' : rarityBg}`}>
+        <div className="flex items-start justify-between">
+          <div className="text-5xl">{displayIcon}</div>
+          {item.equipped && (
+            <span className="text-xs px-2 py-1 bg-accent text-white rounded">
+              EQUIPPED
+            </span>
+          )}
+        </div>
+        
+        <div className="space-y-2">
+          <div className="font-bold text-text">{item.name}</div>
+          <div className={`text-xs font-bold px-2 py-0.5 rounded ${rarityColor}`}>
+            {getRarityDisplayName(item.rarity)}
+          </div>
+          {item.description && (
+            <div className="text-xs text-subtle line-clamp-2">{item.description}</div>
+          )}
+          
+          {/* Stats & Bonuses */}
+          {(item.power || item.bonus) && (
+            <div className="text-xs space-y-0.5 pt-1 border-t border-border/50">
+              {item.power && (
+                <div className="flex items-center gap-1 text-subtle">
+                  <Icon name="zap" className="h-3 w-3" />
+                  Power: {item.power}
+                </div>
+              )}
+              {item.bonus && typeof item.bonus === 'object' && (
+                Object.entries(item.bonus).map(([key, value]) => (
+                  <div key={key} className="flex items-center gap-1 text-subtle">
+                    {key === 'attack' && <Icon name="sword" className="h-3 w-3" />}
+                    {key === 'defense' && <Icon name="shield" className="h-3 w-3" size="md" />}
+                    {key === 'hp' && <Icon name="heart" className="h-3 w-3" />}
+                    {key === 'critChance' && <Icon name="challenge" className="h-3 w-3" />}
+                    {key}: {String(value)}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+          
+          {item.quantity > 1 && (
+            <div className="text-xs text-accent font-bold">Qty: {item.quantity}</div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 mt-auto">
+          {canEquip && (
+            <Button
+              onClick={() => item.equipped ? handleUnequip(item.itemId) : handleEquip(item.itemId)}
+              variant={item.equipped ? "outline" : "default"}
+              size="sm"
+              className="flex-1"
+              disabled={equipping === item.itemId}
+            >
+              {equipping === item.itemId ? '...' : item.equipped ? 'Unequip' : 'Equip'}
+            </Button>
+          )}
+          {canUse && (
+            <Button
+              onClick={() => handleUse(item.itemId)}
+              variant="default"
+              size="sm"
+              className="flex-1"
+              disabled={using === item.itemId}
+            >
+              {using === item.itemId ? 'Using...' : 'Use'}
+            </Button>
+          )}
+        </div>
+      </Card>
+    );
   }
 
   if (status === 'loading' || loading) {
     return (
       <div className="container mx-auto p-4 flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Package className="w-8 h-8 animate-spin mx-auto mb-4 text-accent" />
+          <Icon name="package" className="w-8 h-8 animate-spin mx-auto mb-4 text-accent" size="md" />
           <p className="text-muted-foreground">Loading inventory...</p>
         </div>
       </div>
     );
   }
-
-  // Admin fallback for empty inventory
-  if (items.length === 0 && isAdminView()) {
-    return <PlaceholderPage name="Inventory Empty - Items exist in DB but not assigned to user yet" />;
-  }
-
-  const rarityColors: Record<string, string> = {
-    common: 'border-gray-500',
-    uncommon: 'border-green-500',
-    rare: 'border-blue-500',
-    epic: 'border-purple-500',
-    legendary: 'border-yellow-500',
-  };
 
   return (
     <div className="min-h-screen bg-bg p-6">
@@ -88,73 +266,215 @@ export default function InventoryPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Package className="h-8 w-8 text-accent" />
+            <Icon name="package" className="h-8 w-8 text-accent" size="md" />
             <div>
               <h1 className="text-4xl font-bold text-text">Inventory</h1>
-              <p className="text-subtle">Your collected items and equipment</p>
+              <p className="text-subtle">Manage your items and equipment</p>
             </div>
           </div>
           
           <Button onClick={() => router.push('/shop')} className="bg-accent text-white">
-            <ShoppingBag className="h-4 w-4 mr-2" />
+            <Icon name="shopping" className="h-4 w-4 mr-2" size="md" />
             Visit Shop
           </Button>
         </div>
 
-        {/* Inventory Items Grid */}
-        <Card className="bg-card border-2 border-border text-text">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-accent" />
-              Your Items ({items.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {items.length > 0 ? (
+        {/* Tabs */}
+        <div className="w-full">
+          <div className="grid w-full grid-cols-5 gap-2 mb-6">
+            <button
+              onClick={() => setActiveTab('equipment')}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'equipment'
+                  ? 'bg-accent text-white'
+                  : 'bg-card border border-border text-text hover:bg-accent/10'
+              }`}
+            >
+              <Icon name="sword" className="h-4 w-4 inline mr-2" />
+              Equipment
+            </button>
+            <button
+              onClick={() => setActiveTab('consumables')}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'consumables'
+                  ? 'bg-accent text-white'
+                  : 'bg-card border border-border text-text hover:bg-accent/10'
+              }`}
+            >
+              <Icon name="flask" className="h-4 w-4 inline mr-2" size="md" />
+              Consumables
+            </button>
+            <button
+              onClick={() => setActiveTab('materials')}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'materials'
+                  ? 'bg-accent text-white'
+                  : 'bg-card border border-border text-text hover:bg-accent/10'
+              }`}
+            >
+              <Icon name="hammer" className="h-4 w-4 inline mr-2" />
+              Materials
+            </button>
+            <button
+              onClick={() => setActiveTab('themes')}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'themes'
+                  ? 'bg-accent text-white'
+                  : 'bg-card border border-border text-text hover:bg-accent/10'
+              }`}
+            >
+              <Icon name="palette" className="h-4 w-4 inline mr-2" />
+              Themes
+            </button>
+            <button
+              onClick={() => setActiveTab('misc')}
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'misc'
+                  ? 'bg-accent text-white'
+                  : 'bg-card border border-border text-text hover:bg-accent/10'
+              }`}
+            >
+              <Icon name="box" className="h-4 w-4 inline mr-2" size="md" />
+              Misc
+            </button>
+          </div>
+
+          {/* Equipment Tab */}
+          {activeTab === 'equipment' && (
+          <div className="space-y-6">
+            {equipmentItems.length > 0 ? (
+              <>
+                {/* Equipment Slots */}
+                {SLOTS.map((slot) => {
+                  const slotItems = equipmentBySlot[slot];
+                  const equippedItem = slotItems.find(item => item.equipped);
+                  
+                  return (
+                    <Card key={slot} className="bg-card border-2 border-border">
+                      <CardHeader>
+                        <CardTitle className="text-lg capitalize">{slot}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {equippedItem ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <ItemCard item={equippedItem} />
+                            {slotItems.filter(item => !item.equipped).map(item => (
+                              <ItemCard key={item.id} item={item} />
+                            ))}
+                          </div>
+                        ) : slotItems.length > 0 ? (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {slotItems.map(item => (
+                              <ItemCard key={item.id} item={item} />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 text-subtle">
+                            No {slot} equipment yet
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </>
+            ) : (
+              <Card className="bg-card border-2 border-border">
+                <CardContent className="text-center py-12">
+                  <Icon name="sword" className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" />
+                  <p className="text-subtle text-lg">You don't have equipment yet</p>
+                  <p className="text-subtle text-sm mt-2">
+                    Find items in quests, shop, or battles
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+          )}
+
+          {/* Consumables Tab */}
+          {activeTab === 'consumables' && (
+            consumableItems.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {items.map((item) => (
-                  <Card 
-                    key={item.id} 
-                    className={`p-4 flex flex-col items-center justify-between space-y-3 border-2  `}
-                  >
-                    <div className="text-5xl">{item.emoji || 'ðŸ“¦'}</div>
-                    <div className="text-center space-y-1">
-                      <div className="font-bold text-text">{item.name}</div>
-                      <div className="text-xs text-subtle capitalize">{item.rarity}</div>
-                      {item.description && (
-                        <div className="text-xs text-subtle line-clamp-2">{item.description}</div>
-                      )}
-                      {item.quantity && item.quantity > 1 && (
-                        <div className="text-xs text-accent font-bold">Qty: {item.quantity}</div>
-                      )}
-                      {item.equipped && (
-                        <div className="text-xs text-accent font-bold">âœ“ Equipped</div>
-                      )}
-                    </div>
-                  </Card>
+                {consumableItems.map(item => (
+                  <ItemCard key={item.id} item={item} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <Package className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" />
-                <p className="text-subtle text-lg">Your inventory is empty</p>
-                <p className="text-subtle text-sm mt-2">Visit the shop to purchase items!</p>
-                <Button onClick={() => router.push('/shop')} className="mt-4 bg-accent text-white">
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  Browse Shop
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              <Card className="bg-card border-2 border-border">
+                <CardContent className="text-center py-12">
+                  <Icon name="flask" className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" size="md" />
+                  <p className="text-subtle text-lg">You don't have consumables yet</p>
+                  <p className="text-subtle text-sm mt-2">
+                    Find items in quests, shop, or battles
+                  </p>
+                </CardContent>
+              </Card>
+            )
+          )}
 
-        {/* Inventory Info */}
-        <Card className="bg-card border border-border text-text">
-          <CardContent className="p-4 text-center text-subtle text-sm">
-            ðŸ’¡ Equip items from your inventory to boost your stats and customize your profile!
-          </CardContent>
-        </Card>
+          {/* Materials Tab */}
+          {activeTab === 'materials' && (
+            materialItems.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {materialItems.map(item => (
+                  <ItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : (
+              <Card className="bg-card border-2 border-border">
+                <CardContent className="text-center py-12">
+                  <Icon name="hammer" className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" />
+                  <p className="text-subtle text-lg">You don't have materials yet</p>
+                  <p className="text-subtle text-sm mt-2">
+                    Find items in quests, shop, or battles
+                  </p>
+                </CardContent>
+              </Card>
+            )
+          )}
+
+          {/* Themes Tab */}
+          {activeTab === 'themes' && (
+            themeItems.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {themeItems.map(item => (
+                  <ItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : (
+              <Card className="bg-card border-2 border-border">
+                <CardContent className="text-center py-12">
+                  <Icon name="palette" className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" />
+                  <p className="text-subtle text-lg">You don't have themes yet</p>
+                  <p className="text-subtle text-sm mt-2">
+                    Find items in quests, shop, or battles
+                  </p>
+                </CardContent>
+              </Card>
+            )
+          )}
+
+          {/* Misc Tab */}
+          {activeTab === 'misc' && (
+            miscItems.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {miscItems.map(item => (
+                  <ItemCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : (
+              <Card className="bg-card border-2 border-border">
+                <CardContent className="text-center py-12">
+                  <Icon name="box" className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" size="md" />
+                  <p className="text-subtle text-lg">No miscellaneous items</p>
+                </CardContent>
+              </Card>
+            )
+          )}
+        </div>
       </div>
     </div>
   );
 }
+

@@ -2,10 +2,14 @@
  * Challenges API
  * Returns daily and weekly challenges
  * v0.13.2n - Community Growth
+ * v0.41.6 - C3 Step 7: Unified API envelope
+ * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3
  */
 
 import { NextRequest } from 'next/server';
-import { safeAsync, successResponse } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess } from '@parel/api';
+import type { ChallengeDTO, ChallengesResponseDTO } from '@parel/types/dto';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
@@ -19,7 +23,7 @@ const DAILY_CHALLENGES = [
     target: 5,
     metric: 'questions_answered',
     reward: { xp: 50, diamonds: 10 },
-    icon: '🎯',
+    icon: 'dYZ_',
   },
   {
     id: 'daily_streak_maintain',
@@ -29,7 +33,7 @@ const DAILY_CHALLENGES = [
     target: 1,
     metric: 'streak_maintained',
     reward: { xp: 30, diamonds: 5 },
-    icon: '🔥',
+    icon: 'dY"�',
   },
   {
     id: 'daily_perfect_5',
@@ -39,7 +43,7 @@ const DAILY_CHALLENGES = [
     target: 5,
     metric: 'perfect_answers',
     reward: { xp: 75, diamonds: 15 },
-    icon: '⭐',
+    icon: '�-?',
   },
   {
     id: 'daily_speed_demon',
@@ -49,7 +53,7 @@ const DAILY_CHALLENGES = [
     target: 10,
     metric: 'fast_answers',
     reward: { xp: 100, diamonds: 20 },
-    icon: '⚡',
+    icon: '�s�',
   },
   {
     id: 'daily_social_butterfly',
@@ -59,7 +63,7 @@ const DAILY_CHALLENGES = [
     target: 3,
     metric: 'messages_sent',
     reward: { xp: 40, diamonds: 8 },
-    icon: '💬',
+    icon: 'dY',
   },
 ];
 
@@ -72,7 +76,7 @@ const WEEKLY_CHALLENGES = [
     target: 25,
     metric: 'questions_answered',
     reward: { xp: 200, diamonds: 50 },
-    icon: '🏆',
+    icon: 'dY?+',
   },
   {
     id: 'weekly_streak_7',
@@ -82,7 +86,7 @@ const WEEKLY_CHALLENGES = [
     target: 7,
     metric: 'streak_days',
     reward: { xp: 300, diamonds: 75 },
-    icon: '🔥',
+    icon: 'dY"�',
   },
   {
     id: 'weekly_refer_friend',
@@ -92,7 +96,7 @@ const WEEKLY_CHALLENGES = [
     target: 1,
     metric: 'referrals',
     reward: { xp: 150, diamonds: 100 },
-    icon: '👥',
+    icon: 'dY�',
   },
   {
     id: 'weekly_share_3',
@@ -102,7 +106,7 @@ const WEEKLY_CHALLENGES = [
     target: 3,
     metric: 'shares',
     reward: { xp: 100, diamonds: 30 },
-    icon: '📢',
+    icon: 'dY"�',
   },
 ];
 
@@ -151,23 +155,25 @@ export const GET = safeAsync(async (req: NextRequest) => {
 
   // In production, you'd fetch progress from database
   // For now, return challenges with 0 progress (client will use localStorage)
-  const formattedDaily = dailyChallenges.map(challenge => ({
+  const formattedDaily: ChallengeDTO[] = dailyChallenges.map(challenge => ({
     ...challenge,
     progress: 0,
     completed: false,
   }));
 
-  const formattedWeekly = weeklyChallenges.map(challenge => ({
+  const formattedWeekly: ChallengeDTO[] = weeklyChallenges.map(challenge => ({
     ...challenge,
     progress: 0,
     completed: false,
   }));
 
-  return successResponse({
+  const response: ChallengesResponseDTO = {
     daily: formattedDaily,
     weekly: formattedWeekly,
     timestamp: now.toISOString(),
-  });
+  };
+
+  return buildSuccess(req, response);
 });
 
 /**
@@ -177,10 +183,11 @@ export const GET = safeAsync(async (req: NextRequest) => {
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    return successResponse({ message: 'Guest mode - progress saved locally' });
+    return buildSuccess(req, { message: 'Guest mode - progress saved locally' });
   }
 
   // In future, save to database
   // For now, just acknowledge
-  return successResponse({ message: 'Progress updated' });
+  return buildSuccess(req, { message: 'Progress updated' });
 });
+

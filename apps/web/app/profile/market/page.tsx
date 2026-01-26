@@ -1,214 +1,378 @@
-"use client";
+/**
+ * Profile Market Page - User's listings and create listing form
+ * v0.36.29 - Marketplace 2.0
+ */
 
-import Link from 'next/link';
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useMarket } from '@/hooks/useMarket';
-import { useGold } from '@/hooks/useGold';
-import { SkeletonLoader } from '@/components/ui/SkeletonLoader';
-import { ShoppingBag, Coins, Gem, ArrowLeft } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ShoppingBag, Loader2, X, Plus, Package } from 'lucide-react';
+import { apiFetch } from '@/lib/apiBase';
+import { useToast } from '@/components/ui/use-toast';
+import { getRarityColorClass } from '@/lib/rpg/rarity';
 
-type TabType = 'browse' | 'my-listings' | 'activity';
-
-export default function MarketPage() {
-  const { listings, loading, buyListing, cancelListing } = useMarket();
-  const { gold, loading: goldLoading } = useGold();
-  const [activeTab, setActiveTab] = useState<TabType>('browse');
-  const [purchasing, setPurchasing] = useState<string | null>(null);
-  const [cancelling, setCancelling] = useState<string | null>(null);
-
-  const handleBuy = async (listingId: string) => {
-    setPurchasing(listingId);
-    try {
-      await buyListing(listingId);
-    } finally {
-      setPurchasing(null);
-    }
+interface UserListing {
+  id: string;
+  itemId: string;
+  price: number;
+  quantity: number;
+  status: string;
+  createdAt: string;
+  item: {
+    id: string;
+    name: string;
+    emoji: string;
+    icon: string;
+    rarity: string;
+    type: string;
   };
+}
 
-  const handleCancel = async (listingId: string) => {
+interface InventoryItem {
+  id: string;
+  itemId: string;
+  name: string;
+  emoji: string;
+  icon: string;
+  rarity: string;
+  type: string;
+  quantity: number;
+}
+
+export default function ProfileMarketPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { toast } = useToast();
+  const [listings, setListings] = useState<UserListing[]>([]);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [price, setPrice] = useState('');
+  const [quantity, setQuantity] = useState('1');
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      loadData();
+    }
+  }, [status]);
+
+  async function loadData() {
+    setLoading(true);
+    try {
+      const [listingsRes, inventoryRes] = await Promise.all([
+        apiFetch('/api/market/user'),
+        apiFetch('/api/inventory'),
+      ]);
+
+      if ((listingsRes as any).ok) {
+        setListings((listingsRes as any).data.listings || []);
+      }
+
+      if ((inventoryRes as any).ok) {
+        const items = (inventoryRes as any).data.inventory || [];
+        // Filter out items that are already listed
+        const listedItemIds = new Set(listings.map(l => l.itemId));
+        setInventory(items.filter((item: InventoryItem) => !listedItemIds.has(item.itemId)));
+      }
+    } catch (error) {
+      console.error('Failed to load data', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load marketplace data',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCreateListing() {
+    if (!selectedItem || !price || !quantity) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const priceNum = parseInt(price);
+    const quantityNum = parseInt(quantity);
+
+    if (priceNum < 1 || priceNum > 99999) {
+      toast({
+        title: 'Error',
+        description: 'Price must be between 1 and 99999',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (quantityNum < 1 || quantityNum > selectedItem.quantity) {
+      toast({
+        title: 'Error',
+        description: `Quantity must be between 1 and ${selectedItem.quantity}`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const res = await apiFetch('/api/market/list', {
+        method: 'POST',
+        body: JSON.stringify({
+          itemId: selectedItem.itemId,
+          quantity: quantityNum,
+          price: priceNum,
+        }),
+      });
+
+      if ((res as any).ok) {
+        toast({
+          title: 'Success',
+          description: 'Listing created successfully!',
+        });
+        setShowCreateForm(false);
+        setSelectedItem(null);
+        setPrice('');
+        setQuantity('1');
+        await loadData();
+      } else {
+        throw new Error((res as any).error || 'Failed to create listing');
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to create listing',
+        variant: 'destructive',
+      });
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handleCancelListing(listingId: string) {
+    if (cancelling) return;
     setCancelling(listingId);
     try {
-      await cancelListing(listingId);
+      const res = await apiFetch(`/api/market/list/${listingId}`, {
+        method: 'DELETE',
+      });
+
+      if ((res as any).ok) {
+        toast({
+          title: 'Success',
+          description: 'Listing cancelled. Items returned to inventory.',
+        });
+        await loadData();
+      } else {
+        throw new Error((res as any).error || 'Failed to cancel listing');
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to cancel listing',
+        variant: 'destructive',
+      });
     } finally {
       setCancelling(null);
     }
-  };
+  }
 
-  const RARITY_COLORS: Record<string, string> = {
-    common: 'border-gray-500 text-gray-300',
-    uncommon: 'border-green-500 text-green-300',
-    rare: 'border-blue-500 text-blue-300',
-    epic: 'border-purple-500 text-purple-300',
-    legendary: 'border-yellow-500 text-yellow-300',
-    alpha: 'border-amber-500 text-amber-300 border-2',
-  };
+  if (status === 'unauthenticated') {
+    router.push('/login');
+    return null;
+  }
 
-  const getCurrencyEmoji = (currencyKey: string) => {
-    return currencyKey === 'gold' ? '🪙' : '💎';
-  };
+  const activeListings = listings.filter(l => l.status === 'active');
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header */}
-      <div className="mb-8">
-        <Link href="/profile" className="text-accent hover:underline mb-2 inline-flex items-center gap-1">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Profile
-        </Link>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <ShoppingBag className="h-8 w-8 text-accent" />
-            <h1 className="text-4xl font-bold text-text">Marketplace</h1>
-          </div>
-          {/* Wallet Balance */}
-          <div className="flex items-center gap-4 text-lg">
-            <div className="flex items-center gap-2 font-bold text-yellow-400">
-              <Coins className="h-5 w-5" />
-              {goldLoading ? '...' : gold.toLocaleString()} 🪙
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+          <ShoppingBag className="w-8 h-8" />
+          My Marketplace
+        </h1>
+        <p className="text-gray-400">Manage your listings and create new ones</p>
+      </div>
+
+      {/* Create Listing Button */}
+      <Card className="bg-gray-800 border-gray-700 mb-6">
+        <CardContent className="p-4">
+          <Button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            {showCreateForm ? 'Cancel' : 'Create Listing'}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Create Listing Form */}
+      {showCreateForm && (
+        <Card className="bg-gray-800 border-gray-700 mb-6">
+          <CardHeader>
+            <CardTitle className="text-white">Create New Listing</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Item Selection */}
+            <div>
+              <Label className="text-gray-300">Select Item</Label>
+              <select
+                value={selectedItem?.itemId || ''}
+                onChange={(e) => {
+                  const item = inventory.find(i => i.itemId === e.target.value);
+                  setSelectedItem(item || null);
+                  setQuantity('1');
+                }}
+                className="w-full mt-2 px-4 py-2 bg-gray-900 border border-gray-700 rounded-md text-white"
+              >
+                <option value="">Choose an item...</option>
+                {inventory.map((item) => (
+                  <option key={item.itemId} value={item.itemId}>
+                    {item.emoji || item.icon || '📦'} {item.name} (x{item.quantity})
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
-        </div>
-        <p className="text-subtle">Buy and sell items with other players</p>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b border-border">
-        <button
-          onClick={() => setActiveTab('browse')}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'browse'
-              ? 'text-accent border-b-2 border-accent'
-              : 'text-subtle hover:text-text'
-          }`}
-        >
-          Browse
-        </button>
-        <button
-          onClick={() => setActiveTab('my-listings')}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'my-listings'
-              ? 'text-accent border-b-2 border-accent'
-              : 'text-subtle hover:text-text'
-          }`}
-        >
-          My Listings
-        </button>
-        <button
-          onClick={() => setActiveTab('activity')}
-          className={`px-4 py-2 font-medium transition-colors ${
-            activeTab === 'activity'
-              ? 'text-accent border-b-2 border-accent'
-              : 'text-subtle hover:text-text'
-          }`}
-        >
-          Activity
-        </button>
-      </div>
+            {/* Preview */}
+            {selectedItem && (
+              <Card className="bg-gray-900 border-gray-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="text-4xl">{selectedItem.emoji || selectedItem.icon || '📦'}</div>
+                    <div>
+                      <h3 className="font-bold text-white">{selectedItem.name}</h3>
+                      <p className="text-sm text-gray-400">{selectedItem.rarity} • {selectedItem.type}</p>
+                      <p className="text-sm text-gray-500">Available: {selectedItem.quantity}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-      {/* Content */}
-      <Card className="bg-card border-2 border-border">
-        <div className="p-6">
-          {activeTab === 'browse' && (
-            <>
-              {loading ? (
-                <SkeletonLoader variant="card" count={3} />
-              ) : listings.length === 0 ? (
-                <div className="text-center py-12 text-subtle">
-                  <ShoppingBag className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                  <p>No active listings</p>
-                </div>
+            {/* Quantity */}
+            <div>
+              <Label className="text-gray-300">Quantity</Label>
+              <Input
+                type="number"
+                min="1"
+                max={selectedItem?.quantity || 1}
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                className="mt-2 bg-gray-900 border-gray-700 text-white"
+                disabled={!selectedItem}
+              />
+            </div>
+
+            {/* Price */}
+            <div>
+              <Label className="text-gray-300">Price (Gold)</Label>
+              <Input
+                type="number"
+                min="1"
+                max="99999"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className="mt-2 bg-gray-900 border-gray-700 text-white"
+                placeholder="Enter price..."
+              />
+            </div>
+
+            {/* Submit */}
+            <Button
+              onClick={handleCreateListing}
+              disabled={creating || !selectedItem || !price || !quantity}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {creating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {listings.map((listing) => {
-                    const rarityColor = RARITY_COLORS[listing.item.rarity] || RARITY_COLORS.common;
-                    const canAfford = listing.currencyKey === 'gold' ? gold >= listing.price : false; // TODO: Check diamonds
-                    const isPurchasing = purchasing === listing.id;
+                'Create Listing'
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
-                    return (
-                      <div
-                        key={listing.id}
-                        className={`border-2 rounded-xl p-4 ${rarityColor} bg-card hover:bg-bg transition-all`}
-                      >
-                        {/* Item Info */}
-                        <div className="text-center mb-3">
-                          <div className="text-4xl mb-2">{listing.item.emoji}</div>
-                          <h3 className="font-bold text-lg">{listing.item.name}</h3>
-                          <p className="text-xs text-subtle uppercase mt-1">
-                            {listing.item.rarity}
-                          </p>
-                        </div>
-
-                        {/* Stats */}
-                        {(listing.item.power || listing.item.defense) && (
-                          <div className="flex justify-center gap-3 text-xs mb-3">
-                            {listing.item.power && (
-                              <div className="text-red-400">⚔️ {listing.item.power}</div>
-                            )}
-                            {listing.item.defense && (
-                              <div className="text-blue-400">🛡️ {listing.item.defense}</div>
-                            )}
+      {/* Active Listings */}
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white">Your Active Listings ({activeListings.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+            </div>
+          ) : activeListings.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">
+              <Package className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <p>No active listings. Create one above!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {activeListings.map((listing) => {
+                const rarityColor = getRarityColorClass(listing.item.rarity);
+                return (
+                  <Card key={listing.id} className={`bg-gray-900 border-2 ${rarityColor}`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="text-4xl">{listing.item.emoji || listing.item.icon || '📦'}</div>
+                          <div>
+                            <h3 className="font-bold text-white">{listing.item.name}</h3>
+                            <p className="text-sm text-gray-400">
+                              Quantity: {listing.quantity} • Price: {listing.price.toLocaleString()} 🪙
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Listed {new Date(listing.createdAt).toLocaleDateString()}
+                            </p>
                           </div>
-                        )}
-
-                        {/* Seller */}
-                        <div className="text-center text-xs text-subtle mb-3">
-                          by {listing.seller.username || listing.seller.name || 'Player'}
                         </div>
-
-                        {/* Price */}
-                        <div className="text-center mb-3">
-                          <div className="text-2xl font-bold text-yellow-400">
-                            {listing.price.toLocaleString()} {getCurrencyEmoji(listing.currencyKey)}
-                          </div>
-                        </div>
-
-                        {/* Buy Button */}
                         <Button
-                          onClick={() => handleBuy(listing.id)}
-                          disabled={!canAfford || isPurchasing}
-                          className={`w-full ${!canAfford ? 'bg-gray-600' : ''}`}
+                          onClick={() => handleCancelListing(listing.id)}
+                          disabled={cancelling === listing.id}
+                          variant="destructive"
+                          size="sm"
                         >
-                          {isPurchasing ? (
-                            '⏳ Purchasing...'
-                          ) : !canAfford ? (
-                            `⛔ Not enough ${listing.currencyKey}`
+                          {cancelling === listing.id ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Cancelling...
+                            </>
                           ) : (
-                            `🛒 Buy Now`
+                            <>
+                              <X className="w-4 h-4 mr-2" />
+                              Cancel
+                            </>
                           )}
                         </Button>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </>
-          )}
-
-          {activeTab === 'my-listings' && (
-            <div className="text-center py-12 text-subtle">
-              <p>My Listings - Coming soon</p>
-              <p className="text-xs mt-2">This will show your active and sold listings</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
-
-          {activeTab === 'activity' && (
-            <div className="text-center py-12 text-subtle">
-              <p>Activity - Coming soon</p>
-              <p className="text-xs mt-2">Recent marketplace transactions</p>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Info Box */}
-      <Card className="mt-6 bg-card border border-border">
-        <div className="p-4 text-center text-sm text-subtle">
-          💡 5% marketplace fee on all sales. Items are locked while listed.
-        </div>
+        </CardContent>
       </Card>
     </div>
   );
 }
-

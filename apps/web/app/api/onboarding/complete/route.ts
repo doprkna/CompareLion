@@ -4,7 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import prisma from '@/lib/db';
 import { logEvent } from '@/lib/telemetry';
 import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError } from '@/lib/api-handler';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 /**
  * POST /api/onboarding/complete

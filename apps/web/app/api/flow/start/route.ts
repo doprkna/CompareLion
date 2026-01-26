@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { startFlow } from '@/lib/flow/flow-skeleton';
+import { startFlow } from '@parel/features/flow';
 import { safeAsync, successResponse, authError, notFoundError } from '@/lib/api-handler';
 import { z } from 'zod';
 

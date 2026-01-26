@@ -1,6 +1,6 @@
 "use client";
-import { usePacks } from '@/hooks/usePacks';
-import { useUnlockPack } from '@/hooks/usePacks';
+import { usePacks } from '@parel/core/hooks/usePacks';
+import { useUnlockPack } from '@parel/core/hooks/usePacks';
 import { PackCard } from '@/components/packs/PackCard';
 
 export default function PacksPage() {

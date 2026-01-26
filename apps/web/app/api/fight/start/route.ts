@@ -11,6 +11,7 @@ import { safeAsync, authError, validationError } from '@/lib/api-handler';
 import { prisma } from '@/lib/db';
 import { simulateFight, Combatant } from '@/lib/fightEngine';
 import { addXP } from '@/lib/services/progressionService';
+import { computeHeroStats } from '@/lib/rpg/stats';
 import { z } from 'zod';
 
 export const runtime = 'nodejs';
@@ -20,7 +21,7 @@ const StartFightSchema = z.object({
 });
 
 /**
- * Calculate hero stats from User model
+ * Get hero combatant using canonical stat engine
  */
 async function getHeroCombatant(userId: string): Promise<Combatant> {
   const user = await prisma.user.findUnique({
@@ -28,8 +29,6 @@ async function getHeroCombatant(userId: string): Promise<Combatant> {
     select: {
       id: true,
       name: true,
-      level: true,
-      stats: true,
     },
   });
 
@@ -37,23 +36,17 @@ async function getHeroCombatant(userId: string): Promise<Combatant> {
     throw new Error('User not found');
   }
 
-  const stats = (user.stats || {}) as { str?: number; vit?: number; dex?: number };
-  
-  // Calculate stats with defaults
-  const str = stats.str || 10 + user.level;
-  const def = Math.floor((stats.vit || 5) * 0.5) + Math.floor(user.level * 0.3);
-  const speed = stats.dex || 5 + Math.floor(user.level * 0.2);
-  const maxHp = 50 + (stats.vit || 10) * 2 + user.level * 5;
-  const hp = maxHp; // Start at full HP
+  // Use canonical stat engine
+  const computedStats = await computeHeroStats(userId);
 
   return {
     id: user.id,
     name: user.name || 'Hero',
-    hp,
-    maxHp,
-    str,
-    def,
-    speed,
+    hp: computedStats.maxHp,
+    maxHp: computedStats.maxHp,
+    str: computedStats.attackPower,
+    def: computedStats.defense,
+    speed: computedStats.speed,
   };
 }
 

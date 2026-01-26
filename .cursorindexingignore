@@ -45,10 +45,17 @@ apps/web/components/
 apps/web/contexts/
 apps/web/pages/
 apps/web/locales/
+apps/web/types/
+apps/web/data/
+apps/mobile/
+apps/web/app/**/*
+!apps/web/app/api/
+!apps/web/app/admin/
 
 # ─── Assets & Static Files ─────────────────────────────────────────
 public/
 assets/
+static/
 *.png
 *.jpg
 *.jpeg
@@ -60,6 +67,13 @@ assets/
 *.ttf
 *.eot
 *.webp
+*.bmp
+*.tiff
+*.mp4
+*.mp3
+*.wav
+*.avi
+*.mov
 
 # ─── Config & Lock Files ───────────────────────────────────────────
 pnpm-lock.yaml
@@ -71,11 +85,39 @@ tsconfig.tsbuildinfo
 *.tmp
 *.bak
 *.pdf
+*.txt
+!README.md
+!CHANGELOG.md
+*.py
+*.sql
+*.service
+*.example
+Dockerfile
+docker-compose.yml
+*.tree.txt
+api-tree.txt
+apps-tree.txt
+packages-tree.txt
+mobile-tree.txt
+lib-tree.txt
+level1.txt
+temp_*.txt
+*.config.js
+jest.config.js
+ecosystem.config.js
+pm2.config.js
+vercel.json
+.env.example
+env.example
 
 # ─── Scripts & Maintenance ─────────────────────────────────────────
 scripts/
 seed/
 apps/worker/
+apps/web/worker/
+fix_*.py
+remove_*.py
+verify-*.sql
 
 # ─── Documentation (Non-Code) ──────────────────────────────────────
 *.md
@@ -129,6 +171,27 @@ apps/web/lib/rewards/
 # ─── Database & Migrations ─────────────────────────────────────────
 migrations/
 packages/db/
+prisma/
+
+# ─── Packages (Mostly Generated/Stable) ────────────────────────────
+packages/core/state/
+packages/core/hooks/
+packages/core/config/
+packages/core/BACKUP*/
+packages/api/
+packages/types/
+packages/shared/
+packages/utils/
+packages/ui/icons/
+packages/ui/atoms/
+packages/validation/
+packages/rating/
+packages/notifications/
+packages/narrative/
+packages/lore/
+packages/features/
+packages/story/
+packages/redis/
 
 # ═══════════════════════════════════════════════════════════════════
 # KEEP INDEXED (Let these through):

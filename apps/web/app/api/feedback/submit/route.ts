@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, validationError, successResponse } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 import { z } from 'zod';
 
 const SubmitFeedbackSchema = z.object({
@@ -16,6 +17,7 @@ const SubmitFeedbackSchema = z.object({
  * Sends bug report or suggestion (auth optional)
  * Public endpoint (auth optional)
  * v0.29.19 - Ops & Community Tools
+ * v0.41.3 - C3 Step 4: Unified API envelope
  */
 export const POST = safeAsync(async (req: NextRequest) => {
   // Get session (optional - allow anonymous feedback)
@@ -33,7 +35,13 @@ export const POST = safeAsync(async (req: NextRequest) => {
   const body = await req.json().catch(() => ({}));
   const parsed = SubmitFeedbackSchema.safeParse(body);
   if (!parsed.success) {
-    return validationError('Invalid payload');
+    const details: Record<string, string[]> = {};
+    parsed.error.errors.forEach((err) => {
+      const path = err.path.join('.');
+      if (!details[path]) details[path] = [];
+      details[path].push(err.message);
+    });
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Invalid payload', { details });
   }
 
   const { message, screenshotUrl, context } = parsed.data;
@@ -49,8 +57,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     },
   });
 
-  return successResponse({
-    success: true,
+  return buildSuccess(req, {
     feedback: {
       id: feedback.id,
       status: feedback.status,
@@ -59,4 +66,3 @@ export const POST = safeAsync(async (req: NextRequest) => {
     message: 'Feedback submitted successfully',
   });
 });
-

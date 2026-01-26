@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { getNextQuestion } from '@/lib/flow/flow-skeleton';
+import { getNextQuestion } from '@parel/features/flow';
 import { safeAsync, successResponse, authError, notFoundError, getRequiredSearchParam } from '@/lib/api-handler';
 
 /**

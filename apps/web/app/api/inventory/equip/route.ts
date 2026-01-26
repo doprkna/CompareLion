@@ -9,11 +9,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, unauthorizedError, validationError, successResponse, parseBody } from '@/lib/api-handler';
+import { equipUserItem } from '@/lib/services/itemService';
 
 /**
  * POST /api/inventory/equip
- * Toggle equip state of an inventory item
- * Body: { inventoryItemId: string, equip: boolean }
+ * Equip an item by itemId
+ * Enforces slot rules: only 1 item per slot, unequips previous item in same slot
+ * Body: { itemId: string }
+ * v0.36.34 - Standardized inventory system
  */
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
@@ -32,54 +35,20 @@ export const POST = safeAsync(async (req: NextRequest) => {
   }
 
   const body = await parseBody<{
-    inventoryItemId: string;
-    equip: boolean;
+    itemId: string;
   }>(req);
 
-  if (!body.inventoryItemId) {
-    return validationError('Missing required field: inventoryItemId');
+  if (!body.itemId) {
+    return validationError('Missing required field: itemId');
   }
 
-  // Verify ownership
-  const inventoryItem = await prisma.inventoryItem.findUnique({
-    where: { id: body.inventoryItemId },
-    include: {
-      item: true,
-    },
-  });
-
-  if (!inventoryItem) {
-    return validationError('Inventory item not found');
-  }
-
-  if (inventoryItem.userId !== user.id) {
-    return unauthorizedError('Not authorized to modify this item');
-  }
-
-  // Update equip state
-  const updated = await prisma.inventoryItem.update({
-    where: { id: body.inventoryItemId },
-    data: {
-      equipped: body.equip,
-    },
-    include: {
-      item: true,
-      effect: true,
-    },
-  });
+  // Equip the item (will unequip previous item in same slot if any)
+  const result = await equipUserItem(user.id, body.itemId);
 
   return successResponse({
-    success: true,
-    item: {
-      id: updated.id,
-      equipped: updated.equipped,
-      rarity: updated.rarity,
-      power: updated.power,
-      effectKey: updated.effectKey,
-      effect: updated.effect ? {
-        name: updated.effect.name,
-        description: updated.effect.description,
-      } : null,
-    },
+    success: result.success,
+    item: result.equippedItem,
+    stats: result.stats,
+    unequippedItem: result.unequippedItem,
   });
 });

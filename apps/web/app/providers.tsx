@@ -1,9 +1,9 @@
-﻿'use client'
+'use client'
 
 import dynamic from 'next/dynamic';
 import { ThemeProvider } from 'next-themes';
-import { useRealtime } from '@/hooks/useRealtime';
-import { usePresence } from '@/hooks/usePresence';
+import { useRealtime } from '@parel/core/hooks/useRealtime';
+import { usePresence } from '@parel/core/hooks/usePresence';
 
 // Dynamic import of AuthProvider to prevent server-side next-auth/react issues
 const AuthProvider = dynamic(() => import('./auth-provider'), { ssr: false });

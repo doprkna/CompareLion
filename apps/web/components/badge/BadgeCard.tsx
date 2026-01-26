@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from '@/hooks/useBadges';
+import { Badge } from '@parel/core/hooks/useBadges';
 import { cn } from '@/lib/utils';
 
 interface BadgeCardProps {

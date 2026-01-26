@@ -1,73 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/app/api/_utils';
+/**
+ * Mark Notification Read API
+ * Mark a notification as read
+ * v0.40.17 - Story Notifications 1.0
+ * v0.41.5 - C3 Step 6: Unified API envelope
+ */
+
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, authError, validationError } from '@/lib/api-handler';
-import { z } from 'zod';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import { markNotificationRead } from '@/lib/notifications/notificationService';
 
 /**
  * POST /api/notifications/read
- * Mark notifications as read
- * Body: { ids?: string[], all?: boolean }
+ * Mark notification as read
+ * Body: { id: string }
  */
-
-const MarkReadSchema = z.object({
-  ids: z.array(z.string()).optional(),
-  all: z.boolean().optional(),
-});
-
 export const POST = safeAsync(async (req: NextRequest) => {
-  const user = await getUserFromRequest(req);
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Authentication required');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
   if (!user) {
-    return authError('Unauthorized');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
   const body = await req.json();
-  const parsed = MarkReadSchema.safeParse(body);
-  
-  if (!parsed.success) {
-    return validationError('Invalid request', parsed.error.issues);
+  const { id } = body;
+
+  if (!id || typeof id !== 'string') {
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'id is required');
   }
 
-  const { ids, all } = parsed.data;
+  try {
+    await markNotificationRead(id, user.id);
 
-  if (!ids && !all) {
-    return validationError('Must provide either ids array or all=true');
+    return buildSuccess(req, {
+      message: 'Notification marked as read',
+    });
+  } catch (error: any) {
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, error.message || 'Failed to mark notification as read');
   }
-
-  // Mark all notifications as read
-  if (all) {
-    const result = await prisma.notification.updateMany({
-      where: {
-        userId: user.userId,
-        isRead: false,
-      },
-      data: { isRead: true },
-    });
-
-    return NextResponse.json({
-      success: true,
-      markedCount: result.count,
-      message: 'All notifications marked as read',
-    });
-  }
-
-  // Mark specific notifications as read
-  if (ids && ids.length > 0) {
-    const result = await prisma.notification.updateMany({
-      where: {
-        userId: user.userId,
-        id: { in: ids },
-      },
-      data: { isRead: true },
-    });
-
-    return NextResponse.json({
-      success: true,
-      markedCount: result.count,
-      message: `${result.count} notification(s) marked as read`,
-    });
-  }
-
-  return validationError('No notifications to mark');
 });
-

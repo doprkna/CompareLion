@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
-import { safeAsync, authError, successResponse, notFoundError, validationError } from "@/lib/api-handler";
+import { safeAsync } from "@/lib/api-handler";
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 import { z } from "zod";
 
 const GenerateLoreSchema = z.object({
@@ -122,11 +123,12 @@ function generateLore(
  * POST /api/lore/generate
  * Generates a short lore snippet via local templates
  * Triggered when user completes an action (reflection, quest, loot moment)
+ * v0.41.6 - C3 Step 7: Unified API envelope
  */
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return authError("Unauthorized");
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, "Unauthorized");
   }
 
   const user = await prisma.user.findUnique({
@@ -140,13 +142,19 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return notFoundError("User");
+    return buildError(req, ApiErrorCode.NOT_FOUND, "User not found");
   }
 
   const body = await req.json().catch(() => ({}));
   const parsed = GenerateLoreSchema.safeParse(body);
   if (!parsed.success) {
-    return validationError("Invalid payload");
+    const details: Record<string, string[]> = {};
+    parsed.error.errors.forEach((err) => {
+      const path = err.path.join('.') || 'root';
+      if (!details[path]) details[path] = [];
+      details[path].push(err.message);
+    });
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, "Invalid payload", { details });
   }
 
   const { sourceType, sourceId } = parsed.data;
@@ -192,8 +200,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     },
   });
 
-  return successResponse({
-    success: true,
+  return buildSuccess(req, {
     message: "Lore entry generated",
     entry: {
       id: loreEntry.id,
@@ -204,4 +211,3 @@ export const POST = safeAsync(async (req: NextRequest) => {
     },
   });
 });
-

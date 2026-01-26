@@ -7,14 +7,16 @@
  * - Active sessions (if available)
  * - Memory usage
  * - Recent error rate
+ * v0.41.2 - C3 Step 3: Unified API envelope
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getRuntimeInfo } from '@/lib/build-info';
 import { safeAsync } from '@/lib/api-handler';
-import { getFlags } from '@/lib/config/flags';
+import { getFlags } from '@parel/core/config/flags';
 import { env } from '@/lib/env';
+import { buildSuccess } from '@parel/api';
 
 // Track startup time for uptime calculation
 const startTime = Date.now();
@@ -177,7 +179,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
       seconds: uptimeSec,
       minutes: uptimeMin,
       hours: uptimeHours,
-      formatted: `${uptimeHours}h ${uptimeMin % 60}m ${uptimeSec % 60}s`,
+      formatted: `${uptimeHours}h ${uptimeMin}m ${uptimeSec}s`,
     },
     
     // Database
@@ -200,11 +202,9 @@ export const GET = safeAsync(async (req: NextRequest) => {
     },
   };
 
-  return NextResponse.json(response, {
-    status: isHealthy ? 200 : 503,
-    headers: {
-      'Cache-Control': 'no-store, max-age=0',
-    },
-  });
+  const httpResponse = buildSuccess(req, response, { status: isHealthy ? 200 : 503 });
+  httpResponse.headers.set('Cache-Control', 'no-store, max-age=0');
+  return httpResponse;
 });
+
 

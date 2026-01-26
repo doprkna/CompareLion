@@ -7,7 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 interface DBCounts {
   users: number;

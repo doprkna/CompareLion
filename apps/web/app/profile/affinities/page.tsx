@@ -1,6 +1,6 @@
 "use client";
 import { useSession } from 'next-auth/react';
-import { useAffinities, useAffinityActions } from '@/hooks/useAffinities';
+import { useAffinities, useAffinityActions } from '@parel/core/hooks/useAffinities';
 import { AffinityCard } from '@/components/affinity/AffinityCard';
 
 export default function AffinitiesPage() {

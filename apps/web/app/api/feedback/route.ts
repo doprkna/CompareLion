@@ -2,13 +2,15 @@
  * Feedback API
  * Handles user feedback submissions during beta
  * v0.14.0 - Enhanced with bug auto-creation & screenshot upload
+ * v0.41.5 - C3 Step 6: Unified API envelope
  */
 
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, successResponse, validationError } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 import { z } from 'zod';
 import { trackEvent } from '@/lib/metrics';
 
@@ -34,7 +36,13 @@ export const POST = safeAsync(async (req: NextRequest) => {
   const validation = FeedbackSchema.safeParse(body);
 
   if (!validation.success) {
-    return validationError(validation.error.issues[0]?.message || 'Invalid feedback data');
+    const details: Record<string, string[]> = {};
+    validation.error.errors.forEach((err) => {
+      const path = err.path.join('.') || 'root';
+      if (!details[path]) details[path] = [];
+      details[path].push(err.message);
+    });
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, validation.error.issues[0]?.message || 'Invalid feedback data', { details });
   }
 
   const { category, message, page, userAgent, screenshot } = validation.data;
@@ -62,7 +70,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       userId: userId || 'anonymous',
       type: typeMap[category],
       category,
-      title: `${category.charAt(0).toUpperCase() + category.slice(1)} - ${message.slice(0, 50)}${message.length > 50 ? '...' : ''}`,
+      title: `${category.charAt(0).toUpperCase() + category.slice(1)} - `,
       description: message,
       page: page || 'unknown',
       userAgent: userAgent || req.headers.get('user-agent') || 'unknown',
@@ -101,10 +109,9 @@ export const POST = safeAsync(async (req: NextRequest) => {
     feedbackId: feedback.id,
   });
 
-  return successResponse({
+  return buildSuccess(req, {
     message: 'Thanks for your feedback!',
     id: feedback.id,
     bugReported: category === 'bug',
   });
 });
-

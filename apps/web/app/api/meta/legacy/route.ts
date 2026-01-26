@@ -2,17 +2,19 @@ import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, unauthorizedError, successResponse } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 
 /**
  * GET /api/meta/legacy
  * Returns user legacy summary (past seasons, perks, prestige records)
  * v0.29.9 - Meta-Progression Layer
+ * v0.41.3 - C3 Step 4: Unified API envelope
  */
 export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
-    return unauthorizedError('Unauthorized');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Unauthorized');
   }
 
   const user = await prisma.user.findUnique({
@@ -25,7 +27,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return unauthorizedError('User not found');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
   // Get all prestige records with badge info
@@ -80,7 +82,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
   // Calculate total legacy XP
   const totalLegacyXP = prestigeRecords.reduce((sum, record) => sum + record.legacyXP, 0);
 
-  return successResponse({
+  return buildSuccess(req, {
     prestigeCount: user.prestigeCount,
     legacyPerk: user.legacyPerk,
     totalLegacyXP,
@@ -107,4 +109,3 @@ export const GET = safeAsync(async (req: NextRequest) => {
     })),
   });
 });
-

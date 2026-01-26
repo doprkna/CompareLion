@@ -1,6 +1,6 @@
 'use client';
 
-import { LoreEntry } from '@/hooks/useLore';
+import { LoreEntry } from '@parel/core/hooks/useLore';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollText, Zap, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';

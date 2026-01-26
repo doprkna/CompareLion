@@ -5,8 +5,8 @@
  */
 
 import { prisma } from '@/lib/db';
-import { logger } from '@/lib/utils/debug';
-import { matchesLanguage, matchesRegion, type Question } from '@/lib/types/question';
+import { logger } from '@parel/core/utils/debug';
+import { matchesLanguage, matchesRegion, type Question } from '@parel/types/question';
 
 export interface FlowQuestion {
   id: string;
@@ -195,16 +195,41 @@ export async function recordFlowAnswer(answer: FlowAnswer): Promise<boolean> {
       });
     }
 
-    // Update user stats
+    // Update user stats (XP is handled by route handler via addXP)
     if (!answer.skipped) {
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: { id: answer.userId },
         data: {
           questionsAnswered: { increment: 1 },
-          xp: { increment: 10 }, // Award XP for answering
           lastAnsweredAt: new Date(),
         },
+        select: {
+          questionsAnswered: true,
+        },
       });
+
+      // Create feed post for question answered (v0.36.25)
+      try {
+        const { postQuestionAnswered, postQuestionMilestone } = await import('@/lib/services/feedService');
+        await postQuestionAnswered(answer.userId, answer.questionId);
+        
+        // Check for milestone (every 5 questions)
+        if (updatedUser.questionsAnswered > 0 && updatedUser.questionsAnswered % 5 === 0) {
+          await postQuestionMilestone(answer.userId, updatedUser.questionsAnswered);
+        }
+      } catch (error) {
+        // Don't fail question answer if feed post fails
+        logger.debug('[FlowService] Feed post failed', error);
+      }
+
+      // Create notification for question answered (v0.36.26)
+      try {
+        const { notifyQuestionAnswered } = await import('@/lib/services/notificationService');
+        await notifyQuestionAnswered(answer.userId);
+      } catch (error) {
+        // Don't fail question answer if notification fails
+        logger.debug('[FlowService] Notification failed', error);
+      }
     }
 
     return true;

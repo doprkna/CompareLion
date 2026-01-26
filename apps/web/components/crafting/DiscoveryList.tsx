@@ -1,6 +1,6 @@
 'use client';
 
-import { useDiscoveryIndex, Discovery } from '@/hooks/useDiscoveryIndex';
+import { useDiscoveryIndex, Discovery } from '@parel/core/hooks/useDiscoveryIndex';
 import { Loader2, Sparkles, Package } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

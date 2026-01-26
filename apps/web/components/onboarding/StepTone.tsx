@@ -6,7 +6,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { TONE_OPTIONS, type ToneId } from '@/lib/types/onboarding';
+import { TONE_OPTIONS, type ToneId } from '@parel/types/onboarding';
 import { ArrowLeft } from 'lucide-react';
 
 interface StepToneProps {

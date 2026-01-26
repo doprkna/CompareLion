@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/auth/requireSession';
-import { SssCategoryCreateSchema } from '@/lib/validation/sssc';
+import { SssCategoryCreateSchema } from '@parel/validation/sssc';
 import { toSssCategoryDTO, SssCategoryDTO } from '@/lib/dto/sssCategoryDTO';
 import { getAllSssCategories, createSssCategory } from '@/lib/services/sssCategoryService';
 import { safeAsync, validationError } from '@/lib/api-handler';

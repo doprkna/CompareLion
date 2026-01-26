@@ -19,6 +19,13 @@ import { logError, AppError } from "./errors";
  * const res = await apiFetch<MyType>('/api/endpoint');
  * if (!res.ok) { // handle error }
  */
+
+/**
+ * @deprecated Use defaultClient from @parel/api/client instead.
+ * Legacy API fetch wrapper. This will be removed in v0.42.0+.
+ * v0.41.15 - C3 Step 16: API Client Cleanup & Deprecation Pass
+ * Migration: import { defaultClient } from '@parel/api/client';
+ */
 export async function apiFetch<T>(
   path: string,
   options?: RequestInit

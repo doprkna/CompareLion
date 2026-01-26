@@ -3,7 +3,7 @@
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Swords, Home } from "lucide-react";
-import { useCombatPreferences } from "@/hooks/useCombatPreferences";
+import { useCombatPreferences } from '@parel/core/hooks/useCombatPreferences";
 import Link from "next/link";
 
 export default function CombatSettingsPage() {

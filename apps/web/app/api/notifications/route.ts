@@ -1,17 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { ensurePrismaClient } from "@/lib/prisma-guard";
-import { safeAsync, authError, notFoundError } from "@/lib/api-handler";
+/**
+ * Notifications API
+ * Get user notifications
+ * v0.40.17 - Story Notifications 1.0
+ * v0.41.4 - C3 Step 5: Unified API envelope
+ * v0.41.9 - C3 Step 10: DTO Consolidation Batch #2
+ */
 
-export const GET = safeAsync(async (_req: NextRequest) => {
-  ensurePrismaClient();
-  
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import type { NotificationDTO, NotificationsResponseDTO } from '@parel/types/dto';
+import { getNotifications, getUnreadCount } from '@/lib/notifications/notificationService';
+
+/**
+ * GET /api/notifications
+ * Get user notifications
+ */
+export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
-  
   if (!session?.user?.email) {
-    return authError();
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Authentication required');
   }
 
   const user = await prisma.user.findUnique({
@@ -20,69 +31,20 @@ export const GET = safeAsync(async (_req: NextRequest) => {
   });
 
   if (!user) {
-    return notFoundError('User');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
-  // Fetch recent notifications (last 30) - optimized with composite index (userId, isRead)
-  const items = await prisma.notification.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    take: 30,
-  });
+  try {
+    const notifications = await getNotifications(user.id);
+    const unreadCount = await getUnreadCount(user.id);
 
-  // Count unread using index-optimized query (v0.29.22)
-  const unreadCount = await prisma.notification.count({
-    where: { userId: user.id, isRead: false },
-  });
+    const response: NotificationsResponseDTO = {
+      notifications,
+      unreadCount,
+    };
 
-  return NextResponse.json({
-    success: true,
-    items,
-    unreadCount,
-  });
-});
-
-import { z } from "zod";
-
-const MarkReadSchema = z.object({
-  ids: z.array(z.string()).min(1)
-});
-
-export const PATCH = safeAsync(async (req: NextRequest) => {
-  ensurePrismaClient();
-  
-  const session = await getServerSession(authOptions);
-  
-  if (!session?.user?.email) {
-    return authError();
+    return buildSuccess(req, response);
+  } catch (error: any) {
+    return buildError(req, ApiErrorCode.INTERNAL_ERROR, error.message || 'Failed to fetch notifications');
   }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-
-  if (!user) {
-    return notFoundError('User');
-  }
-
-  const body = await req.json();
-  const { ids } = MarkReadSchema.parse(body);
-
-  // Mark notifications as read
-  await prisma.notification.updateMany({
-    where: {
-      userId: user.id,
-      id: { in: ids },
-    },
-    data: { isRead: true },
-  });
-
-  return NextResponse.json({
-    success: true,
-    markedCount: ids.length,
-  });
 });
-
-
-

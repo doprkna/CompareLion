@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
-import type { OnboardingData } from '@/lib/types/onboarding';
+import type { OnboardingData } from '@parel/types/onboarding';
 
 export default function OnboardingPage() {
   const { data: session, status } = useSession();

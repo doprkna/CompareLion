@@ -65,6 +65,18 @@ const config: CapacitorConfig = {
       style: 'dark',
       backgroundColor: '#0c0a1f',
     },
+
+    // AdMob plugin configuration (v0.36.22)
+    AdMob: {
+      appIdAndroid: process.env.ADMOB_ANDROID_APP_ID || '',
+      appIdIOS: process.env.ADMOB_IOS_APP_ID || '',
+      bannerAndroid: process.env.ADMOB_ANDROID_BANNER_ID || '',
+      bannerIOS: process.env.ADMOB_IOS_BANNER_ID || '',
+      rewardedAndroid: process.env.ADMOB_ANDROID_REWARDED_ID || '',
+      rewardedIOS: process.env.ADMOB_IOS_REWARDED_ID || '',
+      interstitialAndroid: process.env.ADMOB_ANDROID_INTERSTITIAL_ID || '',
+      interstitialIOS: process.env.ADMOB_IOS_INTERSTITIAL_ID || '',
+    },
   },
 };
 

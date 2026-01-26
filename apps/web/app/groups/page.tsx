@@ -1,7 +1,7 @@
 'use client';
 
 import { GroupCard } from '@/components/groups/GroupCard';
-import { useGroups } from '@/hooks/useGroups';
+import { useGroups } from '@parel/core/hooks/useGroups';
 
 export default function GroupsPage() {
   // Client component for simplicity to reuse hooks

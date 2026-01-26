@@ -2,7 +2,7 @@ import { Worker } from 'bullmq';
 import { prisma } from '@parel/db/src/client';
 import { getLeafContext } from '@parel/db/src/leaf';
 import { buildPrompt } from '@/lib/prompts/generateQuestions';
-import { GeneratedQuestions } from '@/lib/validation/questionGen';
+import { GeneratedQuestions } from '@parel/validation/questionGen';
 import { normalizeQuestionText } from '@/lib/text';
 import { callAI } from '@/lib/ai';
 import type { Job } from 'bullmq';

@@ -1,13 +1,17 @@
 /**
  * Events API
- * v0.17.0 - Community events system (challenges, themed weeks, spotlights)
+ * v0.17.0 - Community events system
+ * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3 (challenges, themed weeks, spotlights)
+ * v0.41.6 - C3 Step 7: Unified API envelope
  */
 
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, successResponse, validationError, unauthorizedError, notFoundError } from '@/lib/api-handler';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import type { EventDTO, EventsResponseDTO } from '@parel/types/dto';
 import { z } from 'zod';
 import { getRequestLocaleChain, sortByLocalePreference } from '@/lib/middleware/locale';
 
@@ -95,10 +99,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
     };
   });
 
-  return successResponse({
+  const response: EventsResponseDTO = {
     events: eventsWithTimeRemaining,
     localeChain: chain,
-  });
+  };
+
+  return buildSuccess(req, response);
 });
 
 /**
@@ -110,7 +116,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   
   if (!session?.user?.email) {
-    return unauthorizedError('You must be logged in');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'You must be logged in');
   }
 
   // Get user and verify admin role
@@ -120,11 +126,11 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return unauthorizedError('User not found');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
   if (user.role !== 'ADMIN') {
-    return unauthorizedError('Only admins can create events');
+    return buildError(req, ApiErrorCode.AUTHORIZATION_ERROR, 'Only admins can create events');
   }
 
   // Parse and validate request
@@ -132,9 +138,13 @@ export const POST = safeAsync(async (req: NextRequest) => {
   const validation = EventSchema.safeParse(body);
 
   if (!validation.success) {
-    return validationError(
-      validation.error.issues[0]?.message || 'Invalid event data'
-    );
+    const details: Record<string, string[]> = {};
+    validation.error.errors.forEach((err) => {
+      const path = err.path.join('.') || 'root';
+      if (!details[path]) details[path] = [];
+      details[path].push(err.message);
+    });
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, validation.error.issues[0]?.message || 'Invalid event data', { details });
   }
 
   const data = validation.data;
@@ -144,7 +154,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
   const endDate = new Date(data.endDate);
 
   if (endDate <= startDate) {
-    return validationError('End date must be after start date');
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'End date must be after start date');
   }
 
   // Check for overlapping events of the same type
@@ -178,9 +188,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (overlappingEvents.length > 0) {
-    return validationError(
-      `Event overlaps with existing ${data.type} event: "${overlappingEvents[0]?.title}"`
-    );
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Event overlaps with existing event');
   }
 
   // Determine initial status based on dates
@@ -212,7 +220,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     },
   });
 
-  return successResponse({
+  return buildSuccess(req, {
     message: 'Event created successfully',
     event,
   });
@@ -227,7 +235,7 @@ export const PATCH = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   
   if (!session?.user?.email) {
-    return unauthorizedError('You must be logged in');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'You must be logged in');
   }
 
   // Get user and verify admin role
@@ -237,7 +245,7 @@ export const PATCH = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user || user.role !== 'ADMIN') {
-    return unauthorizedError('Only admins can update events');
+    return buildError(req, ApiErrorCode.AUTHORIZATION_ERROR, 'Only admins can update events');
   }
 
   // Parse request
@@ -245,7 +253,7 @@ export const PATCH = safeAsync(async (req: NextRequest) => {
   const { id, ...updateData } = body;
 
   if (!id) {
-    return validationError('Event ID is required');
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Event ID is required');
   }
 
   // Check if event exists
@@ -254,7 +262,7 @@ export const PATCH = safeAsync(async (req: NextRequest) => {
   });
 
   if (!event) {
-    return notFoundError('Event not found');
+    return buildError(req, ApiErrorCode.NOT_FOUND, 'Event not found');
   }
 
   // Update event
@@ -271,7 +279,7 @@ export const PATCH = safeAsync(async (req: NextRequest) => {
     },
   });
 
-  return successResponse({
+  return buildSuccess(req, {
     message: 'Event updated successfully',
     event: updatedEvent,
   });
@@ -286,7 +294,7 @@ export const DELETE = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
   
   if (!session?.user?.email) {
-    return unauthorizedError('You must be logged in');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'You must be logged in');
   }
 
   // Get user and verify admin role
@@ -296,14 +304,14 @@ export const DELETE = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user || user.role !== 'ADMIN') {
-    return unauthorizedError('Only admins can delete events');
+    return buildError(req, ApiErrorCode.AUTHORIZATION_ERROR, 'Only admins can delete events');
   }
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
 
   if (!id) {
-    return validationError('Event ID is required');
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Event ID is required');
   }
 
   // Check if event exists
@@ -312,7 +320,7 @@ export const DELETE = safeAsync(async (req: NextRequest) => {
   });
 
   if (!event) {
-    return notFoundError('Event not found');
+    return buildError(req, ApiErrorCode.NOT_FOUND, 'Event not found');
   }
 
   // Delete event (or mark as cancelled)
@@ -321,7 +329,7 @@ export const DELETE = safeAsync(async (req: NextRequest) => {
     data: { status: 'CANCELLED' },
   });
 
-  return successResponse({
+  return buildSuccess(req, {
     message: 'Event cancelled successfully',
   });
 });

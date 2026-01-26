@@ -1,7 +1,7 @@
 'use client';
 
-import { Quest } from '@/hooks/useQuests';
-import { QuestLore } from '@/hooks/useQuestLore';
+import { Quest } from '@parel/core/hooks/useQuests';
+import { QuestLore } from '@parel/core/hooks/useQuestLore';
 import { Button } from '@/components/ui/button';
 import { X, Gift, ScrollText, Zap, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

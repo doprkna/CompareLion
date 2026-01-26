@@ -1,6 +1,6 @@
 'use client';
 
-import { Friend } from '@/hooks/useSocial';
+import { Friend } from '@parel/core/hooks/useSocial';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { UserMinus, UserCheck } from 'lucide-react';

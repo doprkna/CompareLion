@@ -3,7 +3,7 @@
  * Centralized theme tokens and design system constants
  */
 
-import { COLOR_CONSTANTS } from '@/lib/config/constants';
+import { COLOR_CONSTANTS } from '@parel/core/config/constants';
 
 // ========== SPACING ==========
 export const SPACING = {

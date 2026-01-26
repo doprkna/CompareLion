@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from 'next/navigation';
-import { usePoll } from '@/hooks/usePolls';
+import { usePoll } from '@parel/core/hooks/usePolls';
 import { PollVotePanel } from '@/components/polls/PollVotePanel';
 import { PollResultsChart } from '@/components/polls/PollResultsChart';
 

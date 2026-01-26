@@ -1,6 +1,6 @@
 'use client';
 
-import { LoreEntry } from '@/hooks/useLore';
+import { LoreEntry } from '@parel/core/hooks/useLore';
 import { LoreCard } from './LoreCard';
 import { Loader2, BookOpen } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';

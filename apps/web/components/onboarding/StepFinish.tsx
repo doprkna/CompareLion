@@ -12,7 +12,7 @@ import {
   getTone, 
   getInterests, 
   type OnboardingData 
-} from '@/lib/types/onboarding';
+} from '@parel/types/onboarding';
 import { ArrowLeft, PartyPopper, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useEffect } from 'react';

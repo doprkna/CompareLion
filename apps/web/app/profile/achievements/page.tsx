@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAchievements } from '@/hooks/useAchievements';
+import { useAchievements } from '@parel/core/hooks/useAchievements';
 import AchievementBadge from '@/components/achievements/AchievementBadge';
 import Link from 'next/link';
 import { Trophy, Swords, Brain, MessageCircle, DollarSign, Globe } from 'lucide-react';
@@ -145,11 +145,19 @@ export default function AchievementsPage() {
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/60 rounded-2xl">
                             <div className="text-center p-2 text-white text-xs">
                               <div className="font-semibold mb-1">{achievement.description}</div>
+                              {achievement.points > 0 && (
+                                <div className="text-blue-300 font-bold">{achievement.points} pts</div>
+                              )}
                               {achievement.xpReward > 0 && (
                                 <div className="text-purple-300">+{achievement.xpReward} XP</div>
                               )}
                               {achievement.rewardGold > 0 && (
                                 <div className="text-yellow-300">+{achievement.rewardGold} gold</div>
+                              )}
+                              {achievement.unlockedAt && (
+                                <div className="text-gray-300 text-xs mt-1">
+                                  {new Date(achievement.unlockedAt).toLocaleDateString()}
+                                </div>
                               )}
                             </div>
                           </div>

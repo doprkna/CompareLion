@@ -1,7 +1,7 @@
 "use client";
 import { MemoryEntryCard } from '@/components/memory/MemoryEntryCard';
 import { MemoryTimeline } from '@/components/memory/MemoryTimeline';
-import { useLatestMemory, useMemoryArchive, useGenerateMemory } from '@/hooks/useMemory';
+import { useLatestMemory, useMemoryArchive, useGenerateMemory } from '@parel/core/hooks/useMemory';
 
 export default function MemoryPage() {
   const { entry, loading, error, reload } = useLatestMemory();

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { LoreList } from '@/components/lore/LoreList';
 import { LoreToneSelector } from '@/components/lore/LoreToneSelector';
-import { useLoreEntries, useLatestLore, useLoreTone } from '@/hooks/useLore';
+import { useLoreEntries, useLatestLore, useLoreTone } from '@parel/core/hooks/useLore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Loader2, Sparkles } from 'lucide-react';

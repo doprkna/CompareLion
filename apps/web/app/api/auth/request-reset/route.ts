@@ -6,7 +6,7 @@ import { generateToken, getTokenExpiry } from '@/lib/auth/tokens';
 import { sendPasswordReset } from '@/lib/email/resend';
 import { logAuditEvent, extractIpFromRequest } from '@/lib/services/auditService';
 import { safeAsync, successResponse, validationError } from '@/lib/api-handler';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 import { z } from 'zod';
 
 const RequestResetSchema = z.object({

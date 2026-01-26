@@ -1,341 +1,562 @@
+/**
+ * Community Feed Page
+ * v0.36.25 - Community Feed 1.0
+ * v0.36.31 - Social Compare Feed 2.0 - Added ComparePost support
+ */
+
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import { useLocale } from '@/lib/i18n/useLocale';
-import { useT } from '@/lib/i18n/useT';
-import DailyEventCard from '@/components/DailyEventCard';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Icon } from '../../../../packages/ui/atoms/icon'; // sanity-fix
+import { formatDistanceToNow } from 'date-fns';
 
-type FeedItem = {
+type FeedPost = {
   id: string;
-  question: string;
-  answers: string[];
-  reactionsLike: number;
-  reactionsLaugh: number;
-  reactionsThink: number;
-  createdAt: string;
-  // Optional tags if backend includes them later
-  tags?: string[];
+  userId: string;
+  postType?: 'feed' | 'compare'; // v0.36.31
+  user: {
+    id: string;
+    username: string | null;
+    name: string | null;
+    avatarUrl: string | null;
+    level: number;
+  };
+  type?: 'achievement' | 'fight' | 'question' | 'levelup' | 'loot' | 'status' | 'milestone';
+  content: string | null;
+  refId?: string | null;
+  preview?: any;
+  // ComparePost fields (v0.36.31)
+  questionId?: string | null;
+  questionContext?: { id: string; text: string } | null;
+  value?: any;
+  createdAt: Date;
+  reactions: {
+    counts: Record<string, number>;
+    userReactions: string[];
+    total: number;
+  };
+  comments: {
+    preview: Array<{
+      id: string;
+      userId: string;
+      user: {
+        id: string;
+        username: string | null;
+        name: string | null;
+        avatarUrl: string | null;
+      };
+      content: string;
+      createdAt: Date;
+    }>;
+    total: number;
+  };
 };
 
 type FeedResponse = {
   success: boolean;
-  items: FeedItem[];
-  nextCursor?: string;
+  posts: FeedPost[];
+  nextCursor: string | null;
   hasMore: boolean;
 };
 
+const TYPE_ICONS: Record<string, any> = {
+  achievement: '🏆',
+  fight: '⚔️',
+  question: '❓',
+  levelup: '⬆️',
+  loot: '📦',
+  status: '💬',
+  milestone: '🎯',
+};
+
+const COMPARE_REACTION_TYPES = [
+  { type: 'like', label: '👍 Like' },
+  { type: 'wow', label: '😮 Wow' },
+  { type: 'same', label: '👋 Same' },
+  { type: 'lol', label: '😂 Lol' },
+  { type: 'roast', label: '🔥 Roast' },
+];
+
 export default function FeedPage() {
-  const { lang, region } = useLocale();
-  const t = useT();
-  const [items, setItems] = useState<FeedItem[]>([]);
-  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [posts, setPosts] = useState<FeedPost[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [loadedCount, setLoadedCount] = useState(0);
-  const [sortMode, setSortMode] = useState<'recent' | 'reacted'>('recent');
-  const [tab, setTab] = useState<'blend' | 'trending' | 'global'>('blend');
-  const [onlyLocalHumor, setOnlyLocalHumor] = useState<boolean>(false);
-  const [showMature, setShowMature] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const v = window.localStorage.getItem('feed.showMature');
-    return v === '1';
-  });
-  const maxItems = 100;
-  const pageSize = 20;
+  const [filter, setFilter] = useState<'all' | 'me' | 'fights' | 'achievements' | 'questions'>('all');
+  const [feedType, setFeedType] = useState<'feed' | 'compare' | 'all'>(
+    (searchParams.get('feedType') as any) || 'feed'
+  );
+  const [feedMode, setFeedMode] = useState<'global' | 'trending' | 'similar'>(
+    (searchParams.get('type') as any) || 'global'
+  );
+  const [statusText, setStatusText] = useState('');
+  const [postingStatus, setPostingStatus] = useState(false);
+  const [showCompareComposer, setShowCompareComposer] = useState(false);
+  const [compareContent, setCompareContent] = useState('');
+  const [compareValue, setCompareValue] = useState('');
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const inflightRef = useRef<Promise<void> | null>(null);
 
-  const canLoad = hasMore && !loading && loadedCount < maxItems;
+  if (status === 'unauthenticated') {
+    router.push('/login');
+    return null;
+  }
 
-  const loadPage = useCallback(async () => {
-    if (!canLoad) return;
+  const loadFeed = useCallback(async (reset = false) => {
+    if (loading) return;
     setLoading(true);
+
     try {
       const params = new URLSearchParams();
-      params.set('limit', String(pageSize));
-      params.set('lang', lang);
-      params.set('region', region);
-      if (cursor) params.set('cursor', cursor);
-
-      let url = '';
-      if (tab === 'trending') {
-        url = `/api/trending?region=${encodeURIComponent(region)}&limit=${pageSize}`;
-      } else if (tab === 'global') {
-        url = `/api/trending?region=GLOBAL&limit=${pageSize}`;
+      params.set('limit', '20');
+      if (feedType === 'compare') {
+        params.set('feedType', 'compare');
+        params.set('type', feedMode);
       } else {
-        url = `/api/feed?${params.toString()}`;
+        params.set('filter', filter);
+      }
+      if (cursor && !reset) {
+        params.set('cursor', cursor);
       }
 
-      const res = await fetch(url, { cache: 'no-store' });
-      const data = await res.json();
+      const res = await fetch(`/api/feed?${params.toString()}`);
+      const data: FeedResponse = await res.json();
+
       if (data.success) {
-        const newItems = (data.items || data.questions || []).map((q: any) => ({
-          id: q.id,
-          question: q.text || q.question || q.texts?.[0] || '',
-          answers: q.answers || [],
-          reactionsLike: q.reactions?.like ?? q.reactionsLike ?? 0,
-          reactionsLaugh: q.reactions?.laugh ?? q.reactionsLaugh ?? 0,
-          reactionsThink: q.reactions?.think ?? q.reactionsThink ?? 0,
-          createdAt: q.createdAt,
-          tags: q.tags || [],
-          region: q.region || 'GLOBAL',
-        }));
-        setItems(prev => tab === 'blend' ? [...prev, ...newItems] : newItems);
+        if (reset) {
+          setPosts(data.posts);
+        } else {
+          setPosts((prev) => [...prev, ...data.posts]);
+        }
         setCursor(data.nextCursor);
-        setHasMore(tab === 'blend' ? Boolean(data.hasMore) && (loadedCount + newItems.length) < maxItems : false);
-        setLoadedCount(prev => (tab === 'blend' ? prev + newItems.length : newItems.length));
-      } else {
-        setHasMore(false);
+        setHasMore(data.hasMore);
       }
-    } catch {
-      // soft-fail
+    } catch (error) {
+      console.error('Failed to load feed', error);
     } finally {
       setLoading(false);
     }
-  }, [canLoad, cursor, loadedCount, tab, lang, region]);
+  }, [cursor, filter, feedType, feedMode, loading]);
 
   useEffect(() => {
-    // initial and when tab changes: reset list (except infinite for blend)
-    setItems([]);
-    setCursor(undefined);
-    setHasMore(true);
-    setLoadedCount(0);
-    loadPage();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, lang, region]);
+    loadFeed(true);
+  }, [filter, feedType, feedMode]);
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem('feed.showMature', showMature ? '1' : '0');
-    } catch {}
-  }, [showMature]);
-
-  useEffect(() => {
-    if (!sentinelRef.current) return;
-    const el = sentinelRef.current;
-    const io = new IntersectionObserver(entries => {
-      if (entries.some(e => e.isIntersecting)) {
-        if (!inflightRef.current) {
-          const p = (async () => {
-            await loadPage();
-          })();
-          inflightRef.current = p.finally(() => {
-            inflightRef.current = null;
-          }) as unknown as Promise<void>;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadFeed();
         }
-      }
-    }, { rootMargin: '200px' });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [loadPage]);
+      },
+      { threshold: 0.1 }
+    );
 
-  const handleShare = useCallback(async (id: string) => {
-    const url = `${window.location.origin}/feed#${id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied!');
-    } catch {
-      toast.info(url);
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
     }
-  }, []);
 
-  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadFeed]);
 
-  const sendReaction = useCallback((id: string, type: 'like' | 'laugh' | 'think') => {
-    // debounce by id+type
-    const key = `${id}:${type}`;
-    if (debounceTimers.current[key]) clearTimeout(debounceTimers.current[key]);
-    debounceTimers.current[key] = setTimeout(async () => {
-      try {
-        await fetch('/api/reaction', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ comparisonId: id, type }),
-        });
-      } catch {
-        // ignore
+  const handlePostStatus = async () => {
+    if (!statusText.trim() || statusText.length > 160) return;
+
+    setPostingStatus(true);
+    try {
+      const res = await fetch('/api/feed/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: statusText }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setStatusText('');
+        loadFeed(true); // Reload feed
       }
-    }, 500);
-  }, []);
+    } catch (error) {
+      console.error('Failed to post status', error);
+    } finally {
+      setPostingStatus(false);
+    }
+  };
 
-  const onReact = useCallback((id: string, type: 'like' | 'laugh' | 'think') => {
-    // optimistic update
-    setItems(prev => (prev || []).map(it => { // sanity-fix
-      if (it.id !== id) return it;
-      if (type === 'like') return { ...it, reactionsLike: it.reactionsLike + 1 };
-      if (type === 'laugh') return { ...it, reactionsLaugh: it.reactionsLaugh + 1 };
-      return { ...it, reactionsThink: it.reactionsThink + 1 };
-    }));
-    sendReaction(id, type);
-  }, [sendReaction]);
+  const handleReact = async (postId: string, emojiOrType: string, postType: 'feed' | 'compare' = 'feed') => {
+    try {
+      const body: any = { postId, postType };
+      if (postType === 'compare') {
+        body.type = emojiOrType;
+      } else {
+        body.emoji = emojiOrType;
+      }
+      
+      const res = await fetch('/api/feed/react', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-  const sortedItems = useMemo(() => {
-    if (sortMode === 'recent') return items || []; // sanity-fix
-    return [...(items || [])].sort((a, b) => { // sanity-fix
-      const sa = a.reactionsLike + a.reactionsLaugh + a.reactionsThink;
-      const sb = b.reactionsLike + b.reactionsLaugh + b.reactionsThink;
-      return sb - sa;
-    });
-  }, [items, sortMode]);
+      const data = await res.json();
+      if (data.success) {
+        loadFeed(true); // Reload to get updated reactions
+      }
+    } catch (error) {
+      console.error('Failed to react', error);
+    }
+  };
 
-  const visibleItems = useMemo(() => {
-    const filtered = sortedItems.filter((it: any) => {
-      if (showMature) return true;
-      const tags: string[] | undefined = it?.tags;
-      if (!tags || tags.length === 0) return true;
-      return !(tags.includes('nsfw') || tags.includes('sensitive'));
-    });
-    const localFiltered = onlyLocalHumor ? filtered.filter((it: any) => (it?.region || 'GLOBAL').toUpperCase() === region.toUpperCase()) : filtered;
-    return localFiltered.slice(0, Math.min(localFiltered.length, maxItems));
-  }, [sortedItems, showMature, onlyLocalHumor, region]);
+  const handleCreateComparePost = async () => {
+    if (!compareContent.trim() && !compareValue.trim()) return;
+
+    setPostingStatus(true);
+    try {
+      const res = await fetch('/api/feed/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: compareContent || undefined,
+          value: compareValue ? (isNaN(Number(compareValue)) ? compareValue : Number(compareValue)) : undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setCompareContent('');
+        setCompareValue('');
+        setShowCompareComposer(false);
+        loadFeed(true);
+      }
+    } catch (error) {
+      console.error('Failed to create compare post', error);
+    } finally {
+      setPostingStatus(false);
+    }
+  };
+
+  const handleComment = async (postId: string, content: string, postType: 'feed' | 'compare' = 'feed') => {
+    try {
+      const res = await fetch('/api/feed/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId, content, postType }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        loadFeed(true); // Reload to get updated comments
+      }
+    } catch (error) {
+      console.error('Failed to comment', error);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      {/* Ambient background using existing profile mode */}
-      {/* <AmbientManager mode="profile" /> */}
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">
+          {feedType === 'compare' ? 'Compare Feed' : 'Community'}
+        </h1>
+        <div className="flex gap-2">
+          {feedType === 'compare' ? (
+            <select
+              value={feedMode}
+              onChange={(e) => {
+                setFeedMode(e.target.value as any);
+                setCursor(null);
+              }}
+              className="px-3 py-1 border rounded bg-background"
+            >
+              <option value="global">Global</option>
+              <option value="trending">Trending</option>
+              <option value="similar">People Like You</option>
+            </select>
+          ) : (
+            <select
+              value={filter}
+              onChange={(e) => {
+                setFilter(e.target.value as any);
+                setCursor(null);
+              }}
+              className="px-3 py-1 border rounded bg-background"
+            >
+              <option value="all">All</option>
+              <option value="me">My Posts</option>
+              <option value="fights">Fights</option>
+              <option value="achievements">Achievements</option>
+              <option value="questions">Questions</option>
+            </select>
+          )}
+          <select
+            value={feedType}
+            onChange={(e) => {
+              setFeedType(e.target.value as any);
+              setCursor(null);
+            }}
+            className="px-3 py-1 border rounded bg-background"
+          >
+            <option value="feed">Feed</option>
+            <option value="compare">Compare</option>
+          </select>
+        </div>
+      </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        <DailyEventCard />
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{t('publicFeed')}</h1>
-          <div className="flex items-center gap-2 text-sm">
-            <button
-              className={`rounded-md px-2 py-1 ${sortMode === 'recent' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`}
-              onClick={() => setSortMode('recent')}
-            >{t('recent')}</button>
-            <button
-              className={`rounded-md px-2 py-1 ${sortMode === 'reacted' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`}
-              onClick={() => setSortMode('reacted')}
-            >{t('mostReacted')}</button>
-            <div className="ml-3 inline-flex items-center gap-1">
-              <button
-                className={`rounded-md px-2 py-1 ${tab === 'trending' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`}
-                onClick={() => setTab('trending')}
-              >🔥 Trending</button>
-              <button
-                className={`rounded-md px-2 py-1 ${tab === 'blend' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`}
-                onClick={() => setTab('blend')}
-              >🏠 My Region</button>
-              <button
-                className={`rounded-md px-2 py-1 ${tab === 'global' ? 'bg-slate-900 text-white' : 'hover:bg-slate-100'}`}
-                onClick={() => setTab('global')}
-              >🌎 Global</button>
-            </div>
-            <div className="ml-2 inline-flex items-center gap-2">
-              <label className="text-slate-600">Show mature</label>
-              <button
-                type="button"
-                onClick={() => setShowMature(v => !v)}
-                className={`relative inline-flex h-6 w-10 items-center rounded-full border ${showMature ? 'bg-slate-900 border-slate-900' : 'bg-white border-slate-300'}`}
-                aria-pressed={showMature}
-                aria-label="Toggle mature content"
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${showMature ? 'translate-x-4' : 'translate-x-1'}`}
+      {/* Composer */}
+      {feedType === 'compare' ? (
+        <Card>
+          <CardContent className="p-4">
+            {!showCompareComposer ? (
+              <Button onClick={() => setShowCompareComposer(true)} className="w-full">
+                Create Compare Post
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <Input
+                  placeholder="Short explanation (optional, max 280 chars)"
+                  value={compareContent}
+                  onChange={(e) => setCompareContent(e.target.value)}
+                  maxLength={280}
                 />
-              </button>
-            </div>
-            <div className="ml-2 inline-flex items-center gap-2">
-              <label className="text-slate-600">Only local humor</label>
-              <input
-                type="checkbox"
-                checked={onlyLocalHumor}
-                onChange={(e) => setOnlyLocalHumor(e.target.checked)}
-                className="h-4 w-4"
-                aria-label="Only local humor"
+                <Input
+                  placeholder="Your value (number or text)"
+                  value={compareValue}
+                  onChange={(e) => setCompareValue(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleCreateComparePost}
+                    disabled={(!compareContent.trim() && !compareValue.trim()) || postingStatus}
+                  >
+                    {postingStatus ? <Icon name="spinner" className="w-4 h-4 animate-spin" /> : 'Post Compare'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCompareComposer(false);
+                      setCompareContent('');
+                      setCompareValue('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground text-right">
+                  {compareContent.length}/280
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex gap-2">
+              <Input
+                placeholder="Share a thought…"
+                value={statusText}
+                onChange={(e) => setStatusText(e.target.value)}
+                maxLength={160}
+                className="flex-1"
               />
+              <Button
+                onClick={handlePostStatus}
+                disabled={!statusText.trim() || postingStatus || statusText.length > 160}
+              >
+                {postingStatus ? <Icon name="spinner" className="w-4 h-4 animate-spin" /> : 'Post'}
+              </Button>
             </div>
-          </div>
-        </div>
+            <p className="text-xs text-muted-foreground mt-1 text-right">
+              {statusText.length}/160
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
-        <div className="space-y-4">
-          {visibleItems.map(item => (
-            <article key={item.id} id={item.id} className="rounded-xl border bg-white shadow-sm p-4">
-              <div className="mb-2 text-base font-semibold text-slate-800 flex items-center gap-2">
-                <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600 border-slate-300">
-                  {(item as any).region || 'GLOBAL'}
-                </span>
-                <span>{item.question}</span>
-              </div>
-              {Array.isArray((item as any).tags) && (item as any).tags.length > 0 && (
-                <div className="mb-2 flex flex-wrap gap-2">
-                  {(item as any).tags.map((tag: string) => (
-                    <span key={tag} className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs ${
-                      tag === 'nsfw' || tag === 'sensitive' ? 'border-rose-300 text-rose-700' : 'border-slate-300 text-slate-700'
-                    }`}>
-                      {tag}
+      {/* Feed List */}
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <Card key={post.id}>
+            <CardContent className="p-4">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0">
+                  {post.user.avatarUrl ? (
+                    <img
+                      src={post.user.avatarUrl}
+                      alt={post.user.username || post.user.name || 'User'}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                      {post.user.username?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold">
+                      {post.user.username || post.user.name || 'Unknown'}
                     </span>
-                  ))}
-                </div>
-              )}
-              <ul className="mb-3 space-y-1 text-slate-700">
-                {(item.answers || []).slice(0, 2).map((a, idx) => ( // sanity-fix
-                  <li key={idx} className="pl-2">• {a}</li>
-                ))}
-              </ul>
+                    <span className="text-xs text-muted-foreground">
+                      Lv.{post.user.level}
+                    </span>
+                    <span className="text-lg">{TYPE_ICONS[post.type] || '📝'}</span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                    </span>
+                  </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <button
-                    className="group inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm hover:bg-slate-100"
-                    onClick={() => onReact(item.id, 'like')}
-                    aria-label="Like"
-                  >
-                    <span className="transition-transform group-hover:scale-110">👍</span>
-                    <span className="tabular-nums text-slate-700">{item.reactionsLike}</span>
-                  </button>
-                  <button
-                    className="group inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm hover:bg-slate-100"
-                    onClick={() => onReact(item.id, 'laugh')}
-                    aria-label="Laugh"
-                  >
-                    <span className="transition-transform group-hover:scale-110">😂</span>
-                    <span className="tabular-nums text-slate-700">{item.reactionsLaugh}</span>
-                  </button>
-                  <button
-                    className="group inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm hover:bg-slate-100"
-                    onClick={() => onReact(item.id, 'think')}
-                    aria-label="Think"
-                  >
-                    <span className="transition-transform group-hover:scale-110">🤔</span>
-                    <span className="tabular-nums text-slate-700">{item.reactionsThink}</span>
-                  </button>
-                </div>
+                  {/* Compare Post Content (v0.36.31) */}
+                  {post.postType === 'compare' ? (
+                    <>
+                      {post.questionContext && (
+                        <div className="text-sm font-medium mb-2 p-2 bg-muted rounded">
+                          ❓ {post.questionContext.text}
+                        </div>
+                      )}
+                      {post.value && (
+                        <div className="text-lg font-bold mb-2 p-2 bg-primary/10 rounded">
+                          {typeof post.value === 'object' && post.value.value !== undefined
+                            ? post.value.value
+                            : JSON.stringify(post.value)}
+                        </div>
+                      )}
+                      {post.content && <p className="text-sm mb-2">{post.content}</p>}
+                      {post.questionId && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => router.push(`/questions?questionId=${post.questionId}`)}
+                          className="mb-2"
+                        >
+                          How do you compare?
+                        </Button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm mb-2">{post.content}</p>
+                      {/* Rich Preview */}
+                      {post.preview && (
+                        <div className="text-xs text-muted-foreground mb-2 p-2 bg-muted rounded">
+                          {post.type === 'fight' && (
+                            <span>{post.preview.won ? '✅ Won' : '❌ Lost'} • {post.preview.rounds} rounds</span>
+                          )}
+                          {post.type === 'loot' && (
+                            <span>📦 {post.preview.itemName} ({post.preview.rarity})</span>
+                          )}
+                          {post.type === 'achievement' && (
+                            <span>🏆 {post.preview.title}</span>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
 
-                <button
-                  className="rounded-md px-2 py-1 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  onClick={() => handleShare(item.id)}
-                >
-                  {t('share')}
-                </button>
+                  {/* Reactions */}
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex gap-2 flex-wrap">
+                      {post.postType === 'compare' ? (
+                        // Compare reactions
+                        COMPARE_REACTION_TYPES.map(({ type, label }) => (
+                          <button
+                            key={type}
+                            onClick={() => handleReact(post.id, type, 'compare')}
+                            className={`text-xs px-2 py-1 rounded ${
+                              post.reactions.userReactions.includes(type)
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted hover:bg-muted/80'
+                            }`}
+                          >
+                            {label.split(' ')[0]} {post.reactions.counts[type] || 0}
+                          </button>
+                        ))
+                      ) : (
+                        // Feed reactions
+                        ['👍', '🔥', '❤️', '💡'].map((emoji) => (
+                          <button
+                            key={emoji}
+                            onClick={() => handleReact(post.id, emoji, 'feed')}
+                            className={`text-sm px-2 py-1 rounded ${
+                              post.reactions.userReactions.includes(emoji)
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted hover:bg-muted/80'
+                            }`}
+                          >
+                            {emoji} {post.reactions.counts[emoji] || 0}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                    <button
+                      onClick={() => router.push(`/feed/post/${post.id}`)}
+                      className="text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      <Icon name="message" className="w-4 h-4 inline mr-1" />
+                      {post.comments.total}
+                    </button>
+                  </div>
+
+                  {/* Comments Preview */}
+                  {post.comments.preview.length > 0 && (
+                    <div className="mt-3 space-y-2 border-t pt-3">
+                      {post.comments.preview.map((comment) => (
+                        <div key={comment.id} className="text-sm">
+                          <span className="font-semibold">
+                            {comment.user.username || comment.user.name || 'Unknown'}
+                          </span>
+                          <span className="text-muted-foreground ml-2">{comment.content}</span>
+                        </div>
+                      ))}
+                      {post.comments.total > post.comments.preview.length && (
+                        <button
+                          onClick={() => router.push(`/feed/post/${post.id}`)}
+                          className="text-xs text-muted-foreground hover:text-foreground"
+                        >
+                          View {post.comments.total - post.comments.preview.length} more comments
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </article>
-          ))}
-        </div>
-
-        <div ref={sentinelRef} className="h-10" />
+            </CardContent>
+          </Card>
+        ))}
 
         {loading && (
-          <div className="py-6 text-center text-slate-500">{t('loading')}</div>
+          <div className="flex justify-center py-8">
+            <Icon name="spinner" className="w-6 h-6 animate-spin" />
+          </div>
         )}
-        {!hasMore && (
-          <div className="py-6 text-center text-slate-400 text-sm">{t('endOfFeed')}</div>
+
+        {!hasMore && posts.length > 0 && (
+          <div className="text-center text-muted-foreground py-8">
+            No more posts
+          </div>
         )}
+
+        {!loading && posts.length === 0 && (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">
+                {feedType === 'compare'
+                  ? 'Answer a question to start comparing!'
+                  : 'No posts yet. Be the first to share!'}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        <div ref={sentinelRef} className="h-4" />
       </div>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

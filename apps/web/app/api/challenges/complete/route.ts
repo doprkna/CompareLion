@@ -29,6 +29,15 @@ export const POST = safeAsync(async (req: NextRequest) => {
     });
   });
 
+  // Record faction contribution for challenge participation (fire-and-forget)
+  import('@/lib/aure/interaction/battleService')
+    .then(({ recordFactionContribution }) => {
+      return recordFactionContribution(user.id, 'vs', 1);
+    })
+    .catch(() => {
+      // Silently fail - faction battles are optional
+    });
+
   return NextResponse.json({ success: true, completed: true });
 });
 

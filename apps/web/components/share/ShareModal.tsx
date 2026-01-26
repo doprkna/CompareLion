@@ -7,7 +7,7 @@ import { ShareButton } from './ShareButton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Share2, Loader2 } from 'lucide-react';
 import { useState } from 'react';
-import { useGenerateShare } from '@/hooks/useGenerateShare';
+import { useGenerateShare } from '@parel/core/hooks/useGenerateShare';
 
 interface ShareModalProps {
   open: boolean;

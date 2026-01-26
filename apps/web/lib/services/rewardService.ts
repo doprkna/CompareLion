@@ -4,7 +4,7 @@
  * v0.26.1 - Reward Economy & Scaling Pass
  */
 
-import { RewardConfig, DifficultyLevel } from '@/lib/config/rewardConfig';
+import { RewardConfig, DifficultyLevel } from '@parel/core/config/rewardConfig';
 import { logger } from '@/lib/logger';
 
 export interface RewardCalculationOptions {

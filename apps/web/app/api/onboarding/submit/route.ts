@@ -11,7 +11,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, validationError, successResponse } from '@/lib/api-handler';
-import { validateOnboardingData, type OnboardingData } from '@/lib/types/onboarding';
+import { validateOnboardingData, type OnboardingData } from '@parel/types/onboarding';
 import { z } from 'zod';
 
 // Validation schema

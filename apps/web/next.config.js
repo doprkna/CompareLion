@@ -8,7 +8,7 @@ const nextConfig = {
   },
   
   // Transpile monorepo packages
-  transpilePackages: ['@parel/db'],
+  transpilePackages: ['@parel/db', '@parel/features', '@parel/core'],
   
   // Performance optimizations (v0.11.1)
   swcMinify: true,
@@ -76,6 +76,7 @@ const nextConfig = {
     
     // Fix pnpm resolution for @prisma/client and runtime modules
     config.resolve.alias = {
+      '@parel/features/flow': path.resolve(__dirname, '../../packages/features/flow'),
       ...config.resolve.alias,
       '@prisma/client$': prismaClientPath,
       '@prisma/client/runtime/library.js': path.join(prismaClientDir, 'runtime', 'library.js'),

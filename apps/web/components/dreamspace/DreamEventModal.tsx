@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Moon, Sparkles, Zap } from 'lucide-react';
-import { useResolveDream } from '@/hooks/useResolveDream';
+import { useResolveDream } from '@parel/core/hooks/useResolveDream';
 
 interface DreamEventModalProps {
   open: boolean;

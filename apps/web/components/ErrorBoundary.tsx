@@ -1,7 +1,26 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import * as Sentry from '@sentry/nextjs';
+// Client-safe Sentry wrapper (prevents server-only instrumentation from being bundled)
+const captureException = (error: Error) => {
+  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+  try {
+    import('@sentry/nextjs').then((Sentry) => {
+      Sentry.captureException(error);
+    }).catch(() => {});
+  } catch {}
+};
+const withScope = (callback: (scope: any) => void) => {
+  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') {
+    callback({ setTag: () => {}, setContext: () => {} });
+    return;
+  }
+  try {
+    import('@sentry/nextjs').then((Sentry) => {
+      Sentry.withScope(callback);
+    }).catch(() => {});
+  } catch {}
+};
 import { logger } from '@/lib/logger';
 
 interface Props {
@@ -29,10 +48,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to Sentry
-    Sentry.withScope((scope) => {
+    withScope((scope) => {
       scope.setTag('errorBoundary', true);
       scope.setContext('errorInfo', errorInfo);
-      Sentry.captureException(error);
+      captureException(error);
     });
 
     // Update state with error info
@@ -200,13 +219,13 @@ export function withErrorBoundary<P extends object>(
 // Hook for manually reporting errors
 export function useErrorHandler() {
   const handleError = React.useCallback((error: Error, context?: Record<string, any>) => {
-    Sentry.withScope((scope) => {
+    withScope((scope) => {
       if (context) {
         Object.entries(context).forEach(([key, value]) => {
           scope.setContext(key, value);
         });
       }
-      Sentry.captureException(error);
+      captureException(error);
     });
   }, []);
 

@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { useSynchResult, useStartSynchTest } from '@/hooks/useSynchTests';
+import { useSynchResult, useStartSynchTest } from '@parel/core/hooks/useSynchTests';
 import { SynchQuestionCard } from '@/components/synch-tests/SynchQuestionCard';
 import { SynchResultCard } from '@/components/synch-tests/SynchResultCard';
 

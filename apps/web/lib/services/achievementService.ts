@@ -6,7 +6,7 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { RewardConfig } from '@/lib/config/rewardConfig';
+import { RewardConfig } from '@parel/core/config/rewardConfig';
 import { calculateAchievementReward } from '@/lib/services/rewardService';
 
 export interface UnlockAchievementParams {
@@ -94,6 +94,28 @@ export async function unlockAchievement(
     }
 
     logger.info(`[AchievementService] Unlocked: ${key} (tier ${tier}) for user ${userId}`);
+
+    // Create feed post for achievement unlock (v0.36.25)
+    try {
+      const { postAchievement } = await import('@/lib/services/feedService');
+      await postAchievement(userId, achievement.id, achievement.title || achievement.name || key);
+    } catch (error) {
+      // Don't fail achievement unlock if feed post fails
+      logger.debug('[AchievementService] Feed post failed', error);
+    }
+
+    // Create notification for achievement unlock (v0.36.26)
+    try {
+      const { notifyAchievementUnlocked } = await import('@/lib/services/notificationService');
+      await notifyAchievementUnlocked(
+        userId,
+        achievement.title || achievement.name || key,
+        achievement.id
+      );
+    } catch (error) {
+      // Don't fail achievement unlock if notification fails
+      logger.debug('[AchievementService] Notification failed', error);
+    }
 
     return {
       unlocked: true,

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useMirrorEvent } from '@/hooks/useMirrorEvent';
-import { useSubmitMirrorReflection } from '@/hooks/useSubmitMirrorReflection';
+import { useMirrorEvent } from '@parel/core/hooks/useMirrorEvent';
+import { useSubmitMirrorReflection } from '@parel/core/hooks/useSubmitMirrorReflection';
 import { MirrorEventCard } from '@/components/mirror/MirrorEventCard';
 import { MirrorRewardModal } from '@/components/mirror/MirrorRewardModal';
 import { Button } from '@/components/ui/button';

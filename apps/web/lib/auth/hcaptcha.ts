@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { securityConfig } from '@/lib/config/security';
+import { securityConfig } from '@parel/core/config/security';
 import { logger } from '@/lib/logger';
 
 // hCaptcha configuration

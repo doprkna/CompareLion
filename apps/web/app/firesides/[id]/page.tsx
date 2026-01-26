@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from 'next/navigation';
-import { useFiresideReactions } from '@/hooks/useFiresides';
+import { useFiresideReactions } from '@parel/core/hooks/useFiresides';
 import { FiresideEmojiPanel } from '@/components/firesides/FiresideEmojiPanel';
 
 export default function FiresideDetailPage() {

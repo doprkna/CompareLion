@@ -3,18 +3,20 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { unlockAchievement } from '@/lib/services/achievementService';
-import { safeAsync, unauthorizedError, successResponse, validationError, parseBody } from '@/lib/api-handler';
+import { safeAsync, parseBody } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 
 /**
  * POST /api/achievements/unlock
  * Unlocks an achievement for the current user
  * Body: { key: string, tier?: number }
+ * v0.41.5 - C3 Step 6: Unified API envelope
  */
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return unauthorizedError('Authentication required');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Authentication required');
   }
 
   const user = await prisma.user.findUnique({
@@ -23,19 +25,19 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return unauthorizedError('User not found');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
   const body = await parseBody<{ key: string; tier?: number }>(req);
 
   if (!body.key) {
-    return validationError('Missing required field: key');
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Missing required field: key');
   }
 
   const result = await unlockAchievement(user.id, body.key, body.tier || 1);
 
   if (!result) {
-    return validationError(`Achievement not found: ${body.key}`);
+    return buildError(req, ApiErrorCode.VALIDATION_ERROR, 'Achievement not found');
   }
 
   // Fetch the achievement for response data
@@ -54,7 +56,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     },
   });
 
-  return successResponse({
+  return buildSuccess(req, {
     unlocked: result.unlocked,
     alreadyUnlocked: result.alreadyUnlocked,
     achievement: achievement ? {
@@ -64,4 +66,3 @@ export const POST = safeAsync(async (req: NextRequest) => {
     } : null,
   });
 });
-

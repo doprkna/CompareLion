@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useSeason } from '@/hooks/useSeason';
-import { usePrestige } from '@/hooks/usePrestige';
-import { useLegacy } from '@/hooks/useLegacy';
+import { useSeason } from '@parel/core/hooks/useSeason';
+import { usePrestige } from '@parel/core/hooks/usePrestige';
+import { useLegacy } from '@parel/core/hooks/useLegacy';
 import { SeasonCard } from '@/components/meta/SeasonCard';
 import { PrestigeModal } from '@/components/meta/PrestigeModal';
 import { LegacyTimeline } from '@/components/meta/LegacyTimeline';

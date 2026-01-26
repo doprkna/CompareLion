@@ -64,5 +64,14 @@ if (env.IS_PROD && !env.IS_VERCEL) {
   }
 }
 
+
+
+export function getEnvStamp(): 'PROD' | 'DEV' | 'STAGE' { // sanity-fix
+  const env = (process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV || 'development').toLowerCase();
+  if (env.startsWith('prod')) return 'PROD';
+  if (env.startsWith('stag')) return 'STAGE';
+  return 'DEV';
+}
+
 // Type helper for strict checking
 export type Env = typeof env;

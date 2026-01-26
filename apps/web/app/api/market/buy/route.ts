@@ -1,23 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { safeAsync, authError, successResponse, notFoundError, validationError } from "@/lib/api-handler";
-import { z } from "zod";
+/**
+ * Marketplace Buy API
+ * POST /api/market/buy - Purchase a marketplace listing
+ * v0.36.39 - Marketplace 2.0
+ */
 
-const BuyItemSchema = z.object({
-  itemId: z.string().min(1),
-});
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError, validationError, successResponse, parseBody } from '@/lib/api-handler';
+import { buyListing } from '@/lib/services/marketplaceService';
+import { PurchaseListingSchema } from '@/lib/marketplace/schemas';
+
+export const runtime = 'nodejs';
 
 /**
  * POST /api/market/buy
- * Validates funds, deducts, logs transaction
- * All operations atomic (transaction)
+ * Purchase a marketplace listing
+ * Body: { listingId: string, quantity?: number }
  */
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
+
   if (!session?.user?.email) {
-    return authError("Unauthorized");
+    return unauthorizedError('Authentication required');
   }
 
   const user = await prisma.user.findUnique({
@@ -26,107 +32,41 @@ export const POST = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return notFoundError("User");
+    return unauthorizedError('User not found');
   }
 
-  const body = await req.json().catch(() => ({}));
-  const parsed = BuyItemSchema.safeParse(body);
-  if (!parsed.success) {
-    return validationError("Invalid payload");
+  const body = await parseBody(req);
+  const validation = PurchaseListingSchema.safeParse(body);
+
+  if (!validation.success) {
+    return validationError('Invalid purchase data', validation.error.issues);
   }
 
-  const { itemId } = parsed.data;
+  const { listingId, quantity } = validation.data;
 
-  // Get market item
-  const item = await prisma.marketItem.findUnique({
-    where: { id: itemId },
-  });
-
-  if (!item) {
-    return notFoundError("Item not found");
-  }
-
-  // Check stock (if limited)
-  if (item.stock !== null && item.stock <= 0) {
-    return validationError("Item out of stock");
-  }
-
-  // Get or create user wallet for currency
-  let userWallet = await prisma.userWallet.findUnique({
-    where: {
-      userId_currencyKey: {
-        userId: user.id,
-        currencyKey: item.currencyKey,
-      },
-    },
-  });
-
-  if (!userWallet) {
-    // Create wallet with zero balance
-    userWallet = await prisma.userWallet.create({
-      data: {
-        userId: user.id,
-        currencyKey: item.currencyKey,
-        balance: 0,
-      },
-    });
-  }
-
-  // Check sufficient funds
-  if (userWallet.balance.toNumber() < item.price.toNumber()) {
-    return validationError(`Insufficient ${item.currencyKey} — need ${item.price.toNumber()}, have ${userWallet.balance.toNumber()}`);
-  }
-
-  // Perform purchase in transaction
-  await prisma.$transaction(async (tx) => {
-    // Deduct balance
-    await tx.userWallet.update({
-      where: {
-        userId_currencyKey: {
-          userId: user.id,
-          currencyKey: item.currencyKey,
-        },
-      },
-      data: {
-        balance: {
-          decrement: item.price,
-        },
-      },
+  try {
+    const result = await buyListing({
+      userId: user.id,
+      listingId,
+      quantity,
     });
 
-    // Decrement stock if limited
-    if (item.stock !== null) {
-      await tx.marketItem.update({
-        where: { id: itemId },
-        data: {
-          stock: {
-            decrement: 1,
-          },
-        },
-      });
-    }
-
-    // Log transaction
-    await tx.transaction.create({
-      data: {
-        userId: user.id,
-        itemId: item.id,
-        type: "purchase",
-        amount: item.price,
-        currencyKey: item.currencyKey,
-        note: `Purchased ${item.name}`,
+    return successResponse({
+      success: true,
+      purchase: {
+        listingId: result.listing.id,
+        itemId: result.item.id,
+        itemName: result.item.name,
+        quantity: result.quantity,
+        totalPrice: result.totalPrice,
+        fee: result.fee,
+        sellerProceeds: result.sellerProceeds,
+        currency: result.currency,
       },
     });
-  });
-
-  return successResponse({
-    success: true,
-    message: "Purchase complete",
-    item: {
-      id: item.id,
-      name: item.name,
-      category: item.category,
-    },
-    remainingBalance: userWallet.balance.toNumber() - item.price.toNumber(),
-  });
+  } catch (error) {
+    return validationError(
+      error instanceof Error ? error.message : 'Failed to purchase listing'
+    );
+  }
 });

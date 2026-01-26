@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useMusicTheme } from '@/hooks/useMusicTheme';
-import { usePlayTrack } from '@/hooks/usePlayTrack';
+import { useMusicTheme } from '@parel/core/hooks/useMusicTheme';
+import { usePlayTrack } from '@parel/core/hooks/usePlayTrack';
 import { MusicControlBar } from './MusicControlBar';
 import { MusicTheme } from '@/lib/music/musicThemes';
-import { useGlobalMood } from '@/hooks/useGlobalMood';
+import { useGlobalMood } from '@parel/core/hooks/useGlobalMood';
 
 interface MusicManagerProps {
   enabled?: boolean;

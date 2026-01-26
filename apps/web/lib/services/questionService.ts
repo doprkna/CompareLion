@@ -1,6 +1,6 @@
 import { prisma } from '@parel/db/src/client';
 import { normalizeQuestionText } from '@/lib/text';
-import type { AdminUpdateQuestion } from '@/lib/validation/questionAdmin';
+import type { AdminUpdateQuestion } from '@parel/validation/questionAdmin';
 
 export async function getQuestionById(id: string) {
   return prisma.question.findUnique({ where: { id } });

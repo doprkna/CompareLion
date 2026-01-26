@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn } from 'next-auth/react';
-import { securityConfig } from '@/lib/config/security';
+import { securityConfig } from '@parel/core/config/security';
 import { SocialLoginButtons } from '@/components/SocialLoginButtons';
 
 export default function LoginPage() {

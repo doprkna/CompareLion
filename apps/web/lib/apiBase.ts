@@ -9,6 +9,13 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 export const getApiUrl = (path: string) => `${API_BASE_URL}${path}`;
 
+
+/**
+ * @deprecated Use defaultClient from @parel/api/client instead.
+ * Legacy API fetch wrapper. This will be removed in v0.42.0+.
+ * v0.41.15 - C3 Step 16: API Client Cleanup & Deprecation Pass
+ * Migration: import { defaultClient } from '@parel/api/client';
+ */
 export const safeApiFetch = async <T>(
   path: string,
   init?: RequestInit

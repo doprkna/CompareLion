@@ -1,18 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { safeAsync, authError, successResponse, notFoundError } from "@/lib/api-handler";
+/**
+ * Social Feed API
+ * GET /api/social/feed - Get paginated social feed from followed users
+ * v0.36.42 - Social Systems 1.0
+ */
+
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError, successResponse } from '@/lib/api-handler';
+import { getFollowing } from '@/lib/social/followService';
+import { filterBlockedUsers } from '@/lib/social/blockService';
+import { formatActivityDisplay } from '@/lib/social/types';
+import { SocialFeedQuerySchema } from '@/lib/social/schemas';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/social/feed
- * Returns aggregated social events (friends' achievements, reflections, duels)
- * Auto-expires entries after 7 days
+ * Get paginated social feed from users you follow
+ * Query params: limit, cursor, userId (filter), type (filter)
  */
 export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
+
   if (!session?.user?.email) {
-    return authError("Unauthorized");
+    return unauthorizedError('Authentication required');
   }
 
   const user = await prisma.user.findUnique({
@@ -21,59 +34,66 @@ export const GET = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return notFoundError("User");
+    return unauthorizedError('User not found');
   }
 
-  // Get user's accepted friendships
-  const friendships = await prisma.friendship.findMany({
-    where: {
-      OR: [
-        { userA: user.id },
-        { userB: user.id },
-      ],
-      status: "accepted",
-    },
-    select: {
-      userA: true,
-      userB: true,
-    },
+  const { searchParams } = new URL(req.url);
+  const validation = SocialFeedQuerySchema.safeParse({
+    limit: searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 20,
+    cursor: searchParams.get('cursor') || undefined,
+    userId: searchParams.get('userId') || undefined,
+    type: searchParams.get('type') || undefined,
   });
 
-  // Get friend IDs
-  const friendIds = friendships.map((f) => 
-    f.userA === user.id ? f.userB : f.userA
-  );
+  if (!validation.success) {
+    return unauthorizedError('Invalid query parameters');
+  }
 
-  if (friendIds.length === 0) {
+  const { limit, cursor, userId: filterUserId, type } = validation.data;
+
+  // Get users being followed
+  let followingIds: string[] = [];
+  
+  if (filterUserId) {
+    // Filter by specific user
+    followingIds = [filterUserId];
+  } else {
+    // Get all users being followed
+    followingIds = await getFollowing(user.id);
+  }
+
+  if (followingIds.length === 0) {
     return successResponse({
-      success: true,
       feed: [],
-      message: "No friends to show feed from",
+      nextCursor: null,
+      hasMore: false,
     });
   }
 
-  // Calculate 7 days ago timestamp
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  // Filter out blocked users
+  const allowedUserIds = await filterBlockedUsers(user.id, followingIds);
 
-  const feedItems: any[] = [];
+  if (allowedUserIds.length === 0) {
+    return successResponse({
+      feed: [],
+      nextCursor: null,
+      hasMore: false,
+    });
+  }
 
-  // Get recent badges from friends (last 7 days)
-  const recentBadges = await prisma.userBadge.findMany({
-    where: {
-      userId: { in: friendIds },
-      unlockedAt: {
-        gte: sevenDaysAgo,
-      },
-    },
+  // Build where clause
+  const where: any = {
+    userId: { in: allowedUserIds },
+  };
+
+  if (type) {
+    where.type = type;
+  }
+
+  // Fetch activities
+  const activities = await prisma.socialActivity.findMany({
+    where,
     include: {
-      badge: {
-        select: {
-          name: true,
-          icon: true,
-          rarity: true,
-        },
-      },
       user: {
         select: {
           id: true,
@@ -82,137 +102,41 @@ export const GET = safeAsync(async (req: NextRequest) => {
         },
       },
     },
-    take: 10,
-    orderBy: {
-      unlockedAt: "desc",
-    },
+    orderBy: { timestamp: 'desc' },
+    take: limit + 1,
+    cursor: cursor ? { id: cursor } : undefined,
   });
 
-  recentBadges.forEach((userBadge) => {
-    feedItems.push({
-      type: "badge",
-      userId: userBadge.userId,
-      username: userBadge.user.username || userBadge.user.name,
-      data: {
-        badgeName: userBadge.badge.name,
-        badgeIcon: userBadge.badge.icon,
-        rarity: userBadge.badge.rarity,
-      },
-      timestamp: userBadge.unlockedAt,
-    });
-  });
+  const hasMore = activities.length > limit;
+  const items = hasMore ? activities.slice(0, limit) : activities;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
 
-  // Get recent duels from friends (last 7 days)
-  const recentDuels = await prisma.socialDuel.findMany({
-    where: {
-      OR: [
-        { challengerId: { in: friendIds } },
-        { opponentId: { in: friendIds } },
-      ],
-      status: "completed",
-      createdAt: {
-        gte: sevenDaysAgo,
+  // Format feed items
+  const feed = items.map(activity => ({
+    id: activity.id,
+    userId: activity.userId,
+    username: activity.user?.username,
+    name: activity.user?.name,
+    type: activity.type,
+    refId: activity.refId,
+    metadata: activity.metadata as Record<string, any> | null,
+    timestamp: activity.timestamp.toISOString(),
+    displayText: formatActivityDisplay(
+      {
+        id: activity.id,
+        userId: activity.userId,
+        type: activity.type as any,
+        refId: activity.refId,
+        timestamp: activity.timestamp,
+        user: activity.user || undefined,
       },
-    },
-    include: {
-      challenger: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-        },
-      },
-      opponent: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-        },
-      },
-      winner: {
-        select: {
-          id: true,
-          username: true,
-        },
-      },
-    },
-    take: 10,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  recentDuels.forEach((duel) => {
-    feedItems.push({
-      type: "duel",
-      userId: duel.winnerId,
-      username: duel.winner?.username || "Unknown",
-      data: {
-        challenger: duel.challenger.username || duel.challenger.name,
-        opponent: duel.opponent.username || duel.opponent.name,
-        winner: duel.winner?.username || "Unknown",
-        challengeType: duel.challengeType,
-        rewardXP: duel.rewardXP,
-      },
-      timestamp: duel.createdAt,
-    });
-  });
-
-  // Get recent quest completions from friends (last 7 days)
-  const recentQuestCompletions = await prisma.userQuest.findMany({
-    where: {
-      userId: { in: friendIds },
-      isCompleted: true,
-      completedAt: {
-        gte: sevenDaysAgo,
-      },
-    },
-    include: {
-      quest: {
-        select: {
-          title: true,
-          type: true,
-        },
-      },
-      user: {
-        select: {
-          id: true,
-          username: true,
-          name: true,
-        },
-      },
-    },
-    take: 10,
-    orderBy: {
-      completedAt: "desc",
-    },
-  });
-
-  recentQuestCompletions.forEach((userQuest) => {
-    feedItems.push({
-      type: "quest",
-      userId: userQuest.userId,
-      username: userQuest.user.username || userQuest.user.name,
-      data: {
-        questTitle: userQuest.quest.title,
-        questType: userQuest.quest.type,
-      },
-      timestamp: userQuest.completedAt,
-    });
-  });
-
-  // Sort by timestamp (most recent first)
-  feedItems.sort((a, b) => 
-    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
-
-  // Limit to 50 items to prevent spam
-  const limitedFeed = feedItems.slice(0, 50);
+      activity.metadata as Record<string, any> | undefined
+    ),
+  }));
 
   return successResponse({
-    success: true,
-    feed: limitedFeed,
-    count: limitedFeed.length,
+    feed,
+    nextCursor,
+    hasMore,
   });
 });
-

@@ -1,106 +1,127 @@
-import { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { prisma } from "@/lib/db";
-import { getAvailableRecipes } from "@/lib/crafting";
-import { safeAsync, successResponse, unauthorizedError, notFoundError } from "@/lib/api-handler";
+/**
+ * Crafting Recipes API
+ * GET /api/crafting/recipes - List available crafting recipes
+ * v0.36.40 - Materials & Crafting 1.0
+ */
+
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError, successResponse } from '@/lib/api-handler';
+
+export const runtime = 'nodejs';
 
 /**
  * GET /api/crafting/recipes
- * Get available crafting recipes for current user
+ * Get all active crafting recipes
+ * Optionally filter by user's level and materials
  */
 export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
+  const { searchParams } = new URL(req.url);
+  const includeUserMaterials = searchParams.get('includeUserMaterials') === 'true';
 
-  if (!session?.user?.email) {
-    return unauthorizedError('Unauthorized');
+  let userId: string | null = null;
+  let userLevel = 1;
+
+  if (session?.user?.email) {
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, level: true },
+    });
+
+    if (user) {
+      userId = user.id;
+      userLevel = user.level || 1;
+    }
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  // Get all active recipes
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      isActive: true,
+      // Filter by unlock level if user is logged in
+      ...(userId ? {
+        OR: [
+          { unlockLevel: null },
+          { unlockLevel: { lte: userLevel } },
+        ],
+      } : {}),
+    },
+    include: {
+      outputItem: {
+        select: {
+          id: true,
+          name: true,
+          rarity: true,
+          type: true,
+          emoji: true,
+          icon: true,
+          description: true,
+        },
+      },
+    },
+    orderBy: [
+      { unlockLevel: 'asc' },
+      { name: 'asc' },
+    ],
   });
 
-  if (!user) {
-    return notFoundError('User');
+  // If user is logged in and requested, check which recipes they can craft
+  let userMaterials: Record<string, number> = {};
+  if (userId && includeUserMaterials) {
+    const materials = await prisma.userMaterial.findMany({
+      where: { userId },
+      select: {
+        materialId: true,
+        quantity: true,
+      },
+    });
+
+    userMaterials = materials.reduce((acc, m) => {
+      acc[m.materialId] = m.quantity;
+      return acc;
+    }, {} as Record<string, number>);
   }
 
-    const recipes = await getAvailableRecipes(user.id);
+  // Format recipes with craftability info
+  const formattedRecipes = recipes.map(recipe => {
+    const ingredients = (recipe.ingredients as Array<{ materialId: string; quantity: number }>) || [];
+    
+    let canCraft = false;
+    if (userId && includeUserMaterials) {
+      canCraft = ingredients.every(ing => {
+        const userQty = userMaterials[ing.materialId] || 0;
+        return userQty >= ing.quantity;
+      });
+    }
 
-    // Enrich recipes with item details
-    const enrichedRecipes = await Promise.all(
-      recipes.map(async (recipe) => {
-        const inputItems = await prisma.item.findMany({
-          where: { id: { in: recipe.inputItemIds } },
-        });
-
-        const outputItem = await prisma.item.findUnique({
-          where: { id: recipe.outputItemId },
-        });
-
-        // Check if user has materials
-        const inventory = await prisma.inventoryItem.findMany({
-          where: {
-            userId: user.id,
-            itemId: { in: recipe.inputItemIds },
-          },
-          include: { item: true },
-        });
-
-        const canCraft =
-          inventory.length === recipe.inputItemIds.length &&
-          (user.funds || 0) >= recipe.goldCost;
-
-        return {
-          id: recipe.id,
-          name: recipe.name,
-          description: recipe.description,
-          goldCost: recipe.goldCost,
-          requiresToken: recipe.requiresToken,
-          rarityBoost: recipe.rarityBoost,
-          successRate: recipe.successRate,
-          unlockLevel: recipe.unlockLevel,
-          inputItems: inputItems.map((item) => ({
-            id: item.id,
-            name: item.name,
-            rarity: item.rarity,
-            icon: item.type === "weapon" ? "⚔️" : item.type === "armor" ? "🛡️" : "💎",
-          })),
-          outputItem: outputItem
-            ? {
-                id: outputItem.id,
-                name: outputItem.name,
-                rarity: outputItem.rarity,
-                type: outputItem.type,
-                power: outputItem.power,
-                defense: outputItem.defense,
-              }
-            : null,
-          canCraft,
-          userHasMaterials: inventory.map((inv) => ({
-            itemId: inv.itemId,
-            name: inv.item.name,
-            quantity: inv.quantity,
-          })),
-        };
-      })
-  );
+    return {
+      id: recipe.id,
+      name: recipe.name,
+      description: recipe.description,
+      outputItemId: recipe.outputItemId,
+      ingredients: ingredients.map(ing => ({
+        materialId: ing.materialId,
+        quantity: ing.quantity,
+        // Include user's quantity if available
+        ...(userId && includeUserMaterials ? {
+          userQuantity: userMaterials[ing.materialId] || 0,
+          hasEnough: (userMaterials[ing.materialId] || 0) >= ing.quantity,
+        } : {}),
+      })),
+      craftTime: recipe.craftTime,
+      skillRequirement: recipe.skillRequirement,
+      unlockLevel: recipe.unlockLevel,
+      goldCost: recipe.goldCost,
+      outputItem: recipe.outputItem,
+      canCraft: userId ? canCraft : undefined,
+    };
+  });
 
   return successResponse({
-    recipes: enrichedRecipes,
-    userLevel: user.level || 1,
-    userGold: user.funds || 0,
+    recipes: formattedRecipes,
+    totalRecipes: formattedRecipes.length,
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-

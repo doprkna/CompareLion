@@ -8,7 +8,7 @@
 'use client';
 
 import { useState } from "react";
-import { useEventBus } from "@/hooks/useEventBus";
+import { useEventBus } from '@parel/core/hooks/useEventBus";
 
 interface PresenceDotProps {
   userId: string;

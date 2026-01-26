@@ -6,8 +6,8 @@
 
 import { NextRequest } from 'next/server';
 import { safeAsync, successResponse } from '@/lib/api-handler';
-import { logger } from '@/lib/utils/debug';
-import { getFlags } from '@/lib/config/flags';
+import { logger } from '@parel/core/utils/debug';
+import { getFlags } from '@parel/core/config/flags';
 import { z } from 'zod';
 
 const EventSchema = z.object({

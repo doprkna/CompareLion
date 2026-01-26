@@ -1,178 +1,476 @@
+/**
+ * Marketplace Page
+ * v0.36.29 - Marketplace 2.0
+ */
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { MarketGrid } from '@/components/market/MarketGrid';
-import { WalletDisplay } from '@/components/market/WalletDisplay';
-import { PurchaseModal } from '@/components/market/PurchaseModal';
-import { useMarket, useWallet, usePurchaseItem, MarketItem } from '@/hooks/useMarket';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Loader2, Gift, Sparkles, Zap, Calendar } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { apiFetch } from '@/lib/apiBase';
+
+// Icon component stub
+const Icon = ({ name, className }: { name: string; className?: string; size?: string }) => <span className={'icon-' + name + ' ' + (className || '')} />;
+import { useToast } from '@/components/ui/use-toast';
+import { getRarityColorClass } from '@/lib/rpg/rarity';
+import { CurrencyType } from '@/lib/marketplace/types';
+import { SellModal } from './components/SellModal';
+import { BuyModal } from './components/BuyModal';
+
+interface MarketplaceListing {
+  id: string;
+  price: number;
+  quantity: number;
+  currency?: CurrencyType;
+  createdAt: string;
+  item: {
+    id: string;
+    name: string;
+    emoji?: string | null;
+    icon?: string | null;
+    rarity: string;
+    type: string;
+    description?: string | null;
+  };
+  seller: {
+    id: string;
+    name: string;
+    username?: string;
+  };
+}
 
 export default function MarketplacePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeCategory, setActiveCategory] = useState<'item' | 'cosmetic' | 'booster' | 'all'>('all');
-  const [selectedItem, setSelectedItem] = useState<MarketItem | null>(null);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const { toast } = useToast();
+  const [listings, setListings] = useState<MarketplaceListing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [sort, setSort] = useState<'price_asc' | 'price_desc' | 'newest' | 'oldest'>('newest');
+  const [category, setCategory] = useState<string>('');
+  const [rarity, setRarity] = useState<string>('');
+  const [minPrice, setMinPrice] = useState<string>('');
+  const [maxPrice, setMaxPrice] = useState<string>('');
+  const [currency, setCurrency] = useState<CurrencyType | ''>('');
+  const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [userGold, setUserGold] = useState(0);
+  const [userDiamonds, setUserDiamonds] = useState(0);
+  const [sellModalOpen, setSellModalOpen] = useState(false);
+  const [buyModalOpen, setBuyModalOpen] = useState(false);
+  const [selectedListing, setSelectedListing] = useState<MarketplaceListing | null>(null);
 
-  const { items, loading, error, reload } = useMarket(activeCategory === 'all' ? undefined : activeCategory);
-  const { wallets, loading: walletLoading, reload: reloadWallet } = useWallet();
-  const { purchase, loading: purchasing, error: purchaseError } = usePurchaseItem();
-
-  // Filter items by category
-  const filteredItems = activeCategory === 'all' 
-    ? (items || []) // sanity-fix
-    : (items || []).filter(item => item.category === activeCategory); // sanity-fix
-
-  // Create wallet balance map
-  const walletBalances = (wallets || []).reduce((acc, wallet) => { // sanity-fix
-    acc[wallet.currencyKey] = wallet.balance;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const handlePurchaseClick = (item: MarketItem) => {
-    setSelectedItem(item);
-    setShowPurchaseModal(true);
-    setPurchaseSuccess(false);
-  };
-
-  const handleConfirmPurchase = async () => {
-    if (!selectedItem) return;
-
-    try {
-      const data = await purchase(selectedItem.id);
-      setPurchaseSuccess(true);
-      alert(`🛒 Purchase complete (+1 ${selectedItem.category === 'cosmetic' ? 'New Cosmetic' : 'Item'})`);
-      
-      // Reload data
-      reload();
-      reloadWallet();
-      
-      // Close modal after delay
-      setTimeout(() => {
-        setShowPurchaseModal(false);
-        setSelectedItem(null);
-        setPurchaseSuccess(false);
-      }, 2000);
-    } catch (err) {
-      // Error handled by hook
-      if (err instanceof Error && err.message.includes('Insufficient')) {
-        alert('💸 Insufficient funds — earn more gold or diamonds.');
-      }
+  useEffect(() => {
+    if (status === 'authenticated') {
+      loadListings();
+      loadUserBalance();
     }
-  };
+  }, [status, sort, category, rarity, minPrice, maxPrice, currency]);
+
+  async function loadUserBalance() {
+    try {
+      const res = await apiFetch('/api/user/profile');
+      if ((res as any).ok && (res as any).data) {
+        setUserGold(Number((res as any).data.funds) || 0);
+        setUserDiamonds(Number((res as any).data.diamonds) || 0);
+      }
+    } catch (error) {
+      console.error('Failed to load balance', error);
+    }
+  }
+
+  async function loadListings(cursor?: string) {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (cursor) params.set('cursor', cursor);
+      params.set('limit', '20');
+      params.set('sortBy', sort);
+      if (category) params.set('category', category);
+      if (rarity) params.set('rarity', rarity);
+      if (minPrice) params.set('minPrice', minPrice);
+      if (maxPrice) params.set('maxPrice', maxPrice);
+      if (currency) params.set('currency', currency);
+
+      const res = await apiFetch(`/api/market/listings?${params.toString()}`);
+      if ((res as any).ok) {
+        const data = (res as any).data;
+        if (cursor) {
+          setListings(prev => [...prev, ...data.listings]);
+        } else {
+          setListings(data.listings);
+        }
+        setNextCursor(data.nextCursor || null);
+      }
+    } catch (error) {
+      console.error('Failed to load listings', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load marketplace listings',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleBuyClick(listing: MarketplaceListing) {
+    setSelectedListing(listing);
+    setBuyModalOpen(true);
+  }
+
+  async function handleBuySuccess() {
+    await loadListings();
+    await loadUserBalance();
+    setBuyModalOpen(false);
+    setSelectedListing(null);
+  }
+
+  function handleLoadMore() {
+    if (nextCursor) {
+      loadListings(nextCursor);
+    }
+  }
 
   if (status === 'unauthenticated') {
     router.push('/login');
     return null;
   }
 
-  if (status === 'loading' || (loading && activeCategory === 'all')) {
-    return (
-      <div className="max-w-6xl mx-auto p-4 sm:p-6">
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-subtle" />
-        </div>
-      </div>
-    );
-  }
+  // Client-side search filter (for instant feedback)
+  const filteredListings = search
+    ? listings.filter(l => 
+        l.item.name.toLowerCase().includes(search.toLowerCase()) ||
+        l.item.type.toLowerCase().includes(search.toLowerCase()) ||
+        l.item.rarity.toLowerCase().includes(search.toLowerCase())
+      )
+    : listings;
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6">
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-text mb-2 flex items-center gap-2">
-          <ShoppingBag className="w-8 h-8" />
-          Marketplace
-        </h1>
-        <p className="text-subtle">Shop for items, cosmetics, and boosters</p>
-      </div>
-
-      {/* Wallet Display */}
-      <div className="mb-6">
-        <WalletDisplay wallets={wallets} loading={walletLoading} />
-      </div>
-
-      {/* Category Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        <Button
-          variant={activeCategory === 'all' ? 'default' : 'outline'}
-          onClick={() => setActiveCategory('all')}
-        >
-          All Items
-        </Button>
-        <Button
-          variant={activeCategory === 'item' ? 'default' : 'outline'}
-          onClick={() => setActiveCategory('item')}
-        >
-          <Gift className="w-4 h-4 mr-2" />
-          Items
-        </Button>
-        <Button
-          variant={activeCategory === 'cosmetic' ? 'default' : 'outline'}
-          onClick={() => setActiveCategory('cosmetic')}
-        >
-          <Sparkles className="w-4 h-4 mr-2" />
-          Cosmetics
-        </Button>
-        <Button
-          variant={activeCategory === 'booster' ? 'default' : 'outline'}
-          onClick={() => setActiveCategory('booster')}
-        >
-          <Zap className="w-4 h-4 mr-2" />
-          Boosters
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => {
-            reload();
-            reloadWallet();
-          }}
-          disabled={loading || walletLoading}
-        >
-          Refresh
-        </Button>
-      </div>
-
-      {/* Error State */}
-      {error && (
-        <div className="bg-card border-red-500/20 rounded-lg p-4 mb-6">
-          <p className="text-red-500">{error}</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+            <Icon name="shopping" className="w-8 h-8" size="md" />
+            Marketplace
+          </h1>
+          <p className="text-gray-400">Buy and sell items with other players</p>
         </div>
+        <Button
+          onClick={() => setSellModalOpen(true)}
+          className="bg-purple-600 hover:bg-purple-700"
+        >
+          <Icon name="plus" className="w-4 h-4 mr-2" />
+          Sell Item
+        </Button>
+      </div>
+
+      {/* Wallet Balance */}
+      <Card className="bg-gray-800 border-gray-700 mb-6">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-6 text-lg font-bold">
+            <span className="text-yellow-400">🪙 {userGold.toLocaleString()} Gold</span>
+            <span className="text-blue-400">💎 {userDiamonds.toLocaleString()} Diamonds</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Filters */}
+      <Card className="bg-gray-800 border-gray-700 mb-6">
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-4">
+            {/* Top Row: Search and Filter Toggle */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Icon name="search" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    placeholder="Search items..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-10 bg-gray-900 border-gray-700 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant={showFilters ? 'default' : 'outline'}
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                >
+                  <Icon name="filter" className="w-4 h-4 mr-1" />
+                  Filters
+                </Button>
+              </div>
+            </div>
+
+            {/* Sort Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={sort === 'price_asc' ? 'default' : 'outline'}
+                onClick={() => setSort('price_asc')}
+                size="sm"
+                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+              >
+                <Icon name="arrow-up" className="w-4 h-4 mr-1" />
+                Price ↑
+              </Button>
+              <Button
+                variant={sort === 'price_desc' ? 'default' : 'outline'}
+                onClick={() => setSort('price_desc')}
+                size="sm"
+                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+              >
+                <Icon name="arrow-down" className="w-4 h-4 mr-1" />
+                Price ↓
+              </Button>
+              <Button
+                variant={sort === 'newest' ? 'default' : 'outline'}
+                onClick={() => setSort('newest')}
+                size="sm"
+                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+              >
+                <Icon name="calendar" className="w-4 h-4 mr-1" />
+                Newest
+              </Button>
+              <Button
+                variant={sort === 'oldest' ? 'default' : 'outline'}
+                onClick={() => setSort('oldest')}
+                size="sm"
+                className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+              >
+                Oldest
+              </Button>
+            </div>
+
+            {/* Advanced Filters (Collapsible) */}
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-gray-700">
+                {/* Category */}
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-white text-sm"
+                  >
+                    <option value="">All Categories</option>
+                    <option value="weapon">Weapons</option>
+                    <option value="armor">Armor</option>
+                    <option value="consumable">Consumables</option>
+                    <option value="material">Materials</option>
+                  </select>
+                </div>
+
+                {/* Rarity */}
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Rarity</label>
+                  <select
+                    value={rarity}
+                    onChange={(e) => setRarity(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-white text-sm"
+                  >
+                    <option value="">All Rarities</option>
+                    <option value="common">Common</option>
+                    <option value="rare">Rare</option>
+                    <option value="epic">Epic</option>
+                    <option value="legendary">Legendary</option>
+                  </select>
+                </div>
+
+                {/* Price Range */}
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Min Price</label>
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="bg-gray-900 border-gray-700 text-white text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Max Price</label>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="bg-gray-900 border-gray-700 text-white text-sm"
+                  />
+                </div>
+
+                {/* Currency */}
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Currency</label>
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value as CurrencyType | '')}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-white text-sm"
+                  >
+                    <option value="">All Currencies</option>
+                    <option value={CurrencyType.GOLD}>Gold</option>
+                    <option value={CurrencyType.DIAMONDS}>Diamonds</option>
+                  </select>
+                </div>
+
+                {/* Clear Filters */}
+                <div className="flex items-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setCategory('');
+                      setRarity('');
+                      setMinPrice('');
+                      setMaxPrice('');
+                      setCurrency('');
+                    }}
+                    className="w-full bg-gray-900 border-gray-700 text-white hover:bg-gray-800"
+                  >
+                    <Icon name="close" className="w-4 h-4 mr-1" />
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Listings Grid */}
+      {loading && listings.length === 0 ? (
+        <div className="flex items-center justify-center py-12">
+          <Icon name="spinner" className="w-8 h-8 animate-spin text-gray-400" />
+        </div>
+      ) : filteredListings.length === 0 ? (
+        <Card className="bg-gray-800 border-gray-700">
+          <CardContent className="p-12 text-center">
+            <Icon name="shopping" className="w-16 h-16 mx-auto mb-4 text-gray-600" size="md" />
+            <p className="text-gray-400 text-lg">
+              No items found. Players haven't listed anything yet.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            {filteredListings.map((listing) => {
+              const rarityColor = getRarityColorClass(listing.item.rarity);
+              const listingCurrency = listing.currency || CurrencyType.GOLD;
+              const canAfford = listingCurrency === CurrencyType.GOLD 
+                ? userGold >= listing.price 
+                : userDiamonds >= listing.price;
+              const isPurchasing = purchasing === listing.id;
+              const currencyIcon = listingCurrency === CurrencyType.GOLD ? '🪙' : '💎';
+
+              return (
+                <Card key={listing.id} className={`bg-gray-800 border-2 ${rarityColor}`}>
+                  <CardContent className="p-4">
+                    {/* Item Info */}
+                    <div className="text-center mb-3">
+                      <div className="text-5xl mb-2">{listing.item.emoji || listing.item.icon || '📦'}</div>
+                      <h3 className="font-bold text-lg text-white">{listing.item.name}</h3>
+                      <p className="text-xs text-gray-400 uppercase mt-1">{listing.item.rarity}</p>
+                      {listing.item.type && (
+                        <p className="text-xs text-gray-500 mt-1">{listing.item.type}</p>
+                      )}
+                    </div>
+
+                    {/* Quantity */}
+                    {listing.quantity > 1 && (
+                      <div className="text-center text-sm text-gray-400 mb-2">
+                        Quantity: {listing.quantity}
+                      </div>
+                    )}
+
+                    {/* Seller */}
+                    <div className="text-center text-xs text-gray-500 mb-3">
+                      by {listing.seller.name}
+                    </div>
+
+                    {/* Price */}
+                    <div className="text-center mb-4">
+                      <div className={`text-2xl font-bold ${listingCurrency === CurrencyType.GOLD ? 'text-yellow-400' : 'text-blue-400'}`}>
+                        {listing.price.toLocaleString()} {currencyIcon}
+                      </div>
+                    </div>
+
+                    {/* Buy Button */}
+                    <Button
+                      onClick={() => handleBuyClick(listing)}
+                      disabled={!canAfford || isPurchasing}
+                      className={`w-full ${
+                        !canAfford ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      {isPurchasing ? (
+                        <>
+                          <Icon name="spinner" className="w-4 h-4 mr-2 animate-spin" />
+                          Purchasing...
+                        </>
+                      ) : !canAfford ? (
+                        `Not enough ${listing.currency === CurrencyType.DIAMONDS ? 'diamonds' : 'gold'}`
+                      ) : (
+                        'Buy Now'
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Load More */}
+          {nextCursor && (
+            <div className="text-center">
+              <Button
+                onClick={handleLoadMore}
+                disabled={loading}
+                variant="outline"
+                className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
+              >
+                {loading ? (
+                  <>
+                    <Icon name="spinner" className="w-4 h-4 mr-2 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  'Load More'
+                )}
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Market Grid */}
-      <MarketGrid
-        items={filteredItems}
-        loading={loading}
-        onPurchase={handlePurchaseClick}
-        purchasingItemId={purchasing && selectedItem ? selectedItem.id : null}
-        walletBalances={walletBalances}
+      {/* Info Box */}
+      <Card className="mt-6 bg-gray-800 border-gray-700">
+        <CardContent className="p-4 text-center text-sm text-gray-400">
+          💡 5% marketplace fee on all sales. Items are locked while listed.
+        </CardContent>
+      </Card>
+
+      {/* Modals */}
+      <SellModal
+        open={sellModalOpen}
+        onOpenChange={setSellModalOpen}
+        onSuccess={handleBuySuccess}
       />
-
-      {/* Purchase Modal */}
-      {showPurchaseModal && selectedItem && (
-        <PurchaseModal
-          item={selectedItem}
-          isOpen={showPurchaseModal}
-          onClose={() => {
-            setShowPurchaseModal(false);
-            setSelectedItem(null);
-            setPurchaseSuccess(false);
-          }}
-          onConfirm={handleConfirmPurchase}
-          purchasing={purchasing}
-          walletBalance={walletBalances[selectedItem.currencyKey] || 0}
-          success={purchaseSuccess}
-        />
-      )}
+      <BuyModal
+        open={buyModalOpen}
+        onOpenChange={setBuyModalOpen}
+        listing={selectedListing}
+        userBalance={{ gold: userGold, diamonds: userDiamonds }}
+        onSuccess={handleBuySuccess}
+      />
     </div>
   );
 }
-
-
-
-

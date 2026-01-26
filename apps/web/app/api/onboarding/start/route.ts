@@ -11,7 +11,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, successResponse } from '@/lib/api-handler';
-import { detectRegionFromBrowser } from '@/lib/types/onboarding';
+import { detectRegionFromBrowser } from '@parel/types/onboarding';
 
 /**
  * POST /api/onboarding/start

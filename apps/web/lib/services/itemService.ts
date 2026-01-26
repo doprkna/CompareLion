@@ -6,8 +6,9 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { RARITIES, rollRarity, generatePowerForRarity, RarityKey } from '@/lib/config/rarityConfig';
-import { ITEM_EFFECTS } from '@/lib/config/itemEffects';
+import { RARITIES, rollRarity, generatePowerForRarity, RarityKey } from '@parel/core/config/rarityConfig';
+import { ITEM_EFFECTS } from '@parel/core/config/itemEffects';
+import { updateHeroStats } from '@/lib/services/progressionService';
 
 export interface ItemEffectResult {
   damageMult?: number; // Multiplier for damage
@@ -179,5 +180,359 @@ export async function createInventoryItem(
   });
 
   return { id: inventoryItem.id };
+}
+
+/**
+ * Equip an item - moves from inventory to equipped slot
+ * Unequips existing item of same type if any
+ * v0.36.3 - Equipment/inventory sync
+ */
+export async function equipItem(
+  userId: string,
+  inventoryItemId: string
+): Promise<{
+  success: boolean;
+  equippedItem: any;
+  unequippedItem?: any;
+  stats: any;
+}> {
+  // Verify ownership and get item with type
+  const inventoryItem = await prisma.inventoryItem.findUnique({
+    where: { id: inventoryItemId },
+    include: {
+      item: true,
+    },
+  });
+
+  if (!inventoryItem) {
+    throw new Error('Inventory item not found');
+  }
+
+  if (inventoryItem.userId !== userId) {
+    throw new Error('Not authorized to equip this item');
+  }
+
+  // If already equipped, do nothing
+  if (inventoryItem.equipped) {
+    const stats = await updateHeroStats(userId);
+    return {
+      success: true,
+      equippedItem: inventoryItem,
+      stats,
+    };
+  }
+
+  // Find existing equipped item of same type (if slot-based)
+  // For now, we allow multiple items equipped, but we can unequip same type if needed
+  const itemType = inventoryItem.item?.type;
+  let unequippedItem = null;
+
+  if (itemType) {
+    // Find other equipped items of same type and unequip them (one per type)
+    const existingEquipped = await prisma.inventoryItem.findFirst({
+      where: {
+        userId,
+        equipped: true,
+        item: {
+          type: itemType,
+        },
+        id: { not: inventoryItemId },
+      },
+    });
+
+    if (existingEquipped) {
+      unequippedItem = await prisma.inventoryItem.update({
+        where: { id: existingEquipped.id },
+        data: { equipped: false },
+      });
+    }
+  }
+
+  // Equip the new item
+  const equippedItem = await prisma.inventoryItem.update({
+    where: { id: inventoryItemId },
+    data: { equipped: true },
+    include: {
+      item: true,
+    },
+  });
+
+  // Update hero stats
+  const stats = await updateHeroStats(userId);
+
+  logger.info('[ItemService] Item equipped', {
+    userId,
+    inventoryItemId,
+    itemType,
+    unequippedItemId: unequippedItem?.id,
+  });
+
+  return {
+    success: true,
+    equippedItem,
+    unequippedItem: unequippedItem || undefined,
+    stats,
+  };
+}
+
+/**
+ * Unequip an item - moves from equipped slot back to inventory
+ * v0.36.3 - Equipment/inventory sync
+ */
+export async function unequipItem(
+  userId: string,
+  inventoryItemId: string
+): Promise<{
+  success: boolean;
+  unequippedItem: any;
+  stats: any;
+}> {
+  // Verify ownership
+  const inventoryItem = await prisma.inventoryItem.findUnique({
+    where: { id: inventoryItemId },
+  });
+
+  if (!inventoryItem) {
+    throw new Error('Inventory item not found');
+  }
+
+  if (inventoryItem.userId !== userId) {
+    throw new Error('Not authorized to unequip this item');
+  }
+
+  if (!inventoryItem.equipped) {
+    // Already unequipped, just return stats
+    const stats = await updateHeroStats(userId);
+    return {
+      success: true,
+      unequippedItem: inventoryItem,
+      stats,
+    };
+  }
+
+  // Unequip the item
+  const unequippedItem = await prisma.inventoryItem.update({
+    where: { id: inventoryItemId },
+    data: { equipped: false },
+    include: {
+      item: true,
+    },
+  });
+
+  // Update hero stats
+  const stats = await updateHeroStats(userId);
+
+  logger.info('[ItemService] Item unequipped', {
+    userId,
+    inventoryItemId,
+  });
+
+  return {
+    success: true,
+    unequippedItem,
+    stats,
+  };
+}
+
+/**
+ * Equip a UserItem by itemId
+ * Enforces slot rules: only 1 item per slot, unequips previous item in same slot
+ * v0.36.34 - Standardized inventory system
+ */
+export async function equipUserItem(
+  userId: string,
+  itemId: string
+): Promise<{
+  success: boolean;
+  equippedItem: any;
+  unequippedItem?: any;
+  stats: any;
+}> {
+  // Get UserItem with Item data
+  const userItem = await prisma.userItem.findUnique({
+    where: {
+      userId_itemId: {
+        userId,
+        itemId,
+      },
+    },
+    include: {
+      item: true,
+    },
+  });
+
+  if (!userItem) {
+    throw new Error('Item not found in inventory');
+  }
+
+  // Check if item has a slot (equipment only)
+  const slot = userItem.item.slot;
+  if (!slot) {
+    throw new Error('This item cannot be equipped (no slot)');
+  }
+
+  // If already equipped, do nothing
+  if (userItem.equipped) {
+    const stats = await updateHeroStats(userId);
+    return {
+      success: true,
+      equippedItem: userItem,
+      stats,
+    };
+  }
+
+  // Find and unequip existing item in same slot
+  let unequippedItem = null;
+  const existingEquipped = await prisma.userItem.findFirst({
+    where: {
+      userId,
+      equipped: true,
+      item: {
+        slot: slot,
+      },
+      itemId: { not: itemId },
+    },
+    include: {
+      item: true,
+    },
+  });
+
+  if (existingEquipped) {
+    unequippedItem = await prisma.userItem.update({
+      where: { id: existingEquipped.id },
+      data: { equipped: false },
+      include: {
+        item: true,
+      },
+    });
+  }
+
+  // Equip the new item
+  const equippedItem = await prisma.userItem.update({
+    where: { id: userItem.id },
+    data: { equipped: true },
+    include: {
+      item: true,
+    },
+  });
+
+  // Update hero stats
+  const stats = await updateHeroStats(userId);
+
+  logger.info('[ItemService] UserItem equipped', {
+    userId,
+    itemId,
+    slot,
+    unequippedItemId: unequippedItem?.id,
+  });
+
+  return {
+    success: true,
+    equippedItem,
+    unequippedItem: unequippedItem || undefined,
+    stats,
+  };
+}
+
+/**
+ * Unequip a UserItem by itemId
+ * v0.36.34 - Standardized inventory system
+ */
+export async function unequipUserItem(
+  userId: string,
+  itemId: string
+): Promise<{
+  success: boolean;
+  unequippedItem: any;
+  stats: any;
+}> {
+  // Get UserItem
+  const userItem = await prisma.userItem.findUnique({
+    where: {
+      userId_itemId: {
+        userId,
+        itemId,
+      },
+    },
+    include: {
+      item: true,
+    },
+  });
+
+  if (!userItem) {
+    throw new Error('Item not found in inventory');
+  }
+
+  if (!userItem.equipped) {
+    // Already unequipped, just return stats
+    const stats = await updateHeroStats(userId);
+    return {
+      success: true,
+      unequippedItem: userItem,
+      stats,
+    };
+  }
+
+  // Unequip the item
+  const unequippedItem = await prisma.userItem.update({
+    where: { id: userItem.id },
+    data: { equipped: false },
+    include: {
+      item: true,
+    },
+  });
+
+  // Update hero stats
+  const stats = await updateHeroStats(userId);
+
+  logger.info('[ItemService] UserItem unequipped', {
+    userId,
+    itemId,
+  });
+
+  return {
+    success: true,
+    unequippedItem,
+    stats,
+  };
+}
+
+/**
+ * Add item to user inventory (internal use, for loot system)
+ * v0.36.34 - Standardized inventory system
+ */
+export async function addItemToInventory(
+  userId: string,
+  itemId: string,
+  quantity: number = 1
+): Promise<{ id: string; quantity: number }> {
+  const userItem = await prisma.userItem.upsert({
+    where: {
+      userId_itemId: {
+        userId,
+        itemId,
+      },
+    },
+    create: {
+      userId,
+      itemId,
+      quantity,
+      equipped: false,
+    },
+    update: {
+      quantity: { increment: quantity },
+    },
+  });
+
+  logger.info('[ItemService] Item added to inventory', {
+    userId,
+    itemId,
+    quantity: userItem.quantity,
+  });
+
+  return {
+    id: userItem.id,
+    quantity: userItem.quantity,
+  };
 }
 

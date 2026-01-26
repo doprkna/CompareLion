@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import prisma from '@/lib/db';
 import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError } from '@/lib/api-handler';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 /**
  * POST /api/notifications/send

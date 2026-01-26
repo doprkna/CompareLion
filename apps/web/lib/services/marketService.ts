@@ -6,7 +6,8 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { updateWalletWithLock } from '@/lib/utils/walletTransactions';
+import { updateWalletWithLock } from '@parel/core/utils/walletTransactions';
+import { calculateItemPrice } from '@/lib/rpg/economy';
 
 const MARKETPLACE_FEE = 0.05; // 5% fee
 
@@ -64,6 +65,28 @@ export async function listItem(params: ListItemParams) {
     throw new Error('Cannot list equipped items');
   }
 
+  // Check tradability (v0.36.34 - Standardized inventory)
+  const item = inventoryItem.item;
+  if (item.isTradable === false) {
+    throw new Error('This item cannot be traded');
+  }
+
+  // Price enforcement: price must be within 0.5x to 2.5x of calculated item price (v0.36.14)
+  const calculatedPrice = calculateItemPrice({
+    rarity: item.rarity || 'common',
+    power: item.power || 0,
+    defense: item.defense,
+  });
+
+  const minPrice = Math.floor(calculatedPrice * 0.5);
+  const maxPrice = Math.floor(calculatedPrice * 2.5);
+
+  if (price < minPrice || price > maxPrice) {
+    throw new Error(
+      `Price out of allowed range. Calculated value: ${calculatedPrice}, allowed range: ${minPrice} - ${maxPrice}`
+    );
+  }
+
   // Check if item is already listed (in active listing)
   const existingListing = await prisma.marketListing.findFirst({
     where: {
@@ -76,7 +99,8 @@ export async function listItem(params: ListItemParams) {
     throw new Error('Item is already listed');
   }
 
-  // Create listing (item remains in inventory but locked)
+  // Create listing and remove item from seller's inventory (v0.36.4)
+  // Item will be transferred to buyer when purchased
   const listing = await prisma.marketListing.create({
     data: {
       sellerId: userId,
@@ -100,6 +124,9 @@ export async function listItem(params: ListItemParams) {
       },
     },
   });
+
+  // Note: Item remains in InventoryItem table but ownership will transfer to buyer on purchase
+  // This is handled in buyItem function
 
   logger.info(`[MarketService] Item listed: ${inventoryItemId} by user ${userId} for ${price} ${currencyKey}`);
 
@@ -232,6 +259,12 @@ export async function buyItem(params: BuyItemParams) {
       sellerProceeds,
       fee,
     };
+  });
+
+  // Check achievements after purchase (outside transaction)
+  await checkAndUnlockAchievements(userId, {
+    hasBoughtSomething: true,
+    gold: result.listing.price,
   });
 
   return result;

@@ -10,6 +10,7 @@ import { createFeedItem } from "@/lib/feed";
 import { logActivity } from "@/lib/activity";
 import { notify } from "@/lib/notify";
 import { logger } from "@/lib/logger";
+import { checkAndUnlockAchievements } from "./services/achievementChecker";
 
 export interface QuestTemplate {
   type: string;
@@ -199,28 +200,16 @@ export async function completeQuest(userId: string, questId: string): Promise<an
     },
   });
 
-  // Roll for item drop
+  // Roll for item drop (v0.36.34 - Use UserItem)
   let itemDropped: string | null = null;
   if (quest.rewardItem && quest.dropChance > 0) {
     const roll = Math.random() * 100;
     if (roll < quest.dropChance) {
       itemDropped = quest.rewardItem;
       
-      // Add item to inventory
-      const existing = await prisma.inventoryItem.findFirst({
-        where: { userId, itemId: quest.rewardItem },
-      });
-
-      if (existing) {
-        await prisma.inventoryItem.update({
-          where: { id: existing.id },
-          data: { quantity: { increment: 1 } },
-        });
-      } else {
-        await prisma.inventoryItem.create({
-          data: { userId, itemId: quest.rewardItem, quantity: 1 },
-        });
-      }
+      // Add item to inventory using standardized function
+      const { addItemToInventory } = await import('@/lib/services/itemService');
+      await addItemToInventory(userId, quest.rewardItem, 1);
     }
   }
 
@@ -278,6 +267,18 @@ export async function completeQuest(userId: string, questId: string): Promise<an
     questId,
     title: quest.title,
     rewards: { xp: quest.rewardXp, gold: quest.rewardGold, itemDropped },
+  });
+
+  // Check achievements for quest completion
+  // Get user streak (approximate from lastAnsweredAt or streakCount)
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { streakCount: true },
+  });
+
+  await checkAndUnlockAchievements(userId, {
+    questCompleted: true,
+    streak: user?.streakCount || 0,
   });
 
   return {

@@ -5,7 +5,7 @@ import { apiFetch } from "@/lib/apiBase";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/react";
 import { CheckCircle } from "lucide-react";
-import { useEventBus } from "@/hooks/useEventBus";
+import { useEventBus } from '@parel/core/hooks/useEventBus";
 
 export default function QuestBoard() {
   const [quests, setQuests] = useState<any[]>([]);

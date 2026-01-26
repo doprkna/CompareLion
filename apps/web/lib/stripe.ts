@@ -1,48 +1,20 @@
 /**
- * Stripe Integration
- * v0.35.17b - Safe env loading with fallbacks
+ * Stripe Integration (Client-Safe)
+ * v0.36.21 - Monetization Foundations
+ * 
+ * NOTE: Server-side Stripe operations moved to lib/stripe/server.ts
+ * This file exports pricing plans and types only (safe for client)
  */
 
-import Stripe from 'stripe';
-import { env } from '@/lib/env';
-
-let _stripe: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (!_stripe) {
-    _stripe = env.STRIPE_SECRET_KEY
-      ? new Stripe(env.STRIPE_SECRET_KEY, {
-          apiVersion: '2024-11-20.acacia',
-          typescript: true,
-        })
-      : ({
-          checkout: {
-            sessions: { create: async () => ({ id: 'dummy_session' }) },
-          },
-          billingPortal: {
-            sessions: { create: async () => ({ url: 'dummy_url' }) },
-          },
-          subscriptions: {
-            retrieve: async () => ({} as any),
-            cancel: async () => ({} as any),
-          },
-          webhooks: {
-            constructEvent: () => ({} as any),
-          },
-        } as any);
-  }
-  return _stripe;
-}
-
-const stripe = new Proxy({} as Stripe, {
-  get(_target, prop) {
-    return (getStripe() as any)[prop];
-  },
-  set(_target, prop, value) {
-    (getStripe() as any)[prop] = value;
-    return true;
-  }
-});
+// Re-export server functions for backward compatibility (server-side only)
+export {
+  createCheckoutSession,
+  createPaymentCheckoutSession,
+  createPortalSession,
+  verifyWebhookSignature,
+  getSubscription,
+  cancelSubscription,
+} from './stripe/server';
 
 export interface PricingPlan {
   id: string;
@@ -112,83 +84,5 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
 ];
 
-/**
- * Create a checkout session
- */
-export async function createCheckoutSession(
-  userId: string,
-  userEmail: string,
-  priceId: string,
-  successUrl: string,
-  cancelUrl: string
-): Promise<Stripe.Checkout.Session> {
-  const session = await getStripe().checkout.sessions.create({
-    mode: 'subscription',
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    customer_email: userEmail,
-    client_reference_id: userId,
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    subscription_data: {
-      metadata: {
-        userId,
-      },
-    },
-  });
-
-  return session;
-}
-
-/**
- * Create a portal session for managing subscription
- */
-export async function createPortalSession(
-  customerId: string,
-  returnUrl: string
-): Promise<Stripe.BillingPortal.Session> {
-  const session = await getStripe().billingPortal.sessions.create({
-    customer: customerId,
-    return_url: returnUrl,
-  });
-
-  return session;
-}
-
-/**
- * Get subscription details
- */
-export async function getSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription> {
-  return await getStripe().subscriptions.retrieve(subscriptionId);
-}
-
-/**
- * Cancel subscription
- */
-export async function cancelSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription> {
-  return await getStripe().subscriptions.cancel(subscriptionId);
-}
-
-/**
- * Webhook handler for Stripe events
- */
-export async function handleStripeWebhook(
-  body: string | Buffer,
-  signature: string
-): Promise<Stripe.Event> {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''; // Webhook secret not in main env (optional config)
-  
-  return getStripe().webhooks.constructEvent(body, signature, webhookSecret);
-}
-
-export default stripe;
+// All server-side Stripe functions are exported from ./stripe/server.ts above
 

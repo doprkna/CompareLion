@@ -9,7 +9,7 @@ import { getServerSession } from "next-auth";
 import fs from "fs";
 import path from "path";
 import { safeAsync, successResponse, unauthorizedError } from "@/lib/api-handler";
-import { logger } from "@/lib/utils/debug";
+import { logger } from '@parel/core/utils/debug';
 
 export const GET = safeAsync(async (_req: NextRequest) => {
   // Check authentication

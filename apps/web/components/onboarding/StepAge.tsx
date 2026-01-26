@@ -6,7 +6,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { AGE_GROUPS, type AgeGroupId } from '@/lib/types/onboarding';
+import { AGE_GROUPS, type AgeGroupId } from '@parel/types/onboarding';
 import { ArrowLeft } from 'lucide-react';
 
 interface StepAgeProps {

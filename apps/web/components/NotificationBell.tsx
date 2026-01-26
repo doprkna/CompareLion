@@ -9,7 +9,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/apiBase";
-import { useEventBus } from "@/hooks/useEventBus";
+import { useEventBus } from '@parel/core/hooks/useEventBus";
 import { useToast } from "@/components/ui/use-toast";
 import { Bell } from "lucide-react";
 import {

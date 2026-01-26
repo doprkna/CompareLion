@@ -1,6 +1,6 @@
 'use client';
 
-import { Region } from '@/hooks/useRegions';
+import { Region } from '@parel/core/hooks/useRegions';
 import { Button } from '@/components/ui/button';
 import { X, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

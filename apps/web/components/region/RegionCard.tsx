@@ -1,6 +1,6 @@
 'use client';
 
-import { Region } from '@/hooks/useRegions';
+import { Region } from '@parel/core/hooks/useRegions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Lock, MapPin, Sparkles } from 'lucide-react';

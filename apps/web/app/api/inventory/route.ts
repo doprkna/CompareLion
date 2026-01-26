@@ -1,14 +1,16 @@
-﻿/**
+/**
  * Inventory API
  * v0.35.16c - Admin sees all items, users see owned items
+ * v0.41.4 - C3 Step 5: Unified API envelope
  */
 
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, successResponse, unauthorizedError } from '@/lib/api-handler';
-import { isAdminViewServer } from '@/lib/utils/isAdminViewServer';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import { isAdminViewServer } from '@parel/core/utils/isAdminViewServer';
 
 // Force Node.js runtime (uses NextAuth session)
 export const runtime = 'nodejs';
@@ -42,12 +44,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
       ],
     });
 
-    return successResponse({
+    return buildSuccess(req, {
       inventory: allItems.map(item => ({
         id: item.id,
         name: item.name,
-        emoji: item.emoji || item.icon || 'ðŸ“¦',
-        icon: item.icon || item.emoji || 'ðŸ“¦',
+        emoji: item.emoji || item.icon || 'dY"�',
+        icon: item.icon || item.emoji || 'dY"�',
         description: item.description,
         rarity: item.rarity,
         type: item.type,
@@ -64,7 +66,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
 
   // Regular user - must be logged in
   if (!session?.user?.email) {
-    return unauthorizedError('You must be logged in');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'You must be logged in');
   }
 
   // Get user
@@ -74,72 +76,98 @@ export const GET = safeAsync(async (req: NextRequest) => {
   });
 
   if (!user) {
-    return unauthorizedError('User not found');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'User not found');
   }
 
-  // Fetch user's owned items from UserItem table
+  // Fetch user's owned items from UserItem table (v0.36.34 - Standardized inventory)
   const userItems = await prisma.userItem.findMany({
     where: { userId: user.id },
     include: {
       item: true,
     },
     orderBy: [
-      { quantity: 'desc' },
-      { acquiredAt: 'desc' },
-    ],
-  });
-
-  // Also check InventoryItem table
-  const inventoryItems = await prisma.inventoryItem.findMany({
-    where: { userId: user.id },
-    include: {
-      item: true,
-    },
-    orderBy: [
+      { equipped: 'desc' }, // Equipped items first
       { quantity: 'desc' },
       { createdAt: 'desc' },
     ],
   });
 
-  // Combine and deduplicate by itemId
-  const combinedItems = [
-    ...userItems.map(ui => ({
+  // Get active listings for this user to exclude listed items from inventory (v0.36.4)
+  const activeListings = await prisma.marketListing.findMany({
+    where: {
+      sellerId: user.id,
+      status: 'active',
+    },
+    select: {
+      itemId: true,
+    },
+  });
+  const listedItemIds = new Set(activeListings.map(l => l.itemId));
+
+  // Map UserItems to inventory format with merged Item data
+  const uniqueItems = userItems
+    .filter(ui => !listedItemIds.has(ui.itemId)) // Exclude listed items
+    .map(ui => ({
       id: ui.id,
       itemId: ui.item.id,
       name: ui.item.name,
-      emoji: ui.item.emoji || ui.item.icon || 'ðŸ“¦',
-      icon: ui.item.icon || ui.item.emoji || 'ðŸ“¦',
+      emoji: ui.item.emoji || ui.item.icon || '??',
+      icon: ui.item.icon || ui.item.emoji || '??',
       description: ui.item.description,
       rarity: ui.item.rarity,
       type: ui.item.type,
+      slot: ui.item.slot,
+      power: ui.item.power,
+      bonus: ui.item.bonus,
+      region: ui.item.region,
+      isTradable: ui.item.isTradable,
       goldPrice: ui.item.goldPrice || 0,
       quantity: ui.quantity,
-      equipped: false,
-    })),
-    ...inventoryItems.map(ii => ({
-      id: ii.id,
-      itemId: ii.item.id,
-      name: ii.item.name,
-      emoji: ii.item.emoji || ii.item.icon || 'ðŸ“¦',
-      icon: ii.item.icon || ii.item.emoji || 'ðŸ“¦',
-      description: ii.item.description,
-      rarity: ii.item.rarity,
-      type: ii.item.type,
-      goldPrice: ii.item.goldPrice || 0,
-      quantity: ii.quantity,
-      equipped: ii.equipped,
-    })),
-  ];
+      equipped: ui.equipped,
+      durability: ui.durability,
+      createdAt: ui.createdAt.toISOString(),
+    }));
 
-  // Remove duplicates
-  const uniqueItems = combinedItems.filter((item, index, self) =>
-    index === self.findIndex(t => t.itemId === item.itemId)
-  );
+  // Get user's companions (v0.36.20 - Unified companion system)
+  const userCompanions = await prisma.userCompanion.findMany({
+    where: { userId: user.id },
+    include: {
+      companion: true,
+    },
+    orderBy: {
+      equipped: 'desc', // Equipped first
+    },
+  });
 
-  return successResponse({
+  const companions = userCompanions.map(uc => ({
+    id: uc.id,
+    companionId: uc.companionId,
+    name: uc.companion.name,
+    type: uc.companion.type,
+    rarity: uc.companion.rarity,
+    icon: uc.companion.icon,
+    description: uc.companion.description,
+    level: uc.level,
+    xp: uc.xp,
+    equipped: uc.equipped,
+    bonuses: {
+      atk: uc.companion.atkBonus,
+      def: uc.companion.defBonus,
+      hp: uc.companion.hpBonus,
+      crit: uc.companion.critBonus,
+      speed: uc.companion.speedBonus,
+      xp: uc.companion.xpBonus,
+      gold: uc.companion.goldBonus,
+      travel: uc.companion.travelBonus || 0,
+    },
+  }));
+
+  return buildSuccess(req, {
     inventory: uniqueItems,
+    companions, // v0.36.20 - Unified companion system
     cosmetics: uniqueItems, // For backwards compatibility
     totalCount: uniqueItems.length,
+    companionCount: companions.length,
     isAdminView: false,
   });
 });

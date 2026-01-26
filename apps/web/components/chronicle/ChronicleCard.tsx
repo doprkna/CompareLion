@@ -1,6 +1,6 @@
 'use client';
 
-import { Chronicle } from '@/hooks/useChronicle';
+import { Chronicle } from '@parel/core/hooks/useChronicle';
 import { ChronicleStats } from './ChronicleStats';
 import { ChronicleQuote } from './ChronicleQuote';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,12 +1,16 @@
-﻿/**
+/**
  * Items API
  * v0.35.16c - Admin sees all items, users see shop items only
+ * v0.41.4 - C3 Step 5: Unified API envelope
+ * v0.41.9 - C3 Step 10: DTO Consolidation Batch #2
  */
 
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
-import { safeAsync, successResponse } from '@/lib/api-handler';
-import { isAdminViewServer } from '@/lib/utils/isAdminViewServer';
+import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess } from '@parel/api';
+import type { ItemDTO, ItemsResponseDTO } from '@parel/types/dto';
+import { isAdminViewServer } from '@parel/core/utils/isAdminViewServer';
 
 // Force Node.js runtime (uses NextAuth session)
 export const runtime = 'nodejs';
@@ -57,24 +61,28 @@ export const GET = safeAsync(async (req: NextRequest) => {
     ],
   });
 
-  return successResponse({
-    items: items.map(item => ({
-      id: item.id,
-      key: item.key,
-      name: item.name,
-      emoji: item.emoji || item.icon || 'ðŸ"¦',
-      icon: item.icon || item.emoji || 'ðŸ"¦',
-      description: item.description,
-      goldPrice: item.goldPrice || 0,
-      rarity: item.rarity,
-      type: item.type,
-      power: item.power,
-      defense: item.defense,
-      isShopItem: item.isShopItem,
-      region: item.region,
-    })),
-    count: items.length,
+  const formattedItems: ItemDTO[] = items.map(item => ({
+    id: item.id,
+    key: item.key,
+    name: item.name,
+    emoji: item.emoji || item.icon || 'dY"���',
+    icon: item.icon || item.emoji || 'dY"���',
+    description: item.description,
+    goldPrice: item.goldPrice || 0,
+    rarity: item.rarity,
+    type: item.type,
+    power: item.power,
+    defense: item.defense,
+    isShopItem: item.isShopItem,
+    region: item.region,
+  }));
+
+  const response: ItemsResponseDTO = {
+    items: formattedItems,
+    count: formattedItems.length,
     isAdminView: isAdmin,
     filterRegion: region,
-  });
+  };
+
+  return buildSuccess(req, response);
 });

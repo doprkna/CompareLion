@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
-import { QuestionCreateSchema, QuestionUpdateSchema } from '@/lib/validation/question';
+import { QuestionCreateSchema, QuestionUpdateSchema } from '@parel/validation/question';
 import { getQuestionById, getQuestionsBySsscId, createQuestion, updateQuestion, deleteQuestion } from '@/lib/services/questionService';
 import { toQuestionDTO, QuestionDTO } from '@/lib/dto/questionDto';
 import { safeAsync, notFoundError, validationError } from '@/lib/api-handler';
@@ -8,6 +8,7 @@ import { prisma } from '@/lib/db';
 import { getRequestLocale } from '@/lib/locale';
 import { getRequestLocaleChain, sortByLocalePreference } from '@/lib/middleware/locale';
 import { evaluateContent } from '@/lib/middleware/culturalFilter';
+import { normalizeTags } from '@/lib/questions/tags/tagUtils';
 
 export const GET = safeAsync(async (req: NextRequest) => {
   const auth = await requireAuth(req);
@@ -33,48 +34,81 @@ export const GET = safeAsync(async (req: NextRequest) => {
   const limit = Math.min(parseInt(req.nextUrl.searchParams.get('limit') || '50', 10), 100);
   const localeChain = await getRequestLocaleChain(req);
 
-  // Tag filtering: includeTags[]=name&excludeTags[]=name
+  // Tag filtering: includeTags[]=name&excludeTags[]=name (existing relation-based)
   const includeTags = req.nextUrl.searchParams.getAll('includeTags[]');
   const excludeTags = req.nextUrl.searchParams.getAll('excludeTags[]');
 
+  // Hashtag filtering: tag=xyz or tags=a,b,c (simple JSON array filtering)
+  const tagParam = req.nextUrl.searchParams.get('tag');
+  const tagsParam = req.nextUrl.searchParams.get('tags');
+  const hashtags: string[] = [];
+  if (tagParam) {
+    hashtags.push(tagParam);
+  }
+  if (tagsParam) {
+    hashtags.push(...tagsParam.split(',').map(t => t.trim()).filter(Boolean));
+  }
+  const normalizedHashtags = normalizeTags(hashtags);
+
   // Prefer localeCode chain; include approved filter
-  const fetched = await prisma.question.findMany({
-    where: {
-      approved: true,
-      OR: [
-        { localeCode: { in: localeChain } },
-        { localeCode: null },
-      ],
-      AND: [
-        includeTags.length > 0
-          ? {
-              currentVersion: {
-                tags: {
-                  some: {
-                    tag: { name: { in: includeTags } },
-                  },
-                },
-              },
-            }
-          : {},
-        excludeTags.length > 0
-          ? {
-              NOT: {
-                currentVersion: {
-                  tags: {
-                    some: {
-                      tag: { name: { in: excludeTags } },
-                    },
-                  },
-                },
-              },
-            }
-          : {},
-      ],
-    },
+  // Build base where clause
+  const baseWhere: any = {
+    approved: true,
+    OR: [
+      { localeCode: { in: localeChain } },
+      { localeCode: null },
+    ],
+  };
+
+  // Add relation-based tag filtering (existing)
+  const andConditions: any[] = [];
+  if (includeTags.length > 0) {
+    andConditions.push({
+      currentVersion: {
+        tags: {
+          some: {
+            tag: { name: { in: includeTags } },
+          },
+        },
+      },
+    });
+  }
+  if (excludeTags.length > 0) {
+    andConditions.push({
+      NOT: {
+        currentVersion: {
+          tags: {
+            some: {
+              tag: { name: { in: excludeTags } },
+            },
+          },
+        },
+      },
+    });
+  }
+  if (andConditions.length > 0) {
+    baseWhere.AND = andConditions;
+  }
+
+  // Fetch questions
+  let fetched = await prisma.question.findMany({
+    where: baseWhere,
     orderBy: { createdAt: 'desc' },
-    take: limit,
+    take: limit * 2, // Fetch more to account for filtering
   });
+
+  // Filter by hashtags if provided (in-memory filter for JSON array)
+  if (normalizedHashtags.length > 0) {
+    fetched = fetched.filter((q: any) => {
+      // Check if question has tags JSON field and it contains any of the requested tags
+      const questionTags = (q.tags as string[]) || [];
+      return normalizedHashtags.some(tag => 
+        questionTags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+      );
+    }).slice(0, limit);
+  } else {
+    fetched = fetched.slice(0, limit);
+  }
 
   const results = sortByLocalePreference(fetched, localeChain);
 

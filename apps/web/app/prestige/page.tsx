@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { usePrestigeStatus } from '@/hooks/usePrestigeStatus';
-import { useActivatePrestige } from '@/hooks/useActivatePrestige';
-import { usePrestigeHistory } from '@/hooks/usePrestigeHistory';
+import { usePrestigeStatus } from '@parel/core/hooks/usePrestigeStatus';
+import { useActivatePrestige } from '@parel/core/hooks/useActivatePrestige';
+import { usePrestigeHistory } from '@parel/core/hooks/usePrestigeHistory';
 import { PrestigeBadge } from '@/components/prestige/PrestigeBadge';
 import { PrestigeClaimModal } from '@/components/prestige/PrestigeClaimModal';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

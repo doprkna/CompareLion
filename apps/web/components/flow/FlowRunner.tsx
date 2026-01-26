@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useFlow, type FlowQuestion } from '@/hooks/useFlow';
+import { useFlow, type FlowQuestion } from '@parel/core/hooks/useFlow';
 import { ProgressBar } from './ProgressBar';
 import { AnswerPad } from './AnswerPad';
 import { useXp } from '@/components/XpProvider';
 import { logger } from '@/lib/logger';
-import { useCombatLink } from '@/hooks/useCombatLink';
+import { useCombatLink } from '@parel/core/hooks/useCombatLink';
 
 interface FlowRunnerProps {
   initialQuestions: FlowQuestion[];

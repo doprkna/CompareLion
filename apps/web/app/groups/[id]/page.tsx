@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useGroup, useGroupStats, useGroupReflections } from '@/hooks/useGroups';
+import { useGroup, useGroupStats, useGroupReflections } from '@parel/core/hooks/useGroups';
 import { GroupLeaderboard } from '@/components/groups/GroupLeaderboard';
 import { GroupReflectionList } from '@/components/groups/GroupReflectionList';
 

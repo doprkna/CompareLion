@@ -1,13 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getLatestVersion } from '@/lib/services/versionService';
 import { toVersionDTO, VersionDTO } from '@/lib/dto/versionDTO';
 import { safeAsync } from '@/lib/api-handler';
+import { buildSuccess } from '@parel/api';
+import type { VersionResponseDTO } from '@parel/types/dto';
 import fs from 'fs';
 import path from 'path';
 
+/**
+ * Version Endpoint
+ * Returns current application version
+ * v0.41.2 - C3 Step 3: Unified API envelope
+ * v0.41.8 - C3 Step 9: DTO Consolidation Batch #1
+ */
 export const GET = safeAsync(async (req: NextRequest) => {
   if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ success: true, version: 'dev' });
+    const response: VersionResponseDTO = { version: 'dev' };
+    return buildSuccess(req, response);
   }
 
   const v = await getLatestVersion();
@@ -40,20 +49,22 @@ export const GET = safeAsync(async (req: NextRequest) => {
         // Simple regex to extract the first version
         const versionMatch = content.match(/^## \[([^\]]+)\](?:\s*-\s*(\d{4}-\d{2}-\d{2}))?/m);
         if (versionMatch) {
-          return NextResponse.json({ 
-            success: true, 
+          const response: VersionResponseDTO = { 
             version: { 
               number: versionMatch[1],
               releasedAt: versionMatch[2] || new Date().toISOString()
             }
-          });
+          };
+          return buildSuccess(req, response);
         }
       }
     } catch (changelogError) {
       // Continue to fallback
     }
-    return NextResponse.json({ success: true, version: null });
+    const response: VersionResponseDTO = { version: null };
+    return buildSuccess(req, response);
   }
   const version: VersionDTO = toVersionDTO(v);
-  return NextResponse.json({ success: true, version });
+  const response: VersionResponseDTO = { version };
+  return buildSuccess(req, response);
 });

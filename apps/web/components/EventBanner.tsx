@@ -9,7 +9,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch } from "@/lib/apiBase";
-import { useEventBus } from "@/hooks/useEventBus";
+import { useEventBus } from '@parel/core/hooks/useEventBus";
 import { X, Clock } from "lucide-react";
 
 export default function EventBanner() {

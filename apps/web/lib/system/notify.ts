@@ -6,7 +6,7 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import type { SystemAlert } from '@/hooks/useMarket';
+import type { SystemAlert } from '@parel/core/hooks/useMarket';
 
 const MAX_RETRY_ATTEMPTS = 3;
 
@@ -273,6 +273,8 @@ export async function sendTestAlert(webhookUrl: string, webhookType: string): Pr
     return false;
   }
 }
+
+
 
 
 

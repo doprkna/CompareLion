@@ -1,5 +1,5 @@
 "use client";
-import { useFiresides } from '@/hooks/useFiresides';
+import { useFiresides } from '@parel/core/hooks/useFiresides';
 import { FiresideCard } from '@/components/firesides/FiresideCard';
 
 export default function FiresidesPage() {

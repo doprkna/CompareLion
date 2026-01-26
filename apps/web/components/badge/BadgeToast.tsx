@@ -1,6 +1,6 @@
 'use client';
 
-import { BadgeUnlockEvent } from '@/hooks/useBadgeNotification';
+import { BadgeUnlockEvent } from '@parel/core/hooks/useBadgeNotification';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X } from 'lucide-react';
 

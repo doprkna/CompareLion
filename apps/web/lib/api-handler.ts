@@ -6,7 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { handleApiError } from '@/lib/api/error-handler';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 /**
  * Safe async wrapper for API route handlers

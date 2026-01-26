@@ -6,36 +6,15 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { ARCHETYPES, getArchetype, calculateStatsForLevel } from '@/lib/config/archetypeConfig';
-
-// XP table: XP required for each level
-// level 1 = 0, level 2 = 100, level 3 = 250, etc.
-const XP_TABLE = [
-  0,      // Level 1
-  100,    // Level 2
-  250,    // Level 3
-  500,    // Level 4
-  800,    // Level 5
-  1200,   // Level 6
-  1800,   // Level 7
-  2500,   // Level 8
-  3500,   // Level 9
-  5000,   // Level 10
-  7000,   // Level 11
-  9500,   // Level 12
-  12500,  // Level 13
-  16000,  // Level 14
-  20000,  // Level 15
-  25000,  // Level 16
-  31000,  // Level 17
-  38000,  // Level 18
-  46000,  // Level 19
-  55000,  // Level 20
-];
+import { ARCHETYPES, getArchetype, calculateStatsForLevel } from '@parel/core/config/archetypeConfig';
+import { getTotalItemPower } from '@/lib/services/itemService';
+import { checkAndUnlockAchievements } from './achievementChecker';
+import { getLevelFromXP, getXPForLevel, getXPForNextLevel as getXPForNextLevelNew } from '@/lib/levelCurve';
 
 const MAX_LEVEL = 100; // Cap to prevent overflow
 const REROLL_COOLDOWN_HOURS = 24;
 const REROLL_COST = 1000; // Gold cost to reroll archetype
+const ATTRIBUTE_POINTS_PER_LEVEL = 2; // v0.36.34 - Stats 2.0
 
 export interface Stats {
   str: number;
@@ -45,41 +24,17 @@ export interface Stats {
 }
 
 /**
- * Get level from total XP
+ * Get level from total XP (v0.36.34 - uses new level curve)
  */
 export function getLevel(xp: number): number {
-  for (let level = 1; level < XP_TABLE.length; level++) {
-    if (xp < XP_TABLE[level]) {
-      return level;
-    }
-  }
-  
-  // Beyond table, use formula: 55000 + (level - 20) * 5000
-  if (xp < 55000) {
-    return XP_TABLE.length;
-  }
-  
-  const baseXP = 55000;
-  const additionalLevels = Math.floor((xp - baseXP) / 5000);
-  return Math.min(20 + additionalLevels, MAX_LEVEL);
+  return getLevelFromXP(xp);
 }
 
 /**
- * Get XP required for next level
+ * Get XP required for next level (v0.36.34 - uses new level curve)
  */
 export function getXPForNextLevel(currentLevel: number): number {
-  if (currentLevel >= MAX_LEVEL) {
-    return 0; // Max level reached
-  }
-  
-  if (currentLevel < XP_TABLE.length) {
-    return XP_TABLE[currentLevel];
-  }
-  
-  // Beyond table
-  const baseXP = 55000;
-  const additionalLevels = currentLevel - 20;
-  return baseXP + additionalLevels * 5000;
+  return getXPForNextLevelNew(currentLevel);
 }
 
 /**
@@ -153,9 +108,21 @@ export async function addXP(
     }
   }
 
-  // Cap XP to prevent overflow
-  const newXP = Math.min(oldXP + adjustedAmount, XP_TABLE[MAX_LEVEL] || 999999999);
-  const newLevel = getLevel(newXP);
+  // Cap XP to prevent overflow (v0.36.34 - new level curve)
+  const maxXP = getXPForLevel(MAX_LEVEL);
+  const newXP = Math.min(oldXP + adjustedAmount, maxXP);
+  let newLevel = getLevel(newXP);
+
+  // Handle recursive level-ups (XP overflow) - v0.36.34
+  // If user has enough XP for multiple levels, level up recursively
+  while (newLevel < MAX_LEVEL) {
+    const nextLevelXP = getXPForLevel(newLevel + 1);
+    if (newXP >= nextLevelXP) {
+      newLevel++;
+    } else {
+      break;
+    }
+  }
 
   // Update user
   const updatedUser = await prisma.user.update({
@@ -168,9 +135,105 @@ export async function addXP(
 
   const leveledUp = newLevel > oldLevel;
 
-  // Handle level up
+  // Handle level up and update stats
   if (leveledUp) {
+    // Award attribute points (v0.36.34 - Stats 2.0)
+    // +2 points per level gained
+    const levelsGained = newLevel - oldLevel;
+    const pointsToAward = levelsGained * ATTRIBUTE_POINTS_PER_LEVEL;
+    
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          unspentPoints: {
+            increment: pointsToAward,
+          },
+        },
+      });
+      logger.info(`[ProgressionService] Awarded ${pointsToAward} attribute points for level ${oldLevel} → ${newLevel}`);
+    } catch (error) {
+      // Don't fail if unspentPoints field doesn't exist yet (backward compatibility)
+      logger.debug('[ProgressionService] Failed to award attribute points (field may not exist)', error);
+    }
+    
     await handleLevelUp(userId, oldLevel, newLevel);
+    
+    // Auto-unlock skills every 5 levels (v0.36.33)
+    try {
+      const { unlockSkill, MVP_SKILLS, seedSkills } = await import('@/lib/services/skillService');
+      const { prisma } = await import('@/lib/db');
+      
+      // Ensure skills are seeded
+      await seedSkills();
+      
+      // Check if we should unlock a skill (every 5 levels: 5, 10, 15, 20, etc.)
+      if (newLevel % 5 === 0) {
+        // Get all skills
+        const allSkills = await prisma.skill.findMany({
+          orderBy: [
+            { type: 'asc' }, // Passives first
+            { name: 'asc' },
+          ],
+        });
+        
+        // Get user's current skills
+        const userSkills = await prisma.userSkill.findMany({
+          where: { userId },
+          select: { skillId: true },
+        });
+        
+        const unlockedSkillIds = new Set(userSkills.map((us) => us.skillId));
+        
+        // Find first skill user doesn't have
+        const skillToUnlock = allSkills.find((skill) => !unlockedSkillIds.has(skill.id));
+        
+        if (skillToUnlock) {
+          await unlockSkill(userId, skillToUnlock.id);
+          logger.info(`[ProgressionService] Auto-unlocked skill ${skillToUnlock.name} at level ${newLevel}`);
+        }
+      }
+    } catch (error) {
+      // Don't fail level up if skill unlock fails
+      logger.debug('[ProgressionService] Skill unlock failed', error);
+    }
+    
+    // Create feed post for level up (v0.36.25)
+    try {
+      const { postLevelUp } = await import('@/lib/services/feedService');
+      await postLevelUp(userId, newLevel);
+    } catch (error) {
+      // Don't fail level up if feed post fails
+      logger.debug('[ProgressionService] Feed post failed', error);
+    }
+
+    // Create notification for level up (v0.36.26)
+    try {
+      const { notifyLevelUp } = await import('@/lib/services/notificationService');
+      await notifyLevelUp(userId, newLevel);
+    } catch (error) {
+      // Don't fail level up if notification fails
+      logger.debug('[ProgressionService] Notification failed', error);
+    }
+    
+    // Check achievements for level milestones
+    await checkAndUnlockAchievements(userId, {
+      heroLevel: newLevel,
+    });
+  } else {
+    // Even without level up, ensure stats are recalculated (equipment may have changed)
+    await updateHeroStats(userId);
+  }
+
+  // Add XP to season pass (v0.36.23)
+  try {
+    const { addSeasonXP } = await import('@/lib/season/service');
+    await addSeasonXP(userId, adjustedAmount).catch((error) => {
+      // Don't fail if season system not available
+      logger.debug('[ProgressionService] Season XP not available', error);
+    });
+  } catch (error) {
+    // Season service may not be available - ignore
   }
 
   logger.debug('[ProgressionService] XP added', {
@@ -195,13 +258,14 @@ export async function addXP(
 
 /**
  * Handle level up - update stats and notify
+ * v0.36.2 - Uses updateHeroStats() for unified stat calculation
  */
 export async function handleLevelUp(
   userId: string,
   oldLevel: number,
   newLevel: number
 ): Promise<void> {
-  // Get user archetype
+  // Get user archetype for logging
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -210,33 +274,27 @@ export async function handleLevelUp(
     },
   });
 
-  if (!user || !user.archetypeKey) {
-    // No archetype, just update level
-    logger.info(`[ProgressionService] User ${userId} leveled up: ${oldLevel} → ${newLevel} (no archetype)`);
+  if (!user) {
+    logger.warn(`[ProgressionService] User ${userId} not found during level up`);
     return;
   }
 
-  const archetype = getArchetype(user.archetypeKey);
-  if (!archetype) {
-    logger.warn(`[ProgressionService] Unknown archetype: ${user.archetypeKey}`);
-    return;
+  const oldStats = user.stats as Stats | null;
+
+  // Update stats using unified function (includes base + level + equipment)
+  const newStats = await updateHeroStats(userId);
+
+  if (user.archetypeKey) {
+    logger.info(`[ProgressionService] User ${userId} leveled up: ${oldLevel} → ${newLevel} (${user.archetypeKey})`, {
+      oldStats,
+      newStats,
+    });
+  } else {
+    logger.info(`[ProgressionService] User ${userId} leveled up: ${oldLevel} → ${newLevel} (no archetype)`, {
+      oldStats,
+      newStats,
+    });
   }
-
-  // Calculate new stats for new level
-  const newStats = calculateStatsForLevel(archetype, newLevel);
-
-  // Update user stats
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      stats: newStats as any, // Prisma Json type
-    },
-  });
-
-  logger.info(`[ProgressionService] User ${userId} leveled up: ${oldLevel} → ${newLevel} (${user.archetypeKey})`, {
-    oldStats: user.stats,
-    newStats,
-  });
 }
 
 /**
@@ -341,6 +399,78 @@ export async function rerollArchetype(userId: string): Promise<{
     costPaid: REROLL_COST,
     newStats: { str: 0, int: 0, cha: 0, luck: 0 }, // Reset stats
   };
+}
+
+/**
+ * Update hero stats - single source of truth for stat calculation
+ * Calculates: base stats (from archetype) + level bonuses + equipment bonuses
+ * v0.36.2 - Hero stats recalculation pipeline
+ */
+export async function updateHeroStats(userId: string): Promise<Stats> {
+  // Get user data
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      level: true,
+      archetypeKey: true,
+      stats: true,
+    },
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  // Start with base stats (0 if no archetype)
+  let finalStats: Stats = { str: 0, int: 0, cha: 0, luck: 0 };
+
+  // Calculate base stats + level bonuses from archetype
+  if (user.archetypeKey) {
+    const archetype = getArchetype(user.archetypeKey);
+    if (archetype) {
+      finalStats = calculateStatsForLevel(archetype, user.level);
+    }
+  }
+
+  // Add equipment bonuses (item power contributes to stats proportionally)
+  // Formula: item power / 10 = stat bonus distributed across stats
+  try {
+    const itemPower = await getTotalItemPower(userId);
+    if (itemPower > 0) {
+      // Distribute item power bonus across stats (25% each)
+      const powerBonus = Math.floor(itemPower / 10);
+      finalStats.str += Math.floor(powerBonus * 0.25);
+      finalStats.int += Math.floor(powerBonus * 0.25);
+      finalStats.cha += Math.floor(powerBonus * 0.25);
+      finalStats.luck += Math.floor(powerBonus * 0.25);
+    }
+  } catch (error) {
+    // If item service fails, continue without equipment bonuses
+    logger.warn(`[ProgressionService] Failed to get item power for ${userId}`, error);
+  }
+
+  // Ensure no negative stats
+  finalStats.str = Math.max(0, finalStats.str);
+  finalStats.int = Math.max(0, finalStats.int);
+  finalStats.cha = Math.max(0, finalStats.cha);
+  finalStats.luck = Math.max(0, finalStats.luck);
+
+  // Persist to database
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      stats: finalStats as any, // Prisma Json type
+    },
+  });
+
+  logger.debug('[ProgressionService] Hero stats updated', {
+    userId,
+    level: user.level,
+    archetype: user.archetypeKey,
+    stats: finalStats,
+  });
+
+  return finalStats;
 }
 
 /**

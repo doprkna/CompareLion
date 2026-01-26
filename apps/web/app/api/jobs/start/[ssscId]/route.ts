@@ -5,7 +5,7 @@ import { questionGenQueue } from '@/lib/queue/questionGenQueue';
 import { startJob } from '@/lib/services/jobService';
 import { toJobDTO, JobDTO } from '@/lib/dto/jobDTO';
 import { requireSession } from '@/lib/auth/requireSession';
-import { JobStartSchema } from '@/lib/validation/job';
+import { JobStartSchema } from '@parel/validation/job';
 import { safeAsync, validationError, serverError } from '@/lib/api-handler';
 
 export const POST = safeAsync(async (req: NextRequest, { params }: { params: { ssscId: string } }) => {

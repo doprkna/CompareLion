@@ -1,4 +1,4 @@
-import { useMoodFeed } from '@/hooks/useMoodFeed';
+import { useMoodFeed } from '@parel/core/hooks/useMoodFeed';
 
 export function MoodToggleChip() {
   const { mood, setMood } = useMoodFeed();

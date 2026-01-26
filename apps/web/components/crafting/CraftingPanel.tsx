@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useRecipes } from '@/hooks/useRecipes';
+import { useRecipes } from '@parel/core/hooks/useRecipes';
 import { RecipeCard } from './RecipeCard';
 import { Loader2, Package, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { useInventory } from '@/hooks/useInventory';
+import { useInventory } from '@parel/core/hooks/useInventory';
 
 export function CraftingPanel() {
   const { recipes, loading, error, reload } = useRecipes();

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
 import bcrypt from 'bcrypt';
-import { SignupSchema } from '@/lib/validation/auth';
+import { SignupSchema } from '@parel/validation/auth';
 import { safeAsync, validationError } from '@/lib/api-handler';
 
 function _isValidEmail(email: string) {

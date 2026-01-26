@@ -6,7 +6,7 @@ import { getSessionFromCookie } from '@/lib/auth/session';
 import { createNewsletterProvider } from '@/lib/newsletter/providers';
 import { logAuditEvent, extractIpFromRequest } from '@/lib/services/auditService';
 import { z } from 'zod';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 import { safeAsync, successResponse, errorResponse, authError, notFoundError } from '@/lib/api-handler';
 
 const NewsletterOptInSchema = z.object({

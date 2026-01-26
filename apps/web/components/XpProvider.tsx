@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, ReactNode } from 'react';
-import { useXpPopup } from '@/hooks/useXpPopup';
+import { useXpPopup } from '@parel/core/hooks/useXpPopup';
 import type { XpPopupProps } from '@/components/XpPopup';
 
 interface XpContextType {

@@ -1,5 +1,5 @@
 "use client";
-import { usePolls } from '@/hooks/usePolls';
+import { usePolls } from '@parel/core/hooks/usePolls';
 import { PollCard } from '@/components/polls/PollCard';
 
 export default function PollsPage() {

@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 /**
  * Generic API handler wrapper

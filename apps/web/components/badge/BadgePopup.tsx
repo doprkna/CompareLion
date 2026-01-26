@@ -1,10 +1,10 @@
 'use client';
 
-import { Badge } from '@/hooks/useBadges';
+import { Badge } from '@parel/core/hooks/useBadges';
 import { Button } from '@/components/ui/button';
 import { X, Sparkles } from 'lucide-react';
 import { useState } from 'react';
-import { useClaimBadge } from '@/hooks/useClaimBadge';
+import { useClaimBadge } from '@parel/core/hooks/useClaimBadge';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 

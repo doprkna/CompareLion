@@ -8,7 +8,7 @@ import {
   getBaseReward,
   calculateReward,
 } from '@/lib/services/rewardService';
-import { RewardConfig, DifficultyLevel } from '@/lib/config/rewardConfig';
+import { RewardConfig, DifficultyLevel } from '@parel/core/config/rewardConfig';
 import { safeAsync, unauthorizedError, successResponse, validationError, parseBody } from '@/lib/api-handler';
 
 /**

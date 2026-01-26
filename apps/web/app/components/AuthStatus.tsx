@@ -2,7 +2,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import NotificationBell from '@/components/NotificationBell';
+import NotificationBell from './NotificationBell';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';

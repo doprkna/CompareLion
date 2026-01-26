@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GenerationCard } from './GenerationCard';
 import { Timeline, Calendar, Crown } from 'lucide-react';
-import { useGenerations } from '@/hooks/useGenerations';
+import { useGenerations } from '@parel/core/hooks/useGenerations';
 import { Loader2 } from 'lucide-react';
 
 export function LegacyTimeline() {

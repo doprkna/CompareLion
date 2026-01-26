@@ -6,8 +6,8 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RewardToast } from '@/hooks/useRewardToast';
-import { TOAST_THEME, getToastStyles } from '@/lib/config/toastTheme';
+import { RewardToast } from '@parel/core/hooks/useRewardToast';
+import { TOAST_THEME, getToastStyles } from '@parel/core/config/toastTheme';
 
 interface RewardToastProps {
   toast: RewardToast;

@@ -1,4 +1,4 @@
-import { WILDCARDS, WildcardEvent } from '@/lib/config/wildcards';
+import { WILDCARDS, WildcardEvent } from '@parel/core/config/wildcards';
 
 type CacheEntry = { event: WildcardEvent | null; expiresAt: number };
 

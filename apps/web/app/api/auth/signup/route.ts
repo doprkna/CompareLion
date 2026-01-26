@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth/password';
-import { SignupSchema } from '@/lib/validation/auth';
+import { SignupSchema } from '@parel/validation/auth';
 import { createSession, setSessionCookie } from '@/lib/auth/session';
 import { checkSignupRateLimit } from '@/lib/security/rateLimit';
 import { verifyHCaptcha, isHCaptchaRequired } from '@/lib/security/hcaptcha';

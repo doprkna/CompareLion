@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ChevronDown, Lock, Settings } from "lucide-react";
 import { apiFetch } from "@/lib/apiBase";
-import { isAdminView } from "@/lib/utils/isAdminView";
+import { isAdminView } from '@parel/core/utils/isAdminView';
 
 export default function NavLinks() {
   const { data: session } = useSession();

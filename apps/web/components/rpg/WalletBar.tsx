@@ -7,7 +7,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useGold } from '@/hooks/useGold';
+import { useGold } from '@parel/core/hooks/useGold';
 import { Coins, Gem } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

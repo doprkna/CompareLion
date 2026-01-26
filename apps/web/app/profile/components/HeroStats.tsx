@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/apiBase";
-import { useEventBus } from "@/hooks/useEventBus";
+import { useEventBus } from "@parel/core/hooks/useEventBus";
 import { toast } from "sonner";
 import { Sparkles, History } from "lucide-react";
 

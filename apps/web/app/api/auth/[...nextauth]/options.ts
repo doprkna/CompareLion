@@ -107,6 +107,16 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account }) {
+      // Grant daily login chest for OAuth/Email logins (v0.36.30)
+      if (user?.id && account) {
+        try {
+          const { grantDailyLoginChest } = await import('@/lib/services/chestService');
+          await grantDailyLoginChest(user.id);
+        } catch (error) {
+          // Don't fail login if chest grant fails
+          logger.debug('[Auth] Daily chest grant failed', error);
+        }
+      }
       // auto-create on OAuth
       if (
         ["email", "google", "facebook", "twitter", "reddit"].includes(
@@ -138,13 +148,49 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.image = user.image;
         token.role = (user as any).role;
+        
+        // Fetch premium status from DB (v0.36.21)
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { isPremium: true, premiumUntil: true },
+          });
+          
+          if (dbUser) {
+            token.isPremium = dbUser.isPremium || false;
+            token.premiumUntil = dbUser.premiumUntil?.toISOString() || null;
+          }
+        } catch (error) {
+          logger.warn('[Auth] Failed to fetch premium status', error);
+          token.isPremium = false;
+          token.premiumUntil = null;
+        }
+      } else if (token.id) {
+        // Refresh premium status on each request (check if expired)
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { isPremium: true, premiumUntil: true },
+          });
+          
+          if (dbUser) {
+            // Check if premium expired
+            const now = new Date();
+            const isExpired = dbUser.premiumUntil && new Date(dbUser.premiumUntil) < now;
+            
+            token.isPremium = dbUser.isPremium && !isExpired;
+            token.premiumUntil = dbUser.premiumUntil?.toISOString() || null;
+          }
+        } catch (error) {
+          // Silent fail - keep existing token values
+        }
       }
       
       return token;
     },
 
     async session({ session, token }) {
-      // Add user info from JWT token to session
+      // Add user info from JWT token to session (v0.36.21)
       if (token) {
         session.user = {
           id: token.id as string,
@@ -152,6 +198,8 @@ export const authOptions: NextAuthOptions = {
           name: token.name as string || null,
           image: token.image as string || null,
           role: token.role as string,
+          isPremium: (token.isPremium as boolean) || false,
+          premiumUntil: token.premiumUntil ? new Date(token.premiumUntil as string) : null,
         };
       }
       

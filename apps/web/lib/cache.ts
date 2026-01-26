@@ -4,7 +4,7 @@
  * v0.13.2i
  */
 
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 interface CacheEntry<T> {
   value: T;

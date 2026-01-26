@@ -10,6 +10,8 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, notFoundError } from '@/lib/api-handler';
 import { recordFlowAnswer, getUserFlowStats } from '@/lib/services/flowService';
+import { addXP, updateHeroStats } from '@/lib/services/progressionService';
+import { publishEvent } from '@/lib/realtime';
 import { z } from 'zod';
 
 // Force Node.js runtime for Prisma (v0.35.16d)
@@ -58,6 +60,25 @@ export const POST = safeAsync(async (req: NextRequest) => {
     skipped: skipped || false,
   });
 
+  // Grant XP if not skipped (10 XP per answer)
+  let xpResult = null;
+  if (!skipped) {
+    const xpReward = 10;
+    xpResult = await addXP(user.id, xpReward, 'flow_answer');
+    
+    // Update hero stats (base + level + equipment bonuses)
+    await updateHeroStats(user.id);
+    
+    // Publish XP update event for UI
+    await publishEvent('xp:update', {
+      userId: user.id,
+      newXp: xpResult.xp,
+      newLevel: xpResult.level,
+      leveledUp: xpResult.leveledUp,
+      xpGained: xpReward,
+    });
+  }
+
   // Get updated stats
   const stats = await getUserFlowStats(user.id);
 
@@ -69,5 +90,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       todayAnswered: stats.todayAnswered,
       xpGained: skipped ? 0 : 10,
     },
+    level: xpResult?.level,
+    leveledUp: xpResult?.leveledUp || false,
   });
 });

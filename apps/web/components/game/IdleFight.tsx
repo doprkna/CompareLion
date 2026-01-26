@@ -2,10 +2,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DamageNumber } from "./DamageNumber";
-import { useCombatPreferences } from "@/hooks/useCombatPreferences";
-import { useRewardToast } from "@/hooks/useRewardToast";
+import { useCombatPreferences } from '@parel/core/hooks/useCombatPreferences";
+import { useRewardToast } from '@parel/core/hooks/useRewardToast";
 import { RewardToastContainer } from "@/components/ui/RewardToast";
-import { useSfx } from "@/hooks/useSfx"; // v0.26.13
+import { useSfx } from '@parel/core/hooks/useSfx"; // v0.26.13
 import { AmbientManager } from "@/components/AmbientManager"; // v0.26.14
 
 interface CombatSession {

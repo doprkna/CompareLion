@@ -8,7 +8,7 @@ import { logQuizToFeed } from "@/lib/feed";
 import { notify } from "@/lib/notify";
 import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError } from "@/lib/api-handler";
 import { attack, getPowerBonus } from "@/lib/services/combatService";
-import { logger } from "@/lib/utils/debug";
+import { logger } from '@parel/core/utils/debug';
 
 /**
  * POST /api/quiz/submit

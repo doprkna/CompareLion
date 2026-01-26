@@ -3,12 +3,14 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { debug, error as logError } from "@/lib/utils/debug";
+import { debug, error as logError } from '@parel/core/utils/debug'; // sanity-fix
 import { apiFetch } from "@/lib/apiBase";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Trophy, TrendingUp, Flame, Star, Target, AlertCircle } from "lucide-react";
-import { useEventBus } from "@/hooks/useEventBus";
+
+import { useEventBus } from '@parel/core/hooks/useEventBus';
+
+// sanity-fix
 import { xpToLevel, levelProgress } from "@/lib/xp";
 import { LevelUpPopup } from "@/components/LevelUpPopup";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -17,16 +19,18 @@ import { MiniEventCard } from "@/components/MiniEventCard";
 import { GlobalMoodBar } from "@/components/moods/GlobalMoodBar";
 import { DailyForkCard } from "@/components/forks/DailyForkCard";
 import { ForkResultToast } from "@/components/forks/ForkResultToast";
-import { useDailyFork, useChooseFork } from "@/hooks/useDailyFork";
+import { useDailyFork, useChooseFork } from '@parel/core/hooks/useDailyFork';
 import { DuetRunCard } from "@/components/duet-runs/DuetRunCard";
 import { DuetSummaryModal } from "@/components/duet-runs/DuetSummaryModal";
-import { useDuetRun, useDuetProgress } from "@/hooks/useDuetRun";
+import { useDuetRun, useDuetProgress } from '@parel/core/hooks/useDuetRun';
 import { RitualCard } from "@/components/rituals/RitualCard";
 import { RitualToast } from "@/components/rituals/RitualToast";
-import { useRituals, useCompleteRitual } from "@/hooks/useRituals";
+import { useRituals, useCompleteRitual } from '@parel/core/hooks/useRituals';
 import { ClanBuffBadge } from "@/components/micro-clans/ClanBuffBadge";
-import { useClanBuff } from "@/hooks/useMicroClans";
-import RegionSelector from "@/components/ui/RegionSelector";
+import { useClanBuff } from '@parel/core/hooks/useMicroClans';
+
+// sanity-fix
+const Icon = ({ name, className }: { name: string; className?: string; size?: string }) => <span className={'icon-' + name + ' ' + (className || '')} />;
 
 interface UserSummary {
   name: string;
@@ -291,7 +295,7 @@ export default function MainPage() {
           <div className="bg-card border-2 border-accent rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-subtle text-sm">XP</span>
-              <Sparkles className="h-5 w-5 text-accent" />
+              <Icon name="xp" className="h-5 w-5 text-accent" />
             </div>
             <div className="text-3xl font-bold text-accent">{data.xp}</div>
           </div>
@@ -299,7 +303,7 @@ export default function MainPage() {
           <div className="bg-card border-2 border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-subtle text-sm">Gold</span>
-              <Star className="h-5 w-5 text-yellow-500" />
+              <Icon name="star" className="h-5 w-5 text-yellow-500" />
             </div>
             <div className="text-3xl font-bold text-text">{data.funds}</div>
           </div>
@@ -307,7 +311,7 @@ export default function MainPage() {
           <div className="bg-card border-2 border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-subtle text-sm">Diamonds</span>
-              <Star className="h-5 w-5 text-purple-500" />
+              <Icon name="star" className="h-5 w-5 text-purple-500" />
             </div>
             <div className="text-3xl font-bold text-text">{data.diamonds}</div>
           </div>
@@ -315,7 +319,7 @@ export default function MainPage() {
           <div className="bg-card border-2 border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-subtle text-sm">Streak</span>
-              <Flame className="h-5 w-5 text-orange-500" />
+              <Icon name="flame" className="h-5 w-5 text-orange-500" />
             </div>
             <div className="text-3xl font-bold text-text">{data.streakCount} 🔥</div>
           </div>
@@ -325,7 +329,7 @@ export default function MainPage() {
         <Card className="bg-card border-2 border-accent text-text shadow-sm rounded-xl">
           <CardHeader>
             <CardTitle className="text-xl font-semibold flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-accent" />
+              <Icon name="level-up" className="h-6 w-6 text-accent" />
               Level Progress
             </CardTitle>
           </CardHeader>
@@ -359,7 +363,7 @@ export default function MainPage() {
         <Card className="bg-card border-2 border-border text-text shadow-sm rounded-xl">
           <CardHeader>
             <CardTitle className="text-xl font-semibold flex items-center gap-2">
-              <Trophy className="h-6 w-6 text-accent" />
+              <Icon name="trophy" className="h-6 w-6 text-accent" />
               Achievements ({data.achievements.length})
             </CardTitle>
           </CardHeader>
@@ -390,7 +394,7 @@ export default function MainPage() {
                 description="Complete flows, answer questions, and participate in challenges to unlock achievements and earn rewards!"
                 action={
                   <Button onClick={() => router.push("/flow-demo")} className="bg-accent text-white">
-                    <Target className="h-4 w-4 mr-2" />
+                    <Icon name="challenge" className="h-4 w-4 mr-2" />
                     Start Your First Flow
                   </Button>
                 }
@@ -405,7 +409,7 @@ export default function MainPage() {
             onClick={() => router.push("/flow-demo")}
             className="bg-accent text-white hover:opacity-90 h-16 text-lg font-bold"
           >
-            <Target className="h-6 w-6 mr-2" />
+            <Icon name="challenge" className="h-6 w-6 mr-2" />
             Start Flow
           </Button>
           <Button
@@ -413,7 +417,7 @@ export default function MainPage() {
             variant="outline"
             className="border-2 border-accent text-accent hover:bg-accent/10 h-16 text-lg font-bold"
           >
-            <Trophy className="h-6 w-6 mr-2" />
+            <Icon name="trophy" className="h-6 w-6 mr-2" />
             Leaderboard
           </Button>
           <Button
@@ -421,7 +425,7 @@ export default function MainPage() {
             variant="outline"
             className="border-2 border-border text-text hover:bg-card/50 h-16 text-lg font-bold"
           >
-            <Star className="h-6 w-6 mr-2" />
+            <Icon name="star" className="h-6 w-6 mr-2" />
             Shop
           </Button>
         </div>

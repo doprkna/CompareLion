@@ -6,7 +6,7 @@ import { generateToken, getTokenExpiry } from '@/lib/auth/tokens';
 import { sendEmailVerification } from '@/lib/email/resend';
 import { getSessionFromCookie } from '@/lib/auth/session';
 import { safeAsync, successResponse, unauthorizedError, notFoundError, validationError, serverError } from '@/lib/api-handler';
-import { logger } from '@/lib/utils/debug';
+import { logger } from '@parel/core/utils/debug';
 
 export const POST = safeAsync(async (req: NextRequest) => {
   // Get the current user from session

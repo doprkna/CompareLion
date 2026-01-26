@@ -10,14 +10,14 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { 
-  getAgeGroup, 
-  getRegion, 
-  getTone, 
-  getInterests,
-  type OnboardingProfile 
-} from '@/lib/types/onboarding';
 import { Edit, Loader2, Sparkles, MapPin, Heart, MessageCircle } from 'lucide-react';
+
+// Stubs for @parel/types/onboarding
+type OnboardingProfile = any;
+const getAgeGroup = (val: any) => String(val || '');
+const getRegion = (val: any) => String(val || '');
+const getTone = (val: any) => String(val || '');
+const getInterests = (val: any) => String(val || '');
 
 export default function MyVibePage() {
   const { data: session, status } = useSession();

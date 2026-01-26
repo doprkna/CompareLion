@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, successResponse, unauthorizedError, forbiddenError, validationError } from '@/lib/api-handler';
+import { addItemToInventory } from '@/lib/services/itemService';
 import { z } from 'zod';
 
 const GrantSchema = z.object({
@@ -68,45 +69,8 @@ export const POST = safeAsync(async (req: NextRequest) => {
     return validationError('Target user not found');
   }
 
-  // Try UserItem model first
-  try {
-    await prisma.userItem.upsert({
-      where: {
-        userId_itemId: {
-          userId: targetUserId,
-          itemId: itemId,
-        },
-      },
-      create: {
-        userId: targetUserId,
-        itemId: itemId,
-        quantity: quantity,
-        acquiredAt: new Date(),
-      },
-      update: {
-        quantity: { increment: quantity },
-      },
-    });
-  } catch {
-    // If UserItem fails, try InventoryItem
-    await prisma.inventoryItem.upsert({
-      where: {
-        userId_itemId: {
-          userId: targetUserId,
-          itemId: itemId,
-        },
-      },
-      create: {
-        userId: targetUserId,
-        itemId: itemId,
-        quantity: quantity,
-        equipped: false,
-      },
-      update: {
-        quantity: { increment: quantity },
-      },
-    });
-  }
+  // Add item to inventory using standardized function (v0.36.34)
+  await addItemToInventory(targetUserId, itemId, quantity);
 
   return successResponse({
     granted: true,
@@ -119,6 +83,6 @@ export const POST = safeAsync(async (req: NextRequest) => {
       id: targetUser.id,
       name: targetUser.name,
     },
-    message: `Granted x   to `,
+    message: `Granted ${quantity}x ${item.name} to ${targetUser.name || targetUser.id}`,
   });
 });

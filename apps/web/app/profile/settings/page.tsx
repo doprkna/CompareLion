@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { RoastMeterSlider } from '@/components/roast/RoastMeterSlider';
 import { RoastPreview } from '@/components/roast/RoastPreview';
-import { useRoastLevel, useSetRoastLevel } from '@/hooks/useRoastLevel';
+import { useRoastLevel, useSetRoastLevel } from '@parel/core/hooks/useRoastLevel';
 
 export default function ProfileSettingsPage() {
   const { data: session, status } = useSession();

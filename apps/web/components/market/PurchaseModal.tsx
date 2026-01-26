@@ -1,6 +1,6 @@
 'use client';
 
-import { MarketItem } from '@/hooks/useMarket';
+import { MarketItem } from '@parel/core/hooks/useMarket';
 import { Button } from '@/components/ui/button';
 import { X, ShoppingCart, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

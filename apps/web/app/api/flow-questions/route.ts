@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { safeAsync, successResponse } from "@/lib/api-handler";
-import { filterQuestionsByLocale } from "@/lib/types/question";
+import { filterQuestionsByLocale } from '@parel/types/question';
 
 export const GET = safeAsync(async (req: NextRequest) => {
   const url = new URL(req.url);

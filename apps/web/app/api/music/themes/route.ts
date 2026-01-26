@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { safeAsync, successResponse } from '@/lib/api-handler';
-import { MUSIC_THEMES } from '@/lib/config/musicThemes';
+import { MUSIC_THEMES } from '@parel/core/config/musicThemes';
 
 /**
  * GET /api/music/themes

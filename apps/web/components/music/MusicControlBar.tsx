@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { VolumeSlider } from './VolumeSlider';
 import { NowPlayingLabel } from './NowPlayingLabel';
 import { Play, Pause, VolumeX } from 'lucide-react';
-import { usePlayTrack } from '@/hooks/usePlayTrack';
+import { usePlayTrack } from '@parel/core/hooks/usePlayTrack';
 
 interface MusicControlBarProps {
   currentTrack?: any;

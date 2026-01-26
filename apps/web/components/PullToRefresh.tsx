@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, ReactNode } from 'react';
-import { usePullToRefresh } from '@/hooks/useTouchGestures';
+import { usePullToRefresh } from '@parel/core/hooks/useTouchGestures';
 import { Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

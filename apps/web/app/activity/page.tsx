@@ -14,7 +14,7 @@ import {
   LogIn,
   Activity as ActivityIcon
 } from "lucide-react";
-import { useEventBus } from "@/hooks/useEventBus";
+import { useEventBus } from '@parel/core/hooks/useEventBus';
 
 interface Activity {
   id: string;

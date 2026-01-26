@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCombatLink } from '@/hooks/useCombatLink';
+import { useCombatLink } from '@parel/core/hooks/useCombatLink';
 
 type Question = {
   id: string;

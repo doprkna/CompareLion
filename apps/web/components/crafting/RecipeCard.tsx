@@ -2,9 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Recipe } from '@/hooks/useRecipes';
+import { Recipe } from '@parel/core/hooks/useRecipes';
 import { Hammer, Clock, Star, Package } from 'lucide-react';
-import { useCrafting } from '@/hooks/useCrafting';
+import { useCrafting } from '@parel/core/hooks/useCrafting';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

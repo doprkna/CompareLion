@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/connection-pool";
 import { safeAsync } from "@/lib/api-handler";
-import { logger } from "@/lib/utils/debug";
+import { logger } from '@parel/core/utils/debug';
 
 export const GET = safeAsync(async (_req: NextRequest) => {
   const startTime = Date.now();

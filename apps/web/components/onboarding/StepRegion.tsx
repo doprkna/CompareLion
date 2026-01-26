@@ -6,7 +6,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { REGIONS, type RegionId, detectRegionFromBrowser } from '@/lib/types/onboarding';
+import { REGIONS, type RegionId, detectRegionFromBrowser } from '@parel/types/onboarding';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

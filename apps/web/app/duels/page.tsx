@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { DuelCard } from '@/components/social/DuelCard';
-import { useDuels, useStartDuel } from '@/hooks/useSocial';
+import { useDuels, useStartDuel } from '@parel/core/hooks/useSocial';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Sword, Loader2, Plus } from 'lucide-react';

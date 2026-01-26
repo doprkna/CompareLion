@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getAvailableCategories } from '@/lib/flow/flow-skeleton';
+import { getAvailableCategories } from '@parel/features/flow';
 import { safeAsync, successResponse } from '@/lib/api-handler';
 
 // Force Node.js runtime for Prisma (v0.35.16d)

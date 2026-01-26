@@ -1,6 +1,6 @@
 'use client';
 
-import { WalletBalance } from '@/hooks/useMarket';
+import { WalletBalance } from '@parel/core/hooks/useMarket';
 import { Card, CardContent } from '@/components/ui/card';
 import { Coins, Gem, Heart } from 'lucide-react';
 

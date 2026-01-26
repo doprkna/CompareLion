@@ -3,14 +3,14 @@ export const runtime = 'nodejs';
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/db';
 import { verifyPassword, hashPassword, isBcryptHash } from '@/lib/auth/password';
-import { LoginSchema } from '@/lib/validation/auth';
+import { LoginSchema } from '@parel/validation/auth';
 import { createSession, setSessionCookie } from '@/lib/auth/session';
 import { checkRateLimit, recordFailedAttempt, clearAllFailedAttempts } from '@/lib/auth/rateLimit';
 import { verifyHCaptcha, shouldVerifyHCaptcha, extractHCaptchaToken } from '@/lib/auth/hcaptcha';
 import { logAuditEvent, extractIpFromRequest } from '@/lib/services/auditService';
-import { getRequestId, createResponseWithRequestId } from '@/lib/utils/requestId';
-import { captureError, createErrorContextFromRequest } from '@/lib/utils/errorTracking';
-import { securityConfig } from '@/lib/config/security';
+import { getRequestId, createResponseWithRequestId } from '@parel/core/utils/requestId';
+import { captureError, createErrorContextFromRequest } from '@parel/core/utils/errorTracking';
+import { securityConfig } from '@parel/core/config/security';
 import { safeAsync } from '@/lib/api-handler';
 
 export const POST = safeAsync(async (req: NextRequest) => {
@@ -188,6 +188,15 @@ export const POST = safeAsync(async (req: NextRequest) => {
       email: user.email,
     });
     await setSessionCookie(token);
+
+    // Grant daily login chest (v0.36.30)
+    try {
+      const { grantDailyLoginChest } = await import('@/lib/services/chestService');
+      await grantDailyLoginChest(user.id);
+    } catch (error) {
+      // Don't fail login if chest grant fails
+      logger.debug('[Login] Daily chest grant failed', error);
+    }
 
     // Log successful login
     await logAuditEvent({

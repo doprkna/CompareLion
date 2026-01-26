@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CreatorPack } from '@/hooks/useCreatorPacks';
+import { CreatorPack } from '@parel/core/hooks/useCreatorPacks';
 import { Package, User } from 'lucide-react';
 
 interface CreatorPackCardProps {

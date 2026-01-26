@@ -1,13 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
-import { safeAsync, authError, successResponse } from "@/lib/api-handler";
+import { safeAsync } from "@/lib/api-handler";
+import { buildSuccess } from '@parel/api';
+import type { QuestDTO, QuestsResponseDTO } from '@parel/types/dto';
 
 /**
  * GET /api/quests
  * Lists active quests with progress + status for current user
  * Optional query param: ?includeLore=true to include associated lore snippets
+ * v0.41.6 - C3 Step 7: Unified API envelope
+ * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3
  */
 export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
@@ -93,7 +97,7 @@ export const GET = safeAsync(async (req: NextRequest) => {
   }
 
   // Map quests with progress status
-  const questsWithStatus = quests.map((quest) => {
+  const questsWithStatus: QuestDTO[] = quests.map((quest) => {
     const userQuest = userQuests[quest.id];
     const progress = userQuest?.progress || 0;
     const isCompleted = userQuest?.isCompleted || false;
@@ -127,9 +131,11 @@ export const GET = safeAsync(async (req: NextRequest) => {
     };
   });
 
-  return successResponse({
+  const response: QuestsResponseDTO = {
     quests: questsWithStatus,
     total: questsWithStatus.length,
-  });
+  };
+
+  return buildSuccess(req, response);
 });
 

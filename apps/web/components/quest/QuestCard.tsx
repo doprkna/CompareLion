@@ -1,6 +1,6 @@
 'use client';
 
-import { Quest } from '@/hooks/useQuests';
+import { Quest } from '@parel/core/hooks/useQuests';
 import { QuestProgressBar } from './QuestProgressBar';
 import { QuestLoreTooltip } from './QuestLoreTooltip';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

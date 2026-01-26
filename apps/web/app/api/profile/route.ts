@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getUserFromRequest } from '@/app/api/_utils';
 import { toUserDTO, UserDTO } from '@/lib/dto/userDTO';
 import bcrypt from 'bcrypt';
 import { getUserProfile, updateUserProfile } from '@/lib/services/userService';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, notFoundError, validationError } from '@/lib/api-handler';
+import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
+import type { UserProfileWithStatsDTO, ProfileResponseDTO, SessionDTO, UserStatsDTO, TodayActivityDTO } from '@parel/types/dto';
 import { z } from 'zod';
 
 function _msToHMS(ms: number) {
@@ -20,20 +22,26 @@ function _msToHMS(ms: number) {
   ].filter(Boolean).join(' ');
 }
 
+/**
+ * GET /api/profile
+ * Get user profile with stats and progression
+ * v0.41.3 - C3 Step 4: Unified API envelope
+ * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3
+ */
 export const GET = safeAsync(async (req: NextRequest) => {
   const user = await getUserFromRequest(req);
   if (!user) {
-    return authError('Unauthorized');
+    return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Unauthorized');
   }
   const dbUser = await getUserProfile(user.userId);
   if (!dbUser) {
-    return notFoundError('User');
+    return buildError(req, ApiErrorCode.NOT_FOUND, 'User not found');
   }
   // Stats: per session
   const sessions = await prisma.flowProgress.findMany({ where: { userId: dbUser.id }, orderBy: { startedAt: 'desc' } });
   let totalAnswers = 0;
   let totalTime = 0;
-  const sessionStats = await Promise.all(sessions.map(async (session: any) => {
+  const sessionStats: SessionDTO[] = await Promise.all(sessions.map(async (session: any) => {
     const count = await prisma.answer.count({ where: { sessionId: session.id } });
     totalAnswers += count;
     const start = session.startedAt ? new Date(session.startedAt).getTime() : 0;
@@ -58,80 +66,37 @@ export const GET = safeAsync(async (req: NextRequest) => {
     prisma.userQuestion.count({ where: { userId: dbUser.id, status: 'answered', updatedAt: { gte: todayStart } } }),
     prisma.userQuestion.count({ where: { userId: dbUser.id, status: 'skipped', updatedAt: { gte: todayStart } } }),
   ]);
-  return NextResponse.json({
-    success: true,
-    user: {
-      ...baseUser,
-      streakCount: dbUser.streakCount,
-      today: { answered: answeredToday, skipped: skippedToday },
-      stats: {
-        totalSessions: sessions.length,
-        totalAnswers,
-        totalTime,
-        lastSessionAnswers: lastSession.answers,
-        lastSessionTime: lastSession.timeSpent,
-      },
-      sessions: sessionStats.map((s: { id: string; startedAt: Date; completedAt: Date | null; answers: number; timeSpent: number }) => ({
-        id: s.id,
-        startedAt: s.startedAt,
-        completedAt: s.completedAt,
-        answers: s.answers,
-        timeSpent: s.timeSpent,
-      })),
-    },
-  });
-});
-
-const ProfileUpdateSchema = z.object({
-  email: z.string().email().optional(),
-  password: z.string().min(6).optional(),
-  name: z.string().optional(),
-  phone: z.string().optional(),
-  language: z.string().optional(),
-  country: z.string().optional(),
-  dateOfBirth: z.string().optional(),
-  avatarUrl: z.string().url().optional(),
-  motto: z.string().optional(),
-  theme: z.string().optional(),
-  funds: z.number().optional(),
-  diamonds: z.number().optional(),
-  xp: z.number().optional(),
-  level: z.number().optional(),
-});
-
-export const PATCH = safeAsync(async (req: NextRequest) => {
-  const user = await getUserFromRequest(req);
-  if (!user) {
-    return authError('Unauthorized');
-  }
   
-  const body = await req.json();
-  const parsed = ProfileUpdateSchema.safeParse(body);
-  if (!parsed.success) {
-    return validationError('Invalid profile data', parsed.error.issues);
-  }
+  const stats: UserStatsDTO = {
+    totalSessions: sessions.length,
+    totalAnswers,
+    totalTime,
+    lastSessionAnswers: lastSession.answers,
+    lastSessionTime: lastSession.timeSpent,
+  };
   
-  const validData = parsed.data;
-  const data: any = {};
-  if (validData.email) data.email = validData.email;
-  if (validData.password) data.password = await bcrypt.hash(validData.password, 10);
-  if (validData.name) data.name = validData.name;
-  if (validData.phone) data.phone = validData.phone;
-  if (validData.language) data.language = validData.language;
-  if (validData.country) data.country = validData.country;
-  if (validData.dateOfBirth) data.dateOfBirth = new Date(validData.dateOfBirth);
-  if (validData.avatarUrl) data.avatarUrl = validData.avatarUrl;
-  if (validData.motto) data.motto = validData.motto;
-  if (validData.theme) data.theme = validData.theme;
-  if (validData.funds !== undefined) data.funds = validData.funds;
-  if (validData.diamonds !== undefined) data.diamonds = validData.diamonds;
-  if (validData.xp !== undefined) data.xp = validData.xp;
-  if (validData.level !== undefined) data.level = validData.level;
+  const today: TodayActivityDTO = {
+    answered: answeredToday,
+    skipped: skippedToday,
+  };
   
-  if (Object.keys(data).length === 0) {
-    return validationError('No changes provided');
-  }
+  const userProfile: UserProfileWithStatsDTO = {
+    ...baseUser,
+    streakCount: dbUser.streakCount,
+    today,
+    stats,
+    sessions: sessionStats.map((s: SessionDTO) => ({
+      id: s.id,
+      startedAt: s.startedAt,
+      completedAt: s.completedAt,
+      answers: s.answers,
+      timeSpent: s.timeSpent,
+    })),
+  };
   
-  await updateUserProfile(user.userId, data);
-  return NextResponse.json({ success: true, message: 'Profile updated' });
+  const response: ProfileResponseDTO = {
+    user: userProfile,
+  };
+  
+  return buildSuccess(req, response);
 });

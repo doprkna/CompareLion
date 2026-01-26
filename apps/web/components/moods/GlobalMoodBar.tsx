@@ -1,5 +1,5 @@
 "use client";
-import { useGlobalMood, useMoodTheme } from '@/hooks/useGlobalMood';
+import { useGlobalMood, useMoodTheme } from '@parel/core/hooks/useGlobalMood';
 
 interface GlobalMoodBarProps {
   showTooltip?: boolean;

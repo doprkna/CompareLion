@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from 'react';
-import { useShop } from '@/hooks/useShop';
-import { useGold } from '@/hooks/useGold';
-import { useCombatPreferences } from '@/hooks/useCombatPreferences';
-import { useSfx } from '@/hooks/useSfx'; // v0.26.13
+import { useShop } from '@parel/core/hooks/useShop';
+import { useGold } from '@parel/core/hooks/useGold';
+import { useCombatPreferences } from '@parel/core/hooks/useCombatPreferences';
+import { useSfx } from '@parel/core/hooks/useSfx'; // v0.26.13
 import { SkeletonLoader } from '@/components/ui/SkeletonLoader';
 import { RpgButton } from '@/components/rpg/RpgButton';
 import { ShoppingBag } from 'lucide-react';

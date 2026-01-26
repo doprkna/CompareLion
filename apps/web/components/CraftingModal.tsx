@@ -6,9 +6,9 @@ import { apiFetch } from "@/lib/apiBase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, Hammer, Sparkles, AlertTriangle } from "lucide-react";
-import { useRewardToast } from "@/hooks/useRewardToast"; // v0.26.9
-import { useCombatPreferences } from "@/hooks/useCombatPreferences"; // v0.26.13
-import { useSfx } from "@/hooks/useSfx"; // v0.26.13
+import { useRewardToast } from '@parel/core/hooks/useRewardToast"; // v0.26.9
+import { useCombatPreferences } from '@parel/core/hooks/useCombatPreferences"; // v0.26.13
+import { useSfx } from '@parel/core/hooks/useSfx"; // v0.26.13
 
 interface CraftingModalProps {
   show: boolean;

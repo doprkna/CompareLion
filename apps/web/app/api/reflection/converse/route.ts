@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import { prisma } from "@/lib/db";
 import { safeAsync, authError, successResponse, notFoundError, validationError } from "@/lib/api-handler";
 import { z } from "zod";
-import { GEN_CONFIG } from "@/lib/config/generator";
+import { GEN_CONFIG } from '@parel/core/config/generator';
 
 const ConverseSchema = z.object({
   reflectionId: z.string().min(1),
