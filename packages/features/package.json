@@ -1,0 +1,16 @@
+{
+  "name": "@parel/features",
+  "version": "0.0.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    "./flow": {
+      "import": "./flow/index.ts",
+      "require": "./flow/index.ts",
+      "types": "./flow/index.ts"
+    }
+  },
+  "sideEffects": false,
+  "private": true
+}
+

@@ -1,0 +1,486 @@
+﻿/**
+ * Fight Screen - Combat Engine 2.0
+ * /play/fight
+ * v0.36.35 - Combat Engine 2.0
+ */
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { apiFetch } from '@/lib/apiBase';
+import { toast } from 'sonner';
+import { Swords, Shield, Zap, Heart, Loader2, Trophy, Coins, Package, Sparkles } from 'lucide-react';
+
+interface EnemyCardProps {
+  enemy: {
+    id: string;
+    name: string;
+    level: number;
+    maxHp: number;
+    icon?: string | null;
+  };
+  currentHp: number;
+}
+
+function EnemyCard({ enemy, currentHp }: EnemyCardProps) {
+  const hpPercent = (currentHp / enemy.maxHp) * 100;
+
+  return (
+    <Card className="bg-card border-2 border-border">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-3">
+          <div className="text-4xl">{enemy.icon || 'ðŸ‘¹'}</div>
+          <div>
+            <div className="text-xl font-bold">{enemy.name}</div>
+            <div className="text-sm text-muted-foreground">Level {enemy.level}</div>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">HP</span>
+            <span className="font-bold">{currentHp} / {enemy.maxHp}</span>
+          </div>
+          <Progress value={hpPercent} className="h-3" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface PlayerCardProps {
+  stats: {
+    hp: number;
+    maxHp: number;
+    attack: number;
+    defense: number;
+    speed: number;
+  };
+  equipment?: Array<{ icon?: string; name: string }>;
+  petIcon?: string;
+}
+
+function PlayerCard({ stats, equipment = [], petIcon }: PlayerCardProps) {
+  const hpPercent = (stats.hp / stats.maxHp) * 100;
+
+  return (
+    <Card className="bg-card border-2 border-accent">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-3">
+          <div className="text-4xl">âš”ï¸</div>
+          <div>
+            <div className="text-xl font-bold">You</div>
+            <div className="text-sm text-muted-foreground">Hero</div>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">HP</span>
+              <span className="font-bold">{stats.hp} / {stats.maxHp}</span>
+            </div>
+            <Progress value={hpPercent} className="h-3" />
+          </div>
+
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="flex items-center gap-1">
+              <Zap className="h-3 w-3 text-yellow-500" />
+              <span>{stats.attack}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Shield className="h-3 w-3 text-blue-500" />
+              <span>{stats.defense}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Zap className="h-3 w-3 text-green-500" />
+              <span>{stats.speed}</span>
+            </div>
+          </div>
+
+          {(equipment.length > 0 || petIcon) && (
+            <div className="pt-2 border-t border-border">
+              <div className="flex items-center gap-2 flex-wrap">
+                {equipment.map((item, idx) => (
+                  <div key={idx} className="text-2xl" title={item.name}>
+                    {item.icon || 'âš”ï¸'}
+                  </div>
+                ))}
+                {petIcon && (
+                  <div className="text-2xl" title="Pet">
+                    {petIcon}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface FightLogProps {
+  logs: Array<{
+    round: number;
+    actor: 'user' | 'enemy';
+    action: 'attack' | 'dodge' | 'crit';
+    value: number;
+    crit?: boolean;
+    userHp?: number;
+    enemyHp?: number;
+  }>;
+}
+
+function FightLog({ logs }: FightLogProps) {
+  return (
+    <Card className="bg-card border-2 border-border">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Swords className="h-5 w-5" />
+          Fight Log
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2 max-h-64 overflow-y-auto">
+          {logs.map((log, idx) => (
+            <div
+              key={idx}
+              className="p-2 rounded bg-muted/50 animate-in fade-in duration-300"
+            >
+              <div className="text-sm">
+                <span className="font-semibold">Round {log.round}:</span>{' '}
+                <span className={log.actor === 'user' ? 'text-blue-500' : 'text-red-500'}>
+                  {log.actor === 'user' ? 'You' : 'Enemy'}
+                </span>{' '}
+                {log.action === 'dodge' ? (
+                  <span className="text-green-500">dodged!</span>
+                ) : log.action === 'crit' ? (
+                  <span className="text-yellow-500 font-bold">CRIT for {log.value} damage!</span>
+                ) : (
+                  <span>attacked for {log.value} damage</span>
+                )}
+                {log.userHp !== undefined && (
+                  <span className="text-muted-foreground ml-2">
+                    (You: {log.userHp} HP, Enemy: {log.enemyHp} HP)
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+interface FightResultProps {
+  result: 'win' | 'loss';
+  xpReward: number;
+  goldReward: number;
+  items: Array<{ itemId: string; quantity: number }>;
+  petXpGained: number;
+  onClose: () => void;
+}
+
+function FightResult({ result, xpReward, goldReward, items, petXpGained, onClose }: FightResultProps) {
+  const [showRewards, setShowRewards] = useState(false);
+
+  useEffect(() => {
+    if (result === 'win') {
+      setTimeout(() => setShowRewards(true), 500);
+    }
+  }, [result]);
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <Card className="w-full max-w-md bg-card border-2 border-accent">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">
+            {result === 'win' ? (
+              <span className="text-green-500 flex items-center justify-center gap-2">
+                <Trophy className="h-6 w-6" />
+                Victory!
+              </span>
+            ) : (
+              <span className="text-red-500 flex items-center justify-center gap-2">
+                ðŸ’€ Defeat
+              </span>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {result === 'win' && showRewards && (
+            <div className="space-y-3 animate-in fade-in duration-500">
+              <div className="flex items-center justify-center gap-4 text-lg">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-yellow-500" />
+                  <span>+{xpReward} XP</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Coins className="h-5 w-5 text-yellow-500" />
+                  <span>+{goldReward} Gold</span>
+                </div>
+              </div>
+
+              {items.length > 0 && (
+                <div className="pt-3 border-t border-border">
+                  <div className="text-sm font-semibold mb-2">Items Dropped:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {items.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2 bg-accent/10 rounded border border-accent animate-in zoom-in duration-300"
+                        style={{ animationDelay: `${idx * 100}ms` }}
+                      >
+                        <Package className="h-6 w-6 mx-auto mb-1" />
+                        <div className="text-xs text-center">x{item.quantity}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {petXpGained > 0 && (
+                <div className="text-sm text-muted-foreground text-center">
+                  Pet gained +{petXpGained} XP
+                </div>
+              )}
+            </div>
+          )}
+
+          <Button onClick={onClose} className="w-full" variant={result === 'win' ? 'default' : 'outline'}>
+            Continue
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function FightPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const enemyId = searchParams.get('enemyId');
+
+  const [enemy, setEnemy] = useState<any>(null);
+  const [playerStats, setPlayerStats] = useState<any>(null);
+  const [equipment, setEquipment] = useState<any[]>([]);
+  const [petIcon, setPetIcon] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [fighting, setFighting] = useState(false);
+  const [fightResult, setFightResult] = useState<any>(null);
+  const [fightLogs, setFightLogs] = useState<any[]>([]);
+  const [currentUserHp, setCurrentUserHp] = useState(0);
+  const [currentEnemyHp, setCurrentEnemyHp] = useState(0);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+
+    if (status === 'authenticated' && enemyId) {
+      loadFightData();
+    }
+  }, [status, enemyId, router]);
+
+  async function loadFightData() {
+    setLoading(true);
+    try {
+      // Load enemy
+      const enemyRes = await apiFetch(`/api/enemies/${enemyId}`);
+      if ((enemyRes as any).ok) {
+        const enemyData = (enemyRes as any).data;
+        setEnemy(enemyData);
+        setCurrentEnemyHp(enemyData.maxHp);
+      }
+
+      // Load player stats
+      const statsRes = await apiFetch('/api/user/stats');
+      if ((statsRes as any).ok) {
+        const stats = (statsRes as any).data;
+        setPlayerStats(stats);
+        setCurrentUserHp(stats.hp);
+      }
+
+      // Load equipment
+      const invRes = await apiFetch('/api/inventory');
+      if ((invRes as any).ok) {
+        const inventory = (invRes as any).data.inventory || [];
+        const equipped = inventory.filter((item: any) => item.equipped);
+        setEquipment(equipped);
+      }
+
+      // Load pet
+      const petRes = await apiFetch('/api/pets/equipped');
+      if ((petRes as any).ok) {
+        const pet = (petRes as any).data;
+        if (pet?.icon) {
+          setPetIcon(pet.icon);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load fight data:', error);
+      toast.error('Failed to load fight data');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleFight() {
+    if (!enemyId || fighting) return;
+
+    setFighting(true);
+    setFightLogs([]);
+    setCurrentUserHp(playerStats?.hp || 0);
+    setCurrentEnemyHp(enemy?.maxHp || 0);
+
+    try {
+      const res = await apiFetch('/api/combat/fight', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enemyId }),
+      });
+
+      if ((res as any).ok) {
+        const result = (res as any).data;
+        setFightResult(result);
+
+        // Animate logs
+        for (let i = 0; i < result.logs.length; i++) {
+          setTimeout(() => {
+            setFightLogs(result.logs.slice(0, i + 1));
+            const log = result.logs[i];
+            if (log.userHp !== undefined) {
+              setCurrentUserHp(log.userHp);
+            }
+            if (log.enemyHp !== undefined) {
+              setCurrentEnemyHp(log.enemyHp);
+            }
+          }, i * 500);
+        }
+
+        if (result.result === 'win') {
+          toast.success('Victory!');
+        } else {
+          toast.error('Defeat!');
+        }
+      } else {
+        throw new Error((res as any).error || 'Fight failed');
+      }
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to start fight');
+    } finally {
+      setFighting(false);
+    }
+  }
+
+  function handleCloseResult() {
+    setFightResult(null);
+    setFightLogs([]);
+    router.push('/play');
+  }
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="container mx-auto p-4 flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+
+  if (!enemy || !playerStats) {
+    return (
+      <div className="container mx-auto p-4">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">Enemy not found</p>
+            <Button onClick={() => router.push('/play')} className="mt-4">
+              Back to Play
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-bg p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-text">Combat</h1>
+          <Button onClick={() => router.push('/play')} variant="outline">
+            Back
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <EnemyCard
+            enemy={enemy}
+            currentHp={currentEnemyHp}
+          />
+          <PlayerCard
+            stats={{
+              hp: currentUserHp,
+              maxHp: playerStats.maxHp,
+              attack: playerStats.attack,
+              defense: playerStats.defense,
+              speed: playerStats.speed,
+            }}
+            equipment={equipment}
+            petIcon={petIcon}
+          />
+        </div>
+
+        {fightLogs.length > 0 && (
+          <FightLog logs={fightLogs} />
+        )}
+
+        <div className="flex justify-center">
+          <Button
+            onClick={handleFight}
+            disabled={fighting || !!fightResult}
+            size="lg"
+            className="px-8 py-6 text-lg"
+          >
+            {fighting ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Fighting...
+              </>
+            ) : fightResult ? (
+              'Fight Complete'
+            ) : (
+              <>
+                <Swords className="h-5 w-5 mr-2" />
+                Fight
+              </>
+            )}
+          </Button>
+        </div>
+
+        {fightResult && (
+          <FightResult
+            result={fightResult.result}
+            xpReward={fightResult.xpReward}
+            goldReward={fightResult.goldReward}
+            items={fightResult.items}
+            petXpGained={fightResult.petXpGained}
+            onClose={handleCloseResult}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+

@@ -1,11 +1,15 @@
 import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
 import { SCHEDULER_INTERVAL_MS } from '@/lib/config';
+import { hasRedis } from '@/lib/env';
 
 let _connection: IORedis | null = null;
 let _schedulerQueue: Queue | null = null;
 
 function getConnection(): IORedis | null {
+  if (!hasRedis) {
+    return null;
+  }
   if (!_connection && process.env.REDIS_URL) {
     _connection = new IORedis(process.env.REDIS_URL);
   }

@@ -4,7 +4,7 @@ import { toUserDTO, UserDTO } from '@/lib/dto/userDTO';
 import bcrypt from 'bcrypt';
 import { getUserProfile, updateUserProfile } from '@/lib/services/userService';
 import { prisma } from '@/lib/db';
-import { safeAsync, authError, notFoundError, validationError } from '@/lib/api-handler';
+import { safeAsync, authError, notFoundError, validationError, requireDb } from '@/lib/api-handler';
 import { buildSuccess, buildError, ApiErrorCode } from '@parel/api';
 import type { UserProfileWithStatsDTO, ProfileResponseDTO, SessionDTO, UserStatsDTO, TodayActivityDTO } from '@parel/types/dto';
 import { z } from 'zod';
@@ -29,6 +29,9 @@ function _msToHMS(ms: number) {
  * v0.41.10 - C3 Step 11: DTO Consolidation Batch #3
  */
 export const GET = safeAsync(async (req: NextRequest) => {
+  const dbCheck = requireDb(req);
+  if (dbCheck) return dbCheck;
+  
   const user = await getUserFromRequest(req);
   if (!user) {
     return buildError(req, ApiErrorCode.AUTHENTICATION_ERROR, 'Unauthorized');

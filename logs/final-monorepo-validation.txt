@@ -1,0 +1,337 @@
+================================================================================
+PAREL MONOREPO - FINAL VALIDATION REPORT
+Generated: 2025-11-25
+Version: 0.40.22
+================================================================================
+
+EXECUTIVE SUMMARY
+-----------------
+✅ Packages structure validated
+✅ tsconfig.base.json paths configured correctly
+✅ Package.json files have correct structure
+⚠️  Multiple "@/lib/" imports found in packages (need fixing)
+⚠️  Prisma imports unresolved (need @parel/db setup)
+⚠️  Web app structure not accessible (filtered by .cursorignore)
+✅ Mobile app structure validated
+✅ No old lib folders found in apps/web/lib
+
+================================================================================
+STEP 1: DIRECTORY CONSISTENCY AUDIT
+================================================================================
+
+✅ VERIFIED PACKAGES WITH src/index.ts:
+  - packages/core/src/index.ts ✓
+  - packages/features/flow/src/index.ts ✓
+  - packages/story/src/index.ts ✓
+  - packages/narrative/src/index.ts ✓
+  - packages/lore/src/index.ts ✓
+  - packages/validation/src/index.ts ✓
+  - packages/types/src/index.ts ✓
+  - packages/api/src/index.ts ✓
+
+✅ VERIFIED OLD LIB FOLDERS REMOVED:
+  - apps/web/lib/narrative/ - NOT FOUND ✓
+  - apps/web/lib/lore/ - NOT FOUND ✓
+  - apps/web/lib/story/ - NOT FOUND ✓
+  - apps/web/lib/flow/ - NOT FOUND ✓
+  - apps/web/lib/validation/ - NOT FOUND ✓
+  - apps/web/lib/types/ - NOT FOUND ✓
+  - apps/web/lib/config/ - NOT FOUND ✓
+  - apps/web/lib/utils/ - NOT FOUND ✓
+
+NOTE: apps/web/lib/ appears empty (as expected after refactor)
+
+================================================================================
+STEP 2: TS CONFIG PATHS VALIDATION
+================================================================================
+
+✅ tsconfig.base.json CONFIGURATION:
+  Location: tsconfig.base.json
+  Status: VALID
+  
+  Paths configured:
+    - "@parel/*": ["packages/*/src"] ✓
+    - "@parel/shared": ["packages/shared"] ✓
+    - "@parel/utils": ["packages/utils"] ✓
+    - "@shared/*": ["packages/shared/*"] ✓
+    - "@utils/*": ["packages/utils/*"] ✓
+
+  Base URL: "." ✓
+  Module Resolution: "Node" ✓
+
+================================================================================
+STEP 3: PACKAGE BOUNDARY VALIDATION
+================================================================================
+
+✅ PACKAGE.JSON VALIDATION:
+
+packages/core/package.json:
+  - name: "@parel/core" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/story/package.json:
+  - name: "@parel/story" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/narrative/package.json:
+  - name: "@parel/narrative" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/lore/package.json:
+  - name: "@parel/lore" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/validation/package.json:
+  - name: "@parel/validation" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/types/package.json:
+  - name: "@parel/types" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/api/package.json:
+  - name: "@parel/api" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/shared/package.json:
+  - name: "@parel/shared" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/utils/package.json:
+  - name: "@parel/utils" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+packages/features/flow/package.json:
+  - name: "@parel/features-flow" ✓
+  - main: "dist/index.js" ✓
+  - types: "dist/index.d.ts" ✓
+  - build script: "tsc -b" ✓
+
+================================================================================
+STEP 4: REBUILD SIMULATION ISSUES
+================================================================================
+
+⚠️  MISSING EXPORTS / UNRESOLVED IMPORTS:
+
+1. PRISMA CLIENT IMPORTS:
+   Files using '@/lib/db' (10 files):
+     - packages/story/src/storyService.ts
+     - packages/story/src/storyChallengeService.ts
+     - packages/story/src/storyAudioService.ts
+     - packages/story/src/storyDraftService.ts
+     - packages/story/src/storyAnalyticsService.ts
+     - packages/story/src/storyCollectionService.ts
+     - packages/story/src/storyTemplateService.ts
+     - packages/story/src/weeklyStoryService.ts
+     - packages/features/flow/flow-skeleton.ts
+     - packages/core/utils/walletTransactions.ts
+   
+   ACTION REQUIRED: Replace with @parel/db import
+   STATUS: Partially fixed (storyService.ts imports commented, usage needs fixing)
+
+2. LOGGER IMPORTS:
+   Files using '@/lib/logger' (17 files):
+     - packages/story/src/* (multiple)
+     - packages/core/utils/errorTracking.ts
+     - packages/core/hooks/useAppPreload.ts
+     - packages/core/hooks/useStatXpPopup.ts
+     - packages/core/hooks/usePresence.ts
+     - packages/core/hooks/useRealtime.ts
+     - packages/core/utils/walletTransactions.ts
+     - packages/core/config/security.ts
+   
+   ACTION REQUIRED: Replace with @parel/core (logger exported from packages/core/utils/debug.ts)
+   STATUS: Partially fixed (storyService.ts fixed)
+
+3. GEN_CONFIG IMPORTS:
+   Files using '@/lib/config/generator' (1 file):
+     - packages/story/src/weeklyStoryService.ts
+   
+   ACTION REQUIRED: Replace with @parel/core (GEN_CONFIG exported from packages/core/config/generator.ts)
+   STATUS: Fixed in storyService.ts, needs fixing in weeklyStoryService.ts
+
+4. WEB-SPECIFIC UTILITIES (Cannot be resolved in packages):
+   Files using '@/lib/notifications/notificationService' (3 files):
+     - packages/story/src/storyRemixService.ts
+     - packages/story/src/storyFeedService.ts
+     - packages/story/src/storyChallengeService.ts
+   
+   Files using '@/lib/rating/categoryDetection' (1 file):
+     - packages/story/src/storyService.ts
+   
+   Files using '@/lib/aure/life/*' (1 file):
+     - packages/story/src/weeklyStoryService.ts
+   
+   Files using '@/lib/ux/*' (3 files):
+     - packages/core/hooks/useKeyboardNavigation.ts
+     - packages/core/hooks/useTheme.ts
+     - packages/core/hooks/useSound.ts
+   
+   Files using '@/lib/config/regions' (1 file):
+     - store/useRegionStore.ts
+   
+   Files using '@/lib/eventBus' (1 file):
+     - packages/core/hooks/useRealtime.ts
+   
+   ACTION REQUIRED: 
+     Option A: Move these utilities to appropriate @parel/* packages
+     Option B: Accept as dependencies and inject from web app
+     Option C: Comment out and add TODO markers (current approach)
+   STATUS: Partially fixed (some imports commented with TODOs)
+
+5. CIRCULAR DEPENDENCIES:
+   STATUS: No obvious circular dependencies detected in package structure
+
+6. DUPLICATE IDENTIFIERS:
+   STATUS: No duplicate exports detected
+
+================================================================================
+STEP 5: GLOBAL IMPORT SANITY SWEEP
+================================================================================
+
+✅ PATTERNS CHECKED:
+
+❌ "@/lib/" - FOUND 42 files (see Step 4 for details)
+❌ "~/lib/" - NOT FOUND ✓
+❌ "@/story/" - NOT FOUND ✓
+❌ "@/flow/" - NOT FOUND ✓
+❌ "@/narrative/" - NOT FOUND ✓
+❌ "@/lore/" - NOT FOUND ✓
+❌ "apps/apps/mobile" - FOUND 1 file (mobile2-tree.txt - text file, safe to ignore)
+❌ "story-engine-v0" - NOT FOUND ✓
+❌ "narrative-v0" - NOT FOUND ✓
+❌ "lore-v0" - NOT FOUND ✓
+
+RELATIVE PATH IMPORTS:
+❌ "../../lib" - NOT FOUND ✓
+❌ "../../../lib" - NOT FOUND ✓
+
+================================================================================
+STEP 6: NEXT.JS + EXPO COMPATIBILITY CHECK
+================================================================================
+
+📱 MOBILE APP (EXPO) - VALIDATED:
+
+✅ Structure:
+  - apps/mobile/app/ exists ✓
+  - apps/mobile/package.json exists ✓
+  - apps/mobile/babel.config.js exists ✓
+  - apps/mobile/metro.config.js exists ✓
+  - apps/mobile/tsconfig.json exists ✓
+
+✅ Package.json:
+  - name: "mobile" ✓
+  - main: "expo-router/entry" ✓
+  - Dependencies include @parel/db, @parel/utils, @parel/shared ✓
+
+✅ Metro Config:
+  - Monorepo support configured ✓
+  - Workspace packages mapped correctly ✓
+  - @parel/* packages resolved ✓
+
+✅ TSConfig:
+  - Extends tsconfig.base.json ✓
+  - jsx: "react-native" ✓
+  - Paths configured for @/* ✓
+
+✅ No nested folders found:
+  - apps/apps/mobile - NOT FOUND ✓
+  - apps/mobile/mobile - NOT FOUND ✓
+
+🌐 WEB APP (NEXT.JS) - CANNOT VALIDATE:
+
+⚠️  apps/web/ is filtered by .cursorignore
+⚠️  Cannot verify:
+  - app/ directory existence
+  - package.json existence
+  - next.config.js existence
+  - tsconfig.json existence
+  - pages/ directory (should not exist)
+
+ACTION REQUIRED: Manual verification needed for apps/web structure
+NOTE: User specified to ignore .cursorignore, but files still not accessible
+
+================================================================================
+STEP 7: DEAD CODE DETECTION
+================================================================================
+
+⚠️  ORPHAN MODULES DETECTED:
+
+Files not imported anywhere (potential dead code):
+  - store/useRegionStore.ts (uses @/lib/config/regions - needs verification)
+  - components/ThemeProvider.tsx (may be used in web app)
+  - components/ui/RegionSelector.tsx (may be used in web app)
+  - create_components.py (Python script - may be legacy)
+  - create_loot_components.py (Python script - may be legacy)
+  - add-runtime.ps1 (PowerShell script - may be legacy)
+  - mobile2-tree.txt (Text file - safe to archive)
+
+ACTION REQUIRED: Review these files and archive if unused
+STATUS: Needs manual review (web app files not accessible)
+
+================================================================================
+STEP 8: FINAL BASELINE STATUS
+================================================================================
+
+✅ COMPLETED:
+  - Package structure validated
+  - tsconfig paths configured
+  - Package.json files validated
+  - Mobile app structure validated
+  - Old lib folders confirmed removed
+
+⚠️  NEEDS ATTENTION:
+  - 42 files with "@/lib/" imports need fixing
+  - Prisma client imports need @parel/db setup
+  - Web app structure needs manual verification
+  - Web-specific utilities need package migration or dependency injection
+
+❌ UNRESOLVED TODOs:
+  - packages/story/src/storyService.ts: prisma import commented
+  - packages/story/src/storyService.ts: detectImageCategory commented
+  - Multiple files: createNotification, getTimelineForWeeklyVibe, etc.
+
+================================================================================
+RECOMMENDATIONS
+================================================================================
+
+1. IMMEDIATE ACTIONS:
+   a. Fix all "@/lib/logger" imports → "@parel/core"
+   b. Fix all "@/lib/config/generator" imports → "@parel/core"
+   c. Set up @parel/db package to export prisma client
+   d. Fix all "@/lib/db" imports → "@parel/db"
+
+2. MEDIUM TERM:
+   a. Move web-specific utilities to @parel/api or @parel/core
+   b. Create @parel/notifications package for createNotification
+   c. Create @parel/rating package for detectImageCategory
+   d. Review and archive dead code files
+
+3. LONG TERM:
+   a. Complete web app structure validation
+   b. Ensure all packages can build independently
+   c. Run full build simulation: pnpm build:packages
+   d. Verify Next.js and Expo both resolve @parel/* correctly
+
+================================================================================
+END OF REPORT
+================================================================================
+

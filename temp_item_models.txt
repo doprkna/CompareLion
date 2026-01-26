@@ -1,0 +1,100 @@
+﻿model Item {
+  id              String          @id @default(cuid())
+  name            String
+  type            String`n  slot            String?
+  slot            String?
+  rarity          String          @default("common")
+  description     String?`n  region          String?
+  region          String?
+  power           Int?
+  defense         Int?
+  effect          String?
+  bonus Json?
+  icon            String?
+  key             String?         @unique // v0.26.2 - Semantic key for shop items (e.g. 'alpha-item')
+  emoji           String? // v0.26.2 - Display emoji for shop
+  createdAt       DateTime        @default(now())
+  availableUntil  DateTime?
+  cosmeticSubtype String`n  slot            String??
+  cosmeticType    String`n  slot            String??
+  diamondPrice    Int?
+  eventCurrency   String?
+  eventPrice      Int?
+  goldPrice       Int?
+  isFeatured      Boolean         @default(false)
+  isLimited       Boolean         @default(false)
+  isShopItem      Boolean         @default(false)`n  isTradable      Boolean         @default(true)
+  isTradable      Boolean         @default(true)
+  visualConfig    Json?
+  culturalItems   CulturalItem[]
+  dynamicPrice    DynamicPrice?
+  inventoryItems  InventoryItem[]`n  userItems       UserItem[]`n  userItems       UserItem[]
+  userItems       UserItem[]
+  rarityId        String?
+  rarityTier      RarityTier?     @relation(fields: [rarityId], references: [id], onDelete: SetNull)
+  ItemRecipe      ItemRecipe[]
+  ItemDiscovery   ItemDiscovery[]
+
+  @@index([type, rarity])
+  @@index([rarityId])
+  @@index([cosmeticType, cosmeticSubtype])
+  @@index([isShopItem, isFeatured])
+  @@index([key]) // v0.26.2
+  // Note: isCraftable and category indexes removed (v0.29.24) - fields don't exist yet
+  @@map("items")
+}
+
+model InventoryItem {
+  id             String          @id @default(cuid())
+  userId         String
+  itemId         String
+  itemKey        String? // v0.26.5 - Denormalized item key for quick lookup
+  rarity         String          @default("common") // v0.26.5 - Rarity tier (common, rare, epic, legendary, alpha)
+  power          Int             @default(0) // v0.26.5 - Item power stat
+  effectKey      String? // v0.26.5 - References ItemEffect.key
+  quantity       Int             @default(1)
+  equipped       Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt // v0.26.5
+  item           Item            @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  effect         ItemEffect?     @relation(fields: [effectKey], references: [key], onDelete: SetNull) // v0.26.5
+  marketListings MarketListing[]
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@index([rarity]) // v0.26.5
+  @@index([equipped]) // v0.26.5
+  @@map("inventory_items")
+}
+
+
+model UserItem {
+  id          String   @id @default(cuid())
+  userId      String
+  itemId      String
+  quantity    Int      @default(1)
+  equipped    Boolean  @default(false)
+  durability  Int?
+  createdAt   DateTime @default(now())
+  item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId])
+  @@index([userId])
+  @@index([itemId])
+  @@index([equipped])
+  @@map("user_items")
+}
+
+
+model ItemEffect {
+  key            String          @id // v0.26.5 - Unique effect key (e.g. 'life-steal', 'crit-bonus')
+  name           String // v0.26.5 - Display name
+  description    String // v0.26.5 - Effect description
+  type           String`n  slot            String? // v0.26.5 - 'buff' | 'debuff' | 'passive'
+  magnitude      Float // v0.26.5 - Effect strength/percentage
+  trigger        String? // v0.26.5 - Trigger event (e.g. 'onAttack', 'onKill', 'onCrit', 'onStart')
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt

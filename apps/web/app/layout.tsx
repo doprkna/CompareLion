@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -95,7 +95,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-bg text-text transition-colors duration-300`}>
+      <body className={`${inter.className} bg-bg text-text transition-colors duration-300`} suppressHydrationWarning>
         <Providers>
           <LocaleProvider>
           <ThemeProvider>

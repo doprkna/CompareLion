@@ -1,0 +1,14 @@
+{
+  "name": "@parel/redis",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "ioredis": "^5.7.0"
+  }
+}
+

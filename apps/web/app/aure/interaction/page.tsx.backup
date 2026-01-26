@@ -1,0 +1,529 @@
+﻿/**
+ * AURE Interaction Engine Page
+ * Quests, Faction Battles, Mix Mode, AI vs Human
+ * v0.39.2 - AURE Interaction Engine
+ */
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Loader2, Target, Sword, Sparkles, Bot } from 'lucide-react';
+import { apiFetch } from '@/lib/apiBase';
+
+interface Quest {
+  questId: string;
+  type: string;
+  description: string;
+  rewardXp: number;
+  isDaily: boolean;
+  isWeekly: boolean;
+  progress: number;
+  required: number;
+  completedAt: string | null;
+}
+
+interface FactionBattle {
+  id: string;
+  archetypeA: string;
+  archetypeB: string;
+  scoreA: number;
+  scoreB: number;
+  winner: 'A' | 'B' | 'tie';
+}
+
+export default function AureInteractionPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'quests' | 'battles' | 'mix' | 'aivshuman'>('quests');
+  const [loading, setLoading] = useState(true);
+  
+  // Quests state
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [completingQuest, setCompletingQuest] = useState<string | null>(null);
+  
+  // Battles state
+  const [battle, setBattle] = useState<FactionBattle | null>(null);
+  const [contributing, setContributing] = useState(false);
+  
+  // Mix Mode state
+  const [mixRequestIds, setMixRequestIds] = useState('');
+  const [mixStory, setMixStory] = useState<string | null>(null);
+  const [generatingMix, setGeneratingMix] = useState(false);
+  
+  // AI vs Human state
+  const [leftRequestId, setLeftRequestId] = useState('');
+  const [rightRequestId, setRightRequestId] = useState('');
+  const [battleId, setBattleId] = useState<string | null>(null);
+  const [aiWinner, setAiWinner] = useState<'left' | 'right' | null>(null);
+  const [humanVotes, setHumanVotes] = useState({ left: 0, right: 0 });
+  const [creatingBattle, setCreatingBattle] = useState(false);
+  const [voting, setVoting] = useState(false);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+      return;
+    }
+    if (status === 'authenticated') {
+      loadData();
+    }
+  }, [status, router, activeTab]);
+
+  async function loadData() {
+    setLoading(true);
+    try {
+      if (activeTab === 'quests') {
+        await loadQuests();
+      } else if (activeTab === 'battles') {
+        await loadBattle();
+      }
+    } catch (error) {
+      console.error('Failed to load data', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function loadQuests() {
+    try {
+      const res = await apiFetch('/api/aure/interaction/quests');
+      if ((res as any).ok && (res as any).data?.quests) {
+        setQuests((res as any).data.quests);
+      }
+    } catch (error) {
+      console.error('Failed to load quests', error);
+    }
+  }
+
+  async function loadBattle() {
+    try {
+      const res = await apiFetch('/api/aure/interaction/battles/current');
+      if ((res as any).ok && (res as any).data?.battle) {
+        setBattle((res as any).data.battle);
+      }
+    } catch (error) {
+      console.error('Failed to load battle', error);
+    }
+  }
+
+  async function handleCompleteQuest(questId: string) {
+    setCompletingQuest(questId);
+    try {
+      const res = await apiFetch('/api/aure/interaction/quests/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questId }),
+      });
+      if ((res as any).ok) {
+        await loadQuests();
+      }
+    } catch (error) {
+      console.error('Failed to complete quest', error);
+    } finally {
+      setCompletingQuest(null);
+    }
+  }
+
+  async function handleContribute(archetypeId: string) {
+    setContributing(true);
+    try {
+      const res = await apiFetch('/api/aure/interaction/battles/contribute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ archetypeId, amount: 1 }),
+      });
+      if ((res as any).ok) {
+        await loadBattle();
+      }
+    } catch (error) {
+      console.error('Failed to contribute', error);
+    } finally {
+      setContributing(false);
+    }
+  }
+
+  async function handleGenerateMix() {
+    const ids = mixRequestIds.split(',').map((id) => id.trim()).filter(Boolean);
+    if (ids.length < 2) {
+      alert('Need at least 2 request IDs');
+      return;
+    }
+
+    setGeneratingMix(true);
+    try {
+      const res = await apiFetch('/api/aure/interaction/mixmode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestIds: ids }),
+      });
+      if ((res as any).ok && (res as any).data?.story) {
+        setMixStory((res as any).data.story.story);
+      }
+    } catch (error) {
+      console.error('Failed to generate mix story', error);
+    } finally {
+      setGeneratingMix(false);
+    }
+  }
+
+  async function handleCreateBattle() {
+    if (!leftRequestId || !rightRequestId) {
+      alert('Both request IDs are required');
+      return;
+    }
+
+    setCreatingBattle(true);
+    try {
+      const res = await apiFetch('/api/aure/interaction/aivshuman', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leftRequestId, rightRequestId }),
+      });
+      if ((res as any).ok && (res as any).data?.battle) {
+        const battleData = (res as any).data.battle;
+        setBattleId(battleData.id);
+        setAiWinner(battleData.aiWinner);
+        setHumanVotes({ left: battleData.humanVotesA, right: battleData.humanVotesB });
+      }
+    } catch (error) {
+      console.error('Failed to create battle', error);
+    } finally {
+      setCreatingBattle(false);
+    }
+  }
+
+  async function handleVote(choice: 'left' | 'right') {
+    if (!battleId) return;
+
+    setVoting(true);
+    try {
+      const res = await apiFetch('/api/aure/interaction/aivshuman/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ battleId, choice }),
+      });
+      if ((res as any).ok && (res as any).data?.outcome) {
+        const outcome = (res as any).data.outcome;
+        setHumanVotes({
+          left: outcome.battle.humanVotesA,
+          right: outcome.battle.humanVotesB,
+        });
+        alert(`You ${outcome.userAgreement === 'match' ? 'agreed' : 'disagreed'} with AI!`);
+      }
+    } catch (error) {
+      console.error('Failed to vote', error);
+    } finally {
+      setVoting(false);
+    }
+  }
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <h1 className="text-3xl font-bold mb-6">AURE Interaction Engine</h1>
+
+      {/* Tabs */}
+      <div className="grid w-full grid-cols-4 gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab('quests')}
+          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+            activeTab === 'quests'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <Target className="h-4 w-4 inline mr-2" />
+          Quests
+        </button>
+        <button
+          onClick={() => setActiveTab('battles')}
+          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+            activeTab === 'battles'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <Sword className="h-4 w-4 inline mr-2" />
+          Battles
+        </button>
+        <button
+          onClick={() => setActiveTab('mix')}
+          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+            activeTab === 'mix'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <Sparkles className="h-4 w-4 inline mr-2" />
+          Mix Mode
+        </button>
+        <button
+          onClick={() => setActiveTab('aivshuman')}
+          className={`px-4 py-2 rounded-md font-medium transition-colors ${
+            activeTab === 'aivshuman'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <Bot className="h-4 w-4 inline mr-2" />
+          AI vs Human
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'quests' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Quests</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {quests.length > 0 ? (
+              <div className="space-y-4">
+                {quests.map((quest) => (
+                  <div key={quest.questId} className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="font-medium">{quest.description}</h3>
+                        <p className="text-sm text-gray-500">
+                          {quest.isDaily ? 'Daily' : 'Weekly'} â€¢ {quest.rewardXp} XP
+                        </p>
+                      </div>
+                      {quest.completedAt ? (
+                        <span className="text-green-600">Completed</span>
+                      ) : (
+                        <Button
+                          onClick={() => handleCompleteQuest(quest.questId)}
+                          disabled={completingQuest === quest.questId || quest.progress < quest.required}
+                          size="sm"
+                        >
+                          {completingQuest === quest.questId ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Completing...
+                            </>
+                          ) : (
+                            'Complete'
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-blue-600 h-2 rounded-full"
+                        style={{ width: `${Math.min((quest.progress / quest.required) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {quest.progress} / {quest.required}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No quests available</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === 'battles' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Faction Battles</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {battle ? (
+              <div>
+                <div className="mb-4">
+                  <h3 className="font-medium mb-2">
+                    {battle.archetypeA.replace(/-/g, ' ')} vs {battle.archetypeB.replace(/-/g, ' ')}
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="capitalize">{battle.archetypeA.replace(/-/g, ' ')}</span>
+                      <span>{battle.scoreA}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div
+                        className="bg-blue-600 h-4 rounded-full"
+                        style={{
+                          width: `${(battle.scoreA / (battle.scoreA + battle.scoreB || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="capitalize">{battle.archetypeB.replace(/-/g, ' ')}</span>
+                      <span>{battle.scoreB}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div
+                        className="bg-red-600 h-4 rounded-full"
+                        style={{
+                          width: `${(battle.scoreB / (battle.scoreA + battle.scoreB || 1)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleContribute(battle.archetypeA)}
+                    disabled={contributing}
+                    variant="outline"
+                  >
+                    {contributing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Contributing...
+                      </>
+                    ) : (
+                      `Support ${battle.archetypeA.replace(/-/g, ' ')}`
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => handleContribute(battle.archetypeB)}
+                    disabled={contributing}
+                    variant="outline"
+                  >
+                    {contributing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Contributing...
+                      </>
+                    ) : (
+                      `Support ${battle.archetypeB.replace(/-/g, ' ')}`
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-500">No active battle</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === 'mix' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Mix Mode</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Request IDs (comma-separated, at least 2):
+                </label>
+                <Input
+                  value={mixRequestIds}
+                  onChange={(e) => setMixRequestIds(e.target.value)}
+                  placeholder="requestId1, requestId2, requestId3"
+                />
+              </div>
+              <Button onClick={handleGenerateMix} disabled={generatingMix}>
+                {generatingMix ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  'Generate Story'
+                )}
+              </Button>
+              {mixStory && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium mb-2">Generated Story:</h3>
+                  <p className="text-sm whitespace-pre-line">{mixStory}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {activeTab === 'aivshuman' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>AI vs Human</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Left Request ID:</label>
+                <Input
+                  value={leftRequestId}
+                  onChange={(e) => setLeftRequestId(e.target.value)}
+                  placeholder="requestId1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Right Request ID:</label>
+                <Input
+                  value={rightRequestId}
+                  onChange={(e) => setRightRequestId(e.target.value)}
+                  placeholder="requestId2"
+                />
+              </div>
+              <Button onClick={handleCreateBattle} disabled={creatingBattle || !leftRequestId || !rightRequestId}>
+                {creatingBattle ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  'Create Battle'
+                )}
+              </Button>
+              {battleId && aiWinner && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-medium mb-2">AI picked: {aiWinner}</h3>
+                  <p className="text-sm mb-4">
+                    Human votes: Left {humanVotes.left} - Right {humanVotes.right}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button onClick={() => handleVote('left')} disabled={voting} variant="outline">
+                      {voting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Voting...
+                        </>
+                      ) : (
+                        'Pick Left'
+                      )}
+                    </Button>
+                    <Button onClick={() => handleVote('right')} disabled={voting} variant="outline">
+                      {voting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Voting...
+                        </>
+                      ) : (
+                        'Pick Right'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+

@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { safeAsync } from '@/lib/api-handler';
+import { safeAsync, requireDb, requireRedis } from '@/lib/api-handler';
 import { prisma } from '@/lib/db';
+import { hasRedis } from '@/lib/env';
 import Redis from 'ioredis';
 
 const REDIS_URL = process.env.REDIS_URL;
 let _redis: Redis | null = null;
 
 function getRedis(): Redis | null {
-  if (!_redis && REDIS_URL) {
+  if (!hasRedis || !REDIS_URL) {
+    return null;
+  }
+  if (!_redis) {
     try {
       _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
     } catch {
@@ -20,6 +24,9 @@ function getRedis(): Redis | null {
 function k(region: string) { return `event:today:${region.toUpperCase()}`; }
 
 export const GET = safeAsync(async (req: NextRequest) => {
+  const dbCheck = requireDb(req);
+  if (dbCheck) return dbCheck;
+  
   const region = (req.nextUrl.searchParams.get('region') || 'GLOBAL').toUpperCase();
   const todayStart = new Date(); todayStart.setUTCHours(0,0,0,0);
   const todayEnd = new Date(); todayEnd.setUTCHours(23,59,59,999);

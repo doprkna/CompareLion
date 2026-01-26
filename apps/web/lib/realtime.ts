@@ -13,7 +13,7 @@
 import { eventBus } from "@/lib/eventBus";
 import Redis from "ioredis";
 import { logger } from "@/lib/logger";
-import { env } from "@/lib/env";
+import { env, hasRedis } from "@/lib/env";
 
 const REDIS_URL = env.REDIS_URL;
 const CHANNEL_NAME = "parel-events";
@@ -33,7 +33,7 @@ function initializeRedis() {
     return;
   }
 
-  if (!REDIS_URL) {
+  if (!hasRedis || !REDIS_URL) {
     if (env.NODE_ENV === 'development') {
     }
     return;

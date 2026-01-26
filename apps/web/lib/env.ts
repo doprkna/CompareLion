@@ -54,6 +54,11 @@ export const env = {
   APP_URL: safeEnv("APP_URL", "http://localhost:3000"),
 };
 
+// Environment status helpers
+export const isProd = process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_APP_ENV === "production";
+export const hasDb = Boolean(process.env.DATABASE_URL);
+export const hasRedis = Boolean(process.env.REDIS_URL) || (Boolean(process.env.UPSTASH_REDIS_REST_URL) && Boolean(process.env.UPSTASH_REDIS_REST_TOKEN));
+
 // Optional runtime validation for required vars (skipped in build)
 if (env.IS_PROD && !env.IS_VERCEL) {
   for (const key of requiredInRuntime) {

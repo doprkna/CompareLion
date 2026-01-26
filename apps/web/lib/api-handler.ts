@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { handleApiError } from '@/lib/api/error-handler';
 import { logger } from '@parel/core/utils/debug';
+import { hasDb, hasRedis } from '@/lib/env';
 
 /**
  * Safe async wrapper for API route handlers
@@ -53,6 +54,26 @@ export function getRequiredSearchParam(req: NextRequest, key: string): string {
     throw new Error(`Missing required parameter: ${key}`);
   }
   return value;
+}
+
+/**
+ * Check if database is available, return disabled response if not
+ */
+export function requireDb(req: NextRequest): NextResponse | null {
+  if (!hasDb) {
+    return NextResponse.json({ disabled: true, reason: 'no_db' }, { status: 200 });
+  }
+  return null;
+}
+
+/**
+ * Check if Redis is available, return disabled response if not
+ */
+export function requireRedis(req: NextRequest): NextResponse | null {
+  if (!hasRedis) {
+    return NextResponse.json({ disabled: true, reason: 'no_redis' }, { status: 200 });
+  }
+  return null;
 }
 
 // Re-export common error responses for convenience

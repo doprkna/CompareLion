@@ -8,7 +8,7 @@
  */
 
 import { PrismaClient } from '@parel/db/client';
-import { env } from '@/lib/env';
+import { env, hasDb } from '@/lib/env';
 
 // Global singleton pattern (Vercel-safe)
 const globalForPrisma = globalThis as unknown as {
@@ -17,7 +17,11 @@ const globalForPrisma = globalThis as unknown as {
 
 let _prisma: PrismaClient | null = null;
 
-function getPrisma(): PrismaClient {
+function getPrisma(): PrismaClient | null {
+  if (!hasDb) {
+    return null;
+  }
+  
   if (!_prisma) {
     _prisma = globalForPrisma.prisma ??
       new PrismaClient({
@@ -35,10 +39,18 @@ function getPrisma(): PrismaClient {
 
 export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    return (getPrisma() as any)[prop];
+    const client = getPrisma();
+    if (!client) {
+      throw new Error("Prisma client not available - DATABASE_URL not configured");
+    }
+    return (client as any)[prop];
   },
   set(_target, prop, value) {
-    (getPrisma() as any)[prop] = value;
+    const client = getPrisma();
+    if (!client) {
+      throw new Error("Prisma client not available - DATABASE_URL not configured");
+    }
+    (client as any)[prop] = value;
     return true;
   }
 });

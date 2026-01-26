@@ -1,0 +1,15 @@
+{
+  "name": "@parel/api",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "sideEffects": false,
+  "private": true,
+  "dependencies": {
+    "next": "^14.0.0"
+  }
+}
+

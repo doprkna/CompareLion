@@ -1,0 +1,56 @@
+'use client';
+// sanity-fix
+import { useCallback, useEffect, useState } from 'react';
+export function useAffinities() {
+    const [affinities, setAffinities] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const load = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetch('/api/affinities', { cache: 'no-store' });
+            const json = await res.json();
+            if (!res.ok || !json?.success)
+                throw new Error(json?.error || 'Failed to load affinities');
+            setAffinities(json.affinities || []);
+        }
+        catch (e) {
+            setError(e?.message || 'Failed to load affinities');
+        }
+        finally {
+            setLoading(false);
+        }
+    }, []);
+    useEffect(() => { load(); }, [load]);
+    return { affinities, loading, error, reload: load };
+}
+export function useAffinityActions() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const post = async (url, body) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const json = await res.json();
+            if (!res.ok || !json?.success)
+                throw new Error(json?.error || 'Request failed');
+            return true;
+        }
+        catch (e) {
+            setError(e?.message || 'Request failed');
+            return false;
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    return {
+        loading,
+        error,
+        request: (targetId, type) => post('/api/affinities/request', { targetId, type }),
+        accept: (sourceId, type) => post('/api/affinities/accept', { sourceId, type }),
+        remove: (targetId, type) => post('/api/affinities/remove', { targetId, type }),
+    };
+}

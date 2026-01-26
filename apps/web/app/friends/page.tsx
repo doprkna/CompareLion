@@ -5,7 +5,7 @@ import { apiFetch } from "@/lib/apiBase";
 import { Input } from "@/components/ui/input";
 import { useXp } from "@/components/XpProvider";
 import { useToast } from "@/components/ui/use-toast";
-import { useEventBus } from '@parel/core/hooks/useEventBus";
+import { useEventBus } from '@parel/core/hooks/useEventBus';
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MessageCircle } from "lucide-react";
 import { logger } from "@/lib/logger";

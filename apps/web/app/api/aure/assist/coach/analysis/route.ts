@@ -1,0 +1,64 @@
+/**
+ * AURE Assist Engine - Coach Analysis API 2.0
+ * Get user analysis (strengths, weaknesses, trend)
+ * v0.39.9 - Coach 2.0 (Adaptive + Premium-ready)
+ */
+
+import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/options';
+import { prisma } from '@/lib/db';
+import { safeAsync, unauthorizedError, validationError, forbiddenError, successResponse } from '@/lib/api-handler';
+import { analyzeUserForCoach, CoachType } from '@/lib/aure/assist/coachService';
+
+/**
+ * GET /api/aure/assist/coach/analysis?type=snack|desk|outfit|room|generic
+ * Get user analysis (premium-only)
+ */
+export const GET = safeAsync(async (req: NextRequest) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return unauthorizedError('Authentication required');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!user) {
+    return unauthorizedError('User not found');
+  }
+
+  const { searchParams } = new URL(req.url);
+  const type = searchParams.get('type') as CoachType | null;
+
+  if (!type) {
+    return validationError('type parameter is required (snack|desk|outfit|room|generic)');
+  }
+
+  const validTypes: CoachType[] = ['snack', 'desk', 'outfit', 'room', 'generic'];
+  if (!validTypes.includes(type)) {
+    return validationError(`Invalid type. Must be one of: ${validTypes.join(', ')}`);
+  }
+
+  try {
+    const analysis = await analyzeUserForCoach(user.id, type);
+
+    // Check if premium required
+    if ('error' in analysis && analysis.error === 'premium_required') {
+      return forbiddenError('Coach is a premium feature. Upgrade to access personalized coaching.');
+    }
+
+    return successResponse({
+      success: true,
+      strengths: analysis.strengths,
+      weaknesses: analysis.weaknesses,
+      recentTrend: analysis.recentTrend,
+      avgMetrics: analysis.avgMetrics,
+    });
+  } catch (error: any) {
+    return validationError(error.message || 'Failed to get coach analysis');
+  }
+});
+

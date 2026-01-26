@@ -1,6 +1,7 @@
 import Redis from 'ioredis';
 import { prisma } from '@/lib/db';
 import { safeRuntime } from '@/lib/safe-runtime';
+import { hasRedis } from '@/lib/env';
 
 export interface AIContextDTO {
   region: string;
@@ -15,7 +16,10 @@ const REDIS_URL = process.env.REDIS_URL;
 let _redis: Redis | null = null;
 
 function getRedis(): Redis | null {
-  if (!_redis && REDIS_URL) {
+  if (!hasRedis || !REDIS_URL) {
+    return null;
+  }
+  if (!_redis) {
     try {
       _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
     } catch {

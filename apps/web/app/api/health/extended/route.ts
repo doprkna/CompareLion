@@ -15,7 +15,7 @@ import { prisma } from '@/lib/db';
 import { getRuntimeInfo } from '@/lib/build-info';
 import { safeAsync } from '@/lib/api-handler';
 import { getFlags } from '@parel/core/config/flags';
-import { env } from '@/lib/env';
+import { env, hasDb } from '@/lib/env';
 import { buildSuccess } from '@parel/api';
 
 // Track startup time for uptime calculation
@@ -25,7 +25,7 @@ const startTime = Date.now();
  * Check database connectivity and measure latency
  */
 async function checkDatabase() {
-  if (!env.DATABASE_URL) {
+  if (!hasDb) {
     return {
       status: 'unavailable',
       error: 'DATABASE_URL not configured',

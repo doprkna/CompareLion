@@ -1,10 +1,14 @@
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
+import { hasRedis } from '@/lib/env';
 
 let _connection: IORedis | null = null;
 let _runQueue: Queue | null = null;
 
 function getConnection(): IORedis | null {
+  if (!hasRedis) {
+    return null;
+  }
   if (!_connection && process.env.REDIS_URL) {
     _connection = new IORedis(process.env.REDIS_URL);
   }

@@ -1,8 +1,12 @@
 import IORedis from 'ioredis';
+import { hasRedis } from '@/lib/env';
 
 let _connection: IORedis | null = null;
 
-function getConnection(): IORedis {
+function getConnection(): IORedis | null {
+  if (!hasRedis) {
+    return null;
+  }
   if (!_connection) {
     _connection = new IORedis(process.env.REDIS_URL!);
   }
@@ -11,10 +15,18 @@ function getConnection(): IORedis {
 
 const connection = new Proxy({} as IORedis, {
   get(_target, prop) {
-    return (getConnection() as any)[prop];
+    const conn = getConnection();
+    if (!conn) {
+      throw new Error("Redis connection not available - REDIS_URL not configured");
+    }
+    return (conn as any)[prop];
   },
   set(_target, prop, value) {
-    (getConnection() as any)[prop] = value;
+    const conn = getConnection();
+    if (!conn) {
+      throw new Error("Redis connection not available - REDIS_URL not configured");
+    }
+    (conn as any)[prop] = value;
     return true;
   }
 });

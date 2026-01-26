@@ -1,0 +1,55 @@
+'use client';
+// sanity-fix
+/**
+ * useRituals Hook
+ * v0.41.19 - Migrated to unified state store (read-only part)
+ */
+
+import { useEffect, useState, useCallback } from 'react';
+import { useRitualsStore } from '../state/stores/ritualsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { Ritual, RitualUserProgress } from '../state/stores/ritualsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+
+export type { Ritual, RitualUserProgress };
+
+export function useRituals() {
+  const { state, load, reload } = useRitualsStore();
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return {
+    ritual: state.data?.ritual || null,
+    userProgress: state.data?.userProgress || null,
+    loading: state.loading,
+    error: state.error,
+    reload,
+  };
+}
+
+export function useCompleteRitual() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const complete = useCallback(async (ritualId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/rituals/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ritualId }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json?.success) throw new Error(json?.error || 'Failed to complete ritual');
+      return json;
+    } catch (e: any) {
+      setError(e?.message || 'Failed to complete ritual');
+      throw e;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { complete, loading, error };
+}

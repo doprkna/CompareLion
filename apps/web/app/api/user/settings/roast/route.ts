@@ -9,26 +9,50 @@ const SetRoastSchema = z.object({
   level: z.number().int().min(1).max(5),
 });
 
-export const GET = safeAsync(async (req: NextRequest) => {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return unauthorizedError('Unauthorized');
+export const GET = async (req: NextRequest) => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({
+        enabled: false,
+        text: null,
+        updatedAt: new Date().toISOString(),
+        reason: 'unauthenticated',
+      }, { status: 200 });
+    }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true, settings: true },
-  });
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, settings: true },
+    });
 
-  if (!user) return unauthorizedError('Unauthorized');
+    if (!user) {
+      return NextResponse.json({
+        enabled: false,
+        text: null,
+        updatedAt: new Date().toISOString(),
+        reason: 'unauthenticated',
+      }, { status: 200 });
+    }
 
-  // Extract roast level from settings (default to 3)
-  const settings = (user.settings as any) || {};
-  const roastLevel = settings.roastLevel || 3;
+    // Extract roast level from settings (default to 3)
+    const settings = (user.settings as any) || {};
+    const roastLevel = settings.roastLevel || 3;
 
-  return NextResponse.json({
-    success: true,
-    roastLevel,
-  });
-});
+    return NextResponse.json({
+      enabled: roastLevel > 0,
+      text: null,
+      updatedAt: new Date().toISOString(),
+    }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({
+      enabled: false,
+      text: null,
+      updatedAt: new Date().toISOString(),
+      reason: 'unavailable',
+    }, { status: 200 });
+  }
+};
 
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);

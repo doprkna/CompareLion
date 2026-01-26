@@ -1,4 +1,5 @@
 import { Queue } from 'bullmq';
+import { hasRedis } from '@/lib/env';
 
 export type QuestionGenJob = {
   ssscId: string;
@@ -10,6 +11,9 @@ export type QuestionGenJob = {
 let _questionGenQueue: Queue<QuestionGenJob> | null = null;
 
 function getQuestionGenQueue(): Queue<QuestionGenJob> | null {
+  if (!hasRedis) {
+    return null;
+  }
   if (!_questionGenQueue && process.env.REDIS_HOST && process.env.REDIS_PORT) {
     _questionGenQueue = new Queue<QuestionGenJob>('question-gen', {
       connection: {
