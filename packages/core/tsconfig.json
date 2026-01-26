@@ -5,6 +5,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "include": ["src", "utils", "config"]
+  "include": ["src", "utils", "config", "hooks"]
 }
 
