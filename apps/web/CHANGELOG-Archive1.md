@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## [0.42.35] - 2026-01-26
+
+### Fixed
+  - Fixed - Vercel functions pattern: Removed functions block from vercel.json (Next.js App Router handles API routes automatically, pattern was invalid)
+
+## [0.42.34] - 2026-01-26
+
+### Fixed
+  - Fixed - Vercel Hobby cron limit: Removed cron section from vercel.json (was blocking redeploy with "*/5 * * * *" schedule)
+
+## [0.42.33] - 2026-01-26
+
+### Changed
+  - Deployment: Configuration updates for Vercel deployment
+
+## [0.42.32] - 2026-01-26
+
+### Changed
+  - Deployment: Updated Vercel configuration for Hobby plan compatibility
+
 ## [0.42.31] - 2026-01-26
 
 ### Fixed
@@ -15,8 +35,10 @@
   - Fixed - Neon Postgres + Upstash Redis support: Added env helpers (isProd, hasDb, hasRedis), conditional Prisma/Redis initialization, requireDb/requireRedis helpers in api-handler, updated /api/health to show env status
   - Fixed - Prisma schema validation: Removed missing `Fight` model references from User and Enemy models, fixed duplicate field definitions (region, isTradable, userItems), fixed Notification relation name mismatch, removed invalid ItemEffect->UserItem relation
   - Fixed - Missing hooks build: Added "hooks" to packages/core/tsconfig.json include array so useCommunity, useSocial, useFactions are compiled and available in dist/
-  - Fixed - Node version: Changed engines.node from ">=20.10.0" to "22.x" in root package.json to prevent Vercel from using Node 24.x 
-
+  - Fixed - Node version: Changed engines.node from ">=20.10.0" to "22.x" in root package.json to prevent Vercel from using Node 24.x
+  - Fixed - Vercel build module resolution: Updated all deep imports from "@parel/core/hooks/*" to "@parel/core" barrel export in community, duels, factions, and social pages/components
+  - Fixed - Vercel monorepo deployment: Added @parel/core, @parel/api, @parel/types as workspace dependencies in apps/web/package.json, updated apps/web engines.node to "22.x", added build:vercel script to root package.json
+  - Fixed - Vercel Hobby cron limit: Removed cron definition from vercel.json (was running every 5 minutes, exceeds Hobby plan once-per-day limit) 
 
 
 ## [0.42.30] - 2026-01-09
