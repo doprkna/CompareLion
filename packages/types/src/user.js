@@ -20,10 +20,10 @@ export function toUserProfile(user) {
         tone: user.tone || null,
         onboardingCompleted: user.onboardingCompleted,
         // Stats
-        xp: user.xp,
-        level: user.level,
-        streakCount: user.streakCount,
-        questionsAnswered: user.questionsAnswered,
+        xp: user.xp ?? undefined,
+        level: user.level ?? undefined,
+        streakCount: user.streakCount ?? undefined,
+        questionsAnswered: user.questionsAnswered ?? undefined,
         // Metadata
         createdAt: user.createdAt,
         lastLoginAt: user.lastLoginAt,
@@ -38,6 +38,6 @@ export function toOnboardingProfile(user) {
         region: user.region,
         interests: (user.interests || []),
         tone: user.tone,
-        onboardingCompleted: user.onboardingCompleted,
+        onboardingCompleted: user.onboardingCompleted ?? false,
     };
 }

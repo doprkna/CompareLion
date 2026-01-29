@@ -138,7 +138,7 @@ export function applyPlugins(
       
       // Validate plugin output (basic check)
       if (pluginOverrides && typeof pluginOverrides === 'object') {
-        config = deepMerge(config, pluginOverrides);
+        config = deepMerge(config, pluginOverrides) as UnifiedConfig;
       } else {
         if (process.env.NODE_ENV === 'development') {
           console.warn(
@@ -206,9 +206,5 @@ export function validatePlugin(plugin: unknown): {
   };
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export type { ConfigPlugin };
+// ConfigPlugin is exported at declaration (line 25)
 

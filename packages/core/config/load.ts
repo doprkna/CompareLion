@@ -46,7 +46,7 @@ function deepMerge<T extends Record<string, any>>(
       typeof targetValue === 'object' &&
       !Array.isArray(targetValue)
     ) {
-      result[key] = deepMerge(targetValue || {}, sourceValue as Partial<T[Extract<keyof T, string>]>);
+      result[key] = deepMerge((targetValue || {}) as T[Extract<keyof T, string>], sourceValue as Partial<T[Extract<keyof T, string>]>);
     }
     // Primitives are replaced
     else {
@@ -132,7 +132,12 @@ function getRuntimeOverrides(): PartialUnifiedConfig {
     overrides.security = {};
   }
   if (!overrides.security.captcha) {
-    overrides.security.captcha = {};
+    overrides.security.captcha = {
+      enabled: false,
+      siteKey: '',
+      secret: '',
+      apiUrl: 'https://hcaptcha.com/siteverify',
+    };
   }
   overrides.security.captcha.siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '';
   overrides.security.captcha.secret = process.env.HCAPTCHA_SECRET || '';
@@ -140,13 +145,18 @@ function getRuntimeOverrides(): PartialUnifiedConfig {
     !!process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY && env === 'production';
   
   if (!overrides.security.auth) {
-    overrides.security.auth = {};
+    overrides.security.auth = {
+      maxFailedAttempts: 3,
+      demoBypass: process.env.NEXT_PUBLIC_ALLOW_DEMO_LOGIN === 'true' || env !== 'production',
+    };
   }
   overrides.security.auth.demoBypass = 
     process.env.NEXT_PUBLIC_ALLOW_DEMO_LOGIN === 'true' || env !== 'production';
   
   if (!overrides.security.rateLimit) {
-    overrides.security.rateLimit = {};
+    overrides.security.rateLimit = {
+      enabled: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL,
+    };
   }
   overrides.security.rateLimit.enabled = 
     !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL;
@@ -156,21 +166,33 @@ function getRuntimeOverrides(): PartialUnifiedConfig {
     overrides.api = {};
   }
   if (!overrides.api.generator) {
-    overrides.api.generator = {};
+    overrides.api.generator = {
+      maxConcurrency: Number(process.env.NEXT_PUBLIC_GEN_MAX_CONCURRENCY || 2),
+      questionsPerCategoryMin: Number(process.env.NEXT_PUBLIC_Q_PER_CAT_MIN || 5),
+      questionsPerCategoryMax: Number(process.env.NEXT_PUBLIC_Q_PER_CAT_MAX || 12),
+      batchSize: Number(process.env.NEXT_PUBLIC_GEN_BATCH_SIZE || 50),
+      maxRetries: Number(process.env.NEXT_PUBLIC_GEN_MAX_RETRIES || 3),
+      retryDelayMs: Number(process.env.NEXT_PUBLIC_GEN_RETRY_DELAY || 1000),
+      languages: (process.env.NEXT_PUBLIC_GEN_LANGS || 'en').split(',').map(s => s.trim()),
+      gptUrl: process.env.GPT_GEN_URL || '',
+      gptKey: process.env.GPT_GEN_KEY || '',
+      adminToken: process.env.ADMIN_TOKEN || '',
+      dryRun: process.env.NEXT_PUBLIC_GEN_DRY_RUN === 'true',
+    };
   }
-  overrides.api.generator.maxConcurrency = 
+  overrides.api.generator.maxConcurrency =
     Number(process.env.NEXT_PUBLIC_GEN_MAX_CONCURRENCY || 2);
-  overrides.api.generator.questionsPerCategoryMin = 
+  overrides.api.generator.questionsPerCategoryMin =
     Number(process.env.NEXT_PUBLIC_Q_PER_CAT_MIN || 5);
-  overrides.api.generator.questionsPerCategoryMax = 
+  overrides.api.generator.questionsPerCategoryMax =
     Number(process.env.NEXT_PUBLIC_Q_PER_CAT_MAX || 12);
-  overrides.api.generator.batchSize = 
+  overrides.api.generator.batchSize =
     Number(process.env.NEXT_PUBLIC_GEN_BATCH_SIZE || 50);
-  overrides.api.generator.maxRetries = 
+  overrides.api.generator.maxRetries =
     Number(process.env.NEXT_PUBLIC_GEN_MAX_RETRIES || 3);
-  overrides.api.generator.retryDelayMs = 
+  overrides.api.generator.retryDelayMs =
     Number(process.env.NEXT_PUBLIC_GEN_RETRY_DELAY || 1000);
-  overrides.api.generator.languages = 
+  overrides.api.generator.languages =
     (process.env.NEXT_PUBLIC_GEN_LANGS || 'en').split(',').map(s => s.trim());
   overrides.api.generator.gptUrl = process.env.GPT_GEN_URL || '';
   overrides.api.generator.gptKey = process.env.GPT_GEN_KEY || '';
@@ -254,15 +276,15 @@ export function loadConfig(userOverrides?: PartialUnifiedConfig): Readonly<Unifi
 
   // Step 2: Apply environment layer
   const envConfig = getEnvironmentConfig();
-  config = deepMerge(config, envConfig);
+  config = deepMerge(config, envConfig) as UnifiedConfig;
 
   // Step 3: Apply runtime overrides (env vars)
   const runtimeOverrides = getRuntimeOverrides();
-  config = deepMerge(config, runtimeOverrides);
+  config = deepMerge(config, runtimeOverrides) as UnifiedConfig;
 
   // Step 4: Apply user overrides
   if (userOverrides) {
-    config = deepMerge(config, userOverrides);
+    config = deepMerge(config, userOverrides) as UnifiedConfig;
   }
 
   // Step 5: Apply plugin extensions

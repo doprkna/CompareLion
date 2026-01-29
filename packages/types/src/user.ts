@@ -55,10 +55,10 @@ export function toUserProfile(user: PrismaUser): UserProfile {
     onboardingCompleted: user.onboardingCompleted,
     
     // Stats
-    xp: user.xp,
-    level: user.level,
-    streakCount: user.streakCount,
-    questionsAnswered: user.questionsAnswered,
+    xp: user.xp ?? undefined,
+    level: user.level ?? undefined,
+    streakCount: user.streakCount ?? undefined,
+    questionsAnswered: user.questionsAnswered ?? undefined,
     
     // Metadata
     createdAt: user.createdAt,
@@ -75,7 +75,7 @@ export function toOnboardingProfile(user: PrismaUser): OnboardingProfile {
     region: user.region as RegionId | undefined,
     interests: (user.interests || []) as InterestId[],
     tone: user.tone as ToneId | undefined,
-    onboardingCompleted: user.onboardingCompleted,
+    onboardingCompleted: user.onboardingCompleted ?? false,
   };
 }
 

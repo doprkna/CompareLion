@@ -469,8 +469,8 @@ export const ICONS: IconRegistry = {
     return createIconWrapper(Brain);
   },
   mask: async () => {
-    const { Mask } = await import('lucide-react');
-    return createIconWrapper(Mask);
+    const { VenetianMask } = await import('lucide-react');
+    return createIconWrapper(VenetianMask);
   },
   lock: async () => {
     const { Lock } = await import('lucide-react');

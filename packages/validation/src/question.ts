@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateAndNormalizeTags } from '@/lib/questions/tags/tagUtils';
+import { validateAndNormalizeTags } from './tagUtilsStub';
 
 export const QuestionTextSchema = z.object({
   lang: z.string().min(2).max(5),

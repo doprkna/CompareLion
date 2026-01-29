@@ -3,7 +3,11 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@parel/core": ["../core/dist"],
+      "@parel/core/*": ["../core/dist/*"]
+    }
   },
   "include": ["src"],
   "references": [{ "path": "../core" }]

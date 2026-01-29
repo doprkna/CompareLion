@@ -4,9 +4,20 @@
     "composite": true,
     "rootDir": ".",
     "outDir": "./dist",
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "@parel/*": ["packages/*/src"],
+      "@parel/core/utils/*": ["packages/core/utils/*"],
+      "@parel/core/config": ["packages/ui/stubs/core-config"],
+      "@parel/ui": ["packages/ui"],
+      "@parel/ui/atoms": ["packages/ui/atoms"],
+      "@parel/shared": ["packages/shared"],
+      "@parel/utils": ["packages/utils"],
+      "@shared/*": ["packages/shared/*"],
+      "@utils/*": ["packages/utils/*"]
+    }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "stubs/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

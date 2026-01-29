@@ -19,7 +19,7 @@ export interface IconProps {
   size?: IconSize | number; // Size variant or numeric pixel size
   className?: string; // Additional CSS classes
   'aria-label'?: string; // Accessibility label (optional)
-  'aria-hidden'?: boolean; // Hide from screen readers (default: true if no aria-label)
+  'aria-hidden'?: boolean | string; // Hide from screen readers (default: true if no aria-label)
 }
 
 const sizeMap: Record<IconSize, number> = {

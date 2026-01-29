@@ -33,7 +33,6 @@ export const EMOJI_TO_CANONICAL: Record<string, string> = {
   // Stat XP icons
   '💤': 'moon', // ✅ Exists in registry (implemented)
   '💪': 'heart', // ✅ Exists in registry (implemented) - Health stat uses heart icon
-  '📘': 'book', // ✅ Exists in registry (implemented) - Knowledge stat
   '🎨': 'palette', // ✅ Exists in registry (implemented)
 
   // Toast theme icons

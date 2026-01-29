@@ -3,8 +3,18 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@parel/*": ["packages/*/src"],
+      "@parel/core/utils/*": ["packages/core/utils/*"],
+      "@parel/core/config": ["packages/core/config"],
+      "@parel/shared": ["packages/shared"],
+      "@parel/utils": ["packages/utils"],
+      "@shared/*": ["packages/shared/*"],
+      "@utils/*": ["packages/utils/*"],
+      "@parel/api": ["packages/core/stubs/parel-api"]
+    }
   },
-  "include": ["src", "utils", "config", "hooks"]
+  "include": ["src", "utils", "config", "hooks", "stubs"]
 }
 

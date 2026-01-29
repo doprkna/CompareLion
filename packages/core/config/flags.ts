@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Dynamic Feature Flags Layer
  * C6 Step 7: Dynamic Feature Flags + Plugin Extension Points
  * v0.42.23
@@ -341,4 +341,4 @@ export function getFeatureFlagsSync(
 // EXPORTS
 // ============================================================================
 
-export type { FeatureFlagName, FlagEvaluationContext, RemoteFlagSource };
+export type { RemoteFlagSource };

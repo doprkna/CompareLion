@@ -9,6 +9,7 @@
   "sideEffects": false,
   "private": true,
   "dependencies": {
+    "@parel/core": "workspace:*",
     "next": "^14.0.0"
   }
 }
