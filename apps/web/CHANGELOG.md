@@ -9,3 +9,4 @@
   - Fixed - 
   - Fixed - 
   - Fixed - 
+  - Fixed - Single Vercel config: Root vercel.json is sole source of truth; installCommand set to pnpm install --frozen-lockfile, buildCommand to pnpm build; apps/web/vercel.json moved to vercel.json.disabled for monorepo deploy from repo root
