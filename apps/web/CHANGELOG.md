@@ -1,5 +1,10 @@
 
-## [0.42.36] - 2026-01-29
+## [Unreleased]
+
+### Fixed
+  - Vercel build: use build:vercel (exclude @parel/story); devCommand to pnpm run dev
+
+## [0.42.36] - 2026-01-30
 
 ### Fixed
   - Fixed packages/api envelope.ts: cast addRequestIdToResponse return to NextResponse to satisfy TS2740

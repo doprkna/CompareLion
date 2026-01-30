@@ -24,7 +24,7 @@
     "dev:mobile": "pnpm --filter mobile start",
     "build": "pnpm -r run build",
     "build:packages": "pnpm --filter \"@parel/*\" run build",
-    "build:vercel": "pnpm --filter \"@parel/*\" run build && pnpm --filter @parel/web run build",
+    "build:vercel": "pnpm -r --filter \"!@parel/story\" run build",
     "build:web": "cd apps/web && pnpm run build:web",
     "build:android": "cd apps/web && pnpm run build:android",
     "build:ios": "cd apps/web && pnpm run build:ios",
