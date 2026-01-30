@@ -1,7 +1,3 @@
-/**
- * useRarities Hook
- * v0.41.18 - Migrated to unified state store
- */
 export declare function useRarities(): {
     rarities: any;
     loading: any;
@@ -9,7 +5,7 @@ export declare function useRarities(): {
     reload: any;
 };
 export declare function useSeedRarities(): {
-    seed: any;
-    loading: any;
-    error: any;
+    seed: () => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

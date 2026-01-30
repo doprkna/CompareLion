@@ -92,7 +92,8 @@ export function useActiveQuests() {
     setError(null);
     try {
       const response = await defaultClient.get('/quests/active');
-      setQuests(response?.data?.quests || { daily: [], weekly: [], story: [], side: [] }); // sanity-fix
+      type ActiveQuests = { daily: Quest[]; weekly: Quest[]; story: Quest[]; side: Quest[] };
+      setQuests((response?.data as { quests?: ActiveQuests } | undefined)?.quests ?? { daily: [], weekly: [], story: [], side: [] }); // sanity-fix
     } catch (err) {
       const errorMessage = err instanceof ApiClientError
         ? err.message

@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useCallback, useRef } from 'react';
 export function useFadeTransition() {
     const fadeIntervalRef = useRef(null);

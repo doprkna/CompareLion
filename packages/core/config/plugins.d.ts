@@ -90,4 +90,3 @@ export declare function validatePlugin(plugin: unknown): {
     valid: boolean;
     errors: string[];
 };
-export type { ConfigPlugin };

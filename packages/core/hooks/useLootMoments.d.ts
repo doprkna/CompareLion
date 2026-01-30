@@ -1,16 +1,16 @@
 export declare function useLootMoments(limit?: number): {
-    loot: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loot: any[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useLootCheck(): {
-    check: any;
-    loading: any;
-    error: any;
+    check: (trigger: "reflection" | "mission" | "comparison" | "levelup" | "random") => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useLootRedeem(): {
-    redeem: any;
-    loading: any;
-    error: any;
+    redeem: (lootId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

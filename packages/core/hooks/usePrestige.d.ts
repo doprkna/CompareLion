@@ -1,5 +1,5 @@
 export declare function usePrestige(): {
-    prestige: any;
-    loading: any;
-    error: any;
+    prestige: () => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

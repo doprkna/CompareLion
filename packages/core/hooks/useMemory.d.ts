@@ -1,19 +1,19 @@
 export declare function useLatestMemory(): {
     entry: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useMemoryArchive(): {
-    entries: any;
-    nextCursor: any;
-    loading: any;
-    error: any;
-    loadMore: () => any;
-    reload: () => any;
+    entries: any[];
+    nextCursor: string | undefined;
+    loading: boolean;
+    error: string | null;
+    loadMore: () => Promise<void> | undefined;
+    reload: () => Promise<void>;
 };
 export declare function useGenerateMemory(): {
-    generate: any;
-    loading: any;
-    error: any;
+    generate: () => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

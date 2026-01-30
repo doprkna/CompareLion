@@ -1,8 +1,3 @@
-/**
- * useQuests Hook
- * Fetches quests and active quests
- * v0.41.13 - Migrated GET calls to unified API client
- */
 export interface Quest {
     id: string;
     questId: string;
@@ -32,19 +27,24 @@ export interface Quest {
     completedAt?: string | null;
 }
 export declare function useQuests(): {
-    quests: any;
-    loading: any;
-    error: any;
+    quests: Quest[];
+    loading: boolean;
+    error: string | null;
     reload: () => Promise<void>;
 };
 export declare function useActiveQuests(): {
-    quests: any;
-    loading: any;
-    error: any;
+    quests: {
+        daily: Quest[];
+        weekly: Quest[];
+        story: Quest[];
+        side: Quest[];
+    };
+    loading: boolean;
+    error: string | null;
     reload: () => Promise<void>;
 };
 export declare function useClaimQuest(): {
     claim: (userQuestId: string) => Promise<any>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };

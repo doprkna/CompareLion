@@ -1,6 +1,6 @@
 export declare function useCurrentGeneration(): {
     current: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };

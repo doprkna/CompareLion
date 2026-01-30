@@ -11,7 +11,7 @@ import { useEffect, useRef } from 'react';
 import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 import type { NotificationsResponseDTO } from '@parel/types'; // sanity-fix: replaced @parel/types/dto with @parel/types (dto not exported as subpath)
 // sanity-fix: replaced sonner import with local stub (missing dependency)
-const toast = { success: () => {}, error: () => {}, info: () => {}, warning: () => {} };
+const toast = { success: (..._a: unknown[]) => {}, error: (..._a: unknown[]) => {}, info: (..._a: unknown[]) => {}, warning: (..._a: unknown[]) => {} };
 import { getUiConfig } from '../config/unified'; // sanity-fix: replaced @parel/core/config self-import with relative import
 
 const TYPE_ICONS: Record<string, string> = {

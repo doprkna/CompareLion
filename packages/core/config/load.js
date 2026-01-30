@@ -34,7 +34,7 @@ function deepMerge(target, source) {
             targetValue &&
             typeof targetValue === 'object' &&
             !Array.isArray(targetValue)) {
-            result[key] = deepMerge(targetValue || {}, sourceValue);
+            result[key] = deepMerge((targetValue || {}), sourceValue);
         }
         // Primitives are replaced
         else {
@@ -107,19 +107,29 @@ function getRuntimeOverrides() {
         overrides.security = {};
     }
     if (!overrides.security.captcha) {
-        overrides.security.captcha = {};
+        overrides.security.captcha = {
+            enabled: false,
+            siteKey: '',
+            secret: '',
+            apiUrl: 'https://hcaptcha.com/siteverify',
+        };
     }
     overrides.security.captcha.siteKey = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '';
     overrides.security.captcha.secret = process.env.HCAPTCHA_SECRET || '';
     overrides.security.captcha.enabled =
         !!process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY && env === 'production';
     if (!overrides.security.auth) {
-        overrides.security.auth = {};
+        overrides.security.auth = {
+            maxFailedAttempts: 3,
+            demoBypass: process.env.NEXT_PUBLIC_ALLOW_DEMO_LOGIN === 'true' || env !== 'production',
+        };
     }
     overrides.security.auth.demoBypass =
         process.env.NEXT_PUBLIC_ALLOW_DEMO_LOGIN === 'true' || env !== 'production';
     if (!overrides.security.rateLimit) {
-        overrides.security.rateLimit = {};
+        overrides.security.rateLimit = {
+            enabled: !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL,
+        };
     }
     overrides.security.rateLimit.enabled =
         !!process.env.REDIS_URL || !!process.env.UPSTASH_REDIS_REST_URL;
@@ -128,7 +138,19 @@ function getRuntimeOverrides() {
         overrides.api = {};
     }
     if (!overrides.api.generator) {
-        overrides.api.generator = {};
+        overrides.api.generator = {
+            maxConcurrency: Number(process.env.NEXT_PUBLIC_GEN_MAX_CONCURRENCY || 2),
+            questionsPerCategoryMin: Number(process.env.NEXT_PUBLIC_Q_PER_CAT_MIN || 5),
+            questionsPerCategoryMax: Number(process.env.NEXT_PUBLIC_Q_PER_CAT_MAX || 12),
+            batchSize: Number(process.env.NEXT_PUBLIC_GEN_BATCH_SIZE || 50),
+            maxRetries: Number(process.env.NEXT_PUBLIC_GEN_MAX_RETRIES || 3),
+            retryDelayMs: Number(process.env.NEXT_PUBLIC_GEN_RETRY_DELAY || 1000),
+            languages: (process.env.NEXT_PUBLIC_GEN_LANGS || 'en').split(',').map(s => s.trim()),
+            gptUrl: process.env.GPT_GEN_URL || '',
+            gptKey: process.env.GPT_GEN_KEY || '',
+            adminToken: process.env.ADMIN_TOKEN || '',
+            dryRun: process.env.NEXT_PUBLIC_GEN_DRY_RUN === 'true',
+        };
     }
     overrides.api.generator.maxConcurrency =
         Number(process.env.NEXT_PUBLIC_GEN_MAX_CONCURRENCY || 2);

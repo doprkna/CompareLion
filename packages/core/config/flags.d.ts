@@ -79,4 +79,4 @@ export declare function getFeatureFlags(names: FeatureFlagName[], config: Unifie
  * Get multiple flags at once (sync)
  */
 export declare function getFeatureFlagsSync(names: FeatureFlagName[], config: UnifiedConfig): Record<FeatureFlagName, boolean>;
-export type { FeatureFlagName, FlagEvaluationContext, RemoteFlagSource };
+export type { RemoteFlagSource };

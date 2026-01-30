@@ -1,3 +1,5 @@
+'use client';
+// sanity-fix
 /**
  * usePresence Hook
  *
@@ -8,7 +10,10 @@
  */
 'use client';
 import { useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
+// Stub for next-auth/react (core must not depend on next-auth; app provides session)
+function useSession() {
+    return { data: null, status: "unauthenticated" };
+}
 import { apiFetch } from "./apiBase"; // sanity-fix
 import { logger } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
 const HEARTBEAT_INTERVAL_MS = 25000; // 25 seconds

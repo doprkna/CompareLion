@@ -7,7 +7,7 @@
 'use client';
 import { useCallback } from 'react';
 import { LifeRewardScreen } from './LifeRewardScreen'; // sanity-fix
-import { useLifeRewardStore } from '@parel/core/state/stores/lifeRewardStore';
+import { useLifeRewardStore } from '../state/stores/lifeRewardStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useLifeRewardScreen() {
     const { isOpen, rewardData, triggerLifeReward, close } = useLifeRewardStore();
     const LifeRewardScreenComponent = useCallback(() => {

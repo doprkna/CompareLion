@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 // sanity-fix: replaced next-auth/react import with local stub (web-only dependency)
 const useSession = () => ({ data: null, status: 'unauthenticated' });
 // sanity-fix: replaced next/navigation import with local stub (web-only dependency)
-const useRouter = () => ({ push: () => {}, replace: () => {}, refresh: () => {} });
+const useRouter = () => ({ push: () => {}, replace: () => {}, refresh: () => {}, prefetch: (_?: string) => {} });
 import { logger } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
 
 interface PreloadData {

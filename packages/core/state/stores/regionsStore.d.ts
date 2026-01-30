@@ -17,4 +17,4 @@ export interface Region {
     isUnlocked?: boolean;
     canUnlock?: boolean;
 }
-export declare const useRegionsStore: UseBoundStore<StoreApi<T>>;
+export declare const useRegionsStore: any;

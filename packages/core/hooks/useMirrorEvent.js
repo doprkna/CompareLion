@@ -6,7 +6,7 @@
  * v0.41.14 - Migrated to unified API client
  */
 import { useCallback, useEffect, useState } from 'react';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 export function useMirrorEvent() {
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);

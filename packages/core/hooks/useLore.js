@@ -2,7 +2,8 @@
 // sanity-fix
 'use client';
 import { useState, useEffect } from 'react';
-import { useLoreStore } from '@parel/core/state/stores/loreStore';
+import { useLoreStore } from '../state/stores/loreStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import { useLatestLoreStore } from '../state/stores/latestLoreStore';
 /**
  * useLoreEntries Hook
  * v0.41.18 - Migrated to unified state store

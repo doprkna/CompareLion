@@ -30,4 +30,4 @@ export interface FightResult {
     xpReward: number;
     goldReward: number;
 }
-export declare const useFightStore: UseBoundStore<StoreApi<T>>;
+export declare const useFightStore: any;

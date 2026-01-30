@@ -25,7 +25,6 @@ export * from './useEventBus';
 export * from './useFactions';
 export * from './useFadeTransition';
 export * from './useFeedback';
-export * from './useFightStore';
 export * from './useFiresides';
 export * from './useFlow';
 export * from './useFlowRewardScreen';

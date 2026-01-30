@@ -1,8 +1,4 @@
-/**
- * useFlow Hook
- * v0.41.20 - Migrated to unified state store
- */
-import type { FlowQuestion, FlowAnswer } from '../state/stores/flowStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { FlowQuestion, FlowAnswer } from '../state/stores/flowStore';
 export type { FlowQuestion, FlowAnswer };
 export declare function useFlow(initialQuestions?: FlowQuestion[]): {
     questions: any;

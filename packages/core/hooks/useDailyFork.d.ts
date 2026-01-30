@@ -1,7 +1,3 @@
-/**
- * useDailyFork Hooks
- * v0.41.20 - Migrated to unified state store
- */
 export declare function useDailyFork(): {
     fork: any;
     userChoice: any;

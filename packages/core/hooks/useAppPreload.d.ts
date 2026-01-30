@@ -1,6 +1,11 @@
+interface PreloadData {
+    user?: any;
+    ready: boolean;
+}
 export declare function useAppPreload(): {
-    preloadData: any;
-    preloadApp: any;
-    isPreloading: any;
-    isReady: any;
+    preloadData: PreloadData;
+    preloadApp: () => Promise<void>;
+    isPreloading: boolean;
+    isReady: boolean;
 };
+export {};

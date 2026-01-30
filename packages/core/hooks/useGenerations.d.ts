@@ -1,6 +1,6 @@
 export declare function useGenerations(): {
     generations: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };

@@ -30,12 +30,16 @@ const worker = new Worker<RunJobData>('run-queue', async (job: Job<RunJobData>) 
     // Get task details
     const task = await prisma.task.findUnique({
       where: { id: taskId },
-      include: { workflow: true },
     })
 
     if (!task) {
       throw new Error(`Task ${taskId} not found`)
     }
+
+    // Fetch workflow by id (Task has no workflow relation; Run has workflowId)
+    const workflow = workflowId
+      ? await prisma.workflow.findUnique({ where: { id: workflowId } })
+      : null
 
     // Update task status
     await prisma.task.update({
@@ -45,11 +49,12 @@ const worker = new Worker<RunJobData>('run-queue', async (job: Job<RunJobData>) 
 
     // Simulate workflow execution based on action type
     let result: any = {}
+    const desc = task.description ?? undefined
     
-    if (workflowId && task.workflow) {
-      switch (task.workflow.action) {
+    if (workflowId && workflow) {
+      switch (workflow.action) {
         case 'GOOGLE_SEARCH':
-          result = await simulateGoogleSearch(task.title, task.description)
+          result = await simulateGoogleSearch(task.title, desc)
           break
         case 'WEB_SCRAPE':
           result = await simulateWebScrape(task.title)
@@ -58,14 +63,14 @@ const worker = new Worker<RunJobData>('run-queue', async (job: Job<RunJobData>) 
           result = await simulateDocSummary(task.description || '')
           break
         case 'CUSTOM':
-          result = await simulateCustomAction(task.title, task.description)
+          result = await simulateCustomAction(task.title, desc)
           break
         default:
           result = { message: 'Unknown action type' }
       }
     } else {
       // Default action for tasks without specific workflow
-      result = await simulateDefaultAction(task.title, task.description)
+      result = await simulateDefaultAction(task.title, desc)
     }
 
     // Update run with results
@@ -82,7 +87,7 @@ const worker = new Worker<RunJobData>('run-queue', async (job: Job<RunJobData>) 
     })
 
     // Add result message to task
-    await prisma.message.create({
+    await prisma.taskMessage.create({
       data: {
         taskId,
         authorType: 'SYSTEM',
@@ -114,7 +119,7 @@ const worker = new Worker<RunJobData>('run-queue', async (job: Job<RunJobData>) 
     })
 
     // Add error message to task
-    await prisma.message.create({
+    await prisma.taskMessage.create({
       data: {
         taskId,
         authorType: 'SYSTEM',

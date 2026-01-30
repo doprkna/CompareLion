@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useEffect, useState } from 'react';
 import { useRealtime } from './useRealtime';
 export function useBadgeNotification(onUnlock) {
@@ -8,6 +6,8 @@ export function useBadgeNotification(onUnlock) {
     const [pendingUnlock, setPendingUnlock] = useState(null);
     useEffect(() => {
         const handleBadgeUnlock = (event) => {
+            if (!event)
+                return;
             setPendingUnlock(event);
             if (onUnlock) {
                 onUnlock(event);

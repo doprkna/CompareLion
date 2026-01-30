@@ -8,7 +8,7 @@ export interface CombatPreferences {
     ambientEnabled: boolean;
 }
 export declare function useCombatPreferences(): {
-    preferences: any;
+    preferences: CombatPreferences;
     updatePreferences: (updates: Partial<CombatPreferences>) => void;
     toggleDamageNumbers: () => void;
     toggleScreenShake: () => void;

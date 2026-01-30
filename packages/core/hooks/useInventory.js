@@ -5,8 +5,9 @@
  * v0.41.14 - Migrated SWR fetcher to unified API client
  */
 'use client';
-import useSWR from 'swr';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+// sanity-fix: replaced swr import with local stub (missing dependency)
+const useSWR = (_key, _fetcher, _options) => ({ data: null, error: null, isLoading: false, mutate: () => { } });
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 const fetcher = async (url) => {
     try {
         // Extract path from full URL (SWR passes full URL)

@@ -26,4 +26,4 @@ export interface Recipe {
     discoveredBy: string | null;
     createdAt: string;
 }
-export declare const useRecipesStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useRecipesStore: any;

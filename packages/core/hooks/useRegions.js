@@ -1,8 +1,8 @@
 'use client';
 // sanity-fix
 'use client';
-import { useEffect } from 'react';
-import { useRegionsStore } from '@parel/core/state/stores/regionsStore';
+import { useEffect, useState } from 'react';
+import { useRegionsStore } from '../state/stores/regionsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 /**
  * useRegions Hook
  * v0.41.18 - Migrated to unified state store

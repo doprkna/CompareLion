@@ -1,9 +1,9 @@
 export declare function useMusicTheme(): {
-    themes: any;
-    loading: any;
-    error: any;
-    getThemeByMood: any;
-    getThemeByRegion: any;
-    getThemeByArchetype: any;
-    reload: any;
+    themes: import("../config/musicThemes").MusicThemeConfig[];
+    loading: boolean;
+    error: string | null;
+    getThemeByMood: (moodTag: "calm" | "chaos" | "joy" | "deep" | "battle") => import("../config/musicThemes").MusicThemeConfig | undefined;
+    getThemeByRegion: (regionKey: string) => import("../config/musicThemes").MusicThemeConfig | undefined;
+    getThemeByArchetype: (archetypeKey: string) => import("../config/musicThemes").MusicThemeConfig | undefined;
+    reload: () => Promise<void>;
 };

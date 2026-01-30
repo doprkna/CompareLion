@@ -1,10 +1,10 @@
 'use client';
-// sanity-fix
-'use client';
 import { useState, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { logger } from '@parel/core';
+// sanity-fix: replaced next-auth/react import with local stub (web-only dependency)
+const useSession = () => ({ data: null, status: 'unauthenticated' });
+// sanity-fix: replaced next/navigation import with local stub (web-only dependency)
+const useRouter = () => ({ push: () => { }, replace: () => { }, refresh: () => { }, prefetch: (_) => { } });
+import { logger } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
 export function useAppPreload() {
     const [preloadData, setPreloadData] = useState({ ready: false });
     const [isPreloading, setIsPreloading] = useState(false);

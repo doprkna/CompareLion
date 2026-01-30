@@ -138,3 +138,4 @@ export function validatePlugin(plugin) {
         errors,
     };
 }
+// ConfigPlugin is exported at declaration (line 25)

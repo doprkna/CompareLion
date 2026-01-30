@@ -5,7 +5,7 @@
  */
 'use client';
 import { createAsyncStore, createResourceStore } from '../factory';
-import { defaultClient } from '@parel/api'; // sanity-fix
+import { defaultClient } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 // Firesides list store
 export const useFiresidesStore = createAsyncStore({
     name: 'firesides',

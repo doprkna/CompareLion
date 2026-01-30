@@ -9,11 +9,6 @@ export function useCommunityCreations(type) {
         setLoading(true);
         setError(null);
         try {
-            if (typeof window === 'undefined') { // sanity-fix
-                setError('Client-side only');
-                setLoading(false);
-                return;
-            }
             const url = new URL('/api/community/approved', window.location.origin);
             if (type)
                 url.searchParams.set('type', type);
@@ -21,7 +16,7 @@ export function useCommunityCreations(type) {
             const json = await res.json();
             if (!res.ok || !json?.success)
                 throw new Error(json?.error || 'Failed to load creations');
-            setCreations(json?.creations || []); // sanity-fix
+            setCreations(json.creations || []);
         }
         catch (e) {
             setError(e?.message || 'Failed to load creations');
@@ -48,7 +43,7 @@ export function useSubmitCreation() {
             const json = await res.json();
             if (!res.ok || !json?.success)
                 throw new Error(json?.error || 'Failed to submit creation');
-            return json?.creation ?? null; // sanity-fix
+            return json.creation;
         }
         catch (e) {
             setError(e?.message || 'Failed to submit creation');

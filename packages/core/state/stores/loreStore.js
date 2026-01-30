@@ -5,7 +5,7 @@
  */
 'use client';
 import { createAsyncStore } from '../factory';
-import { defaultClient } from '@parel/api'; // sanity-fix
+import { defaultClient } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 export const useLoreStore = createAsyncStore({
     name: 'lore',
     fetcher: async (page = 1, limit = 20) => {

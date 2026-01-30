@@ -15,7 +15,7 @@
  */
 'use client';
 import { useXp } from "./XpProvider"; // sanity-fix
-import { logger } from '@parel/core';
+import { logger } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
 const statIcons = {
     sleep: '💤',
     health: '💪',

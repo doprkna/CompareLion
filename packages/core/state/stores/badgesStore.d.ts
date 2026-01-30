@@ -22,5 +22,5 @@ export interface Badge {
     canClaim?: boolean;
     userBadgeId?: string;
 }
-export declare const useBadgesStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
-export declare const useUserBadgesStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useBadgesStore: any;
+export declare const useUserBadgesStore: any;

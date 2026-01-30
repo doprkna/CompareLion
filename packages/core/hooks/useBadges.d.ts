@@ -1,8 +1,4 @@
-/**
- * useBadges Hook
- * v0.41.19 - Migrated to unified state store
- */
-import type { Badge } from '../state/stores/badgesStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { Badge } from '../state/stores/badgesStore';
 export type { Badge };
 export declare function useBadges(): {
     badges: any;

@@ -28,5 +28,5 @@ export interface FiresideReaction {
         avatar?: string | null;
     };
 }
-export declare const useFiresidesStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
-export declare const useFiresideStore: UseBoundStore<StoreApi<import("..").ResourceStore<T>>>;
+export declare const useFiresidesStore: any;
+export declare const useFiresideStore: any;

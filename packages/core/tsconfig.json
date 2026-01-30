@@ -8,6 +8,7 @@
       "@parel/*": ["packages/*/src"],
       "@parel/core/utils/*": ["packages/core/utils/*"],
       "@parel/core/config": ["packages/core/config"],
+      "@parel/types": ["../types/dist"],
       "@parel/shared": ["packages/shared"],
       "@parel/utils": ["packages/utils"],
       "@shared/*": ["packages/shared/*"],
@@ -15,6 +16,7 @@
       "@parel/api": ["packages/core/stubs/parel-api"]
     }
   },
-  "include": ["src", "utils", "config", "hooks", "stubs"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "utils/**/*.ts", "config/**/*.ts", "hooks/**/*.ts", "hooks/**/*.tsx", "state/**/*.ts", "stubs/**/*.ts"],
+  "references": [{ "path": "../types" }]
 }
 

@@ -186,7 +186,7 @@ export function buildSuccess<T>(
   };
 
   const response = NextResponse.json(envelope, { status: options?.status || 200 });
-  return addRequestIdToResponse(response, meta.requestId);
+  return addRequestIdToResponse(response, meta.requestId) as NextResponse;
 }
 
 /**
@@ -220,7 +220,7 @@ export function buildError(
   // Map error codes to HTTP status codes
   const statusCode = options?.status || getStatusCodeForError(code);
   const response = NextResponse.json(envelope, { status: statusCode });
-  return addRequestIdToResponse(response, requestId);
+  return addRequestIdToResponse(response, requestId) as NextResponse;
 }
 
 /**

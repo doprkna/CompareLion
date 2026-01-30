@@ -7,6 +7,13 @@
     "build": "tsc -b"
   },
   "sideEffects": false,
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@parel/core": "workspace:*",
+    "@parel/db": "workspace:*",
+    "@parel/notifications": "workspace:*",
+    "@parel/rating": "workspace:*",
+    "@parel/types": "workspace:*"
+  }
 }
 

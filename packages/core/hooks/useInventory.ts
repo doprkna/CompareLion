@@ -8,7 +8,8 @@
 'use client';
 
 // sanity-fix: replaced swr import with local stub (missing dependency)
-const useSWR = (key: any, fetcher: any, options?: any) => ({ data: null, error: null, isLoading: false, mutate: () => {} });
+const useSWR = <T = unknown>(_key: unknown, _fetcher: (url: string) => Promise<T>, _options?: unknown): { data: T | null; error: unknown; isLoading: boolean; mutate: () => void } =>
+  ({ data: null, error: null, isLoading: false, mutate: () => {} });
 import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 
 export interface InventoryItem {

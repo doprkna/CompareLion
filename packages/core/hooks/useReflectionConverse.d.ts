@@ -7,12 +7,12 @@ export interface ConversationResponse {
 }
 export declare function useReflectionConverse(): {
     converse: (reflectionId: string, prompt: string) => Promise<ConversationResponse>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useReflectionConversation(reflectionId: string | null): {
-    conversation: any;
-    loading: any;
-    error: any;
+    conversation: ConversationResponse | null;
+    loading: boolean;
+    error: string | null;
     reload: () => Promise<void>;
 };

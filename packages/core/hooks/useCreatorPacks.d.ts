@@ -16,11 +16,29 @@ export interface CreatorPack {
     approvedAt?: string | null;
     approvedBy?: string | null;
 }
+interface SubmitPackData {
+    title: string;
+    description?: string;
+    type: 'POLL' | 'REFLECTION' | 'MISSION';
+    metadata?: any;
+}
+interface SubmitPackResult {
+    success: boolean;
+    pack: {
+        id: string;
+        title: string;
+        type: string;
+        status: string;
+        createdAt: string;
+    };
+    message: string;
+}
 export declare function useCreatorPacks(type?: 'POLL' | 'REFLECTION' | 'MISSION'): {
-    packs: any;
-    loading: any;
-    error: any;
-    total: any;
-    reload: any;
-    submitPack: any;
+    packs: CreatorPack[];
+    loading: boolean;
+    error: string | null;
+    total: number;
+    reload: () => Promise<void>;
+    submitPack: (data: SubmitPackData) => Promise<SubmitPackResult>;
 };
+export {};

@@ -1,5 +1,3 @@
-'use client';
-// sanity-fix
 "use client";
 import { useState, useEffect } from "react";
 const DEFAULT_PREFERENCES = {

@@ -1,11 +1,11 @@
 export declare function useRoastLevel(): {
-    roastLevel: any;
-    loading: any;
-    error: any;
-    reload: any;
+    roastLevel: number;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useSetRoastLevel(): {
-    setLevel: any;
-    loading: any;
-    error: any;
+    setLevel: (level: number) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

@@ -1,5 +1,8 @@
 export declare function useAscend(): {
-    ascend: any;
-    loading: any;
-    error: any;
+    ascend: (inheritedPerks: Array<{
+        type: string;
+        value: string | number;
+    }>) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

@@ -26,7 +26,7 @@ export async function updateWalletWithLock(
   update: WalletUpdate
 ): Promise<{ success: boolean; newBalance: WalletBalance; error?: string }> {
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Lock the wallet row for update (optimized: select only needed fields)
       const wallet = await tx.wallet.findFirst({
         where: {
@@ -129,7 +129,7 @@ export async function getWalletBalanceWithLock(
   tenantId: string
 ): Promise<WalletBalance | null> {
   try {
-    const wallet = await prisma.$transaction(async (tx) => {
+    const wallet = await prisma.$transaction(async (tx: any) => {
       return await tx.wallet.findFirst({
         where: {
           userId,
@@ -169,7 +169,7 @@ export async function transferBetweenWallets(
   note?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       // Lock both wallets
       const fromWallet = await tx.wallet.findFirst({
         where: {

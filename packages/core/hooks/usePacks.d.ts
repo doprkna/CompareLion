@@ -1,17 +1,17 @@
 export declare function usePacks(): {
-    packs: any;
-    loading: any;
-    error: any;
-    reload: any;
+    packs: any[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function usePack(id: string | null): {
     pack: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useUnlockPack(): {
-    unlock: any;
-    loading: any;
-    error: any;
+    unlock: (packId: string) => Promise<boolean>;
+    loading: boolean;
+    error: string | null;
 };

@@ -5,7 +5,7 @@
  * v0.41.19 - Migrated to unified state store
  */
 import { useEffect } from 'react';
-import { useSeasonStore } from '@parel/core/state/stores/seasonStore';
+import { useSeasonStore } from '../state/stores/seasonStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useSeason() {
     const { state, load, reload } = useSeasonStore();
     useEffect(() => {

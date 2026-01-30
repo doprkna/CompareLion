@@ -7,7 +7,7 @@
 'use client';
 import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useXpPopupStore } from '@parel/core/state/stores/xpPopupStore';
+import { useXpPopupStore } from '../state/stores/xpPopupStore.js'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 import { XpPopup } from './XpPopup'; // sanity-fix
 export function useXpPopup() {
     const { instances, triggerXp, removeInstance } = useXpPopupStore();

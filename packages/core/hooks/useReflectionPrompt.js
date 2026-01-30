@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useCallback, useRef, useState } from 'react';
 /**
  * Lightweight client-side counter to trigger reflection modal

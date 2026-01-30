@@ -1,18 +1,18 @@
 export declare function useMicroClans(seasonId?: string): {
-    clans: any;
-    loading: any;
-    error: any;
-    reload: any;
+    clans: any[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useClan(clanId: string | null): {
     clan: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useClanBuff(): {
     buff: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };

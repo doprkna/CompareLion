@@ -1,5 +1,5 @@
 export declare function useRedeemWildcard(): {
-    redeem: any;
-    loading: any;
-    error: any;
+    redeem: (userWildcardId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLoreStore } from '../state/stores/loreStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import { useLatestLoreStore } from '../state/stores/latestLoreStore';
 import type { LoreEntry, LorePagination } from '../state/stores/loreStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 
 export type { LoreEntry, LorePagination };

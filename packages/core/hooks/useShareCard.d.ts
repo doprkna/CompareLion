@@ -1,6 +1,6 @@
 export declare function useShareCard(shareCardId?: string): {
     shareCard: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };

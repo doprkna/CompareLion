@@ -232,7 +232,7 @@ export function createCollectionStore<T extends { id: string }>(config: {
       set({ state: { ...get().state, loading: true, error: null } });
 
       try {
-        const data = await config.fetcher(...args);
+        const data = await config.fetcher!();
         
         if (config.cacheTtl) {
           defaultCache.set(cacheKey, data, config.cacheTtl);

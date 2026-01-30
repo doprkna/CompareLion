@@ -4,10 +4,12 @@
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 // sanity-fix: replaced swr import with local stub (missing dependency)
-const useSWR = (key: any, fetcher: any, options?: any) => ({ data: null, error: null, isLoading: false, mutate: () => {} });
-const useSWRInfinite = (getKey: any, fetcher: any, options?: any) => ({ data: null, error: null, isLoading: false, mutate: () => {}, setSize: () => {}, size: 0 });
+const useSWR = <T = unknown>(_key: unknown, _fetcher: (url: string) => Promise<T>, _options?: unknown): { data: T | null; error: unknown; isLoading: boolean; isValidating: boolean; mutate: (data?: T, shouldRevalidate?: boolean) => void } =>
+  ({ data: null, error: null, isLoading: false, isValidating: false, mutate: (_?: T, _r?: boolean) => {} });
+const useSWRInfinite = <T = unknown>(_getKey: (index: number, prev: T | null) => string | null, _fetcher: (url: string) => Promise<T>, _options?: unknown): { data: T[] | null; error: unknown; isLoading: boolean; isValidating: boolean; mutate: (data?: T[], shouldRevalidate?: boolean) => void; setSize: (n?: number) => void; size: number } =>
+  ({ data: null, error: null, isLoading: false, isValidating: false, mutate: (_?: T[], _r?: boolean) => {}, setSize: (_?: number) => {}, size: 0 });
 // sanity-fix: replaced sonner import with local stub (missing dependency)
-const toast = { success: () => {}, error: () => {}, info: () => {}, warning: () => {} };
+const toast = { success: (..._a: unknown[]) => {}, error: (..._a: unknown[]) => {}, info: (..._a: unknown[]) => {}, warning: (..._a: unknown[]) => {} };
 
 export interface MarketItem {
   id: string;
@@ -91,6 +93,18 @@ export interface UseInfiniteScrollOptions {
   enabled?: boolean; // Enable/disable infinite scroll (default: true)
 }
 
+interface MarketItemsPage {
+  items: MarketItem[];
+  totalCount?: number;
+  hasMore: boolean;
+}
+
+interface TransactionsPage {
+  transactions: Transaction[];
+  totalCount?: number;
+  hasMore: boolean;
+}
+
 export function useMarketItems(
   filterParams?: MarketFilterParams,
   infiniteScrollOptions?: UseInfiniteScrollOptions
@@ -152,10 +166,10 @@ export function useMarketItems(
     size,
     setSize,
     mutate,
-  } = useSWRInfinite(getKey, fetcher, {
+  } = useSWRInfinite<MarketItemsPage>(getKey, fetcher as (url: string) => Promise<MarketItemsPage>, {
     revalidateFirstPage: false,
     revalidateOnFocus: false,
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -290,11 +304,11 @@ export function useMarketItems(
 }
 
 export function useWallet() {
-  const { data, error, isLoading, mutate } = useSWR('/api/wallet', fetcher, {
+  const { data, error, isLoading, mutate } = useSWR<{ wallets?: WalletBalance[] }>('/api/wallet', fetcher as (url: string) => Promise<{ wallets?: WalletBalance[] }>, {
     dedupingInterval: 60000, // 1 minute deduplication
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -335,12 +349,12 @@ export function usePurchaseItem() {
 }
 
 export function useMarketTransactions(limit: number = 3) {
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR<{ transactions?: Transaction[] }>(
     `/api/market/transactions?limit=${limit}`,
-    fetcher,
+    fetcher as (url: string) => Promise<{ transactions?: Transaction[] }>,
     {
       revalidateOnFocus: false,
-      onError: (err) => {
+      onError: (err: unknown) => {
         if (err instanceof Error) {
           const status = (err as any).status;
           if (status >= 400) {
@@ -392,10 +406,10 @@ export function useTransactions(pageSize: number = 20): UseTransactionsReturn {
     size,
     setSize,
     mutate,
-  } = useSWRInfinite(getKey, fetcher, {
+  } = useSWRInfinite<TransactionsPage>(getKey, fetcher as (url: string) => Promise<TransactionsPage>, {
     revalidateFirstPage: false,
     revalidateOnFocus: false,
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -515,7 +529,7 @@ export function useEconomySummary(withTrends: boolean = false): UseEconomySummar
     revalidateOnReconnect: false,
     refreshInterval: 10 * 60 * 1000, // Refresh every 10 minutes (600000 ms)
     dedupingInterval: 10 * 60 * 1000, // Dedupe requests within 10 minutes
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -583,7 +597,7 @@ export function useAdminEconomyOverview(): UseAdminEconomyOverviewReturn {
     revalidateOnReconnect: false,
     refreshInterval: 10 * 60 * 1000, // Refresh every 10 minutes
     dedupingInterval: 10 * 60 * 1000,
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -621,12 +635,12 @@ export interface UseBalanceSettingsReturn {
  * Uses SWR with 2-minute refresh and optimistic updates
  */
 export function useBalanceSettings(): UseBalanceSettingsReturn {
-  const { data, error, isLoading, mutate } = useSWR('/api/admin/balance', fetcher, {
+  const { data, error, isLoading, mutate } = useSWR<{ success?: boolean; settings?: BalanceSetting[] }>('/api/admin/balance', fetcher as (url: string) => Promise<{ success?: boolean; settings?: BalanceSetting[] }>, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 2 * 60 * 1000, // Refresh every 2 minutes
     dedupingInterval: 60000, // 1 minute deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -704,12 +718,12 @@ export interface UseEconomyPresetsReturn {
  * Uses SWR with 2-minute refresh
  */
 export function useEconomyPresets(): UseEconomyPresetsReturn {
-  const { data, error, isLoading, mutate } = useSWR('/api/admin/presets', fetcher, {
+  const { data, error, isLoading, mutate } = useSWR<{ presets?: EconomyPreset[] }>('/api/admin/presets', fetcher as (url: string) => Promise<{ presets?: EconomyPreset[] }>, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 2 * 60 * 1000, // Refresh every 2 minutes
     dedupingInterval: 60000, // 1 minute deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -867,7 +881,7 @@ export function useAdminMetrics(): UseAdminMetricsReturn {
     revalidateOnReconnect: false,
     refreshInterval: 5 * 60 * 1000, // Refresh every 5 minutes
     dedupingInterval: 60000, // 1 minute deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -919,7 +933,7 @@ export function useSystemHealth(): UseSystemHealthReturn {
     revalidateOnReconnect: false,
     refreshInterval: 30 * 1000, // Refresh every 30 seconds
     dedupingInterval: 10000, // 10 second deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -968,13 +982,13 @@ export interface UseSystemAlertsReturn {
  */
 export function useSystemAlerts(openOnly: boolean = true): UseSystemAlertsReturn {
   const url = `/api/admin/alerts?openOnly=${openOnly}`;
-  
-  const { data, error, isLoading, mutate } = useSWR(url, fetcher, {
+  type AlertsRes = { alerts?: SystemAlert[]; countsByLevel?: { info: number; warn: number; error: number; critical: number } };
+  const { data, error, isLoading, mutate } = useSWR<AlertsRes>(url, fetcher as (url: string) => Promise<AlertsRes>, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 60 * 1000, // Refresh every 60 seconds
     dedupingInterval: 30000, // 30 second deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -1067,11 +1081,11 @@ export interface UseAlertWebhooksReturn {
  * v0.33.1 - Alert Notifications & Webhooks
  */
 export function useAlertWebhooks(): UseAlertWebhooksReturn {
-  const { data, error, isLoading, mutate } = useSWR('/api/admin/alerts/webhooks', fetcher, {
+  const { data, error, isLoading, mutate } = useSWR<{ webhooks?: AlertWebhook[] }>('/api/admin/alerts/webhooks', fetcher as (url: string) => Promise<{ webhooks?: AlertWebhook[] }>, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     dedupingInterval: 60000, // 1 minute deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -1224,13 +1238,14 @@ export interface UseEconomyModifiersReturn {
  * Hook for fetching and updating economy modifiers
  * v0.34.2 - Streaks, social bonuses, weekly modifiers
  */
+type EconomyModifiersRes = { modifiers?: EconomyModifiers; weeklyModifier?: WeeklyModifier | null; availableWeeklyPresets?: WeeklyModifierPreset[] };
 export function useEconomyModifiers(): UseEconomyModifiersReturn {
-  const { data, error, isLoading, mutate } = useSWR('/api/admin/economy/modifiers', fetcher, {
+  const { data, error, isLoading, mutate } = useSWR<EconomyModifiersRes>('/api/admin/economy/modifiers', fetcher as (url: string) => Promise<EconomyModifiersRes>, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 2 * 60 * 1000, // Refresh every 2 minutes
     dedupingInterval: 60000, // 1 minute deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -1243,10 +1258,10 @@ export function useEconomyModifiers(): UseEconomyModifiersReturn {
   const updateModifier = async (key: keyof EconomyModifiers, value: number) => {
     try {
       // Optimistic update
-      const currentModifiers = data?.modifiers || {};
+      const currentModifiers = data?.modifiers || ({} as EconomyModifiers);
       const optimisticModifiers = { ...currentModifiers, [key]: value };
 
-      mutate({ ...data, modifiers: optimisticModifiers }, false);
+      mutate({ ...data, modifiers: optimisticModifiers } as EconomyModifiersRes, false);
 
       // Make API call
       const res = await fetch('/api/admin/economy/modifiers', {
@@ -1329,15 +1344,15 @@ export interface UseFeaturedItemsReturn {
  * v0.34.3 - Returns top 5 featured items for carousel display
  */
 export function useFeaturedItems(): UseFeaturedItemsReturn {
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR<{ items?: MarketItem[]; count?: number }>(
     '/api/market/items?isFeatured=true&limit=5',
-    fetcher,
+    fetcher as (url: string) => Promise<{ items?: MarketItem[]; count?: number }>,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       refreshInterval: 5 * 60 * 1000, // Refresh every 5 minutes
       dedupingInterval: 60000, // 1 minute deduplication
-      onError: (err) => {
+      onError: (err: unknown) => {
         if (err instanceof Error) {
           const status = (err as any).status;
           if (status >= 400) {
@@ -1395,12 +1410,12 @@ export interface UseMountTrialsReturn {
  * v0.34.4 - Mount-specific micro-challenges
  */
 export function useMountTrials(): UseMountTrialsReturn {
-  const { data, error, isLoading, mutate } = useSWR('/api/mounts/trials', fetcher, {
+  const { data, error, isLoading, mutate } = useSWR<{ trials?: MountTrial[]; count?: number }>('/api/mounts/trials', fetcher as (url: string) => Promise<{ trials?: MountTrial[]; count?: number }>, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
     refreshInterval: 2 * 60 * 1000, // Refresh every 2 minutes
     dedupingInterval: 60000, // 1 minute deduplication
-    onError: (err) => {
+    onError: (err: unknown) => {
       if (err instanceof Error) {
         const status = (err as any).status;
         if (status >= 400) {
@@ -1510,7 +1525,7 @@ export function useMarket(category?: string) {
       total: number;
       totalPages: number;
     };
-  }>(url, fetcher, {
+  }>(url, fetcher as (url: string) => Promise<{ success: boolean; listings: MarketplaceListing[]; pagination?: { page: number; limit: number; total: number; totalPages: number } }>, {
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
   });

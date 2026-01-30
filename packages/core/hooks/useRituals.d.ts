@@ -1,8 +1,4 @@
-/**
- * useRituals Hook
- * v0.41.19 - Migrated to unified state store (read-only part)
- */
-import type { Ritual, RitualUserProgress } from '../state/stores/ritualsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { Ritual, RitualUserProgress } from '../state/stores/ritualsStore';
 export type { Ritual, RitualUserProgress };
 export declare function useRituals(): {
     ritual: any;
@@ -12,7 +8,7 @@ export declare function useRituals(): {
     reload: any;
 };
 export declare function useCompleteRitual(): {
-    complete: any;
-    loading: any;
-    error: any;
+    complete: (ritualId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

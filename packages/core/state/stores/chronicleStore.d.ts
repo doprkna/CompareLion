@@ -26,4 +26,4 @@ export interface Chronicle {
     generatedAt: string;
     season?: ChronicleSeason | null;
 }
-export declare const useChronicleStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useChronicleStore: any;

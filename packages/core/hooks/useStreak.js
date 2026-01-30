@@ -7,7 +7,7 @@
  * v0.41.20 - Migrated to unified state store
  */
 import { useEffect } from 'react';
-import { useStreakStore } from '@parel/core/state/stores/streakStore';
+import { useStreakStore } from '../state/stores/streakStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 import { getStreakData } from './streak'; // sanity-fix
 export function useStreak() {
     const { streak, loading, recordActivity } = useStreakStore();

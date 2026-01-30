@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { apiFetch } from './apiClient'; // sanity-fix
 export function useCreatorPacks(type) {

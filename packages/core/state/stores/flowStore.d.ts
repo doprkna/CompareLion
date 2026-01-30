@@ -29,4 +29,4 @@ export interface FlowState {
     startTime: number;
     questionStartTime: number;
 }
-export declare const useFlowStore: UseBoundStore<StoreApi<T>>;
+export declare const useFlowStore: any;

@@ -1,18 +1,7 @@
-/**
- * useRealtime Hook
- *
- * Establishes a persistent Server-Sent Events (SSE) connection
- * for real-time updates from the server.
- *
- * Usage:
- * ```tsx
- * function App() {
- *   useRealtime(); // Establishes global connection
- *   return <YourApp />;
- * }
- * ```
- */
-export declare function useRealtime(): void;
+export declare function useRealtime(): {
+    subscribe: <T = unknown>(ev: string, handler: (payload?: T) => void) => void;
+    unsubscribe: <T = unknown>(ev: string, handler: (payload?: T) => void) => void;
+};
 /**
  * Hook to check if real-time connection is active
  * @returns boolean indicating connection status

@@ -5,7 +5,7 @@
  */
 'use client';
 import { createStore } from '../factory';
-import { defaultClient } from '@parel/api'; // sanity-fix
+import { defaultClient } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 export const useSubmitMirrorReflectionStore = createStore((set, get) => ({
     loading: false,
     error: null,

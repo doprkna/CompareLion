@@ -8,10 +8,10 @@ export interface GroupListItem {
     createdAt: string;
 }
 export declare function useGroups(): {
-    groups: any;
-    loading: any;
-    error: any;
-    reload: any;
+    groups: GroupListItem[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export interface GroupDetails {
     id: string;
@@ -28,10 +28,10 @@ export interface GroupDetails {
     createdAt: string;
 }
 export declare function useGroup(groupId: string | null): {
-    group: any;
-    loading: any;
-    error: any;
-    reload: any;
+    group: GroupDetails | null;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export interface GroupStats {
     totalXP: number;
@@ -43,10 +43,10 @@ export interface GroupStats {
     isMember: boolean;
 }
 export declare function useGroupStats(groupId: string | null): {
-    stats: any;
-    loading: any;
-    error: any;
-    reload: any;
+    stats: GroupStats | null;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export interface GroupReflectionItem {
     id?: string;
@@ -63,8 +63,10 @@ export interface GroupReflectionItem {
     count?: number;
 }
 export declare function useGroupReflections(groupId: string | null): {
-    data: any;
-    loading: any;
-    error: any;
-    reload: any;
+    data: GroupReflectionItem[] | {
+        count: number;
+    } | null;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };

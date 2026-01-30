@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useChronicleStore } from '../state/stores/chronicleStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 import type { Chronicle } from '../state/stores/chronicleStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 

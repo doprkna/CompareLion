@@ -8,7 +8,7 @@
  */
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 import { useGold } from './useGold';
 import { useRewardToast } from './useRewardToast';
 export function useShop() {
@@ -22,7 +22,8 @@ export function useShop() {
             setLoading(true);
             setError(null);
             const response = await defaultClient.get('/shop');
-            setItems(response.data.items || []);
+            const raw = response.data.items || [];
+            setItems(raw.map((item) => ({ ...item, emoji: item.emoji ?? '' })));
         }
         catch (err) {
             const errorMessage = err instanceof ApiClientError

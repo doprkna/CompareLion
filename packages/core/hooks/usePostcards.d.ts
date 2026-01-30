@@ -1,16 +1,16 @@
 export declare function usePostcards(type?: 'inbox' | 'sent'): {
-    postcards: any;
-    loading: any;
-    error: any;
-    reload: any;
+    postcards: any[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useSendPostcard(): {
-    send: any;
-    loading: any;
-    error: any;
+    send: (receiverId: string, message: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useReadPostcard(): {
-    read: any;
-    loading: any;
-    error: any;
+    read: (postcardId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

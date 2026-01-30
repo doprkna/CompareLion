@@ -1,8 +1,4 @@
-/**
- * useFiresides Hook
- * v0.41.19 - Migrated to unified state store (read-only parts)
- */
-import type { Fireside, FiresideReaction } from '../state/stores/firesidesStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { Fireside, FiresideReaction } from '../state/stores/firesidesStore';
 export type { Fireside, FiresideReaction };
 export declare function useFiresides(): {
     firesides: any;
@@ -20,7 +16,7 @@ export declare function useFireside(id: string | null): {
 export declare function useFiresideReactions(id: string | null): {
     fireside: any;
     reactions: any;
-    post: any;
-    posting: any;
+    post: (emoji: string) => Promise<boolean>;
+    posting: boolean;
     reload: () => void;
 };

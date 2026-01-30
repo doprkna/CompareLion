@@ -5,7 +5,7 @@
  */
 'use client';
 import { createAsyncStore, createStore } from '../factory';
-import { defaultClient } from '@parel/api'; // sanity-fix
+import { defaultClient } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 // Read-only fork store
 export const useDailyForkStore = createAsyncStore({
     name: 'dailyFork',

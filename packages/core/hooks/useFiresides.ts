@@ -5,7 +5,7 @@
  * v0.41.19 - Migrated to unified state store (read-only parts)
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useFiresidesStore, useFiresideStore } from '../state/stores/firesidesStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 import type { Fireside, FiresideReaction } from '../state/stores/firesidesStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 

@@ -7,7 +7,8 @@
  */
 'use client';
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+// sanity-fix: replaced next-auth/react import with local stub (web-only dependency)
+const useSession = () => ({ data: null, status: 'unauthenticated' });
 export function useGold() {
     const { data: session } = useSession();
     const [gold, setGold] = useState(0);

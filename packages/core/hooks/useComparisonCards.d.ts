@@ -1,11 +1,11 @@
 export declare function useLatestCard(): {
     card: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useGenerateCard(): {
-    generate: any;
-    loading: any;
-    error: any;
+    generate: () => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

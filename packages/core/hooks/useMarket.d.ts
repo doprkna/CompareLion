@@ -61,18 +61,22 @@ export declare function useMarketItems(filterParams?: MarketFilterParams, infini
 };
 export declare function useWallet(): {
     wallets: WalletBalance[];
-    loading: any;
+    loading: boolean;
     error: string | null;
-    reload: any;
+    reload: (data?: {
+        wallets?: WalletBalance[];
+    } | undefined, shouldRevalidate?: boolean) => void;
 };
 export declare function usePurchaseItem(): {
     purchase: (itemId: string) => Promise<any>;
 };
 export declare function useMarketTransactions(limit?: number): {
     transactions: Transaction[];
-    loading: any;
+    loading: boolean;
     error: string | null;
-    reload: any;
+    reload: (data?: {
+        transactions?: Transaction[];
+    } | undefined, shouldRevalidate?: boolean) => void;
 };
 export interface UseTransactionsReturn {
     transactions: Transaction[];
@@ -350,10 +354,6 @@ export interface UseEconomyModifiersReturn {
     clearWeeklyModifier: () => Promise<void>;
     reload: () => void;
 }
-/**
- * Hook for fetching and updating economy modifiers
- * v0.34.2 - Streaks, social bonuses, weekly modifiers
- */
 export declare function useEconomyModifiers(): UseEconomyModifiersReturn;
 export interface UseFeaturedItemsReturn {
     items: MarketItem[];
@@ -429,9 +429,18 @@ export interface MarketplaceListing {
  */
 export declare function useMarket(category?: string): {
     listings: MarketplaceListing[];
-    loading: any;
+    loading: boolean;
     error: string | null;
     buyListing: (listingId: string) => Promise<any>;
     cancelListing: (listingId: string) => Promise<any>;
-    reload: any;
+    reload: (data?: {
+        success: boolean;
+        listings: MarketplaceListing[];
+        pagination?: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    } | undefined, shouldRevalidate?: boolean) => void;
 };

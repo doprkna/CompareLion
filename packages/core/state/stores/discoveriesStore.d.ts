@@ -18,4 +18,4 @@ export interface Discovery {
     };
     discoveredAt: string;
 }
-export declare const useDiscoveriesStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useDiscoveriesStore: any;

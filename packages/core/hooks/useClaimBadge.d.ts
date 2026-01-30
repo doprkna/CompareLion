@@ -1,5 +1,5 @@
 export declare function useClaimBadge(): {
     claimBadge: (userBadgeId: string) => Promise<any>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };

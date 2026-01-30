@@ -2,11 +2,11 @@
 // sanity-fix
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRegionsStore } from '../state/stores/regionsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
-import type { Region } from '../state/stores/regionsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { Region as RegionEntity } from '../state/stores/regionsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import (alias to avoid conflict with config Region)
 
-export type { Region };
+export type { RegionEntity };
 
 /**
  * useRegions Hook
@@ -59,7 +59,7 @@ export function useTravel() {
 }
 
 export function useActiveRegion() {
-  const [region, setRegion] = useState<Region | null>(null);
+  const [region, setRegion] = useState<RegionEntity | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

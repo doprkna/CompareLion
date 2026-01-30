@@ -1,5 +1,5 @@
 export declare function useGenerateShare(): {
-    generate: any;
-    loading: any;
-    error: any;
+    generate: (type: "weekly" | "achievement" | "comparison") => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

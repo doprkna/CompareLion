@@ -49,7 +49,8 @@ export function useShop(): UseShopReturn {
       setError(null);
 
       const response = await defaultClient.get<ShopResponseDTO>('/shop');
-      setItems(response.data.items || []);
+      const raw = response.data.items || [];
+      setItems(raw.map((item) => ({ ...item, emoji: item.emoji ?? '' })) as ShopItem[]);
     } catch (err) {
       const errorMessage = err instanceof ApiClientError 
         ? err.message 

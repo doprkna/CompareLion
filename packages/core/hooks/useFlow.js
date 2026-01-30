@@ -6,7 +6,7 @@
  */
 'use client';
 import { useEffect } from 'react';
-import { useFlowStore } from '@parel/core/state/stores/flowStore';
+import { useFlowStore } from '../state/stores/flowStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useFlow(initialQuestions = []) {
     const store = useFlowStore();
     // Initialize with initial questions if provided

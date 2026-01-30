@@ -1,9 +1,3 @@
-/**
- * useShop Hook
- * Manages shop items fetching and purchase logic
- * v0.26.2 - Economy Feedback & Shop Loop
- * v0.41.12 - Migrated to unified API client
- */
 export interface ShopItem {
     id: string;
     key: string | null;

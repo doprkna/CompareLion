@@ -1,5 +1,5 @@
 export declare function useDreamTrigger(): {
-    trigger: any;
-    loading: any;
-    error: any;
+    trigger: (triggerType?: "sleep" | "reflection" | "random") => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

@@ -49,7 +49,7 @@ class ConfigManager {
 
   constructor(overrides?: PartialUnifiedConfig) {
     // Start with defaults
-    this.config = deepMerge(unifiedConfigDefaults, overrides || {});
+    this.config = deepMerge(unifiedConfigDefaults, overrides || {}) as UnifiedConfig;
     
     // Apply environment-specific overrides
     this.applyEnvironmentOverrides();

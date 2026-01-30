@@ -20,4 +20,4 @@ export interface UserProgress {
     totalChallenges: number;
     [key: string]: any;
 }
-export declare const useSeasonStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useSeasonStore: any;

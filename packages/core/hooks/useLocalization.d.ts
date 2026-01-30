@@ -1,10 +1,3 @@
-/**
- * Localization Hook
- * v0.23.0 - Phase G: Auto-detect language and region
- *
- * Usage:
- * const { lang, region, setLang, setRegion } = useLocalization();
- */
 export interface LocalizationState {
     lang: string;
     region: string;
@@ -13,13 +6,13 @@ export interface LocalizationState {
  * Hook for managing user localization preferences
  */
 export declare function useLocalization(): {
-    lang: any;
-    region: any;
+    lang: string;
+    region: string;
     setLang: (lang: string) => void;
     setRegion: (region: string) => void;
     setLocalization: (lang: string, region: string) => void;
     getQueryParams: () => URLSearchParams;
-    isClient: any;
+    isClient: boolean;
 };
 /**
  * Helper to build API URL with localization params

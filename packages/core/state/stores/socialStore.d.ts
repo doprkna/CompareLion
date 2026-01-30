@@ -40,8 +40,8 @@ export interface FeedItem {
     data: any;
     timestamp: string;
 }
-export declare const useFriendsStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
-export declare const useDuelsStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
-export declare const useSocialFeedStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
-export declare const useFriendRequestStore: UseBoundStore<StoreApi<T>>;
-export declare const useStartDuelStore: UseBoundStore<StoreApi<T>>;
+export declare const useFriendsStore: any;
+export declare const useDuelsStore: any;
+export declare const useSocialFeedStore: any;
+export declare const useFriendRequestStore: any;
+export declare const useStartDuelStore: any;

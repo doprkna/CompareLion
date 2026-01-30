@@ -6,7 +6,7 @@
  */
 'use client';
 import { useEffect, useMemo } from 'react';
-import { useBadgesStore, useUserBadgesStore } from '@parel/core/state/stores/badgesStore';
+import { useBadgesStore, useUserBadgesStore } from '../state/stores/badgesStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useBadges() {
     const { state, load, reload } = useBadgesStore();
     useEffect(() => {
@@ -26,8 +26,8 @@ export function useUserBadges() {
     }, [load]);
     // Computed selectors
     const badges = state.data?.badges || [];
-    const claimedCount = useMemo(() => badges.filter(b => b.isClaimed).length, [badges]);
-    const unclaimedCount = useMemo(() => badges.filter(b => !b.isClaimed && b.canClaim).length, [badges]);
+    const claimedCount = useMemo(() => badges.filter((b) => b.isClaimed).length, [badges]);
+    const unclaimedCount = useMemo(() => badges.filter((b) => !b.isClaimed && b.canClaim).length, [badges]);
     return {
         badges,
         loading: state.loading,

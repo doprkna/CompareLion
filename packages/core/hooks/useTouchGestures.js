@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useEffect, useState } from 'react';
 /**
  * Custom hook for touch gestures
@@ -26,7 +24,6 @@ export function useTouchGestures(ref, options = {}) {
         let currentY = 0;
         let startScrollTop = 0;
         const handleTouchStart = (e) => {
-            if (!e.touches || e.touches.length === 0) return; // sanity-fix
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
             startScrollTop = element.scrollTop;
@@ -37,7 +34,6 @@ export function useTouchGestures(ref, options = {}) {
             }));
         };
         const handleTouchMove = (e) => {
-            if (!e.touches || e.touches.length === 0) return; // sanity-fix
             currentX = e.touches[0].clientX;
             currentY = e.touches[0].clientY;
             setTouchState((prev) => ({

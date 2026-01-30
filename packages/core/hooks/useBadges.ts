@@ -37,8 +37,8 @@ export function useUserBadges() {
 
   // Computed selectors
   const badges = state.data?.badges || [];
-  const claimedCount = useMemo(() => badges.filter(b => b.isClaimed).length, [badges]);
-  const unclaimedCount = useMemo(() => badges.filter(b => !b.isClaimed && b.canClaim).length, [badges]);
+  const claimedCount = useMemo(() => badges.filter((b: Badge) => b.isClaimed).length, [badges]);
+  const unclaimedCount = useMemo(() => badges.filter((b: Badge) => !b.isClaimed && b.canClaim).length, [badges]);
 
   return {
     badges,

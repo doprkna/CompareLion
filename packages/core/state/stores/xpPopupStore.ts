@@ -6,7 +6,7 @@
 
 'use client';
 
-import { createStore } from '../factory.js';
+import { createStore } from '../factory';
 
 export interface XpPopupProps {
   variant?: 'xp' | 'gold' | 'level';

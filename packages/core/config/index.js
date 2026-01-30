@@ -12,7 +12,7 @@ export * from './musicThemes';
 export * from './questionSeeds';
 export * from './rarityConfig';
 export * from './regions';
-export * from './rewardConfig';
+export { RewardConfig } from './rewardConfig';
 export * from './security';
 export * from './toastTheme';
 export * from './wildcards';

@@ -1,23 +1,23 @@
 export declare function useFactions(region?: string | null): {
-    factions: any;
+    factions: any[];
     userFaction: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useJoinFaction(): {
-    join: any;
-    loading: any;
-    error: any;
+    join: (factionId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useFactionMap(region?: string | null): {
     map: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useFactionContribution(): {
-    contribute: any;
-    loading: any;
-    error: any;
+    contribute: (amount: number, region?: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

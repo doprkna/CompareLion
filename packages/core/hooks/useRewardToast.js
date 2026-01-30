@@ -1,3 +1,5 @@
+'use client';
+// sanity-fix
 /**
  * useRewardToast Hook
  *
@@ -20,7 +22,7 @@
 'use client';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TOAST_THEME } from './toastTheme'; // sanity-fix
-import { getUiConfig } from '@parel/core/config';
+import { getUiConfig } from '../config/unified'; // sanity-fix: replaced @parel/core/config self-import with relative import
 export function useRewardToast() {
     const [toasts, setToasts] = useState([]);
     const timeoutRefs = useRef(new Map());

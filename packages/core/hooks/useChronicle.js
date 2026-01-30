@@ -5,8 +5,8 @@
  * v0.41.19 - Migrated to unified state store (read-only part)
  */
 'use client';
-import { useEffect } from 'react';
-import { useChronicleStore } from '@parel/core/state/stores/chronicleStore';
+import { useEffect, useState } from 'react';
+import { useChronicleStore } from '../state/stores/chronicleStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useChronicle(type = 'weekly') {
     const { state, load, reload } = useChronicleStore();
     useEffect(() => {

@@ -7,7 +7,7 @@
  */
 'use client';
 import { useState } from 'react';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 export function useQuestLore(questId) {
     const [lore, setLore] = useState(null);
     const [loading, setLoading] = useState(false);

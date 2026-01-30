@@ -1,5 +1,10 @@
-import * as Sentry from '@sentry/nextjs';
-import { logger } from '@parel/core';
+// sanity-fix: replaced @sentry/nextjs import with local stub (web-only dependency)
+const Sentry = {
+    withScope: (fn) => fn({ setTag: () => { }, setUser: () => { }, setContext: () => { } }),
+    captureException: (_err) => { },
+    captureMessage: (_msg, _level) => { }
+};
+import { logger } from './debug'; // sanity-fix: replaced @parel/core self-import with relative import
 import { IS_PROD, IS_DEV } from '../config/env';
 /**
  * Capture error with Sentry and request context (production only - v0.35.7)

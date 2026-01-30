@@ -8,7 +8,7 @@
  */
 'use client';
 import { useEffect } from 'react';
-import { useDiscoveriesStore } from '@parel/core/state/stores/discoveriesStore';
+import { useDiscoveriesStore } from '../state/stores/discoveriesStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useDiscoveryIndex() {
     const { state, load, reload } = useDiscoveriesStore();
     useEffect(() => {

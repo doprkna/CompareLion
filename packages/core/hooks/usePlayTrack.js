@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useCallback, useRef, useState, useEffect } from 'react';
 export function usePlayTrack() {
     const [currentTrack, setCurrentTrack] = useState(null);

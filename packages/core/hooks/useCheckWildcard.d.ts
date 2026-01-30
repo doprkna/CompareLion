@@ -1,5 +1,5 @@
 export declare function useCheckWildcard(): {
-    check: any;
-    loading: any;
-    error: any;
+    check: (triggerType: "xpGain" | "login" | "reflection" | "random") => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

@@ -6,7 +6,7 @@
  * v0.41.14 - Migrated useChallenges GET call to unified API client
  */
 import { useCallback, useEffect, useState } from 'react';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 export function usePolls(region) {
     const [polls, setPolls] = useState([]);
     const [loading, setLoading] = useState(true);

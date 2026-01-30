@@ -3,7 +3,10 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@parel/db": ["./src/db-stub"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useState } from 'react';
 export function useReflectionConverse() {
     const [loading, setLoading] = useState(false);

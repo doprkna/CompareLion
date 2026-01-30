@@ -1,5 +1,5 @@
-import type { Region } from '../state/stores/regionsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
-export type { Region };
+import type { Region as RegionEntity } from '../state/stores/regionsStore';
+export type { RegionEntity };
 /**
  * useRegions Hook
  * v0.41.18 - Migrated to unified state store
@@ -13,17 +13,17 @@ export declare function useRegions(): {
 };
 export declare function useTravel(): {
     travel: (targetRegionId: string) => Promise<any>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useActiveRegion(): {
-    region: any;
-    loading: any;
-    error: any;
+    region: RegionEntity | null;
+    loading: boolean;
+    error: string | null;
     reload: () => Promise<void>;
 };
 export declare function useUnlockRegion(): {
     unlock: (regionId: string) => Promise<any>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };

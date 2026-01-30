@@ -13,7 +13,7 @@ export function useLatestMemory() {
             const json = await res.json();
             if (!res.ok || !json?.success)
                 throw new Error(json?.error || 'Failed to load');
-            setEntry(json?.entry || null); // sanity-fix
+            setEntry(json.entry || null);
         }
         catch (e) {
             setError(e?.message || 'Failed to load');
@@ -34,11 +34,6 @@ export function useMemoryArchive() {
         setLoading(true);
         setError(null);
         try {
-            if (typeof window === 'undefined') { // sanity-fix
-                setError('Client-side only');
-                setLoading(false);
-                return;
-            }
             const url = new URL('/api/memory/all', window.location.origin);
             if (cursor)
                 url.searchParams.set('cursor', cursor);
@@ -47,7 +42,7 @@ export function useMemoryArchive() {
             if (!res.ok || !json?.success)
                 throw new Error(json?.error || 'Failed to load');
             setEntries((prev) => cursor ? [...prev, ...(json.entries || [])] : (json.entries || []));
-            setNextCursor(json?.nextCursor); // sanity-fix
+            setNextCursor(json.nextCursor);
         }
         catch (e) {
             setError(e?.message || 'Failed to load');
@@ -70,7 +65,7 @@ export function useGenerateMemory() {
             const json = await res.json();
             if (!res.ok || !json?.success)
                 throw new Error(json?.error || 'Failed to generate');
-            return json?.entry ?? null; // sanity-fix
+            return json.entry;
         }
         catch (e) {
             setError(e?.message || 'Failed to generate');

@@ -26,16 +26,16 @@ export function useMusicTheme() {
   }, [load]);
 
   const getThemeByMood = useCallback((moodTag: 'calm' | 'chaos' | 'joy' | 'deep' | 'battle') => {
-    return findThemeByMood(themes, moodTag);
-  }, [themes]);
+    return findThemeByMood(moodTag);
+  }, []);
 
   const getThemeByRegion = useCallback((regionKey: string) => {
-    return findThemeByRegion(themes, regionKey);
-  }, [themes]);
+    return findThemeByRegion(regionKey);
+  }, []);
 
   const getThemeByArchetype = useCallback((archetypeKey: string) => {
-    return findThemeByArchetype(themes, archetypeKey);
-  }, [themes]);
+    return findThemeByArchetype(archetypeKey);
+  }, []);
 
   return {
     themes,

@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { getMusicThemes, findThemeByMood, findThemeByRegion, findThemeByArchetype } from '../config/musicThemes'; // sanity-fix
 export function useMusicTheme() {
@@ -25,14 +23,14 @@ export function useMusicTheme() {
         load();
     }, [load]);
     const getThemeByMood = useCallback((moodTag) => {
-        return findThemeByMood(themes, moodTag);
-    }, [themes]);
+        return findThemeByMood(moodTag);
+    }, []);
     const getThemeByRegion = useCallback((regionKey) => {
-        return findThemeByRegion(themes, regionKey);
-    }, [themes]);
+        return findThemeByRegion(regionKey);
+    }, []);
     const getThemeByArchetype = useCallback((archetypeKey) => {
-        return findThemeByArchetype(themes, archetypeKey);
-    }, [themes]);
+        return findThemeByArchetype(archetypeKey);
+    }, []);
     return {
         themes,
         loading,

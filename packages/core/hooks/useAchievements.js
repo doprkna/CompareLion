@@ -1,5 +1,3 @@
-'use client';
-// sanity-fix
 /**
  * useAchievements Hook
  * Fetches achievements with unlock status, provides unlock function
@@ -8,7 +6,7 @@
  */
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 import { useRewardToast } from './useRewardToast'; // sanity-fix
 export function useAchievements() {
     const [achievements, setAchievements] = useState([]);

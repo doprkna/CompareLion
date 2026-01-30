@@ -4,8 +4,8 @@
  * useRituals Hook
  * v0.41.19 - Migrated to unified state store (read-only part)
  */
-import { useEffect, useState, useCallback } from 'react'; // sanity-fix
-import { useRitualsStore } from '@parel/core/state/stores/ritualsStore';
+import { useEffect, useState, useCallback } from 'react';
+import { useRitualsStore } from '../state/stores/ritualsStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
 export function useRituals() {
     const { state, load, reload } = useRitualsStore();
     useEffect(() => {

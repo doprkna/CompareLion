@@ -1,8 +1,8 @@
 // sanity-fix: replaced @sentry/nextjs import with local stub (web-only dependency)
 const Sentry = {
-  withScope: (fn: any) => fn({ setTag: () => {}, setUser: () => {}, setContext: () => {} }),
-  captureException: () => {},
-  captureMessage: () => {}
+  withScope: (fn: (scope: { setTag: (k: string, v: string) => void; setUser: (u: object) => void; setContext: (k: string, v: object) => void }) => void) => fn({ setTag: () => {}, setUser: () => {}, setContext: () => {} }),
+  captureException: (_err?: unknown) => {},
+  captureMessage: (_msg?: string, _level?: string) => {}
 };
 import { logger } from './debug'; // sanity-fix: replaced @parel/core self-import with relative import
 import { IS_PROD, IS_DEV } from '../config/env';
@@ -23,7 +23,7 @@ export interface ErrorContext {
 export function captureError(error: Error, context: ErrorContext = {}): void {
   // Only send to Sentry in production with DSN configured
   if (IS_PROD && process.env.NEXT_PUBLIC_SENTRY_DSN) {
-    Sentry.withScope((scope) => {
+    Sentry.withScope((scope: { setTag: (k: string, v: string) => void; setUser: (u: object) => void; setContext: (k: string, v: object) => void }) => {
       // Set request ID as tag
       if (context.requestId) {
         scope.setTag('requestId', context.requestId);
@@ -72,7 +72,7 @@ export function captureError(error: Error, context: ErrorContext = {}): void {
 export function captureMessage(message: string, level: 'info' | 'warning' | 'error' = 'info', context: ErrorContext = {}): void {
   // Only send to Sentry in production with DSN configured
   if (IS_PROD && process.env.NEXT_PUBLIC_SENTRY_DSN) {
-    Sentry.withScope((scope) => {
+    Sentry.withScope((scope: { setTag: (k: string, v: string) => void; setUser: (u: object) => void; setContext: (k: string, v: object) => void }) => {
       // Set request ID as tag
       if (context.requestId) {
         scope.setTag('requestId', context.requestId);
@@ -101,7 +101,7 @@ export function captureMessage(message: string, level: 'info' | 'warning' | 'err
       }
 
       // Capture the message
-      Sentry.captureMessage(message, level);
+      (Sentry.captureMessage as (msg: string, level?: string) => void)(message, level);
     });
   }
 

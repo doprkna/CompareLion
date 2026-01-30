@@ -4,7 +4,7 @@
  */
 export declare function useFlowRewardScreen(): {
     triggerFlowReward: any;
-    FlowRewardScreen: any;
+    FlowRewardScreen: () => import("react").JSX.Element | null;
     isOpen: any;
     close: any;
 };

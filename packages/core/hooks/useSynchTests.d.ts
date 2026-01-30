@@ -1,17 +1,17 @@
 export declare function useSynchTests(): {
-    tests: any;
-    loading: any;
-    error: any;
-    reload: any;
+    tests: any[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useStartSynchTest(): {
-    start: any;
-    loading: any;
-    error: any;
+    start: (testId: string, targetUserId?: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useSynchResult(id: string | null): {
     result: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };

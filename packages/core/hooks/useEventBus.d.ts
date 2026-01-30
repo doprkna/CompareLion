@@ -1,18 +1,4 @@
 /**
- * useEventBus Hook
- *
- * React hook for subscribing to event bus events.
- * Automatically handles cleanup on unmount.
- *
- * Usage:
- * ```tsx
- * useEventBus('message:new', (data) => {
- *   console.log('New message:', data);
- *   refreshMessages();
- * });
- * ```
- */
-/**
  * Subscribe to an event from the event bus
  * @param event Event name to listen to
  * @param handler Callback function to execute when event is emitted

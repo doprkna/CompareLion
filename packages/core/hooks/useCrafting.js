@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useCallback, useState } from 'react';
 export function useCrafting() {
     const [loading, setLoading] = useState(false);

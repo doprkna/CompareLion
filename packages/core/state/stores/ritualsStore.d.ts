@@ -17,4 +17,4 @@ export interface RitualUserProgress {
     progress?: number;
     [key: string]: any;
 }
-export declare const useRitualsStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useRitualsStore: any;

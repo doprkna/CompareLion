@@ -76,7 +76,7 @@ export function combineSelectors<TState, TResults extends readonly any[]>(
   ...selectors: { [K in keyof TResults]: Selector<TState, TResults[K]> }
 ): Selector<TState, TResults> {
   return (state: TState): TResults => {
-    return selectors.map((selector) => selector(state)) as TResults;
+    return selectors.map((selector) => selector(state)) as unknown as TResults;
   };
 }
 

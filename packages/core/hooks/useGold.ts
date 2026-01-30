@@ -10,7 +10,8 @@
 
 import { useState, useEffect } from 'react';
 // sanity-fix: replaced next-auth/react import with local stub (web-only dependency)
-const useSession = () => ({ data: null, status: 'unauthenticated' });
+const useSession = (): { data: { user?: { email?: string } } | null; status: string } =>
+  ({ data: null, status: 'unauthenticated' });
 
 export interface UseGoldReturn {
   gold: number;

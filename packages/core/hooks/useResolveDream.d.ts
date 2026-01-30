@@ -1,5 +1,5 @@
 export declare function useResolveDream(): {
-    resolve: any;
-    loading: any;
-    error: any;
+    resolve: (userDreamId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

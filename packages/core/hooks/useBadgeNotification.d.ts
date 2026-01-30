@@ -10,6 +10,6 @@ export interface BadgeUnlockEvent {
     rewardValue?: string | null;
 }
 export declare function useBadgeNotification(onUnlock?: (badge: BadgeUnlockEvent) => void): {
-    pendingUnlock: any;
+    pendingUnlock: BadgeUnlockEvent | null;
     clearPending: () => void;
 };

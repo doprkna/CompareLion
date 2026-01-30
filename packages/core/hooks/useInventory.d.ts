@@ -27,9 +27,9 @@ export interface InventoryItem {
  * v0.36.3 - Equipment/inventory sync
  */
 export declare function useInventory(): {
-    inventory: any;
-    loading: any;
+    inventory: InventoryItem[];
+    loading: boolean;
     error: string | null;
-    total: any;
-    reload: any;
+    total: number;
+    reload: () => void;
 };

@@ -2,7 +2,11 @@
 // sanity-fix
 'use client';
 import { useEffect } from 'react';
-import { useFriendsStore, useDuelsStore, useSocialFeedStore, useFriendRequestStore, useStartDuelStore, } from '@parel/core/state/stores/socialStore';
+import { useFriendsStore, useDuelsStore, useSocialFeedStore, useFriendRequestStore, useStartDuelStore, } from '../state/stores/socialStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+/**
+ * useSocial Hooks
+ * v0.41.20 - Migrated to unified state store
+ */
 export function useFriends() {
     const { state, load, reload } = useFriendsStore();
     useEffect(() => {

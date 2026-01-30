@@ -19,7 +19,7 @@
 
 import { useEffect, useRef } from "react";
 import { eventBus } from "./eventBus"; // sanity-fix
-import { logger } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
+import { logger, type DebugContext } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
 
 export function useRealtime() {
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -58,7 +58,7 @@ export function useRealtime() {
         isConnectingRef.current = false;
         connect();
       } catch (err) {
-        logger.warn("Failed to check real-time status, retrying with backoff", err);
+        logger.warn("Failed to check real-time status, retrying with backoff", err as DebugContext);
         // Retry status check with backoff on error
         if (mounted && !statusCheckTimeoutRef.current) {
           statusCheckTimeoutRef.current = setTimeout(() => {
@@ -166,6 +166,11 @@ export function useRealtime() {
       }
     };
   }, []);
+
+  return {
+    subscribe: <T = unknown>(ev: string, handler: (payload?: T) => void) => eventBus.on(ev, handler as (payload?: any) => void),
+    unsubscribe: <T = unknown>(ev: string, handler: (payload?: T) => void) => eventBus.off(ev, handler as (payload?: any) => void),
+  };
 }
 
 /**

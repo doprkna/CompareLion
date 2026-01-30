@@ -1,8 +1,3 @@
-/**
- * useFeedback Hook
- * Submits user feedback
- * v0.41.13 - Migrated to unified API client
- */
 export interface Feedback {
     id: string;
     userId?: string | null;
@@ -19,8 +14,23 @@ export interface Feedback {
     reviewedAt?: string | null;
     reviewedBy?: string | null;
 }
+interface SubmitFeedbackData {
+    message: string;
+    screenshotUrl?: string;
+    context?: string;
+}
+interface SubmitFeedbackResult {
+    success: boolean;
+    feedback: {
+        id: string;
+        status: string;
+        createdAt: string;
+    };
+    message: string;
+}
 export declare function useFeedback(): {
-    submitFeedback: any;
-    loading: any;
-    error: any;
+    submitFeedback: (data: SubmitFeedbackData) => Promise<SubmitFeedbackResult>;
+    loading: boolean;
+    error: string | null;
 };
+export {};

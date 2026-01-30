@@ -12,9 +12,12 @@
 'use client';
 
 import { useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
+// Stub for next-auth/react (core must not depend on next-auth; app provides session)
+function useSession(): { data: { user?: unknown } | null; status: "authenticated" | "unauthenticated" } {
+  return { data: null, status: "unauthenticated" };
+}
 import { apiFetch } from "./apiBase"; // sanity-fix
-import { logger } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
+import { logger, type DebugContext } from '../utils/debug'; // sanity-fix: replaced @parel/core self-import with relative import
 
 const HEARTBEAT_INTERVAL_MS = 25000; // 25 seconds
 
@@ -38,7 +41,7 @@ export function usePresence() {
         await apiFetch("/api/presence", { method: "POST" });
         logger.debug("📍 Presence ping sent");
       } catch (error) {
-        logger.warn("Presence ping failed", error);
+        logger.warn("Presence ping failed", error as DebugContext);
       }
 
       // Schedule next ping

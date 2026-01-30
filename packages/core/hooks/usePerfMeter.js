@@ -1,6 +1,4 @@
 'use client';
-// sanity-fix
-'use client';
 import { useEffect, useRef } from 'react';
 /**
  * Performance measurement hook for React components

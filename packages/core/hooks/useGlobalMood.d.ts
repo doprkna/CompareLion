@@ -1,11 +1,11 @@
 export declare function useGlobalMood(): {
     mood: any;
-    loading: any;
-    error: any;
-    reload: any;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useMoodTheme(mood: any | null): {
     theme: any;
-    moodText: any;
+    moodText: string;
     dominantEmotion: any;
 };

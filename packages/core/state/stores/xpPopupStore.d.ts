@@ -13,4 +13,4 @@ export interface XpInstance {
     offsetY: number;
     variant: XpPopupProps['variant'];
 }
-export declare const useXpPopupStore: UseBoundStore<StoreApi<T>>;
+export declare const useXpPopupStore: any;

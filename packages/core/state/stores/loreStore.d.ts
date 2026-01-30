@@ -17,4 +17,4 @@ export interface LorePagination {
     total: number;
     totalPages: number;
 }
-export declare const useLoreStore: UseBoundStore<StoreApi<import("..").AsyncStore<T>>>;
+export declare const useLoreStore: any;

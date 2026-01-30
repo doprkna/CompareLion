@@ -1,11 +1,14 @@
 export declare function useFusionOptions(): {
-    data: any;
-    loading: any;
-    error: any;
-    reload: any;
+    data: {
+        base?: string;
+        options: any[];
+    } | null;
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useArchetypeFusion(): {
-    fuse: any;
-    loading: any;
-    error: any;
+    fuse: (baseA: string, baseB: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };

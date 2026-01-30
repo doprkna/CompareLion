@@ -7,7 +7,7 @@
  */
 'use client';
 import { useState, useEffect } from 'react';
-import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix
+import { defaultClient, ApiClientError } from '@parel/api'; // sanity-fix: replaced @parel/api/client with @parel/api (client not exported as subpath)
 export function useQuests() {
     const [quests, setQuests] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -51,7 +51,7 @@ export function useActiveQuests() {
         setError(null);
         try {
             const response = await defaultClient.get('/quests/active');
-            setQuests(response?.data?.quests || { daily: [], weekly: [], story: [], side: [] }); // sanity-fix
+            setQuests(response?.data?.quests ?? { daily: [], weekly: [], story: [], side: [] }); // sanity-fix
         }
         catch (err) {
             const errorMessage = err instanceof ApiClientError

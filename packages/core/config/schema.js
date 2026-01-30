@@ -134,12 +134,12 @@ export function validateConfig(config) {
                     actual: String(config.api.client.timeout),
                 });
             }
-            if (typeof config.api.client.retries === 'number' && config.api.client.retries < 0) {
+            if (typeof config.api.client.retry?.maxRetries === 'number' && config.api.client.retry.maxRetries < 0) {
                 errors.push({
-                    path: 'api.client.retries',
-                    message: 'retries must be >= 0',
+                    path: 'api.client.retry.maxRetries',
+                    message: 'retry.maxRetries must be >= 0',
                     expected: 'number >= 0',
-                    actual: String(config.api.client.retries),
+                    actual: String(config.api.client.retry.maxRetries),
                 });
             }
         }

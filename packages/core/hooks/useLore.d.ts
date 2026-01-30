@@ -1,4 +1,4 @@
-import type { LoreEntry, LorePagination } from '../state/stores/loreStore'; // sanity-fix: replaced @parel/core/state/stores self-import with relative import
+import type { LoreEntry, LorePagination } from '../state/stores/loreStore';
 export type { LoreEntry, LorePagination };
 /**
  * useLoreEntries Hook
@@ -23,12 +23,12 @@ export declare function useLatestLore(): {
 };
 export declare function useGenerateLore(): {
     generate: (sourceType: "reflection" | "quest" | "item" | "event" | "system", sourceId?: string) => Promise<LoreEntry>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useLoreTone(): {
-    tone: any;
+    tone: "serious" | "comedic" | "poetic" | null;
     updateTone: (newTone: "serious" | "comedic" | "poetic") => Promise<any>;
-    loading: any;
-    error: any;
+    loading: boolean;
+    error: string | null;
 };

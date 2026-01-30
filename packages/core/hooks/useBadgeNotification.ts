@@ -22,17 +22,18 @@ export function useBadgeNotification(
   const [pendingUnlock, setPendingUnlock] = useState<BadgeUnlockEvent | null>(null);
 
   useEffect(() => {
-    const handleBadgeUnlock = (event: BadgeUnlockEvent) => {
+    const handleBadgeUnlock = (event?: BadgeUnlockEvent) => {
+      if (!event) return;
       setPendingUnlock(event);
       if (onUnlock) {
         onUnlock(event);
       }
     };
 
-    subscribe('badge:unlock', handleBadgeUnlock);
+    subscribe<BadgeUnlockEvent>('badge:unlock', handleBadgeUnlock);
 
     return () => {
-      unsubscribe('badge:unlock', handleBadgeUnlock);
+      unsubscribe<BadgeUnlockEvent>('badge:unlock', handleBadgeUnlock);
     };
   }, [subscribe, unsubscribe, onUnlock]);
 

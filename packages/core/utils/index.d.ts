@@ -4,4 +4,3 @@ export * from './isAdminView';
 export * from './isAdminViewServer';
 export * from './pagination';
 export * from './requestId';
-export * from './walletTransactions';

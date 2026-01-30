@@ -1,16 +1,22 @@
 export declare function useCommunityCreations(type?: string | null): {
-    creations: any;
-    loading: any;
-    error: any;
-    reload: any;
+    creations: any[];
+    loading: boolean;
+    error: string | null;
+    reload: () => Promise<void>;
 };
 export declare function useSubmitCreation(): {
-    submit: any;
-    loading: any;
-    error: any;
+    submit: (data: {
+        title: string;
+        type: "question" | "mission" | "item" | "other";
+        content: any;
+        rewardXP?: number;
+        rewardKarma?: number;
+    }) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };
 export declare function useLikeCreation(): {
-    like: any;
-    loading: any;
-    error: any;
+    like: (creationId: string) => Promise<any>;
+    loading: boolean;
+    error: string | null;
 };
