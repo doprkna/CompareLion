@@ -1,13 +1,13 @@
 {
     "name":  "@parel/core",
     "version":  "0.0.0",
-    "main":  "dist/index.js",
-    "types":  "dist/index.d.ts",
+    "main":  "dist/src/index.js",
+    "types":  "dist/src/index.d.ts",
     "exports":  {
                     ".":  {
-                               "require":  "./dist/index.js",
-                               "types":  "./dist/index.d.ts",
-                               "import":  "./dist/index.js"
+                               "require":  "./dist/src/index.js",
+                               "types":  "./dist/src/index.d.ts",
+                               "import":  "./dist/src/index.js"
                            },
                     "./hooks/*":  {
                                       "require":  "./dist/hooks/*.js",
@@ -546,7 +546,8 @@
                                          }
                 },
     "scripts":  {
-                    "build":  "tsc -b"
+                    "build":  "tsc -b",
+                    "check:entry":  "node -e \"const fs=require('fs'); const p=require('./package.json'); const must=[p.main,p.types,p.exports?.['.']?.default,p.exports?.['.']?.types].filter(Boolean); must.forEach(f=>{if(!fs.existsSync(f)) {console.error('Missing entry file:', f); process.exit(1)}}); console.log('entry ok')\""
                 },
     "sideEffects":  false,
     "private":  true,
