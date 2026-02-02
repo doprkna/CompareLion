@@ -169,9 +169,21 @@ importers:
       '@parel/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@parel/features':
+        specifier: workspace:*
+        version: link:../../packages/features
+      '@parel/story':
+        specifier: workspace:*
+        version: link:../../packages/story
       '@parel/types':
         specifier: workspace:*
         version: link:../../packages/types
+      '@parel/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@parel/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

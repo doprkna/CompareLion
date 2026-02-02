@@ -1,4 +1,9 @@
 
+## [0.42.41] - 2026-01-30
+
+### Fixed
+  - Vercel / strict pnpm: added missing workspace deps to apps/web so @parel/core, @parel/ui, @parel/story, @parel/features, @parel/validation resolve in clean installs: @parel/features, @parel/story, @parel/ui, @parel/validation (all workspace:*).
+
 ## [0.42.40] - 2026-02-02
 
 ### Fixed
