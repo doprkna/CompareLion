@@ -12,6 +12,7 @@
  */
 
 import type { UnifiedConfig, FeaturesConfig } from './schema';
+import { getFeaturesConfig } from './unified';
 
 // ============================================================================
 // TYPES
@@ -335,6 +336,15 @@ export function getFeatureFlagsSync(
   }
   
   return results as Record<FeatureFlagName, boolean>;
+}
+
+// ============================================================================
+// getFlags (alias for features config - used by health/extended etc.)
+// ============================================================================
+
+/** Returns current features config (enableBase, enableAnalytics, etc.). */
+export function getFlags(): FeaturesConfig {
+  return getFeaturesConfig() as FeaturesConfig;
 }
 
 // ============================================================================

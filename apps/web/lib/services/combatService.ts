@@ -1023,7 +1023,7 @@ export function generateEnemyName(killCount: number = 0): string {
   return SHADOW_NAMES[Math.floor(Math.random() * SHADOW_NAMES.length)];
 }
 
-function formatSession(session: any) {
+export function formatSession(session: any) {
   return {
     id: session.id,
     heroHp: session.heroHp,

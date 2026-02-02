@@ -1,4 +1,10 @@
 
+## [0.42.43] - 2026-01-30
+
+### Fixed
+  - Missing exports (build:vercel): (A) @parel/validation/auth — added package.json exports "./auth" so SignupSchema resolves. (B) @parel/features/flow — re-export getNextQuestion, getFlowResult, startFlow, getAvailableCategories from flow-skeleton. (C) @parel/core/config/flags — added getFlags() returning getFeaturesConfig() for health/extended. (D) apps/web barrels: formatSession exported from lib/services/combatService; logFlowEvent stub in lib/metrics; TelemetryEvents in lib/telemetry.
+  - DATABASE_URL build crash for /api/health/db: route now uses getPrisma() from @/lib/db inside handler; when DATABASE_URL missing returns 200 with dbSkipped: true (no throw at import).
+
 ## [0.42.42] - 2026-01-30
 
 ### Fixed
