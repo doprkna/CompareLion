@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
-import { prisma } from '@/lib/db';
+import { getPrisma } from '@/lib/db';
 import { safeAsync, unauthorizedError, validationError } from '@/lib/api-handler';
 import { z } from 'zod';
 
@@ -10,6 +10,13 @@ const CheckSchema = z.object({
 });
 
 export const POST = safeAsync(async (req: NextRequest) => {
+  const prisma = getPrisma();
+  if (!prisma) {
+    return NextResponse.json(
+      { error: 'Database not configured' },
+      { status: 503 }
+    );
+  }
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) return unauthorizedError('Unauthorized');
 

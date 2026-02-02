@@ -1,8 +1,33 @@
-﻿/**
+/**
  * Marketplace Types & Enums
  * Shared types, enums, and interfaces for Marketplace 2.0
  * v0.36.39 - Marketplace 2.0
  */
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+/** Max number of featured items shown (e.g. carousel) */
+export const MAX_FEATURED_ITEMS = 5;
+
+/** Market item category (matches Prisma ItemCategory) */
+export type MarketItemCategory = 'item' | 'cosmetic' | 'booster';
+
+/** Market item shape (from prisma.marketItem, with price/createdAt normalized) */
+export interface MarketItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  currencyKey: string;
+  rarity?: string | null;
+  category: MarketItemCategory;
+  stock?: number | null;
+  isEventItem?: boolean;
+  isFeatured?: boolean;
+  createdAt: string;
+}
 
 // ============================================================================
 // ENUMS

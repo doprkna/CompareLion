@@ -1,4 +1,10 @@
 
+## [0.42.42] - 2026-01-30
+
+### Fixed
+  - MAX_FEATURED_ITEMS import: added MAX_FEATURED_ITEMS, MarketItem, and MarketItemCategory to apps/web/lib/marketplace/types.ts so imports from './types' resolve (no import-site changes).
+  - Prisma build-time crash: lazy db client in lib/db.ts — no PrismaClient or throw at module load; getPrisma() returns singleton or null when DATABASE_URL missing; /api/loot/check uses getPrisma() inside handler and returns 503 when DB not configured so build succeeds without DATABASE_URL.
+
 ## [0.42.41] - 2026-01-30
 
 ### Fixed
