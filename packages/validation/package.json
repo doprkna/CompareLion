@@ -5,7 +5,10 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-    "./auth": { "types": "./dist/auth.d.ts", "default": "./dist/auth.js" }
+    "./auth": { "types": "./dist/auth.d.ts", "default": "./dist/auth.js" },
+    "./job": { "types": "./dist/job.d.ts", "default": "./dist/job.js" },
+    "./question": { "types": "./dist/question.d.ts", "default": "./dist/question.js" },
+    "./sssc": { "types": "./dist/sssc.d.ts", "default": "./dist/sssc.js" }
   },
   "scripts": {
     "build": "tsc -b"
