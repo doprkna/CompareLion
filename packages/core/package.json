@@ -519,6 +519,21 @@
                                                    "types": "./dist/config/ambientConfig.d.ts",
                                                    "import": "./dist/config/ambientConfig.js"
                                                },
+                    "./config/flags":  {
+                                               "require": "./dist/config/flags.js",
+                                               "types": "./dist/config/flags.d.ts",
+                                               "import": "./dist/config/flags.js"
+                                           },
+                    "./config/generator":  {
+                                                 "require": "./dist/config/generator.js",
+                                                 "types": "./dist/config/generator.d.ts",
+                                                 "import": "./dist/config/generator.js"
+                                             },
+                    "./config/musicThemes":  {
+                                                 "require": "./dist/config/musicThemes.js",
+                                                 "types": "./dist/config/musicThemes.d.ts",
+                                                 "import": "./dist/config/musicThemes.js"
+                                             },
                     "./state/stores/*":  {
                                              "require":  "./dist/state/stores/*.js",
                                              "types":  "./dist/state/stores/*.d.ts",

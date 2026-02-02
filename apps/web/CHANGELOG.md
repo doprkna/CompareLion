@@ -1,33 +1,20 @@
 
-## [Unreleased]
+## [0.42.40] - 2026-02-02
 
 ### Fixed
-  - Vercel build: use build:vercel (exclude @parel/story); devCommand to pnpm run dev
+  - @prisma/client shadowing: removed path override in apps/web/tsconfig.json that mapped @prisma/client to packages/db/generated (zod schemas). @prisma/client now resolves to the real Prisma client; @parel/db/client re-exports from real @prisma/client.
 
-## [0.42.36] - 2026-01-30
+## [0.42.39] - 2026-02-02
 
 ### Fixed
-  - Fixed packages/api envelope.ts: cast addRequestIdToResponse return to NextResponse to satisfy TS2740
-  - FIXED: packages/core/tsconfig.json — rootDir adjusted to match include patterns
-  - Fixed - Vercel.json setup and fix in their app - install manager configuration
-  - Fixed - Aligned worker with Prisma schema
-  - Fixed - @parel/db stub for notifications
-  - Fixed - normalized and unified: utils/walletTransactions.ts, utils/errorTracking.ts, state/selectors.ts, state/factory.ts, src/index.ts, useSocial.ts, useShop.ts, useRegions.ts, useRealtime.ts, useQuests.ts
-,  usePresence.ts, useNotificationToasts.ts, useMusicTheme.ts...
-  - Fixed - 
-  - Fixed - change of rootDir from ".", reference and include review in tsconfig.js
-  - Fixed - Fixes connected to environments and install manager - package json update for next.js info in both locations
-  - Fixed - Single Vercel config: Root vercel.json is sole source of truth; installCommand set to pnpm install --frozen-lockfile, buildCommand to pnpm build; apps/web/vercel.json moved to vercel.json.disabled for monorepo deploy from repo root
-  - Fixed - packages/core streakStore: Switched to factory createStore API (single-arg creator), removed curried create/persist usage; typed toast stub for noImplicitAny
-  - Fixed - packages/core config/load.ts: Initialize overrides.security.auth with SecurityAuthConfig (maxFailedAttempts, demoBypass) to satisfy TS2739
-  - Fixed - packages/core config/load.ts: Initialize overrides.security.rateLimit with SecurityRateLimitConfig (enabled) to satisfy TS2741
-  - Fixed - packages/core config/load.ts: Initialize overrides.api.generator with full ApiGeneratorConfig to satisfy TS2740
-  - Fixed - packages/core config/load.ts: Assert deepMerge(config, runtimeOverrides) as UnifiedConfig to satisfy TS2322 (gameplay.xp)
-  - Fixed - packages/core config/load.ts: Assert deepMerge(config, envConfig) as UnifiedConfig at line 279 to satisfy TS2322 (gameplay.xp)
-  - Fixed - packages/core config/load.ts: Assert deepMerge(config, userOverrides) as UnifiedConfig at line 287 to satisfy TS2322 (gameplay.xp)
-  - Fixed - packages/core config/plugins.ts: Assert deepMerge(config, pluginOverrides) as UnifiedConfig at line 141 to satisfy TS2322 (gameplay.xp)
-  - Fixed - packages/core config/plugins.ts: Remove duplicate export of ConfigPlugin to resolve TS2484
-  - Fixed - packages/core config/schema.ts: Validate retry.maxRetries instead of retries to satisfy ApiClientConfig (TS2339)
-  - Fixed - packages/core config/unified.ts: Cast deepMerge first-arg fallback as T[Extract<keyof T, string>] to satisfy TS2345
-  - Fixed - packages/core no longer compiles packages/types source (TS6059/TS6307): added @parel/types workspace dependency, path override @parel/types -> ../types/dist, project reference to ../types; packages/types exports field for dist
-  - Fixed - Monorepo build TS6059/TS6307/TS2307: story tsconfig path @parel/types -> ../types/dist + references; story dependency @parel/types; @parel/db/client export types field
+  - Missing module @/lib/config/itemEffects: added re-export from @parel/core/config/itemEffects
+
+## [0.42.38] - 2026-02-02
+
+### Fixed
+  - Missing modules: added @/components/ui/separator, @/lib/telemetry/telemetry-tracker (stub)
+  - Invalid UTF-8 in app/shop/page.tsx (corrupted emoji fallback and tip text)
+  - Syntax error in app/story/feed/page.tsx (handleStoryClick extra braces/dead code)
+  - Duplicate variable redis in lib/middleware/culturalFilter.ts
+  - Missing @/store/useRegionStore (stub for shop page)
+

@@ -94,7 +94,6 @@ export async function loadActiveFilters(regionInput?: string | null): Promise<Cu
     orderBy: { updatedAt: 'desc' },
   }) as unknown as CulturalFilter[];
 
-  const redis = getRedis();
   if (redis) {
     try { await redis.set(key, JSON.stringify(filters), 'EX', 300); } catch {}
   }

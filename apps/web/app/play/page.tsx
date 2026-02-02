@@ -12,8 +12,8 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { useFightStore, Enemy } from '@parel/core/hooks/useFightStore";
-import { useRewardToast } from '@parel/core/hooks/useRewardToast";
+import { useFightStore, Enemy } from '@parel/core/hooks/useFightStore';
+import { useRewardToast } from '@parel/core/hooks/useRewardToast';
 import { apiFetch } from "@/lib/apiBase";
 import { Icon } from '@parel/ui/atoms';
 
@@ -231,7 +231,7 @@ export default function PlayPage() {
                   <Icon name="xp" className="h-4 w-4 text-accent" />
                   <span className="font-medium">{event.name}</span>
                   {event.description && (
-                    <span className="text-muted-foreground">— {event.description}</span>
+                    <span className="text-muted-foreground"> - {event.description}</span>
                   )}
                 </div>
               ))}

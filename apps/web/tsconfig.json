@@ -23,9 +23,6 @@
     "paths": {
       "@/*": [
         "./*"
-      ],
-      "@prisma/client": [
-        "../../packages/db/generated"
       ]
     },
     "noEmit": true,

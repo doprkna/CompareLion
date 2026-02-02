@@ -257,11 +257,7 @@ export default function StoryFeedPage() {
   }
 
   function handleStoryClick(story: StoryFeedItem) {
-    // Link to new story viewer (v0.40.11)
     router.push(`/story/view/${story.id}`);
-      // Fallback: could navigate to detail page or show modal
-      console.log('Story export not available', story.id);
-    }
   }
 
   if (status === 'loading' || loading) {

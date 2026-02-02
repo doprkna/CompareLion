@@ -3,6 +3,52 @@
   "version": "0.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    "./storyAnalyticsService": {
+      "types": "./stubs/storyAnalyticsService.d.ts",
+      "default": "./stubs/storyAnalyticsService.js"
+    },
+    "./storyAudioService": {
+      "types": "./stubs/storyAudioService.d.ts",
+      "default": "./stubs/storyAudioService.js"
+    },
+    "./storyChallengeService": {
+      "types": "./stubs/storyChallengeService.d.ts",
+      "default": "./stubs/storyChallengeService.js"
+    },
+    "./storyCollectionService": {
+      "types": "./stubs/storyCollectionService.d.ts",
+      "default": "./stubs/storyCollectionService.js"
+    },
+    "./storyDraftService": {
+      "types": "./stubs/storyDraftService.d.ts",
+      "default": "./stubs/storyDraftService.js"
+    },
+    "./storyFeedService": {
+      "types": "./stubs/storyFeedService.d.ts",
+      "default": "./stubs/storyFeedService.js"
+    },
+    "./storyRemixService": {
+      "types": "./stubs/storyRemixService.d.ts",
+      "default": "./stubs/storyRemixService.js"
+    },
+    "./storyService": {
+      "types": "./stubs/storyService.d.ts",
+      "default": "./stubs/storyService.js"
+    },
+    "./storyTemplateService": {
+      "types": "./stubs/storyTemplateService.d.ts",
+      "default": "./stubs/storyTemplateService.js"
+    },
+    "./weeklyStoryService": {
+      "types": "./stubs/weeklyStoryService.d.ts",
+      "default": "./stubs/weeklyStoryService.js"
+    },
+    "./stickers": {
+      "types": "./stubs/stickers.d.ts",
+      "default": "./stubs/stickers.js"
+    }
+  },
   "scripts": {
     "build": "tsc -b"
   },
