@@ -4,6 +4,9 @@
 ### Fixed 
   - Production finally alive after month!!!
   - @parel/features/flow barrel: consolidated re-exports from flow-skeleton so getNextQuestion, startFlow, getFlowResult, getAvailableCategories, answerQuestion, skipQuestion, isUserAuthenticated and types FlowSession, FlowQuestion, FlowResult are all exported from one place (aligns with apps/web imports; build green).
+  - Clean monorepo build (@parel/core resolving @parel/types): packages/types build script now removes tsconfig.tsbuildinfo when dist is missing so tsc -b always emits dist after a clean; @parel/core then resolves @parel/types and build:vercel passes.
+  - @parel/redis: build script logs cwd, node version, and require.resolve('ioredis') before tsc -b for CI diagnostics; ioredis remains in dependencies.
+  - @parel/validation: package.json exports added for "./job", "./question", "./sssc" pointing to dist so Next/Vercel can resolve those subpaths.
 
 ## [0.42.39] - 2026-02-02
 
