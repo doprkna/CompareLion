@@ -1,0 +1,3 @@
+import { NextRequest } from "next/server";
+export declare function GET(req: NextRequest): Promise<any>;
+export declare function DELETE(req: NextRequest): Promise<any>;

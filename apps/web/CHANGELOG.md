@@ -1,10 +1,14 @@
-
+  
 ## [0.43.2] - 2026-02-03
 
 ### Fixed
   - Vercel workspace root: vercel.json installCommand → `pnpm -w install --frozen-lockfile`, buildCommand → `pnpm -w build:vercel` so install/build run from workspace root (fixes packages/redis ioredis resolve and node_modules missing).
   - Deterministic CI / hoisted layout: root `.npmrc` sets `node-linker=hoisted` so dependencies are hoisted to root node_modules and packages/redis (and other workspace packages) resolve deps (e.g. ioredis) from root in Vercel/CI.
   - packages/redis build: diagnostic step now wraps require.resolve('ioredis') in try/catch and logs error without exiting non-zero; tsc -b still runs so CI logs are useful and build only fails on actual tsc errors.
+  - TS2307 @parel/db: packages/notifications and apps/worker already declare `"@parel/db": "workspace:*"` in dependencies; packages/db has `"name": "@parel/db"`. No code changes; pnpm strict resolution satisfied.
+  - Monorepo build (node-linker=hoisted): workspace package build scripts now use `pnpm -w exec tsc -b` (or `pnpm -w exec tsc`) instead of `tsc -b` / `tsc` so TypeScript is resolved from the workspace root in CI/Vercel where local node_modules/.bin/tsc is not present (packages: notifications, validation, core, ui, api, rating, utils, shared, features/flow, narrative, lore, types; manual: apps/worker build script and vercel.json installCommand/buildCommand if not yet set).
+
+
 
 ## [0.43.1] - 2026-02-03
 

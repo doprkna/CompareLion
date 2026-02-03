@@ -1,0 +1,3 @@
+export * from '@prisma/client';
+export declare const prisma: any;
+export default prisma;

@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "build": "node -e \"const fs=require('fs'); if (!fs.existsSync('dist') && fs.existsSync('tsconfig.tsbuildinfo')) fs.unlinkSync('tsconfig.tsbuildinfo');\" && tsc -b"
+    "build": "node -e \"const fs=require('fs'); if (!fs.existsSync('dist') && fs.existsSync('tsconfig.tsbuildinfo')) fs.unlinkSync('tsconfig.tsbuildinfo');\" && pnpm -w exec tsc -b"
   },
   "sideEffects": false,
   "private": true

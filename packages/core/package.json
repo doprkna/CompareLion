@@ -546,7 +546,7 @@
                                          }
                 },
     "scripts":  {
-                    "build":  "tsc -b",
+                    "build":  "pnpm -w exec tsc -b",
                     "check:entry":  "node -e \"const fs=require('fs'); const p=require('./package.json'); const must=[p.main,p.types,p.exports?.['.']?.default,p.exports?.['.']?.types].filter(Boolean); must.forEach(f=>{if(!fs.existsSync(f)) {console.error('Missing entry file:', f); process.exit(1)}}); console.log('entry ok')\""
                 },
     "sideEffects":  false,

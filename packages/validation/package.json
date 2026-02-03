@@ -11,7 +11,7 @@
     "./sssc": { "types": "./dist/sssc.d.ts", "default": "./dist/sssc.js" }
   },
   "scripts": {
-    "build": "tsc -b"
+    "build": "pnpm -w exec tsc -b"
   },
   "sideEffects": false,
   "private": true,

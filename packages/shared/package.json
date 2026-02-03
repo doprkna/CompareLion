@@ -5,7 +5,7 @@
   "types": "dist/index.d.ts",
   "private": true,
   "scripts": {
-    "build": "tsc -b"
+    "build": "pnpm -w exec tsc -b"
   },
   "dependencies": {},
   "devDependencies": {

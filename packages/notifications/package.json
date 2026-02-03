@@ -6,7 +6,7 @@
   "sideEffects": false,
   "private": true,
   "scripts": {
-    "build": "tsc -b"
+    "build": "pnpm -w exec tsc -b"
   },
   "dependencies": {
     "@parel/db": "workspace:*"
