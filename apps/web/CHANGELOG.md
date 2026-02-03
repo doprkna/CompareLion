@@ -1,7 +1,7 @@
 
 ## [0.43.1] - 2026-02-03
 
-### Fixed
+### Fixed 
   - Production finally alive after month!!!
   - @parel/features/flow barrel: consolidated re-exports from flow-skeleton so getNextQuestion, startFlow, getFlowResult, getAvailableCategories, answerQuestion, skipQuestion, isUserAuthenticated and types FlowSession, FlowQuestion, FlowResult are all exported from one place (aligns with apps/web imports; build green).
 
