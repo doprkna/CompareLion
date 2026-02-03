@@ -5,7 +5,7 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "node -e \"console.log('cwd',process.cwd()); console.log('node',process.version); console.log('resolve ioredis ->', require.resolve('ioredis'))\" && tsc -b"
+    "build": "node -e \"console.log('cwd',process.cwd()); console.log('node',process.version); try{console.log('resolve ioredis ->', require.resolve('ioredis'))}catch(e){console.error('resolve ioredis FAILED', e.message)}\" && tsc -b"
   },
   "dependencies": {
     "ioredis": "^5.7.0"

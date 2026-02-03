@@ -1,4 +1,10 @@
 
+## [0.43.2] - 2026-02-03
+
+### Fixed
+  - Vercel workspace root: vercel.json installCommand → `pnpm -w install --frozen-lockfile`, buildCommand → `pnpm -w build:vercel` so install/build run from workspace root (fixes packages/redis ioredis resolve and node_modules missing).
+  - packages/redis build: diagnostic step now wraps require.resolve('ioredis') in try/catch and logs error without exiting non-zero; tsc -b still runs so CI logs are useful and build only fails on actual tsc errors.
+
 ## [0.43.1] - 2026-02-03
 
 ### Fixed 
