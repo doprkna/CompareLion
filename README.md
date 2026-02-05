@@ -278,15 +278,18 @@ pnpm run generate:prisma  # Generate Prisma client
    JWT_SECRET=your-production-jwt-secret
    ```
 
-4. **Build settings (monorepo / avoid OOM):**  
-   In Vercel → Project Settings → General → Build & Development Settings, set:
+4. **Build settings (build only @parel/web, not whole monorepo):**  
+   Root `pnpm build` runs `pnpm -r run build` and builds all packages; avoid that on Vercel.
 
-   | Setting | Value |
-   |--------|--------|
-   | **Install Command** | `pnpm -w install --frozen-lockfile --filter @parel/web...` |
-   | **Build Command** | `pnpm --filter @parel/web build` |
+   **Preferred:** Vercel → Project Settings → General → **Root Directory** = `apps/web`. Then:
+   - **Install Command:** `pnpm install --frozen-lockfile`
+   - **Build Command:** `pnpm run build`
 
-   Do **not** use root scripts that build the whole monorepo (e.g. `pnpm build`, `pnpm -r run build`, or `turbo build`). Installing and building only the web app and its workspace dependencies reduces build time and memory (avoids OOM on Hobby).
+   **If Root Directory must stay repo root:** Override in Build & Development Settings:
+   - **Install Command:** `pnpm -w install --frozen-lockfile --filter @parel/web...`
+   - **Build Command:** `pnpm --filter @parel/web run build`
+
+   Do **not** use repo-root `pnpm build` (recursive build).
 
 5. **Deploy:**
    ```bash
