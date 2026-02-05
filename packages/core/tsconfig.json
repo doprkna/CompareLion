@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "composite": true,
     "rootDir": ".",
     "outDir": "dist",
@@ -16,7 +17,7 @@
       "@parel/api": ["packages/core/stubs/parel-api"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "utils/**/*.ts", "config/**/*.ts", "hooks/**/*.ts", "hooks/**/*.tsx", "state/**/*.ts", "stubs/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "utils/**/*.ts", "config/**/*.ts", "state/**/*.ts", "stubs/**/*.ts"],
   "references": [{ "path": "../types" }]
 }
 

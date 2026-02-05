@@ -7,7 +7,7 @@
 'use client';
 
 import { createStore } from '../factory';
-import type { LifeRewardData } from '../../hooks/LifeRewardScreen'; // sanity-fix
+import type { LifeRewardData } from '../../src/hooks/LifeRewardScreen'; // sanity-fix
 
 interface LifeRewardState {
   isOpen: boolean;

@@ -1,6 +1,12 @@
 # v0.34.6 Repo Cuts
 # Reduce Cursor index by ~40-50% while keeping critical backend + admin visible
 
+**/__gen_backup/**
+packages/core/src/hooks/**/*.d.ts
+packages/core/src/hooks/**/*.js
+packages/core/src/hooks/**/*.jsx
+packages/core/src/hooks/**/*.map
+
 # ─── Build & Dependencies ─────────────────────────────────────────
 node_modules/
 .next/
@@ -23,6 +29,7 @@ old/
 legacy/
 playground/
 backup/
+**/__gen_backup/
 deprecated/
 
 # ─── Tests (Global Skip Policy) ────────────────────────────────────

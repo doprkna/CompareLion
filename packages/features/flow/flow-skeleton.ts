@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Flow Skeleton - Simple Question Flow
  * v0.35.13 - Rebuilt to use FlowQuestion & UserResponse models
  * Login â†’ Pick Category â†’ Sequential Questions â†’ Result
@@ -193,7 +193,8 @@ export async function answerQuestion(
         xp: { increment: xpGain },
         lastAnsweredAt: new Date(),
         streakCount: { increment: 1 }
-      })
+      }
+    })
     ]);
   } catch (error) {
     // Transaction error handling with clearer message

@@ -7,7 +7,7 @@
 'use client';
 
 import { createStore } from '../factory';
-import type { FlowRewardData } from '../../hooks/FlowRewardScreen'; // sanity-fix
+import type { FlowRewardData } from '../../src/hooks/FlowRewardScreen'; // sanity-fix
 
 interface FlowRewardState {
   isOpen: boolean;

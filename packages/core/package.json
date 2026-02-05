@@ -10,314 +10,316 @@
                                "import":  "./dist/src/index.js"
                            },
                     "./hooks/*":  {
-                                      "require":  "./dist/hooks/*.js",
-                                      "types":  "./dist/hooks/*.d.ts",
-                                      "import":  "./dist/hooks/*.js"
+                                      "require":  "./dist/src/hooks/*.js",
+                                      "types":  "./dist/src/hooks/*.d.ts",
+                                      "import":  "./dist/src/hooks/*.js"
                                   },
                     "./hooks/useRedeemWildcard":  {
-                                                      "require": "./dist/hooks/useRedeemWildcard.js",
-                                                      "types": "./dist/hooks/useRedeemWildcard.d.ts",
-                                                      "import": "./dist/hooks/useRedeemWildcard.js"
+                                                      "require": "./dist/src/hooks/useRedeemWildcard.js",
+                                                      "types": "./dist/src/hooks/useRedeemWildcard.d.ts",
+                                                      "import": "./dist/src/hooks/useRedeemWildcard.js"
                                                   },
                     "./hooks/useWildcards":  {
-                                                 "require": "./dist/hooks/useWildcards.js",
-                                                 "types": "./dist/hooks/useWildcards.d.ts",
-                                                 "import": "./dist/hooks/useWildcards.js"
+                                                 "require": "./dist/src/hooks/useWildcards.js",
+                                                 "types": "./dist/src/hooks/useWildcards.d.ts",
+                                                 "import": "./dist/src/hooks/useWildcards.js"
                                              },
                     "./hooks/useActivatePrestige":  {
-                                                        "require": "./dist/hooks/useActivatePrestige.js",
-                                                        "types": "./dist/hooks/useActivatePrestige.d.ts",
-                                                        "import": "./dist/hooks/useActivatePrestige.js"
+                                                        "require": "./dist/src/hooks/useActivatePrestige.js",
+                                                        "types": "./dist/src/hooks/useActivatePrestige.d.ts",
+                                                        "import": "./dist/src/hooks/useActivatePrestige.js"
                                                     },
                     "./hooks/useQuests":  {
-                                              "require": "./dist/hooks/useQuests.js",
-                                              "types": "./dist/hooks/useQuests.d.ts",
-                                              "import": "./dist/hooks/useQuests.js"
+                                              "require": "./dist/src/hooks/useQuests.js",
+                                              "types": "./dist/src/hooks/useQuests.d.ts",
+                                              "import": "./dist/src/hooks/useQuests.js"
                                           },
                     "./hooks/useSound":  {
-                                             "require": "./dist/hooks/useSound.js",
-                                             "types": "./dist/hooks/useSound.d.ts",
-                                             "import": "./dist/hooks/useSound.js"
+                                             "require": "./dist/src/hooks/useSound.js",
+                                             "types": "./dist/src/hooks/useSound.d.ts",
+                                             "import": "./dist/src/hooks/useSound.js"
                                          },
                     "./hooks/usePrestigeStatus":  {
-                                                      "require": "./dist/hooks/usePrestigeStatus.js",
-                                                      "types": "./dist/hooks/usePrestigeStatus.d.ts",
-                                                      "import": "./dist/hooks/usePrestigeStatus.js"
+                                                      "require": "./dist/src/hooks/usePrestigeStatus.js",
+                                                      "types": "./dist/src/hooks/usePrestigeStatus.d.ts",
+                                                      "import": "./dist/src/hooks/usePrestigeStatus.js"
                                                   },
                     "./hooks/useLifeRewardScreen":  {
-                                                        "require": "./dist/hooks/useLifeRewardScreen.jsx",
-                                                        "types": "./dist/hooks/useLifeRewardScreen.d.ts",
-                                                        "import": "./dist/hooks/useLifeRewardScreen.jsx"
+                                                        "require": "./dist/src/hooks/useLifeRewardScreen.js",
+                                                        "types": "./dist/src/hooks/useLifeRewardScreen.d.ts",
+                                                        "import": "./dist/src/hooks/useLifeRewardScreen.js"
                                                     },
                     "./hooks/useMemory":  {
-                                              "require": "./dist/hooks/useMemory.js",
-                                              "types": "./dist/hooks/useMemory.d.ts",
-                                              "import": "./dist/hooks/useMemory.js"
+                                              "require": "./dist/src/hooks/useMemory.js",
+                                              "types": "./dist/src/hooks/useMemory.d.ts",
+                                              "import": "./dist/src/hooks/useMemory.js"
                                           },
                     "./hooks/useStreak":  {
-                                              "require": "./dist/hooks/useStreak.js",
-                                              "types": "./dist/hooks/useStreak.d.ts",
-                                              "import": "./dist/hooks/useStreak.js"
+                                              "require": "./dist/src/hooks/useStreak.js",
+                                              "types": "./dist/src/hooks/useStreak.d.ts",
+                                              "import": "./dist/src/hooks/useStreak.js"
                                           },
                     "./hooks/useStatXpPopup":  {
-                                                   "require": "./dist/hooks/useStatXpPopup.js",
-                                                   "types": "./dist/hooks/useStatXpPopup.d.ts",
-                                                   "import": "./dist/hooks/useStatXpPopup.js"
+                                                   "require": "./dist/src/hooks/useStatXpPopup.js",
+                                                   "types": "./dist/src/hooks/useStatXpPopup.d.ts",
+                                                   "import": "./dist/src/hooks/useStatXpPopup.js"
                                                },
                     "./hooks/useDreamTrigger":  {
-                                                    "require": "./dist/hooks/useDreamTrigger.js",
-                                                    "types": "./dist/hooks/useDreamTrigger.d.ts",
-                                                    "import": "./dist/hooks/useDreamTrigger.js"
+                                                    "require": "./dist/src/hooks/useDreamTrigger.js",
+                                                    "types": "./dist/src/hooks/useDreamTrigger.d.ts",
+                                                    "import": "./dist/src/hooks/useDreamTrigger.js"
                                                 },
                     "./hooks/usePacks":  {
-                                             "require": "./dist/hooks/usePacks.js",
-                                             "types": "./dist/hooks/usePacks.d.ts",
-                                             "import": "./dist/hooks/usePacks.js"
+                                             "require": "./dist/src/hooks/usePacks.js",
+                                             "types": "./dist/src/hooks/usePacks.d.ts",
+                                             "import": "./dist/src/hooks/usePacks.js"
                                          },
                     "./hooks/useShareCard":  {
-                                                 "require": "./dist/hooks/useShareCard.js",
-                                                 "types": "./dist/hooks/useShareCard.d.ts",
-                                                 "import": "./dist/hooks/useShareCard.js"
+                                                 "require": "./dist/src/hooks/useShareCard.js",
+                                                 "types": "./dist/src/hooks/useShareCard.d.ts",
+                                                 "import": "./dist/src/hooks/useShareCard.js"
                                              },
                     "./hooks/useMirrorEvent":  {
-                                                   "require": "./dist/hooks/useMirrorEvent.js",
-                                                   "types": "./dist/hooks/useMirrorEvent.d.ts",
-                                                   "import": "./dist/hooks/useMirrorEvent.js"
+                                                   "require": "./dist/src/hooks/useMirrorEvent.js",
+                                                   "types": "./dist/src/hooks/useMirrorEvent.d.ts",
+                                                   "import": "./dist/src/hooks/useMirrorEvent.js"
                                                },
                     "./hooks/useFlow":  {
-                                            "require": "./dist/hooks/useFlow.js",
-                                            "types": "./dist/hooks/useFlow.d.ts",
-                                            "import": "./dist/hooks/useFlow.js"
+                                            "require": "./dist/src/hooks/useFlow.js",
+                                            "types": "./dist/src/hooks/useFlow.d.ts",
+                                            "import": "./dist/src/hooks/useFlow.js"
                                         },
                     "./hooks/useAppPreload":  {
-                                                  "require": "./dist/hooks/useAppPreload.js",
-                                                  "types": "./dist/hooks/useAppPreload.d.ts",
-                                                  "import": "./dist/hooks/useAppPreload.js"
+                                                  "require": "./dist/src/hooks/useAppPreload.js",
+                                                  "types": "./dist/src/hooks/useAppPreload.d.ts",
+                                                  "import": "./dist/src/hooks/useAppPreload.js"
                                               },
                     "./hooks/useSynchTests":  {
-                                                  "require": "./dist/hooks/useSynchTests.js",
-                                                  "types": "./dist/hooks/useSynchTests.d.ts",
-                                                  "import": "./dist/hooks/useSynchTests.js"
+                                                  "require": "./dist/src/hooks/useSynchTests.js",
+                                                  "types": "./dist/src/hooks/useSynchTests.d.ts",
+                                                  "import": "./dist/src/hooks/useSynchTests.js"
                                               },
                     "./hooks/usePresence":  {
-                                                "require": "./dist/hooks/usePresence.js",
-                                                "types": "./dist/hooks/usePresence.d.ts",
-                                                "import":  "./hooks/usePresence.js"
+                                                "types": "./dist/src/hooks/usePresence.d.ts",
+                                                "import": "./dist/src/hooks/usePresence.js",
+                                                "require": "./dist/src/hooks/usePresence.js",
+                                                "default": "./dist/src/hooks/usePresence.js"
                                             },
                     "./hooks/useSubmitMirrorReflection":  {
-                                                              "require": "./dist/hooks/useSubmitMirrorReflection.js",
-                                                              "types": "./dist/hooks/useSubmitMirrorReflection.d.ts",
-                                                              "import": "./dist/hooks/useSubmitMirrorReflection.js"
+                                                              "require": "./dist/src/hooks/useSubmitMirrorReflection.js",
+                                                              "types": "./dist/src/hooks/useSubmitMirrorReflection.d.ts",
+                                                              "import": "./dist/src/hooks/useSubmitMirrorReflection.js"
                                                           },
                     "./hooks/useDreamspace":  {
-                                                  "require": "./dist/hooks/useDreamspace.js",
-                                                  "types": "./dist/hooks/useDreamspace.d.ts",
-                                                  "import": "./dist/hooks/useDreamspace.js"
+                                                  "require": "./dist/src/hooks/useDreamspace.js",
+                                                  "types": "./dist/src/hooks/useDreamspace.d.ts",
+                                                  "import": "./dist/src/hooks/useDreamspace.js"
                                               },
                     "./hooks/useKeyboardNavigation":  {
-                                                          "require": "./dist/hooks/useKeyboardNavigation.js",
-                                                          "types": "./dist/hooks/useKeyboardNavigation.d.ts",
-                                                          "import": "./dist/hooks/useKeyboardNavigation.js"
+                                                          "require": "./dist/src/hooks/useKeyboardNavigation.js",
+                                                          "types": "./dist/src/hooks/useKeyboardNavigation.d.ts",
+                                                          "import": "./dist/src/hooks/useKeyboardNavigation.js"
                                                       },
                     "./hooks/usePerfMeter":  {
-                                                 "require": "./dist/hooks/usePerfMeter.js",
-                                                 "types": "./dist/hooks/usePerfMeter.d.ts",
-                                                 "import": "./dist/hooks/usePerfMeter.js"
+                                                 "require": "./dist/src/hooks/usePerfMeter.js",
+                                                 "types": "./dist/src/hooks/usePerfMeter.d.ts",
+                                                 "import": "./dist/src/hooks/usePerfMeter.js"
                                              },
                     "./hooks/useCombatPreferences":  {
-                                                         "require": "./dist/hooks/useCombatPreferences.js",
-                                                         "types": "./dist/hooks/useCombatPreferences.d.ts",
-                                                         "import": "./dist/hooks/useCombatPreferences.js"
+                                                         "require": "./dist/src/hooks/useCombatPreferences.js",
+                                                         "types": "./dist/src/hooks/useCombatPreferences.d.ts",
+                                                         "import": "./dist/src/hooks/useCombatPreferences.js"
                                                      },
                     "./hooks/useShop":  {
-                                            "require": "./dist/hooks/useShop.js",
-                                            "types": "./dist/hooks/useShop.d.ts",
-                                            "import": "./dist/hooks/useShop.js"
+                                            "require": "./dist/src/hooks/useShop.js",
+                                            "types": "./dist/src/hooks/useShop.d.ts",
+                                            "import": "./dist/src/hooks/useShop.js"
                                         },
                     "./hooks/useComparisonCards":  {
-                                                       "require": "./dist/hooks/useComparisonCards.js",
-                                                       "types": "./dist/hooks/useComparisonCards.d.ts",
-                                                       "import": "./dist/hooks/useComparisonCards.js"
+                                                       "require": "./dist/src/hooks/useComparisonCards.js",
+                                                       "types": "./dist/src/hooks/useComparisonCards.d.ts",
+                                                       "import": "./dist/src/hooks/useComparisonCards.js"
                                                    },
                     "./hooks/useMusicTheme":  {
-                                                  "require": "./dist/hooks/useMusicTheme.js",
-                                                  "types": "./dist/hooks/useMusicTheme.d.ts",
-                                                  "import": "./dist/hooks/useMusicTheme.js"
+                                                  "require": "./dist/src/hooks/useMusicTheme.js",
+                                                  "types": "./dist/src/hooks/useMusicTheme.d.ts",
+                                                  "import": "./dist/src/hooks/useMusicTheme.js"
                                               },
                     "./hooks/useReflectionPrompt":  {
-                                                        "require": "./dist/hooks/useReflectionPrompt.js",
-                                                        "types": "./dist/hooks/useReflectionPrompt.d.ts",
-                                                        "import": "./dist/hooks/useReflectionPrompt.js"
+                                                        "require": "./dist/src/hooks/useReflectionPrompt.js",
+                                                        "types": "./dist/src/hooks/useReflectionPrompt.d.ts",
+                                                        "import": "./dist/src/hooks/useReflectionPrompt.js"
                                                     },
                     "./hooks/useFadeTransition":  {
-                                                      "require": "./dist/hooks/useFadeTransition.js",
-                                                      "types": "./dist/hooks/useFadeTransition.d.ts",
-                                                      "import": "./dist/hooks/useFadeTransition.js"
+                                                      "require": "./dist/src/hooks/useFadeTransition.js",
+                                                      "types": "./dist/src/hooks/useFadeTransition.d.ts",
+                                                      "import": "./dist/src/hooks/useFadeTransition.js"
                                                   },
                     "./hooks/useDailyFork":  {
-                                                 "require": "./dist/hooks/useDailyFork.js",
-                                                 "types": "./dist/hooks/useDailyFork.d.ts",
-                                                 "import": "./dist/hooks/useDailyFork.js"
+                                                 "require": "./dist/src/hooks/useDailyFork.js",
+                                                 "types": "./dist/src/hooks/useDailyFork.d.ts",
+                                                 "import": "./dist/src/hooks/useDailyFork.js"
                                              },
                     "./hooks/useTheme":  {
-                                             "require": "./dist/hooks/useTheme.js",
-                                             "types": "./dist/hooks/useTheme.d.ts",
-                                             "import": "./dist/hooks/useTheme.js"
+                                             "require": "./dist/src/hooks/useTheme.js",
+                                             "types": "./dist/src/hooks/useTheme.d.ts",
+                                             "import": "./dist/src/hooks/useTheme.js"
                                          },
                     "./hooks/useRegions":  {
-                                               "require": "./dist/hooks/useRegions.js",
-                                               "types": "./dist/hooks/useRegions.d.ts",
-                                               "import": "./dist/hooks/useRegions.js"
+                                               "require": "./dist/src/hooks/useRegions.js",
+                                               "types": "./dist/src/hooks/useRegions.d.ts",
+                                               "import": "./dist/src/hooks/useRegions.js"
                                            },
                     "./hooks/useRarities":  {
-                                                "require": "./dist/hooks/useRarities.js",
-                                                "types": "./dist/hooks/useRarities.d.ts",
-                                                "import": "./dist/hooks/useRarities.js"
+                                                "require": "./dist/src/hooks/useRarities.js",
+                                                "types": "./dist/src/hooks/useRarities.d.ts",
+                                                "import": "./dist/src/hooks/useRarities.js"
                                             },
                     "./hooks/useAffinities":  {
-                                                  "require": "./dist/hooks/useAffinities.js",
-                                                  "types": "./dist/hooks/useAffinities.d.ts",
-                                                  "import": "./dist/hooks/useAffinities.js"
+                                                  "require": "./dist/src/hooks/useAffinities.js",
+                                                  "types": "./dist/src/hooks/useAffinities.d.ts",
+                                                  "import": "./dist/src/hooks/useAffinities.js"
                                               },
                     "./hooks/useRewardToast":  {
-                                                   "require": "./dist/hooks/useRewardToast.js",
-                                                   "types": "./dist/hooks/useRewardToast.d.ts",
-                                                   "import": "./dist/hooks/useRewardToast.js"
+                                                   "require": "./dist/src/hooks/useRewardToast.js",
+                                                   "types": "./dist/src/hooks/useRewardToast.d.ts",
+                                                   "import": "./dist/src/hooks/useRewardToast.js"
                                                },
                     "./hooks/useGenerateShare":  {
-                                                     "require": "./dist/hooks/useGenerateShare.js",
-                                                     "types": "./dist/hooks/useGenerateShare.d.ts",
-                                                     "import": "./dist/hooks/useGenerateShare.js"
+                                                     "require": "./dist/src/hooks/useGenerateShare.js",
+                                                     "types": "./dist/src/hooks/useGenerateShare.d.ts",
+                                                     "import": "./dist/src/hooks/useGenerateShare.js"
                                                  },
                     "./hooks/useGlobalMood":  {
-                                                  "require": "./dist/hooks/useGlobalMood.js",
-                                                  "types": "./dist/hooks/useGlobalMood.d.ts",
-                                                  "import": "./dist/hooks/useGlobalMood.js"
+                                                  "require": "./dist/src/hooks/useGlobalMood.js",
+                                                  "types": "./dist/src/hooks/useGlobalMood.d.ts",
+                                                  "import": "./dist/src/hooks/useGlobalMood.js"
                                               },
                     "./hooks/useCurrentGeneration":  {
-                                                         "require": "./dist/hooks/useCurrentGeneration.js",
-                                                         "types": "./dist/hooks/useCurrentGeneration.d.ts",
-                                                         "import": "./dist/hooks/useCurrentGeneration.js"
+                                                         "require": "./dist/src/hooks/useCurrentGeneration.js",
+                                                         "types": "./dist/src/hooks/useCurrentGeneration.d.ts",
+                                                         "import": "./dist/src/hooks/useCurrentGeneration.js"
                                                      },
                     "./hooks/useInventory":  {
-                                                 "require": "./dist/hooks/useInventory.js",
-                                                 "types": "./dist/hooks/useInventory.d.ts",
-                                                 "import": "./dist/hooks/useInventory.js"
+                                                 "require": "./dist/src/hooks/useInventory.js",
+                                                 "types": "./dist/src/hooks/useInventory.d.ts",
+                                                 "import": "./dist/src/hooks/useInventory.js"
                                              },
                     "./hooks/useEventBus":  {
-                                                "require": "./dist/hooks/useEventBus.js",
-                                                "types": "./dist/hooks/useEventBus.d.ts",
-                                                "import": "./dist/hooks/useEventBus.js"
+                                                "require": "./dist/src/hooks/useEventBus.js",
+                                                "types": "./dist/src/hooks/useEventBus.d.ts",
+                                                "import": "./dist/src/hooks/useEventBus.js"
                                             },
                     "./hooks/useRoastLevel":  {
-                                                  "require": "./dist/hooks/useRoastLevel.js",
-                                                  "types": "./dist/hooks/useRoastLevel.d.ts",
-                                                  "import": "./dist/hooks/useRoastLevel.js"
+                                                  "require": "./dist/src/hooks/useRoastLevel.js",
+                                                  "types": "./dist/src/hooks/useRoastLevel.d.ts",
+                                                  "import": "./dist/src/hooks/useRoastLevel.js"
                                               },
                     "./hooks/useArchetypeFusion":  {
-                                                       "require": "./dist/hooks/useArchetypeFusion.js",
-                                                       "types": "./dist/hooks/useArchetypeFusion.d.ts",
-                                                       "import": "./dist/hooks/useArchetypeFusion.js"
+                                                       "require": "./dist/src/hooks/useArchetypeFusion.js",
+                                                       "types": "./dist/src/hooks/useArchetypeFusion.d.ts",
+                                                       "import": "./dist/src/hooks/useArchetypeFusion.js"
                                                    },
                     "./hooks/useFightStore":  {
-                                                  "require": "./dist/hooks/useFightStore.js",
-                                                  "types": "./dist/hooks/useFightStore.d.ts",
-                                                  "import": "./dist/hooks/useFightStore.js"
+                                                  "require": "./dist/src/hooks/useFightStore.js",
+                                                  "types": "./dist/src/hooks/useFightStore.d.ts",
+                                                  "import": "./dist/src/hooks/useFightStore.js"
                                               },
                     "./hooks/useTouchGestures":  {
-                                                     "require": "./dist/hooks/useTouchGestures.js",
-                                                     "types": "./dist/hooks/useTouchGestures.d.ts",
-                                                     "import": "./dist/hooks/useTouchGestures.js"
+                                                     "require": "./dist/src/hooks/useTouchGestures.js",
+                                                     "types": "./dist/src/hooks/useTouchGestures.d.ts",
+                                                     "import": "./dist/src/hooks/useTouchGestures.js"
                                                  },
                     "./hooks/useLocalization":  {
-                                                    "require": "./dist/hooks/useLocalization.js",
-                                                    "types": "./dist/hooks/useLocalization.d.ts",
-                                                    "import": "./dist/hooks/useLocalization.js"
+                                                    "require": "./dist/src/hooks/useLocalization.js",
+                                                    "types": "./dist/src/hooks/useLocalization.d.ts",
+                                                    "import": "./dist/src/hooks/useLocalization.js"
                                                 },
                     "./hooks/useClaimBadge":  {
-                                                  "require": "./dist/hooks/useClaimBadge.js",
-                                                  "types": "./dist/hooks/useClaimBadge.d.ts",
-                                                  "import": "./dist/hooks/useClaimBadge.js"
+                                                  "require": "./dist/src/hooks/useClaimBadge.js",
+                                                  "types": "./dist/src/hooks/useClaimBadge.d.ts",
+                                                  "import": "./dist/src/hooks/useClaimBadge.js"
                                               },
                     "./hooks/useResolveDream":  {
-                                                    "require": "./dist/hooks/useResolveDream.js",
-                                                    "types": "./dist/hooks/useResolveDream.d.ts",
-                                                    "import": "./dist/hooks/useResolveDream.js"
+                                                    "require": "./dist/src/hooks/useResolveDream.js",
+                                                    "types": "./dist/src/hooks/useResolveDream.d.ts",
+                                                    "import": "./dist/src/hooks/useResolveDream.js"
                                                 },
                     "./hooks/useRealtime":  {
-                                                "require": "./dist/hooks/useRealtime.js",
-                                                "types": "./dist/hooks/useRealtime.d.ts",
-                                                "import": "./dist/hooks/useRealtime.js"
+                                                "types": "./dist/src/hooks/useRealtime.d.ts",
+                                                "import": "./dist/src/hooks/useRealtime.js",
+                                                "require": "./dist/src/hooks/useRealtime.js",
+                                                "default": "./dist/src/hooks/useRealtime.js"
                                             },
                     "./hooks/useFeedback":  {
-                                                "require": "./dist/hooks/useFeedback.js",
-                                                "types": "./dist/hooks/useFeedback.d.ts",
-                                                "import": "./dist/hooks/useFeedback.js"
+                                                "require": "./dist/src/hooks/useFeedback.js",
+                                                "types": "./dist/src/hooks/useFeedback.d.ts",
+                                                "import": "./dist/src/hooks/useFeedback.js"
                                             },
                     "./hooks/useCrafting":  {
-                                                "require": "./dist/hooks/useCrafting.js",
-                                                "types": "./dist/hooks/useCrafting.d.ts",
-                                                "import": "./dist/hooks/useCrafting.js"
+                                                "require": "./dist/src/hooks/useCrafting.js",
+                                                "types": "./dist/src/hooks/useCrafting.d.ts",
+                                                "import": "./dist/src/hooks/useCrafting.js"
                                             },
                     "./hooks/useCombatLink":  {
-                                                  "require": "./dist/hooks/useCombatLink.js",
-                                                  "types": "./dist/hooks/useCombatLink.d.ts",
-                                                  "import": "./dist/hooks/useCombatLink.js"
+                                                  "require": "./dist/src/hooks/useCombatLink.js",
+                                                  "types": "./dist/src/hooks/useCombatLink.d.ts",
+                                                  "import": "./dist/src/hooks/useCombatLink.js"
                                               },
                     "./hooks/usePrestige":  {
-                                                "require": "./dist/hooks/usePrestige.js",
-                                                "types": "./dist/hooks/usePrestige.d.ts",
-                                                "import": "./dist/hooks/usePrestige.js"
+                                                "require": "./dist/src/hooks/usePrestige.js",
+                                                "types": "./dist/src/hooks/usePrestige.d.ts",
+                                                "import": "./dist/src/hooks/usePrestige.js"
                                             },
                     "./hooks/useSeason":  {
-                                              "require": "./dist/hooks/useSeason.js",
-                                              "types": "./dist/hooks/useSeason.d.ts",
-                                              "import": "./dist/hooks/useSeason.js"
+                                              "require": "./dist/src/hooks/useSeason.js",
+                                              "types": "./dist/src/hooks/useSeason.d.ts",
+                                              "import": "./dist/src/hooks/useSeason.js"
                                           },
                     "./hooks/useRecipes":  {
-                                               "require": "./dist/hooks/useRecipes.js",
-                                               "types": "./dist/hooks/useRecipes.d.ts",
-                                               "import": "./dist/hooks/useRecipes.js"
+                                               "require": "./dist/src/hooks/useRecipes.js",
+                                               "types": "./dist/src/hooks/useRecipes.d.ts",
+                                               "import": "./dist/src/hooks/useRecipes.js"
                                            },
                     "./hooks/useSocial":  {
-                                              "require": "./dist/hooks/useSocial.js",
-                                              "types": "./dist/hooks/useSocial.d.ts",
-                                              "import": "./dist/hooks/useSocial.js"
+                                              "require": "./dist/src/hooks/useSocial.js",
+                                              "types": "./dist/src/hooks/useSocial.d.ts",
+                                              "import": "./dist/src/hooks/useSocial.js"
                                           },
                     "./hooks/useLootMoments":  {
-                                                   "require": "./dist/hooks/useLootMoments.js",
-                                                   "types": "./dist/hooks/useLootMoments.d.ts",
-                                                   "import": "./dist/hooks/useLootMoments.js"
+                                                   "require": "./dist/src/hooks/useLootMoments.js",
+                                                   "types": "./dist/src/hooks/useLootMoments.d.ts",
+                                                   "import": "./dist/src/hooks/useLootMoments.js"
                                                },
                     "./hooks/useQuestLore":  {
-                                                 "require": "./dist/hooks/useQuestLore.js",
-                                                 "types": "./dist/hooks/useQuestLore.d.ts",
-                                                 "import": "./dist/hooks/useQuestLore.js"
+                                                 "require": "./dist/src/hooks/useQuestLore.js",
+                                                 "types": "./dist/src/hooks/useQuestLore.d.ts",
+                                                 "import": "./dist/src/hooks/useQuestLore.js"
                                              },
                     "./hooks/useSfx":  {
-                                           "require": "./dist/hooks/useSfx.js",
-                                           "types": "./dist/hooks/useSfx.d.ts",
-                                           "import": "./dist/hooks/useSfx.js"
+                                           "require": "./dist/src/hooks/useSfx.js",
+                                           "types": "./dist/src/hooks/useSfx.d.ts",
+                                           "import": "./dist/src/hooks/useSfx.js"
                                        },
                     "./hooks/usePostcards":  {
-                                                 "require": "./dist/hooks/usePostcards.js",
-                                                 "types": "./dist/hooks/usePostcards.d.ts",
-                                                 "import": "./dist/hooks/usePostcards.js"
+                                                 "require": "./dist/src/hooks/usePostcards.js",
+                                                 "types": "./dist/src/hooks/usePostcards.d.ts",
+                                                 "import": "./dist/src/hooks/usePostcards.js"
                                              },
                     "./hooks/useMarket":  {
-                                              "require": "./dist/hooks/useMarket.js",
-                                              "types": "./dist/hooks/useMarket.d.ts",
-                                              "import": "./dist/hooks/useMarket.js"
+                                              "require": "./dist/src/hooks/useMarket.js",
+                                              "types": "./dist/src/hooks/useMarket.d.ts",
+                                              "import": "./dist/src/hooks/useMarket.js"
                                           },
                     "./hooks/useDiscoveryIndex":  {
-                                                      "require": "./dist/hooks/useDiscoveryIndex.js",
-                                                      "types": "./dist/hooks/useDiscoveryIndex.d.ts",
-                                                      "import": "./dist/hooks/useDiscoveryIndex.js"
+                                                      "require": "./dist/src/hooks/useDiscoveryIndex.js",
+                                                      "types": "./dist/src/hooks/useDiscoveryIndex.d.ts",
+                                                      "import": "./dist/src/hooks/useDiscoveryIndex.js"
                                                   },
                     "./hooks/useCommunity":  {
-                                                 "require": "./dist/hooks/useCommunity.js",
-                                                 "types": "./dist/hooks/useCommunity.d.ts",
-                                                 "import": "./dist/hooks/useCommunity.js"
+                                                 "require": "./dist/src/hooks/useCommunity.js",
+                                                 "types": "./dist/src/hooks/useCommunity.d.ts",
+                                                 "import": "./dist/src/hooks/useCommunity.js"
                                              },
                     "./utils/*":  {
                                       "require":  "./dist/utils/*.js",
@@ -360,129 +362,130 @@
                                                         "import": "./dist/utils/walletTransactions.js"
                                                     },
                     "./hooks/useBadgeNotification":  {
-                                                         "require": "./dist/hooks/useBadgeNotification.js",
-                                                         "types": "./dist/hooks/useBadgeNotification.d.ts",
-                                                         "import": "./dist/hooks/useBadgeNotification.js"
+                                                         "require": "./dist/src/hooks/useBadgeNotification.js",
+                                                         "types": "./dist/src/hooks/useBadgeNotification.d.ts",
+                                                         "import": "./dist/src/hooks/useBadgeNotification.js"
                                                      },
                     "./hooks/usePlayTrack":  {
-                                                 "require": "./dist/hooks/usePlayTrack.js",
-                                                 "types": "./dist/hooks/usePlayTrack.d.ts",
-                                                 "import": "./dist/hooks/usePlayTrack.js"
+                                                 "require": "./dist/src/hooks/usePlayTrack.js",
+                                                 "types": "./dist/src/hooks/usePlayTrack.d.ts",
+                                                 "import": "./dist/src/hooks/usePlayTrack.js"
                                              },
                     "./hooks/useMoodFeed":  {
-                                                "require": "./dist/hooks/useMoodFeed.js",
-                                                "types": "./dist/hooks/useMoodFeed.d.ts",
-                                                "import": "./dist/hooks/useMoodFeed.js"
+                                                "require": "./dist/src/hooks/useMoodFeed.js",
+                                                "types": "./dist/src/hooks/useMoodFeed.d.ts",
+                                                "import": "./dist/src/hooks/useMoodFeed.js"
                                             },
                     "./hooks/useChronicle":  {
-                                                 "require": "./dist/hooks/useChronicle.js",
-                                                 "types": "./dist/hooks/useChronicle.d.ts",
-                                                 "import": "./dist/hooks/useChronicle.js"
+                                                 "require": "./dist/src/hooks/useChronicle.js",
+                                                 "types": "./dist/src/hooks/useChronicle.d.ts",
+                                                 "import": "./dist/src/hooks/useChronicle.js"
                                              },
                     "./hooks/useBadges":  {
-                                              "require": "./dist/hooks/useBadges.js",
-                                              "types": "./dist/hooks/useBadges.d.ts",
-                                              "import": "./dist/hooks/useBadges.js"
+                                              "require": "./dist/src/hooks/useBadges.js",
+                                              "types": "./dist/src/hooks/useBadges.d.ts",
+                                              "import": "./dist/src/hooks/useBadges.js"
                                           },
                     "./hooks/useFiresides":  {
-                                                 "require": "./dist/hooks/useFiresides.js",
-                                                 "types": "./dist/hooks/useFiresides.d.ts",
-                                                 "import": "./dist/hooks/useFiresides.js"
+                                                 "require": "./dist/src/hooks/useFiresides.js",
+                                                 "types": "./dist/src/hooks/useFiresides.d.ts",
+                                                 "import": "./dist/src/hooks/useFiresides.js"
                                              },
                     "./hooks/usePrestigeHistory":  {
-                                                       "require": "./dist/hooks/usePrestigeHistory.js",
-                                                       "types": "./dist/hooks/usePrestigeHistory.d.ts",
-                                                       "import": "./dist/hooks/usePrestigeHistory.js"
+                                                       "require": "./dist/src/hooks/usePrestigeHistory.js",
+                                                       "types": "./dist/src/hooks/usePrestigeHistory.d.ts",
+                                                       "import": "./dist/src/hooks/usePrestigeHistory.js"
                                                    },
                     "./hooks/useCheckWildcard":  {
-                                                     "require": "./dist/hooks/useCheckWildcard.js",
-                                                     "types": "./dist/hooks/useCheckWildcard.d.ts",
-                                                     "import": "./dist/hooks/useCheckWildcard.js"
+                                                     "require": "./dist/src/hooks/useCheckWildcard.js",
+                                                     "types": "./dist/src/hooks/useCheckWildcard.d.ts",
+                                                     "import": "./dist/src/hooks/useCheckWildcard.js"
                                                  },
                     "./hooks/useGold":  {
-                                            "require": "./dist/hooks/useGold.js",
-                                            "types": "./dist/hooks/useGold.d.ts",
-                                            "import": "./dist/hooks/useGold.js"
+                                            "require": "./dist/src/hooks/useGold.js",
+                                            "types": "./dist/src/hooks/useGold.d.ts",
+                                            "import": "./dist/src/hooks/useGold.js"
                                         },
                     "./hooks/useCreatorPacks":  {
-                                                    "require": "./dist/hooks/useCreatorPacks.js",
-                                                    "types": "./dist/hooks/useCreatorPacks.d.ts",
-                                                    "import": "./dist/hooks/useCreatorPacks.js"
+                                                    "require": "./dist/src/hooks/useCreatorPacks.js",
+                                                    "types": "./dist/src/hooks/useCreatorPacks.d.ts",
+                                                    "import": "./dist/src/hooks/useCreatorPacks.js"
                                                 },
                     "./hooks/useGenerations":  {
-                                                   "require": "./dist/hooks/useGenerations.js",
-                                                   "types": "./dist/hooks/useGenerations.d.ts",
-                                                   "import": "./dist/hooks/useGenerations.js"
+                                                   "require": "./dist/src/hooks/useGenerations.js",
+                                                   "types": "./dist/src/hooks/useGenerations.d.ts",
+                                                   "import": "./dist/src/hooks/useGenerations.js"
                                                },
                     "./hooks/useFactions":  {
-                                                "require": "./dist/hooks/useFactions.js",
-                                                "types": "./dist/hooks/useFactions.d.ts",
-                                                "import": "./dist/hooks/useFactions.js"
+                                                "require": "./dist/src/hooks/useFactions.js",
+                                                "types": "./dist/src/hooks/useFactions.d.ts",
+                                                "import": "./dist/src/hooks/useFactions.js"
                                             },
                     "./hooks/useAscend":  {
-                                              "require": "./dist/hooks/useAscend.js",
-                                              "types": "./dist/hooks/useAscend.d.ts",
-                                              "import": "./dist/hooks/useAscend.js"
+                                              "require": "./dist/src/hooks/useAscend.js",
+                                              "types": "./dist/src/hooks/useAscend.d.ts",
+                                              "import": "./dist/src/hooks/useAscend.js"
                                           },
                     "./hooks/useXpPopup":  {
-                                               "require": "./dist/hooks/useXpPopup.jsx",
-                                               "types": "./dist/hooks/useXpPopup.d.ts",
-                                               "import": "./dist/hooks/useXpPopup.jsx"
+                                               "types": "./dist/src/hooks/useXpPopup.d.ts",
+                                               "import": "./dist/src/hooks/useXpPopup.js",
+                                               "require": "./dist/src/hooks/useXpPopup.js",
+                                               "default": "./dist/src/hooks/useXpPopup.js"
                                            },
                     "./hooks/useDuetRun":  {
-                                               "require": "./dist/hooks/useDuetRun.js",
-                                               "types": "./dist/hooks/useDuetRun.d.ts",
-                                               "import": "./dist/hooks/useDuetRun.js"
+                                               "require": "./dist/src/hooks/useDuetRun.js",
+                                               "types": "./dist/src/hooks/useDuetRun.d.ts",
+                                               "import": "./dist/src/hooks/useDuetRun.js"
                                            },
                     "./hooks/useSeasonAdmin":  {
-                                                   "require": "./dist/hooks/useSeasonAdmin.js",
-                                                   "types": "./dist/hooks/useSeasonAdmin.d.ts",
-                                                   "import": "./dist/hooks/useSeasonAdmin.js"
+                                                   "require": "./dist/src/hooks/useSeasonAdmin.js",
+                                                   "types": "./dist/src/hooks/useSeasonAdmin.d.ts",
+                                                   "import": "./dist/src/hooks/useSeasonAdmin.js"
                                                },
                     "./hooks/useMicroClans":  {
-                                                  "require": "./dist/hooks/useMicroClans.js",
-                                                  "types": "./dist/hooks/useMicroClans.d.ts",
-                                                  "import": "./dist/hooks/useMicroClans.js"
+                                                  "require": "./dist/src/hooks/useMicroClans.js",
+                                                  "types": "./dist/src/hooks/useMicroClans.d.ts",
+                                                  "import": "./dist/src/hooks/useMicroClans.js"
                                               },
                     "./hooks/useFlowRewardScreen":  {
-                                                        "require": "./dist/hooks/useFlowRewardScreen.jsx",
-                                                        "types": "./dist/hooks/useFlowRewardScreen.d.ts",
-                                                        "import": "./dist/hooks/useFlowRewardScreen.jsx"
+                                                        "require": "./dist/src/hooks/useFlowRewardScreen.js",
+                                                        "types": "./dist/src/hooks/useFlowRewardScreen.d.ts",
+                                                        "import": "./dist/src/hooks/useFlowRewardScreen.js"
                                                     },
                     "./hooks/useGroups":  {
-                                              "require": "./dist/hooks/useGroups.js",
-                                              "types": "./dist/hooks/useGroups.d.ts",
-                                              "import": "./dist/hooks/useGroups.js"
+                                              "require": "./dist/src/hooks/useGroups.js",
+                                              "types": "./dist/src/hooks/useGroups.d.ts",
+                                              "import": "./dist/src/hooks/useGroups.js"
                                           },
                     "./hooks/useNotificationToasts":  {
-                                                          "require": "./dist/hooks/useNotificationToasts.js",
-                                                          "types": "./dist/hooks/useNotificationToasts.d.ts",
-                                                          "import": "./dist/hooks/useNotificationToasts.js"
+                                                          "require": "./dist/src/hooks/useNotificationToasts.js",
+                                                          "types": "./dist/src/hooks/useNotificationToasts.d.ts",
+                                                          "import": "./dist/src/hooks/useNotificationToasts.js"
                                                       },
                     "./hooks/useLegacy":  {
-                                              "require": "./dist/hooks/useLegacy.js",
-                                              "types": "./dist/hooks/useLegacy.d.ts",
-                                              "import": "./dist/hooks/useLegacy.js"
+                                              "require": "./dist/src/hooks/useLegacy.js",
+                                              "types": "./dist/src/hooks/useLegacy.d.ts",
+                                              "import": "./dist/src/hooks/useLegacy.js"
                                           },
                     "./hooks/usePolls":  {
-                                             "require": "./dist/hooks/usePolls.js",
-                                             "types": "./dist/hooks/usePolls.d.ts",
-                                             "import": "./dist/hooks/usePolls.js"
+                                             "require": "./dist/src/hooks/usePolls.js",
+                                             "types": "./dist/src/hooks/usePolls.d.ts",
+                                             "import": "./dist/src/hooks/usePolls.js"
                                          },
                     "./hooks/useLore":  {
-                                            "require": "./dist/hooks/useLore.js",
-                                            "types": "./dist/hooks/useLore.d.ts",
-                                            "import": "./dist/hooks/useLore.js"
+                                            "require": "./dist/src/hooks/useLore.js",
+                                            "types": "./dist/src/hooks/useLore.d.ts",
+                                            "import": "./dist/src/hooks/useLore.js"
                                         },
                     "./hooks/useReflectionConverse":  {
-                                                          "require": "./dist/hooks/useReflectionConverse.js",
-                                                          "types": "./dist/hooks/useReflectionConverse.d.ts",
-                                                          "import": "./dist/hooks/useReflectionConverse.js"
+                                                          "require": "./dist/src/hooks/useReflectionConverse.js",
+                                                          "types": "./dist/src/hooks/useReflectionConverse.d.ts",
+                                                          "import": "./dist/src/hooks/useReflectionConverse.js"
                                                       },
                     "./hooks/useAchievements":  {
-                                                    "require": "./dist/hooks/useAchievements.js",
-                                                    "types": "./dist/hooks/useAchievements.d.ts",
-                                                    "import": "./dist/hooks/useAchievements.js"
+                                                    "require": "./dist/src/hooks/useAchievements.js",
+                                                    "types": "./dist/src/hooks/useAchievements.d.ts",
+                                                    "import": "./dist/src/hooks/useAchievements.js"
                                                 },
                     "./config":  {
                                       "require": "./dist/config/index.js",
@@ -520,9 +523,10 @@
                                                    "import": "./dist/config/ambientConfig.js"
                                                },
                     "./config/flags":  {
-                                               "require": "./dist/config/flags.js",
                                                "types": "./dist/config/flags.d.ts",
-                                               "import": "./dist/config/flags.js"
+                                               "import": "./dist/config/flags.js",
+                                               "require": "./dist/config/flags.js",
+                                               "default": "./dist/config/flags.js"
                                            },
                     "./config/generator":  {
                                                  "require": "./dist/config/generator.js",

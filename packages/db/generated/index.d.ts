@@ -1,10 +1,10 @@
 import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 export type NullableJsonInput = Prisma.JsonValue | null | 'JsonNull' | 'DbNull' | Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull;
-export declare const transformJsonNull: (v?: NullableJsonInput) => any;
+export declare const transformJsonNull: (v?: NullableJsonInput) => string | number | true | Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull | Prisma.JsonObject | Prisma.JsonArray | typeof Prisma.NullTypes.DbNull | typeof Prisma.NullTypes.JsonNull;
 export declare const JsonValueSchema: z.ZodType<Prisma.JsonValue>;
 export type JsonValueType = z.infer<typeof JsonValueSchema>;
-export declare const NullableJsonValue: z.ZodPipe<z.ZodNullable<z.ZodUnion<readonly [z.ZodType<Prisma.JsonValue, unknown, z.core.$ZodTypeInternals<Prisma.JsonValue, unknown>>, z.ZodLiteral<"DbNull">, z.ZodLiteral<"JsonNull">]>>, z.ZodTransform<any, any>>;
+export declare const NullableJsonValue: z.ZodPipe<z.ZodNullable<z.ZodUnion<readonly [z.ZodType<Prisma.JsonValue, unknown, z.core.$ZodTypeInternals<Prisma.JsonValue, unknown>>, z.ZodLiteral<"DbNull">, z.ZodLiteral<"JsonNull">]>>, z.ZodTransform<string | number | true | Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull | Prisma.JsonObject | Prisma.JsonArray | typeof Prisma.NullTypes.DbNull | typeof Prisma.NullTypes.JsonNull, Prisma.JsonValue>>;
 export type NullableJsonValueType = z.infer<typeof NullableJsonValue>;
 export declare const InputJsonValueSchema: z.ZodType<Prisma.InputJsonValue>;
 export type InputJsonValueType = z.infer<typeof InputJsonValueSchema>;
@@ -18,49 +18,49 @@ export declare const TransactionIsolationLevelSchema: z.ZodEnum<{
     Serializable: "Serializable";
 }>;
 export declare const UserScalarFieldEnumSchema: z.ZodEnum<{
-    language: "language";
     id: "id";
-    name: "name";
-    stats: "stats";
-    level: "level";
-    diamonds: "diamonds";
-    karma: "karma";
-    region: "region";
-    xp: "xp";
-    score: "score";
-    theme: "theme";
-    statusMessage: "statusMessage";
-    archetype: "archetype";
-    isPublicProfile: "isPublicProfile";
-    avatarFrameId: "avatarFrameId";
-    lang: "lang";
-    role: "role";
-    visibility: "visibility";
-    image: "image";
-    email: "email";
     createdAt: "createdAt";
-    banned: "banned";
-    lastActiveAt: "lastActiveAt";
-    username: "username";
+    name: "name";
+    region: "region";
+    email: "email";
     passwordHash: "passwordHash";
     phone: "phone";
+    language: "language";
     country: "country";
     dateOfBirth: "dateOfBirth";
     avatarUrl: "avatarUrl";
+    username: "username";
     bio: "bio";
+    statusMessage: "statusMessage";
+    karma: "karma";
+    avatarFrameId: "avatarFrameId";
+    isPublicProfile: "isPublicProfile";
+    visibility: "visibility";
+    banned: "banned";
     motto: "motto";
+    theme: "theme";
     funds: "funds";
+    diamonds: "diamonds";
+    xp: "xp";
+    level: "level";
     lastLoginAt: "lastLoginAt";
+    lastActiveAt: "lastActiveAt";
+    image: "image";
     streakCount: "streakCount";
     lastAnsweredAt: "lastAnsweredAt";
+    score: "score";
     questionsAnswered: "questionsAnswered";
     questionsCreated: "questionsCreated";
     emailVerified: "emailVerified";
     emailVerifiedAt: "emailVerifiedAt";
     newsletterOptIn: "newsletterOptIn";
+    role: "role";
+    archetype: "archetype";
     archetypeKey: "archetypeKey";
+    stats: "stats";
     lastArchetypeReroll: "lastArchetypeReroll";
     settings: "settings";
+    lang: "lang";
     localeCode: "localeCode";
     ageGroup: "ageGroup";
     interests: "interests";
@@ -97,39 +97,39 @@ export declare const UserScalarFieldEnumSchema: z.ZodEnum<{
     equippedBackground: "equippedBackground";
 }>;
 export declare const AffinityScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    targetId: "targetId";
-    visibility: "visibility";
     createdAt: "createdAt";
+    updatedAt: "updatedAt";
+    type: "type";
+    visibility: "visibility";
     sourceId: "sourceId";
+    targetId: "targetId";
     strength: "strength";
     mutual: "mutual";
-    updatedAt: "updatedAt";
 }>;
 export declare const OrgScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    name: "name";
     createdAt: "createdAt";
+    name: "name";
 }>;
 export declare const MembershipScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    orgId: "orgId";
     userId: "userId";
     role: "role";
-    orgId: "orgId";
 }>;
 export declare const TaskScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
     status: "status";
-    title: "title";
-    region: "region";
-    source: "source";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
     orgId: "orgId";
     createdById: "createdById";
+    title: "title";
+    description: "description";
+    region: "region";
     priority: "priority";
+    source: "source";
     assigneeType: "assigneeType";
     assigneeId: "assigneeId";
     dueAt: "dueAt";
@@ -145,61 +145,61 @@ export declare const AttachmentScalarFieldEnumSchema: z.ZodEnum<{
 export declare const TaskMessageScalarFieldEnumSchema: z.ZodEnum<{
     taskId: "taskId";
     id: "id";
-    text: "text";
     createdAt: "createdAt";
     authorType: "authorType";
+    text: "text";
 }>;
 export declare const WorkflowScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    name: "name";
-    action: "action";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
     orgId: "orgId";
     trigger: "trigger";
+    action: "action";
     keywords: "keywords";
+    isActive: "isActive";
 }>;
 export declare const RunScalarFieldEnumSchema: z.ZodEnum<{
     taskId: "taskId";
     workflowId: "workflowId";
     id: "id";
-    logs: "logs";
     status: "status";
+    logs: "logs";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
 }>;
 export declare const IntegrationScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    isActive: "isActive";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
     orgId: "orgId";
+    isActive: "isActive";
+    type: "type";
     config: "config";
 }>;
 export declare const QuestionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    region: "region";
-    ssscId: "ssscId";
-    approved: "approved";
-    text: "text";
-    lang: "lang";
-    visibility: "visibility";
-    source: "source";
-    metadata: "metadata";
     createdAt: "createdAt";
-    difficulty: "difficulty";
-    reviewNotes: "reviewNotes";
-    localeCode: "localeCode";
     updatedAt: "updatedAt";
-    normalizedText: "normalizedText";
-    createdByUserId: "createdByUserId";
+    region: "region";
+    source: "source";
+    text: "text";
     categoryId: "categoryId";
+    visibility: "visibility";
+    lang: "lang";
+    localeCode: "localeCode";
+    normalizedText: "normalizedText";
+    difficulty: "difficulty";
+    approved: "approved";
+    reviewNotes: "reviewNotes";
+    createdByUserId: "createdByUserId";
     subCategoryId: "subCategoryId";
     subSubCategoryId: "subSubCategoryId";
     relatedToId: "relatedToId";
+    metadata: "metadata";
     currentVersionId: "currentVersionId";
+    ssscId: "ssscId";
     isLocalized: "isLocalized";
     isFlagged: "isFlagged";
     flagReason: "flagReason";
@@ -208,22 +208,22 @@ export declare const QuestionScalarFieldEnumSchema: z.ZodEnum<{
     reactionsThink: "reactionsThink";
 }>;
 export declare const QuestionVersionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
     text: "text";
+    type: "type";
     options: "options";
+    questionId: "questionId";
     version: "version";
     metadata: "metadata";
-    createdAt: "createdAt";
-    questionId: "questionId";
     displayText: "displayText";
 }>;
 export declare const QuestionTagScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
     name: "name";
     description: "description";
     region: "region";
+    type: "type";
 }>;
 export declare const QuestionVersionTagScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
@@ -233,9 +233,9 @@ export declare const QuestionVersionTagScalarFieldEnumSchema: z.ZodEnum<{
 export declare const QuestionGenerationScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    ssscId: "ssscId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    ssscId: "ssscId";
     targetCount: "targetCount";
     prompt: "prompt";
     insertedCount: "insertedCount";
@@ -243,42 +243,42 @@ export declare const QuestionGenerationScalarFieldEnumSchema: z.ZodEnum<{
     finishedAt: "finishedAt";
 }>;
 export declare const FlowQuestionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    isActive: "isActive";
-    text: "text";
-    locale: "locale";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    isActive: "isActive";
+    text: "text";
     categoryId: "categoryId";
+    locale: "locale";
+    type: "type";
 }>;
 export declare const FlowQuestionOptionScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
     id: "id";
-    order: "order";
-    label: "label";
     questionId: "questionId";
+    value: "value";
+    label: "label";
+    order: "order";
 }>;
 export declare const UserResponseScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    skipped: "skipped";
     createdAt: "createdAt";
-    questionId: "questionId";
     updatedAt: "updatedAt";
+    userId: "userId";
+    questionId: "questionId";
     optionIds: "optionIds";
     numericVal: "numericVal";
     textVal: "textVal";
+    skipped: "skipped";
 }>;
 export declare const SynchTestScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    title: "title";
-    questions: "questions";
-    region: "region";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    isActive: "isActive";
+    key: "key";
+    questions: "questions";
     resultTextTemplates: "resultTextTemplates";
     rewardXP: "rewardXP";
     rewardKarma: "rewardKarma";
@@ -286,8 +286,8 @@ export declare const SynchTestScalarFieldEnumSchema: z.ZodEnum<{
 export declare const UserSynchTestScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    testId: "testId";
     createdAt: "createdAt";
+    testId: "testId";
     userA: "userA";
     userB: "userB";
     answersA: "answersA";
@@ -296,14 +296,14 @@ export declare const UserSynchTestScalarFieldEnumSchema: z.ZodEnum<{
     shared: "shared";
 }>;
 export declare const FactionScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
     region: "region";
-    createdAt: "createdAt";
+    isActive: "isActive";
     motto: "motto";
+    key: "key";
     colorPrimary: "colorPrimary";
     colorSecondary: "colorSecondary";
     buffType: "buffType";
@@ -327,21 +327,21 @@ export declare const UserFactionScalarFieldEnumSchema: z.ZodEnum<{
     isLeader: "isLeader";
 }>;
 export declare const CommunityCreationScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
     status: "status";
-    userId: "userId";
-    title: "title";
-    content: "content";
     createdAt: "createdAt";
+    title: "title";
+    type: "type";
+    userId: "userId";
     rewardXP: "rewardXP";
     rewardKarma: "rewardKarma";
+    content: "content";
     likes: "likes";
 }>;
 export declare const CommunityCreationLikeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     creationId: "creationId";
 }>;
 export declare const PostcardScalarFieldEnumSchema: z.ZodEnum<{
@@ -354,47 +354,47 @@ export declare const PostcardScalarFieldEnumSchema: z.ZodEnum<{
     deliveryAt: "deliveryAt";
 }>;
 export declare const RarityTierScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
     region: "region";
-    createdAt: "createdAt";
+    isActive: "isActive";
+    key: "key";
     colorPrimary: "colorPrimary";
     colorGlow: "colorGlow";
     frameStyle: "frameStyle";
     rankOrder: "rankOrder";
 }>;
 export declare const DailyForkScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    rarity: "rarity";
-    title: "title";
-    region: "region";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    isActive: "isActive";
+    key: "key";
     optionA: "optionA";
     optionB: "optionB";
     effectA: "effectA";
     effectB: "effectB";
+    rarity: "rarity";
 }>;
 export declare const UserDailyForkScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     forkId: "forkId";
     choice: "choice";
     resultSummary: "resultSummary";
 }>;
 export declare const DuetRunScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    title: "title";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    isActive: "isActive";
+    type: "type";
     rewardXP: "rewardXP";
     rewardKarma: "rewardKarma";
     missionKey: "missionKey";
@@ -412,12 +412,12 @@ export declare const UserDuetRunScalarFieldEnumSchema: z.ZodEnum<{
     progressB: "progressB";
 }>;
 export declare const RitualScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    title: "title";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    isActive: "isActive";
+    key: "key";
     rewardXP: "rewardXP";
     rewardKarma: "rewardKarma";
     timeOfDay: "timeOfDay";
@@ -432,16 +432,16 @@ export declare const UserRitualScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const MicroClanScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    seasonId: "seasonId";
     region: "region";
-    createdAt: "createdAt";
+    isActive: "isActive";
     buffType: "buffType";
     buffValue: "buffValue";
     leaderId: "leaderId";
     memberIds: "memberIds";
+    seasonId: "seasonId";
 }>;
 export declare const MicroClanStatsScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
@@ -452,14 +452,14 @@ export declare const MicroClanStatsScalarFieldEnumSchema: z.ZodEnum<{
     rank: "rank";
 }>;
 export declare const LootMomentScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
+    createdAt: "createdAt";
+    trigger: "trigger";
     isActive: "isActive";
+    key: "key";
     rarity: "rarity";
     rewardType: "rewardType";
     rewardValue: "rewardValue";
-    createdAt: "createdAt";
-    trigger: "trigger";
     flavorText: "flavorText";
 }>;
 export declare const UserLootMomentScalarFieldEnumSchema: z.ZodEnum<{
@@ -472,8 +472,8 @@ export declare const UserLootMomentScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const MessageScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    content: "content";
     createdAt: "createdAt";
+    content: "content";
     senderId: "senderId";
     receiverId: "receiverId";
     isRead: "isRead";
@@ -483,48 +483,48 @@ export declare const MessageScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const CommentScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    content: "content";
-    targetId: "targetId";
-    visibility: "visibility";
     createdAt: "createdAt";
+    userId: "userId";
+    visibility: "visibility";
+    targetId: "targetId";
     isFlagged: "isFlagged";
     flagReason: "flagReason";
+    content: "content";
     flagged: "flagged";
     targetType: "targetType";
 }>;
 export declare const ActionLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    action: "action";
-    metadata: "metadata";
     createdAt: "createdAt";
+    action: "action";
+    userId: "userId";
+    metadata: "metadata";
 }>;
 export declare const ModerationLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    action: "action";
-    reason: "reason";
-    targetId: "targetId";
     createdAt: "createdAt";
+    action: "action";
+    targetId: "targetId";
     targetType: "targetType";
     moderatorId: "moderatorId";
+    reason: "reason";
 }>;
 export declare const CulturalFilterScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     description: "description";
     region: "region";
     category: "category";
     tag: "tag";
-    createdAt: "createdAt";
     severity: "severity";
-    updatedAt: "updatedAt";
     createdBy: "createdBy";
 }>;
 export declare const ModerationReportScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    region: "region";
     createdAt: "createdAt";
+    region: "region";
+    type: "type";
     contentId: "contentId";
     reasonTag: "reasonTag";
     reporterId: "reporterId";
@@ -532,9 +532,9 @@ export declare const ModerationReportScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const AIRegionalContextScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    updatedAt: "updatedAt";
     region: "region";
     localeCode: "localeCode";
-    updatedAt: "updatedAt";
     toneProfile: "toneProfile";
     culturalNotes: "culturalNotes";
     humorStyle: "humorStyle";
@@ -542,26 +542,26 @@ export declare const AIRegionalContextScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const ReflectionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    text: "text";
     createdAt: "createdAt";
+    text: "text";
+    userId: "userId";
 }>;
 export declare const AchievementScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    name: "name";
-    description: "description";
-    emoji: "emoji";
-    icon: "icon";
-    title: "title";
-    category: "category";
-    tier: "tier";
-    code: "code";
-    rewardXp: "rewardXp";
-    rewardGold: "rewardGold";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    title: "title";
+    description: "description";
+    category: "category";
+    code: "code";
+    key: "key";
+    tier: "tier";
+    icon: "icon";
+    emoji: "emoji";
     xpReward: "xpReward";
+    rewardXp: "rewardXp";
+    rewardGold: "rewardGold";
 }>;
 export declare const UserAchievementScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
@@ -573,72 +573,71 @@ export declare const UserAchievementScalarFieldEnumSchema: z.ZodEnum<{
     animationShownAt: "animationShownAt";
 }>;
 export declare const EventLogScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
-    userId: "userId";
+    createdAt: "createdAt";
     title: "title";
+    description: "description";
     region: "region";
-    eventType: "eventType";
+    type: "type";
+    userId: "userId";
     visibility: "visibility";
     metadata: "metadata";
-    createdAt: "createdAt";
     reactionsCount: "reactionsCount";
+    eventType: "eventType";
     eventData: "eventData";
 }>;
 export declare const WaitlistScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    source: "source";
-    email: "email";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    source: "source";
+    email: "email";
     refCode: "refCode";
 }>;
 export declare const MarketingCampaignScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    link: "link";
     status: "status";
-    title: "title";
-    content: "content";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    title: "title";
+    link: "link";
+    content: "content";
     sentAt: "sentAt";
     deliveredCount: "deliveredCount";
     openedCount: "openedCount";
     clickedCount: "clickedCount";
 }>;
 export declare const ActivityScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
-    userId: "userId";
-    title: "title";
-    region: "region";
-    metadata: "metadata";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    type: "type";
+    userId: "userId";
+    metadata: "metadata";
 }>;
 export declare const PresenceScalarFieldEnumSchema: z.ZodEnum<{
     status: "status";
-    userId: "userId";
     updatedAt: "updatedAt";
+    userId: "userId";
     lastActive: "lastActive";
 }>;
 export declare const ItemScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    emoji: "emoji";
-    icon: "icon";
+    region: "region";
+    type: "type";
+    key: "key";
     rarity: "rarity";
+    icon: "icon";
+    emoji: "emoji";
+    slot: "slot";
     power: "power";
     defense: "defense";
-    region: "region";
-    isFeatured: "isFeatured";
-    slot: "slot";
-    createdAt: "createdAt";
     effect: "effect";
     bonus: "bonus";
     availableUntil: "availableUntil";
@@ -648,6 +647,7 @@ export declare const ItemScalarFieldEnumSchema: z.ZodEnum<{
     eventCurrency: "eventCurrency";
     eventPrice: "eventPrice";
     goldPrice: "goldPrice";
+    isFeatured: "isFeatured";
     isLimited: "isLimited";
     isShopItem: "isShopItem";
     isTradable: "isTradable";
@@ -656,108 +656,108 @@ export declare const ItemScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const InventoryItemScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    rarity: "rarity";
-    itemId: "itemId";
-    quantity: "quantity";
-    power: "power";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
+    rarity: "rarity";
+    power: "power";
+    itemId: "itemId";
     itemKey: "itemKey";
     effectKey: "effectKey";
+    quantity: "quantity";
     equipped: "equipped";
 }>;
 export declare const UserItemScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     itemId: "itemId";
     quantity: "quantity";
-    createdAt: "createdAt";
     equipped: "equipped";
     durability: "durability";
 }>;
 export declare const ItemEffectScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    type: "type";
-    name: "name";
-    description: "description";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
     trigger: "trigger";
+    type: "type";
+    key: "key";
     magnitude: "magnitude";
 }>;
 export declare const FriendScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     friendId: "friendId";
     acceptedAt: "acceptedAt";
 }>;
 export declare const ReactionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    emoji: "emoji";
+    createdAt: "createdAt";
     userId: "userId";
     targetId: "targetId";
-    createdAt: "createdAt";
     targetType: "targetType";
+    emoji: "emoji";
 }>;
 export declare const DuelScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    expiresAt: "expiresAt";
     createdAt: "createdAt";
+    completedAt: "completedAt";
     categoryId: "categoryId";
     receiverId: "receiverId";
     initiatorId: "initiatorId";
     initiatorScore: "initiatorScore";
     receiverScore: "receiverScore";
     winnerId: "winnerId";
-    completedAt: "completedAt";
+    expiresAt: "expiresAt";
 }>;
 export declare const ChallengeScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
-    type: "type";
     id: "id";
     status: "status";
-    rewardXp: "rewardXp";
     createdAt: "createdAt";
+    completedAt: "completedAt";
     categoryId: "categoryId";
+    type: "type";
     prompt: "prompt";
     rewardKarma: "rewardKarma";
     receiverId: "receiverId";
+    rewardXp: "rewardXp";
     initiatorId: "initiatorId";
-    completedAt: "completedAt";
     respondedAt: "respondedAt";
     response: "response";
 }>;
 export declare const GlobalEventScalarFieldEnumSchema: z.ZodEnum<{
     active: "active";
-    type: "type";
     id: "id";
-    description: "description";
-    emoji: "emoji";
-    title: "title";
-    region: "region";
-    startAt: "startAt";
-    endAt: "endAt";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    type: "type";
     createdBy: "createdBy";
+    emoji: "emoji";
     bonusType: "bonusType";
     bonusValue: "bonusValue";
     targetScope: "targetScope";
+    startAt: "startAt";
+    endAt: "endAt";
 }>;
 export declare const WeeklyChallengeScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
     status: "status";
-    weekNumber: "weekNumber";
-    rewardXp: "rewardXp";
     createdAt: "createdAt";
-    year: "year";
+    type: "type";
     prompt: "prompt";
     rewardKarma: "rewardKarma";
+    rewardXp: "rewardXp";
+    weekNumber: "weekNumber";
+    year: "year";
     dareVariant: "dareVariant";
     truthVariant: "truthVariant";
     generationSource: "generationSource";
@@ -768,8 +768,8 @@ export declare const WeeklyChallengeScalarFieldEnumSchema: z.ZodEnum<{
 export declare const WeeklyChallengeParticipationScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
-    rewardXp: "rewardXp";
     rewardKarma: "rewardKarma";
+    rewardXp: "rewardXp";
     response: "response";
     challengeId: "challengeId";
     submitted: "submitted";
@@ -777,26 +777,26 @@ export declare const WeeklyChallengeParticipationScalarFieldEnumSchema: z.ZodEnu
 }>;
 export declare const UserInsightScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
-    color: "color";
-    emoji: "emoji";
-    userId: "userId";
     title: "title";
+    description: "description";
+    userId: "userId";
+    emoji: "emoji";
     expiresAt: "expiresAt";
-    metrics: "metrics";
     templateId: "templateId";
+    color: "color";
+    metrics: "metrics";
     generatedAt: "generatedAt";
 }>;
 export declare const DailyQuestScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
     title: "title";
+    type: "type";
     date: "date";
-    expiresAt: "expiresAt";
+    targetCount: "targetCount";
     rewardXp: "rewardXp";
     rewardGold: "rewardGold";
-    createdAt: "createdAt";
-    targetCount: "targetCount";
+    expiresAt: "expiresAt";
     objective: "objective";
     rewardItem: "rewardItem";
     dropChance: "dropChance";
@@ -805,20 +805,20 @@ export declare const QuestCompletionScalarFieldEnumSchema: z.ZodEnum<{
     completed: "completed";
     progress: "progress";
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
     completedAt: "completedAt";
+    userId: "userId";
     questId: "questId";
     itemDropped: "itemDropped";
 }>;
 export declare const MarketListingScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    itemId: "itemId";
-    sellerId: "sellerId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
     price: "price";
+    itemId: "itemId";
+    sellerId: "sellerId";
     currencyKey: "currencyKey";
     buyerId: "buyerId";
 }>;
@@ -831,18 +831,18 @@ export declare const GlobalPoolScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const CraftingRecipeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
     region: "region";
-    unlockLevel: "unlockLevel";
+    inputItemIds: "inputItemIds";
     outputItemId: "outputItemId";
     goldCost: "goldCost";
-    createdAt: "createdAt";
-    inputItemIds: "inputItemIds";
     requiresToken: "requiresToken";
     rarityBoost: "rarityBoost";
     successRate: "successRate";
     craftingTime: "craftingTime";
+    unlockLevel: "unlockLevel";
 }>;
 export declare const CraftingLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
@@ -858,37 +858,37 @@ export declare const CraftingLogScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const DailyQuizScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     date: "date";
     rewardXp: "rewardXp";
-    createdAt: "createdAt";
     questionIds: "questionIds";
     rewardHearts: "rewardHearts";
     completions: "completions";
 }>;
 export declare const DailyQuizCompletionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    completedAt: "completedAt";
     userId: "userId";
     score: "score";
-    completedAt: "completedAt";
     quizId: "quizId";
 }>;
 export declare const UserEnergyScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     updatedAt: "updatedAt";
+    userId: "userId";
     hearts: "hearts";
     maxHearts: "maxHearts";
     lastRegenAt: "lastRegenAt";
 }>;
 export declare const GlobalFeedItemScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
-    userId: "userId";
-    title: "title";
-    region: "region";
-    metadata: "metadata";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    type: "type";
+    userId: "userId";
+    metadata: "metadata";
     reactionsCount: "reactionsCount";
 }>;
 export declare const ProfileThemeScalarFieldEnumSchema: z.ZodEnum<{
@@ -901,16 +901,16 @@ export declare const ProfileThemeScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const WorldChronicleScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    startDate: "startDate";
-    endDate: "endDate";
-    title: "title";
-    seasonNumber: "seasonNumber";
-    summary: "summary";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    title: "title";
     publishedAt: "publishedAt";
     generatedAt: "generatedAt";
+    seasonNumber: "seasonNumber";
     seasonName: "seasonName";
+    startDate: "startDate";
+    endDate: "endDate";
+    summary: "summary";
     fullChronicle: "fullChronicle";
     totalPlayers: "totalPlayers";
     totalXpEarned: "totalXpEarned";
@@ -926,21 +926,21 @@ export declare const WorldChronicleScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const SeasonSummaryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    stats: "stats";
-    title: "title";
-    content: "content";
-    category: "category";
-    order: "order";
     createdAt: "createdAt";
+    title: "title";
+    category: "category";
+    stats: "stats";
+    order: "order";
+    content: "content";
     chronicleId: "chronicleId";
     highlights: "highlights";
 }>;
 export declare const PlayerQuoteScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    isFeatured: "isFeatured";
     createdAt: "createdAt";
+    userId: "userId";
     sourceId: "sourceId";
+    isFeatured: "isFeatured";
     chronicleId: "chronicleId";
     quote: "quote";
     context: "context";
@@ -949,12 +949,12 @@ export declare const PlayerQuoteScalarFieldEnumSchema: z.ZodEnum<{
 export declare const NarrativeQuestScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    userId: "userId";
-    title: "title";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
-    prompt: "prompt";
+    title: "title";
     completedAt: "completedAt";
+    userId: "userId";
+    prompt: "prompt";
     generatedBy: "generatedBy";
     context: "context";
     intro: "intro";
@@ -963,9 +963,9 @@ export declare const NarrativeQuestScalarFieldEnumSchema: z.ZodEnum<{
 export declare const NarrativeChoiceScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     createdAt: "createdAt";
-    step: "step";
     prompt: "prompt";
     questId: "questId";
+    step: "step";
     option1: "option1";
     option2: "option2";
     option3: "option3";
@@ -989,29 +989,29 @@ export declare const NarrativeOutcomeScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const LoreEraScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    name: "name";
-    description: "description";
-    color: "color";
-    icon: "icon";
-    region: "region";
-    order: "order";
-    displayName: "displayName";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
+    region: "region";
+    isActive: "isActive";
+    order: "order";
+    icon: "icon";
+    color: "color";
+    displayName: "displayName";
     startYear: "startYear";
     endYear: "endYear";
     isCurrent: "isCurrent";
 }>;
 export declare const LoreEntryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    title: "title";
-    content: "content";
-    category: "category";
-    summary: "summary";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    title: "title";
+    category: "category";
+    content: "content";
     publishedAt: "publishedAt";
+    summary: "summary";
     isPublished: "isPublished";
     slug: "slug";
     eraId: "eraId";
@@ -1025,25 +1025,25 @@ export declare const LoreEntryScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const LoreTagScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    tag: "tag";
     createdAt: "createdAt";
+    tag: "tag";
     entryId: "entryId";
 }>;
 export declare const UserTimeZoneScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    timezone: "timezone";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
+    timezone: "timezone";
     utcOffset: "utcOffset";
     detectedFrom: "detectedFrom";
     localMidnight: "localMidnight";
 }>;
 export declare const RegionScheduleScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    updatedAt: "updatedAt";
     region: "region";
     timezone: "timezone";
-    updatedAt: "updatedAt";
     dailyResetOffset: "dailyResetOffset";
     quizResetOffset: "quizResetOffset";
     energyResetOffset: "energyResetOffset";
@@ -1053,41 +1053,41 @@ export declare const RegionScheduleScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const RegionalEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
     description: "description";
-    startDate: "startDate";
-    endDate: "endDate";
     region: "region";
-    eventType: "eventType";
+    isActive: "isActive";
+    country: "country";
     theme: "theme";
-    timezone: "timezone";
     rewardXp: "rewardXp";
     rewardGold: "rewardGold";
-    createdAt: "createdAt";
-    country: "country";
-    updatedAt: "updatedAt";
+    eventType: "eventType";
+    startDate: "startDate";
+    endDate: "endDate";
+    timezone: "timezone";
     rewardItems: "rewardItems";
     isRecurring: "isRecurring";
     recurrence: "recurrence";
 }>;
 export declare const RegionConfigScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    region: "region";
-    timezone: "timezone";
-    displayName: "displayName";
-    locale: "locale";
     updatedAt: "updatedAt";
+    region: "region";
+    locale: "locale";
+    displayName: "displayName";
+    timezone: "timezone";
     hasRegionalLeaderboard: "hasRegionalLeaderboard";
     preferredThemes: "preferredThemes";
     flagEmoji: "flagEmoji";
 }>;
 export declare const CulturalItemScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    itemId: "itemId";
+    createdAt: "createdAt";
     region: "region";
     eventType: "eventType";
-    createdAt: "createdAt";
+    itemId: "itemId";
     culture: "culture";
     eventName: "eventName";
     isSeasonalOnly: "isSeasonalOnly";
@@ -1095,31 +1095,31 @@ export declare const CulturalItemScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const LanguagePreferenceScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    locale: "locale";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    locale: "locale";
+    userId: "userId";
     fallbackLocale: "fallbackLocale";
 }>;
 export declare const TranslationKeyScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    en: "en";
-    namespace: "namespace";
-    fr: "fr";
     createdAt: "createdAt";
-    es: "es";
-    de: "de";
     updatedAt: "updatedAt";
-    context: "context";
+    en: "en";
     cs: "cs";
+    key: "key";
+    context: "context";
+    namespace: "namespace";
+    de: "de";
+    fr: "fr";
+    es: "es";
     jp: "jp";
     isMissing: "isMissing";
 }>;
 export declare const EconomyStatScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    date: "date";
     createdAt: "createdAt";
+    date: "date";
     totalGold: "totalGold";
     totalDiamonds: "totalDiamonds";
     totalXp: "totalXp";
@@ -1134,9 +1134,9 @@ export declare const EconomyStatScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const TreasuryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    gold: "gold";
-    diamonds: "diamonds";
     updatedAt: "updatedAt";
+    diamonds: "diamonds";
+    gold: "gold";
     taxCollected: "taxCollected";
     donationsReceived: "donationsReceived";
     eventsSpent: "eventsSpent";
@@ -1146,8 +1146,8 @@ export declare const TreasuryScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const DynamicPriceScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    itemId: "itemId";
     updatedAt: "updatedAt";
+    itemId: "itemId";
     craftingVolume: "craftingVolume";
     basePrice: "basePrice";
     currentPrice: "currentPrice";
@@ -1159,21 +1159,21 @@ export declare const DynamicPriceScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const TaxTransactionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    amount: "amount";
     createdAt: "createdAt";
+    userId: "userId";
+    currency: "currency";
     sourceId: "sourceId";
     sourceType: "sourceType";
+    amount: "amount";
     taxAmount: "taxAmount";
     taxRate: "taxRate";
-    currency: "currency";
 }>;
 export declare const CreatorWalletScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    isActive: "isActive";
+    userId: "userId";
     pendingBalance: "pendingBalance";
     paidBalance: "paidBalance";
     totalEarned: "totalEarned";
@@ -1182,15 +1182,15 @@ export declare const CreatorWalletScalarFieldEnumSchema: z.ZodEnum<{
     nextPayoutAt: "nextPayoutAt";
 }>;
 export declare const CreatorTransactionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
-    amount: "amount";
-    region: "region";
-    metadata: "metadata";
     createdAt: "createdAt";
+    description: "description";
+    region: "region";
+    type: "type";
     sourceId: "sourceId";
+    metadata: "metadata";
     sourceType: "sourceType";
+    amount: "amount";
     walletId: "walletId";
     payoutPoolId: "payoutPoolId";
     stripeTransferId: "stripeTransferId";
@@ -1211,42 +1211,42 @@ export declare const PayoutPoolScalarFieldEnumSchema: z.ZodEnum<{
     distributedAt: "distributedAt";
 }>;
 export declare const EngagementMetricScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
-    type: "type";
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
-    fingerprint: "fingerprint";
+    type: "type";
+    userId: "userId";
+    value: "value";
     contentId: "contentId";
     weekStart: "weekStart";
     contentType: "contentType";
     creatorId: "creatorId";
+    fingerprint: "fingerprint";
 }>;
 export declare const SubscriptionPlanScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
     description: "description";
     region: "region";
-    displayName: "displayName";
-    createdAt: "createdAt";
-    interval: "interval";
-    features: "features";
-    updatedAt: "updatedAt";
+    isActive: "isActive";
     price: "price";
     currency: "currency";
+    displayName: "displayName";
+    interval: "interval";
     stripeProductId: "stripeProductId";
     stripePriceId: "stripePriceId";
     xpMultiplier: "xpMultiplier";
+    features: "features";
 }>;
 export declare const UserSubscriptionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    userId: "userId";
-    expiresAt: "expiresAt";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
     startedAt: "startedAt";
+    expiresAt: "expiresAt";
     planId: "planId";
     stripeSubscriptionId: "stripeSubscriptionId";
     stripeCustomerId: "stripeCustomerId";
@@ -1256,14 +1256,14 @@ export declare const UserSubscriptionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const PaymentLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
     status: "status";
-    userId: "userId";
-    amount: "amount";
-    region: "region";
-    metadata: "metadata";
     createdAt: "createdAt";
+    description: "description";
+    region: "region";
+    userId: "userId";
     currency: "currency";
+    metadata: "metadata";
+    amount: "amount";
     subscriptionId: "subscriptionId";
     stripePaymentIntentId: "stripePaymentIntentId";
     stripeChargeId: "stripeChargeId";
@@ -1272,12 +1272,12 @@ export declare const PaymentLogScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const ReportScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
     status: "status";
-    region: "region";
-    reason: "reason";
     createdAt: "createdAt";
+    description: "description";
+    region: "region";
     priority: "priority";
+    reason: "reason";
     contentId: "contentId";
     reporterId: "reporterId";
     contentType: "contentType";
@@ -1288,9 +1288,9 @@ export declare const ReportScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const ReputationScoreScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    updatedAt: "updatedAt";
     userId: "userId";
     score: "score";
-    updatedAt: "updatedAt";
     reportsReceived: "reportsReceived";
     reportsDismissed: "reportsDismissed";
     positiveReactions: "positiveReactions";
@@ -1305,14 +1305,14 @@ export declare const ReputationScoreScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const ModerationActionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     isActive: "isActive";
     userId: "userId";
+    moderatorId: "moderatorId";
     reason: "reason";
     expiresAt: "expiresAt";
-    duration: "duration";
-    createdAt: "createdAt";
-    moderatorId: "moderatorId";
     actionType: "actionType";
+    duration: "duration";
     reportId: "reportId";
     revokedAt: "revokedAt";
     revokedBy: "revokedBy";
@@ -1320,30 +1320,30 @@ export declare const ModerationActionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const BlockedUserScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     reason: "reason";
     blockedUserId: "blockedUserId";
-    createdAt: "createdAt";
 }>;
 export declare const ContentReviewScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    content: "content";
-    reviewed: "reviewed";
-    approved: "approved";
-    categories: "categories";
     createdAt: "createdAt";
+    approved: "approved";
+    content: "content";
     flagged: "flagged";
     contentId: "contentId";
     contentType: "contentType";
     confidence: "confidence";
+    categories: "categories";
+    reviewed: "reviewed";
     reviewedBy: "reviewedBy";
     reviewedAt: "reviewedAt";
 }>;
 export declare const UserStreakScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    updatedAt: "updatedAt";
     userId: "userId";
     lastLoginAt: "lastLoginAt";
-    updatedAt: "updatedAt";
     currentStreak: "currentStreak";
     longestStreak: "longestStreak";
     lastQuizAt: "lastQuizAt";
@@ -1356,11 +1356,11 @@ export declare const UserStreakScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const RewardCalendarScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     rewardType: "rewardType";
-    createdAt: "createdAt";
-    day: "day";
     calendarType: "calendarType";
+    day: "day";
     rewardAmount: "rewardAmount";
     rewardItemId: "rewardItemId";
     claimed: "claimed";
@@ -1369,36 +1369,36 @@ export declare const RewardCalendarScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const ReturnBonusScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     expiresAt: "expiresAt";
+    inactiveDays: "inactiveDays";
     xpBonus: "xpBonus";
     goldBonus: "goldBonus";
-    createdAt: "createdAt";
-    inactiveDays: "inactiveDays";
     diamondBonus: "diamondBonus";
     granted: "granted";
     grantedAt: "grantedAt";
 }>;
 export declare const FeedbackMoodScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    emoji: "emoji";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
+    comment: "comment";
+    emoji: "emoji";
     context: "context";
     rating: "rating";
     sessionId: "sessionId";
-    comment: "comment";
     sentiment: "sentiment";
     analyzed: "analyzed";
 }>;
 export declare const DailySummaryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    date: "date";
     createdAt: "createdAt";
+    userId: "userId";
     questionsAnswered: "questionsAnswered";
-    challengesSent: "challengesSent";
     challengesReceived: "challengesReceived";
+    date: "date";
+    challengesSent: "challengesSent";
     xpEarned: "xpEarned";
     sessionCount: "sessionCount";
     totalSessionTime: "totalSessionTime";
@@ -1408,11 +1408,11 @@ export declare const DailySummaryScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const BetaInviteScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    expiresAt: "expiresAt";
-    code: "code";
-    source: "source";
     createdAt: "createdAt";
+    source: "source";
+    isActive: "isActive";
+    code: "code";
+    expiresAt: "expiresAt";
     creatorId: "creatorId";
     maxUses: "maxUses";
     usedCount: "usedCount";
@@ -1437,39 +1437,39 @@ export declare const BetaUserScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
     lastActiveAt: "lastActiveAt";
+    referralsSent: "referralsSent";
     joinedAt: "joinedAt";
     inviteCode: "inviteCode";
     wave: "wave";
     firstLoginAt: "firstLoginAt";
     onboardingComplete: "onboardingComplete";
-    referralsSent: "referralsSent";
     referralsAccepted: "referralsAccepted";
 }>;
 export declare const TelemetryEventScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    userId: "userId";
-    action: "action";
+    createdAt: "createdAt";
     region: "region";
+    action: "action";
+    type: "type";
+    userId: "userId";
     metadata: "metadata";
     duration: "duration";
-    createdAt: "createdAt";
+    sessionId: "sessionId";
     page: "page";
     userAgent: "userAgent";
     platform: "platform";
-    sessionId: "sessionId";
     anonymousId: "anonymousId";
     deviceType: "deviceType";
 }>;
 export declare const TelemetryAggregateScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    date: "date";
-    metadata: "metadata";
-    count: "count";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    type: "type";
+    date: "date";
+    metadata: "metadata";
     context: "context";
+    count: "count";
     avgDuration: "avgDuration";
     p50Duration: "p50Duration";
     p95Duration: "p95Duration";
@@ -1478,9 +1478,9 @@ export declare const TelemetryAggregateScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserPreferencesScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
     soundEnabled: "soundEnabled";
     soundVolume: "soundVolume";
     levelUpSound: "levelUpSound";
@@ -1500,14 +1500,14 @@ export declare const UserPreferencesScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const SoundAssetScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
     region: "region";
-    eventType: "eventType";
+    isActive: "isActive";
     category: "category";
+    eventType: "eventType";
     duration: "duration";
-    createdAt: "createdAt";
     assetId: "assetId";
     filePath: "filePath";
     fileSize: "fileSize";
@@ -1516,9 +1516,9 @@ export declare const SoundAssetScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const OnboardingProgressScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    completedAt: "completedAt";
     userId: "userId";
     startedAt: "startedAt";
-    completedAt: "completedAt";
     sawWelcomeOverlay: "sawWelcomeOverlay";
     sawDashboard: "sawDashboard";
     completedAnswer: "completedAnswer";
@@ -1535,58 +1535,58 @@ export declare const OnboardingProgressScalarFieldEnumSchema: z.ZodEnum<{
     lastStepAt: "lastStepAt";
 }>;
 export declare const FeedbackSubmissionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
     status: "status";
-    userId: "userId";
     title: "title";
-    adminNotes: "adminNotes";
-    category: "category";
-    page: "page";
-    userAgent: "userAgent";
+    description: "description";
     priority: "priority";
+    type: "type";
+    category: "category";
+    userId: "userId";
     respondedAt: "respondedAt";
     submittedAt: "submittedAt";
+    page: "page";
+    userAgent: "userAgent";
     screenshot: "screenshot";
+    adminNotes: "adminNotes";
     respondedBy: "respondedBy";
 }>;
 export declare const ErrorLogScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
     id: "id";
     status: "status";
-    userId: "userId";
-    resolved: "resolved";
-    metadata: "metadata";
-    frequency: "frequency";
-    lastSeen: "lastSeen";
     createdAt: "createdAt";
-    severity: "severity";
-    environment: "environment";
-    page: "page";
-    userAgent: "userAgent";
     updatedAt: "updatedAt";
+    userId: "userId";
+    metadata: "metadata";
+    severity: "severity";
     resolvedBy: "resolvedBy";
     resolvedAt: "resolvedAt";
     sessionId: "sessionId";
+    page: "page";
+    userAgent: "userAgent";
     errorType: "errorType";
     stack: "stack";
     buildId: "buildId";
+    environment: "environment";
+    frequency: "frequency";
     firstSeen: "firstSeen";
+    lastSeen: "lastSeen";
     assignedTo: "assignedTo";
+    resolved: "resolved";
 }>;
 export declare const TooltipDefinitionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    icon: "icon";
-    title: "title";
-    position: "position";
     createdAt: "createdAt";
-    page: "page";
+    title: "title";
+    description: "description";
     priority: "priority";
+    isActive: "isActive";
+    icon: "icon";
+    page: "page";
     tooltipId: "tooltipId";
     elementId: "elementId";
+    position: "position";
     showOnce: "showOnce";
     delayMs: "delayMs";
     minLevel: "minLevel";
@@ -1598,9 +1598,9 @@ export declare const WorldCycleScalarFieldEnumSchema: z.ZodEnum<{
     status: "status";
     startDate: "startDate";
     endDate: "endDate";
-    duration: "duration";
     totalPlayers: "totalPlayers";
     totalXp: "totalXp";
+    duration: "duration";
     cycleNumber: "cycleNumber";
     cycleName: "cycleName";
     finalHope: "finalHope";
@@ -1621,7 +1621,6 @@ export declare const WorldCycleScalarFieldEnumSchema: z.ZodEnum<{
 export declare const LegacyRecordScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
-    achievements: "achievements";
     cycleId: "cycleId";
     finalLevel: "finalLevel";
     finalXp: "finalXp";
@@ -1632,6 +1631,7 @@ export declare const LegacyRecordScalarFieldEnumSchema: z.ZodEnum<{
     xpRank: "xpRank";
     karmaRank: "karmaRank";
     prestigeRank: "prestigeRank";
+    achievements: "achievements";
     titles: "titles";
     badges: "badges";
     ascensionChoice: "ascensionChoice";
@@ -1641,10 +1641,10 @@ export declare const LegacyRecordScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserLegacyBonusScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     isActive: "isActive";
     userId: "userId";
     expiresAt: "expiresAt";
-    createdAt: "createdAt";
     bonusType: "bonusType";
     prestigeCarry: "prestigeCarry";
     legacyTitle: "legacyTitle";
@@ -1667,22 +1667,22 @@ export declare const AbyssProgressScalarFieldEnumSchema: z.ZodEnum<{
     lastClear: "lastClear";
 }>;
 export declare const WorldThreatScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    name: "name";
-    description: "description";
     status: "status";
+    name: "name";
     title: "title";
-    defense: "defense";
+    description: "description";
     region: "region";
-    expiresAt: "expiresAt";
+    type: "type";
+    avatar: "avatar";
     difficulty: "difficulty";
     xpReward: "xpReward";
+    defense: "defense";
+    expiresAt: "expiresAt";
     participantCount: "participantCount";
     goldReward: "goldReward";
     threatId: "threatId";
     loreText: "loreText";
-    avatar: "avatar";
     maxHealth: "maxHealth";
     currentHealth: "currentHealth";
     threatLevel: "threatLevel";
@@ -1732,8 +1732,8 @@ export declare const FactionTerritoryScalarFieldEnumSchema: z.ZodEnum<{
 export declare const TerritoryContestScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    winnerId: "winnerId";
     completedAt: "completedAt";
+    winnerId: "winnerId";
     territoryId: "territoryId";
     attackerFaction: "attackerFaction";
     defenderFaction: "defenderFaction";
@@ -1743,21 +1743,20 @@ export declare const TerritoryContestScalarFieldEnumSchema: z.ZodEnum<{
     endTime: "endTime";
 }>;
 export declare const FactionLegacyScalarFieldEnumSchema: z.ZodEnum<{
-    lore: "lore";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
-    description: "description";
-    pattern: "pattern";
-    color: "color";
     title: "title";
+    description: "description";
+    isActive: "isActive";
+    motto: "motto";
+    pattern: "pattern";
+    factionId: "factionId";
+    color: "color";
+    totalXp: "totalXp";
     xpBonus: "xpBonus";
     goldBonus: "goldBonus";
-    createdAt: "createdAt";
-    motto: "motto";
-    updatedAt: "updatedAt";
-    factionId: "factionId";
-    totalXp: "totalXp";
     secondaryColor: "secondaryColor";
     emblem: "emblem";
     glowEffect: "glowEffect";
@@ -1772,11 +1771,12 @@ export declare const FactionLegacyScalarFieldEnumSchema: z.ZodEnum<{
     hasCouncil: "hasCouncil";
     councilSize: "councilSize";
     votingPower: "votingPower";
+    lore: "lore";
 }>;
 export declare const FactionMemberScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     title: "title";
+    userId: "userId";
     role: "role";
     factionId: "factionId";
     joinedAt: "joinedAt";
@@ -1804,21 +1804,21 @@ export declare const FactionChangeLogScalarFieldEnumSchema: z.ZodEnum<{
 export declare const FactionVoteScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
-    factionId: "factionId";
     comment: "comment";
+    vote: "vote";
+    factionId: "factionId";
     votingPower: "votingPower";
     voteType: "voteType";
     proposalId: "proposalId";
-    vote: "vote";
     votedAt: "votedAt";
 }>;
 export declare const FactionProposalScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
     status: "status";
-    title: "title";
-    result: "result";
     createdAt: "createdAt";
+    result: "result";
+    title: "title";
+    description: "description";
     factionId: "factionId";
     createdBy: "createdBy";
     startTime: "startTime";
@@ -1832,9 +1832,9 @@ export declare const FactionProposalScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const MentorProfileScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
     mentorName: "mentorName";
     mentorAvatar: "mentorAvatar";
     mentorTone: "mentorTone";
@@ -1852,12 +1852,12 @@ export declare const MentorProfileScalarFieldEnumSchema: z.ZodEnum<{
 export declare const MentorLogScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
     id: "id";
-    userId: "userId";
+    createdAt: "createdAt";
     title: "title";
     category: "category";
-    createdAt: "createdAt";
-    metrics: "metrics";
+    userId: "userId";
     isRead: "isRead";
+    metrics: "metrics";
     logType: "logType";
     timeframe: "timeframe";
     suggestions: "suggestions";
@@ -1867,40 +1867,40 @@ export declare const MentorLogScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const InsightPromptScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    icon: "icon";
-    category: "category";
     createdAt: "createdAt";
+    isActive: "isActive";
+    category: "category";
     question: "question";
-    tags: "tags";
+    icon: "icon";
     minLevel: "minLevel";
     promptId: "promptId";
     subtext: "subtext";
     archetypes: "archetypes";
     karmaRange: "karmaRange";
     expectedWordCount: "expectedWordCount";
+    tags: "tags";
 }>;
 export declare const ReflectionEntryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    title: "title";
-    content: "content";
     createdAt: "createdAt";
-    mood: "mood";
+    title: "title";
+    userId: "userId";
     localeCode: "localeCode";
+    content: "content";
     sentiment: "sentiment";
     promptId: "promptId";
+    mood: "mood";
     aiInsights: "aiInsights";
     themes: "themes";
     isPrivate: "isPrivate";
 }>;
 export declare const WorldStateScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    chaos: "chaos";
-    hope: "hope";
-    timestamp: "timestamp";
     totalPlayers: "totalPlayers";
     dominantForce: "dominantForce";
+    timestamp: "timestamp";
+    hope: "hope";
+    chaos: "chaos";
     creativity: "creativity";
     knowledge: "knowledge";
     harmony: "harmony";
@@ -1914,24 +1914,24 @@ export declare const WorldStateScalarFieldEnumSchema: z.ZodEnum<{
     harmonyChange: "harmonyChange";
 }>;
 export declare const WorldVariableScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
     id: "id";
     category: "category";
+    value: "value";
     stateId: "stateId";
     variableName: "variableName";
 }>;
 export declare const WorldEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    status: "status";
     name: "name";
     description: "description";
-    status: "status";
-    eventId: "eventId";
-    duration: "duration";
-    triggeredAt: "triggeredAt";
     completedAt: "completedAt";
+    triggeredAt: "triggeredAt";
     participantCount: "participantCount";
+    duration: "duration";
     loreText: "loreText";
     isPostedToFeed: "isPostedToFeed";
+    eventId: "eventId";
     triggerType: "triggerType";
     triggerConditions: "triggerConditions";
     variableImpacts: "variableImpacts";
@@ -1957,15 +1957,15 @@ export declare const WorldContributionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const NpcProfileScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
     title: "title";
-    createdAt: "createdAt";
+    isActive: "isActive";
     bio: "bio";
     tone: "tone";
-    updatedAt: "updatedAt";
-    minLevel: "minLevel";
     avatar: "avatar";
+    minLevel: "minLevel";
     npcId: "npcId";
     archetypeAffinity: "archetypeAffinity";
     portraitUrl: "portraitUrl";
@@ -1985,9 +1985,10 @@ export declare const NpcProfileScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const NpcInteractionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
+    userResponse: "userResponse";
     userId: "userId";
     duration: "duration";
-    createdAt: "createdAt";
     sentiment: "sentiment";
     npcId: "npcId";
     interactionType: "interactionType";
@@ -1995,18 +1996,17 @@ export declare const NpcInteractionScalarFieldEnumSchema: z.ZodEnum<{
     userKarma: "userKarma";
     userPrestige: "userPrestige";
     npcMessage: "npcMessage";
-    userResponse: "userResponse";
     questOffered: "questOffered";
     rewardGiven: "rewardGiven";
     adviceGiven: "adviceGiven";
 }>;
 export declare const NpcMemoryScalarFieldEnumSchema: z.ZodEnum<{
+    id: "id";
+    createdAt: "createdAt";
+    userId: "userId";
     key: "key";
     value: "value";
-    id: "id";
-    userId: "userId";
     expiresAt: "expiresAt";
-    createdAt: "createdAt";
     importance: "importance";
     npcId: "npcId";
     memoryType: "memoryType";
@@ -2015,9 +2015,9 @@ export declare const NpcMemoryScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const NpcAffinityScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
     npcId: "npcId";
     lastInteraction: "lastInteraction";
     affinityScore: "affinityScore";
@@ -2025,22 +2025,22 @@ export declare const NpcAffinityScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const NPCDialogueScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    rarity: "rarity";
-    text: "text";
     createdAt: "createdAt";
+    text: "text";
+    rarity: "rarity";
     triggerType: "triggerType";
     npcId: "npcId";
     moodTag: "moodTag";
 }>;
 export declare const NpcDialogueTreeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
     region: "region";
-    category: "category";
-    createdAt: "createdAt";
     priority: "priority";
+    isActive: "isActive";
+    category: "category";
     triggerType: "triggerType";
     npcId: "npcId";
     treeId: "treeId";
@@ -2048,16 +2048,16 @@ export declare const NpcDialogueTreeScalarFieldEnumSchema: z.ZodEnum<{
     nodes: "nodes";
 }>;
 export declare const RewardOfferScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
-    type: "type";
     id: "id";
-    isActive: "isActive";
-    name: "name";
-    description: "description";
-    category: "category";
-    expiresAt: "expiresAt";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
+    isActive: "isActive";
+    type: "type";
+    category: "category";
+    value: "value";
+    expiresAt: "expiresAt";
     minLevel: "minLevel";
     startsAt: "startsAt";
     offerId: "offerId";
@@ -2082,11 +2082,11 @@ export declare const RewardOfferScalarFieldEnumSchema: z.ZodEnum<{
 export declare const RewardRedemptionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    userId: "userId";
-    expiresAt: "expiresAt";
-    metadata: "metadata";
     createdAt: "createdAt";
+    userId: "userId";
+    metadata: "metadata";
     redeemedAt: "redeemedAt";
+    expiresAt: "expiresAt";
     offerId: "offerId";
     redemptionCode: "redemptionCode";
     qrCode: "qrCode";
@@ -2109,13 +2109,13 @@ export declare const RewardProofScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const PartnerAppScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    name: "name";
-    description: "description";
     status: "status";
-    region: "region";
-    tier: "tier";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
+    region: "region";
+    tier: "tier";
     website: "website";
     contactEmail: "contactEmail";
     clientId: "clientId";
@@ -2134,10 +2134,10 @@ export declare const PartnerAppScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const PartnerApiKeyScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    name: "name";
-    expiresAt: "expiresAt";
     createdAt: "createdAt";
+    name: "name";
+    isActive: "isActive";
+    expiresAt: "expiresAt";
     revokedAt: "revokedAt";
     partnerId: "partnerId";
     lastUsedAt: "lastUsedAt";
@@ -2167,41 +2167,42 @@ export declare const PartnerWebhookScalarFieldEnumSchema: z.ZodEnum<{
     error: "error";
     id: "id";
     status: "status";
-    eventType: "eventType";
-    maxAttempts: "maxAttempts";
     createdAt: "createdAt";
-    payload: "payload";
-    attempts: "attempts";
-    partnerId: "partnerId";
-    signature: "signature";
-    deliveredAt: "deliveredAt";
     failedAt: "failedAt";
+    eventType: "eventType";
+    partnerId: "partnerId";
+    payload: "payload";
+    signature: "signature";
+    attempts: "attempts";
+    maxAttempts: "maxAttempts";
+    deliveredAt: "deliveredAt";
     nextRetryAt: "nextRetryAt";
 }>;
 export declare const PushSubscriptionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     keys: "keys";
-    createdAt: "createdAt";
     userAgent: "userAgent";
-    endpoint: "endpoint";
     deviceType: "deviceType";
     isEnabled: "isEnabled";
+    endpoint: "endpoint";
     lastUsed: "lastUsed";
 }>;
 export declare const OfflineActionScalarFieldEnumSchema: z.ZodEnum<{
     error: "error";
     id: "id";
     status: "status";
-    userId: "userId";
     createdAt: "createdAt";
-    payload: "payload";
+    userId: "userId";
     actionType: "actionType";
+    payload: "payload";
     retryCount: "retryCount";
     syncedAt: "syncedAt";
 }>;
 export declare const PWAMetricsScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    offlineActions: "offlineActions";
     date: "date";
     installCount: "installCount";
     uninstallCount: "uninstallCount";
@@ -2212,7 +2213,6 @@ export declare const PWAMetricsScalarFieldEnumSchema: z.ZodEnum<{
     pushSent: "pushSent";
     pushDelivered: "pushDelivered";
     pushClicked: "pushClicked";
-    offlineActions: "offlineActions";
     syncedActions: "syncedActions";
     failedActions: "failedActions";
     avgLoadTime: "avgLoadTime";
@@ -2220,19 +2220,19 @@ export declare const PWAMetricsScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const MiniEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    status: "status";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    status: "status";
-    icon: "icon";
-    eventId: "eventId";
-    eventType: "eventType";
-    duration: "duration";
-    createdAt: "createdAt";
-    targetCount: "targetCount";
     completedAt: "completedAt";
+    targetCount: "targetCount";
+    icon: "icon";
+    eventType: "eventType";
     participantCount: "participantCount";
+    duration: "duration";
     startTime: "startTime";
     endTime: "endTime";
+    eventId: "eventId";
     currentProgress: "currentProgress";
     rewards: "rewards";
     goalType: "goalType";
@@ -2241,33 +2241,33 @@ export declare const MiniEventScalarFieldEnumSchema: z.ZodEnum<{
 export declare const MiniEventProgressScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
-    eventId: "eventId";
-    lastUpdate: "lastUpdate";
     claimedAt: "claimedAt";
+    eventId: "eventId";
     contribution: "contribution";
+    lastUpdate: "lastUpdate";
     rewardsClaimed: "rewardsClaimed";
 }>;
 export declare const MiniEventRewardScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     description: "description";
     userId: "userId";
+    rewardType: "rewardType";
     amount: "amount";
     eventId: "eventId";
-    rewardType: "rewardType";
     rewardId: "rewardId";
     awardedAt: "awardedAt";
 }>;
 export declare const CreatorProfileScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     isActive: "isActive";
     userId: "userId";
+    bio: "bio";
+    avatar: "avatar";
     badge: "badge";
     tier: "tier";
     displayName: "displayName";
-    createdAt: "createdAt";
-    bio: "bio";
-    updatedAt: "updatedAt";
-    avatar: "avatar";
     isVerified: "isVerified";
     bannerImage: "bannerImage";
     totalFlows: "totalFlows";
@@ -2280,21 +2280,21 @@ export declare const CreatorProfileScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const CreatorFlowScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
     status: "status";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     title: "title";
-    questions: "questions";
+    description: "description";
     region: "region";
     category: "category";
-    isFeatured: "isFeatured";
-    createdAt: "createdAt";
     difficulty: "difficulty";
-    tags: "tags";
-    updatedAt: "updatedAt";
+    questions: "questions";
     xpReward: "xpReward";
+    isFeatured: "isFeatured";
     publishedAt: "publishedAt";
     goldReward: "goldReward";
     creatorId: "creatorId";
+    tags: "tags";
     coverImage: "coverImage";
     questionCount: "questionCount";
     approvedBy: "approvedBy";
@@ -2313,26 +2313,26 @@ export declare const CreatorFollowerScalarFieldEnumSchema: z.ZodEnum<{
     followedAt: "followedAt";
 }>;
 export declare const CreatorRewardScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
     description: "description";
-    amount: "amount";
     source: "source";
+    type: "type";
     earnedAt: "earnedAt";
+    amount: "amount";
     creatorId: "creatorId";
     flowId: "flowId";
 }>;
 export declare const ClanScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    name: "name";
-    description: "description";
-    color: "color";
-    level: "level";
-    region: "region";
-    tag: "tag";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
+    region: "region";
+    level: "level";
     leaderId: "leaderId";
+    tag: "tag";
+    color: "color";
     totalXp: "totalXp";
     isPublic: "isPublic";
     minLevel: "minLevel";
@@ -2347,8 +2347,8 @@ export declare const ClanScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const ClanMemberScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     title: "title";
+    userId: "userId";
     role: "role";
     joinedAt: "joinedAt";
     clanId: "clanId";
@@ -2362,9 +2362,9 @@ export declare const ClanUpgradeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     name: "name";
     level: "level";
+    clanId: "clanId";
     expiresAt: "expiresAt";
     duration: "duration";
-    clanId: "clanId";
     maxLevel: "maxLevel";
     upgradeType: "upgradeType";
     boostAmount: "boostAmount";
@@ -2373,20 +2373,20 @@ export declare const ClanUpgradeScalarFieldEnumSchema: z.ZodEnum<{
 export declare const ClanActivityScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     metadata: "metadata";
-    createdAt: "createdAt";
     clanId: "clanId";
     activityType: "activityType";
 }>;
 export declare const SystemMetricScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
     id: "id";
     name: "name";
-    unit: "unit";
+    value: "value";
     timestamp: "timestamp";
     endpoint: "endpoint";
     metricType: "metricType";
+    unit: "unit";
 }>;
 export declare const HealthLogScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
@@ -2409,18 +2409,18 @@ export declare const AutoHealLogScalarFieldEnumSchema: z.ZodEnum<{
 export declare const CronJobLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    jobKey: "jobKey";
-    durationMs: "durationMs";
     finishedAt: "finishedAt";
     startedAt: "startedAt";
+    jobKey: "jobKey";
+    durationMs: "durationMs";
     errorMessage: "errorMessage";
 }>;
 export declare const ErrorAlertScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
     id: "id";
+    createdAt: "createdAt";
     source: "source";
     metadata: "metadata";
-    createdAt: "createdAt";
     severity: "severity";
     resolvedAt: "resolvedAt";
     stackTrace: "stackTrace";
@@ -2429,12 +2429,12 @@ export declare const ErrorAlertScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const JobQueueScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
-    region: "region";
-    displayName: "displayName";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    description: "description";
+    region: "region";
     priority: "priority";
+    displayName: "displayName";
     isEnabled: "isEnabled";
     queueName: "queueName";
     concurrency: "concurrency";
@@ -2460,10 +2460,10 @@ export declare const JobQueueMetricsScalarFieldEnumSchema: z.ZodEnum<{
 export declare const JobFailureScalarFieldEnumSchema: z.ZodEnum<{
     error: "error";
     id: "id";
+    failedAt: "failedAt";
+    resolvedAt: "resolvedAt";
     payload: "payload";
     attempts: "attempts";
-    resolvedAt: "resolvedAt";
-    failedAt: "failedAt";
     nextRetryAt: "nextRetryAt";
     stackTrace: "stackTrace";
     isResolved: "isResolved";
@@ -2474,13 +2474,13 @@ export declare const JobFailureScalarFieldEnumSchema: z.ZodEnum<{
     willRetry: "willRetry";
 }>;
 export declare const CacheConfigScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
     description: "description";
     region: "region";
-    createdAt: "createdAt";
-    updatedAt: "updatedAt";
+    key: "key";
     isEnabled: "isEnabled";
     ttlSeconds: "ttlSeconds";
     strategy: "strategy";
@@ -2500,18 +2500,18 @@ export declare const CacheMetricsScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const AchievementCollectionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    icon: "icon";
-    rarity: "rarity";
     region: "region";
-    eventId: "eventId";
+    isActive: "isActive";
     theme: "theme";
-    createdAt: "createdAt";
+    rarity: "rarity";
+    icon: "icon";
     xpReward: "xpReward";
     availableUntil: "availableUntil";
     goldReward: "goldReward";
+    eventId: "eventId";
     collectionId: "collectionId";
     titleReward: "titleReward";
     diamondReward: "diamondReward";
@@ -2524,15 +2524,15 @@ export declare const AchievementCollectionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const AchievementCollectionMemberScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    sortOrder: "sortOrder";
     achievementId: "achievementId";
     collectionId: "collectionId";
+    sortOrder: "sortOrder";
 }>;
 export declare const UserAchievementCollectionScalarFieldEnumSchema: z.ZodEnum<{
     progress: "progress";
     id: "id";
-    userId: "userId";
     completedAt: "completedAt";
+    userId: "userId";
     claimedAt: "claimedAt";
     rewardClaimed: "rewardClaimed";
     collectionId: "collectionId";
@@ -2540,17 +2540,17 @@ export declare const UserAchievementCollectionScalarFieldEnumSchema: z.ZodEnum<{
     isCompleted: "isCompleted";
 }>;
 export declare const ThemePackScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    rarity: "rarity";
     region: "region";
-    unlockLevel: "unlockLevel";
-    goldCost: "goldCost";
-    createdAt: "createdAt";
+    isActive: "isActive";
+    type: "type";
+    rarity: "rarity";
     availableUntil: "availableUntil";
+    goldCost: "goldCost";
+    unlockLevel: "unlockLevel";
     themeId: "themeId";
     isSeasonal: "isSeasonal";
     seasonType: "seasonType";
@@ -2570,13 +2570,13 @@ export declare const UserThemeSettingsScalarFieldEnumSchema: z.ZodEnum<{
     lastAutoSwitchAt: "lastAutoSwitchAt";
 }>;
 export declare const ArchetypeScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    name: "name";
-    description: "description";
-    emoji: "emoji";
-    baseStats: "baseStats";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
+    key: "key";
+    emoji: "emoji";
+    baseStats: "baseStats";
     growthRates: "growthRates";
     fusionWith: "fusionWith";
     fusionResult: "fusionResult";
@@ -2585,9 +2585,9 @@ export declare const ArchetypeScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserArchetypeFusionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    result: "result";
     createdAt: "createdAt";
+    result: "result";
+    userId: "userId";
     baseA: "baseA";
     baseB: "baseB";
 }>;
@@ -2603,13 +2603,13 @@ export declare const UserArchetypeHistoryScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const AvatarLayerScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    rarity: "rarity";
     region: "region";
-    unlockLevel: "unlockLevel";
+    rarity: "rarity";
     goldCost: "goldCost";
-    createdAt: "createdAt";
+    unlockLevel: "unlockLevel";
     imageUrl: "imageUrl";
     unlockCondition: "unlockCondition";
     diamondCost: "diamondCost";
@@ -2624,8 +2624,8 @@ export declare const UserAvatarItemScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserAvatarScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     updatedAt: "updatedAt";
+    userId: "userId";
     equippedLayers: "equippedLayers";
     presetName: "presetName";
 }>;
@@ -2638,8 +2638,8 @@ export declare const DuelSpectatorScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const DuelHighlightScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    category: "category";
     createdAt: "createdAt";
+    category: "category";
     reactionsCount: "reactionsCount";
     viewCount: "viewCount";
     duelId: "duelId";
@@ -2650,19 +2650,19 @@ export declare const DuelHighlightScalarFieldEnumSchema: z.ZodEnum<{
     isTopOfDay: "isTopOfDay";
 }>;
 export declare const CoopMissionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
     status: "status";
-    title: "title";
-    region: "region";
-    expiresAt: "expiresAt";
-    rewardXp: "rewardXp";
-    rewardGold: "rewardGold";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    completedAt: "completedAt";
+    type: "type";
     startedAt: "startedAt";
     createdBy: "createdBy";
-    completedAt: "completedAt";
+    rewardXp: "rewardXp";
+    rewardGold: "rewardGold";
+    expiresAt: "expiresAt";
     questionIds: "questionIds";
     maxMembers: "maxMembers";
     minMembers: "minMembers";
@@ -2681,20 +2681,20 @@ export declare const CoopProgressScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
     questionId: "questionId";
+    answer: "answer";
     submittedAt: "submittedAt";
     missionId: "missionId";
-    answer: "answer";
     confirmed: "confirmed";
 }>;
 export declare const TotemBattleScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    weekNumber: "weekNumber";
+    createdAt: "createdAt";
+    rewardXp: "rewardXp";
+    winnerId: "winnerId";
     startAt: "startAt";
     endAt: "endAt";
-    rewardXp: "rewardXp";
-    createdAt: "createdAt";
+    weekNumber: "weekNumber";
     year: "year";
-    winnerId: "winnerId";
     groupAId: "groupAId";
     groupBId: "groupBId";
     phase: "phase";
@@ -2724,28 +2724,28 @@ export declare const GroupMemberScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const GroupActivityScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
+    type: "type";
     userId: "userId";
     metadata: "metadata";
-    createdAt: "createdAt";
     groupId: "groupId";
 }>;
 export declare const FlowScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
     region: "region";
     metadata: "metadata";
-    createdAt: "createdAt";
 }>;
 export declare const FlowStepScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    order: "order";
-    section: "section";
     metadata: "metadata";
     questionVersionId: "questionVersionId";
+    order: "order";
     flowId: "flowId";
+    section: "section";
     branchCondition: "branchCondition";
     randomGroup: "randomGroup";
     isOptional: "isOptional";
@@ -2758,17 +2758,17 @@ export declare const FlowStepLinkScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const FlowProgressScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     updatedAt: "updatedAt";
-    startedAt: "startedAt";
     completedAt: "completedAt";
+    userId: "userId";
+    startedAt: "startedAt";
     flowId: "flowId";
     currentStepId: "currentStepId";
 }>;
 export declare const AnswerScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
     id: "id";
     createdAt: "createdAt";
+    value: "value";
     questionVersionId: "questionVersionId";
     sessionId: "sessionId";
     stepId: "stepId";
@@ -2779,10 +2779,10 @@ export declare const LanguageScalarFieldEnumSchema: z.ZodEnum<{
     code: "code";
 }>;
 export declare const VersionScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
     id: "id";
-    name: "name";
     createdAt: "createdAt";
+    name: "name";
+    value: "value";
 }>;
 export declare const CategoryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
@@ -2801,8 +2801,8 @@ export declare const SubSubCategoryScalarFieldEnumSchema: z.ZodEnum<{
 export declare const SssCategoryScalarFieldEnumSchema: z.ZodEnum<{
     error: "error";
     id: "id";
-    name: "name";
     status: "status";
+    name: "name";
     difficulty: "difficulty";
     subSubCategoryId: "subSubCategoryId";
     generatedAt: "generatedAt";
@@ -2819,11 +2819,11 @@ export declare const SssCategoryScalarFieldEnumSchema: z.ZodEnum<{
 export declare const UserQuestionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    userId: "userId";
-    seasonId: "seasonId";
     createdAt: "createdAt";
-    questionId: "questionId";
     updatedAt: "updatedAt";
+    userId: "userId";
+    questionId: "questionId";
+    seasonId: "seasonId";
     questionTemplateId: "questionTemplateId";
     servedAt: "servedAt";
     answeredAt: "answeredAt";
@@ -2832,26 +2832,26 @@ export declare const UserQuestionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const QuestionTemplateScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    category: "category";
-    text: "text";
     createdAt: "createdAt";
-    weight: "weight";
-    tags: "tags";
-    tone: "tone";
     updatedAt: "updatedAt";
+    isActive: "isActive";
+    text: "text";
+    category: "category";
+    tone: "tone";
+    tags: "tags";
     archetypeAffinity: "archetypeAffinity";
+    weight: "weight";
 }>;
 export declare const BattleAchievementScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    rarity: "rarity";
-    title: "title";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    title: "title";
+    description: "description";
+    isActive: "isActive";
+    key: "key";
     rewardXP: "rewardXP";
+    rarity: "rarity";
     triggerType: "triggerType";
     thresholdValue: "thresholdValue";
     rewardBadgeId: "rewardBadgeId";
@@ -2859,9 +2859,9 @@ export declare const BattleAchievementScalarFieldEnumSchema: z.ZodEnum<{
 export declare const UserBattleAchievementScalarFieldEnumSchema: z.ZodEnum<{
     progress: "progress";
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
     achievementId: "achievementId";
     unlockedAt: "unlockedAt";
     claimedAt: "claimedAt";
@@ -2870,13 +2870,13 @@ export declare const UserBattleAchievementScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const GroupScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
     description: "description";
     region: "region";
     visibility: "visibility";
-    createdAt: "createdAt";
     motto: "motto";
-    updatedAt: "updatedAt";
     totalXp: "totalXp";
     emblem: "emblem";
     avgKarma: "avgKarma";
@@ -2890,10 +2890,10 @@ export declare const GroupScalarFieldEnumSchema: z.ZodEnum<{
 export declare const GroupStatScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     updatedAt: "updatedAt";
+    reflections: "reflections";
     groupId: "groupId";
     avgLevel: "avgLevel";
     totalXP: "totalXP";
-    reflections: "reflections";
 }>;
 export declare const UserGroupScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
@@ -2902,59 +2902,59 @@ export declare const UserGroupScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const PublicPollScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     title: "title";
     region: "region";
-    expiresAt: "expiresAt";
     options: "options";
-    visibility: "visibility";
-    createdAt: "createdAt";
     question: "question";
+    visibility: "visibility";
     rewardXP: "rewardXP";
+    expiresAt: "expiresAt";
     creatorId: "creatorId";
     allowFreetext: "allowFreetext";
     premiumCost: "premiumCost";
 }>;
 export declare const PollResponseScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    region: "region";
     createdAt: "createdAt";
+    region: "region";
+    userId: "userId";
     pollId: "pollId";
     optionIdx: "optionIdx";
     freetext: "freetext";
 }>;
 export declare const PublicChallengeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    title: "title";
-    region: "region";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    isActive: "isActive";
     rewardXP: "rewardXP";
     rewardItem: "rewardItem";
     activeFrom: "activeFrom";
     activeTo: "activeTo";
 }>;
 export declare const ContentPackScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    icon: "icon";
-    title: "title";
-    region: "region";
-    category: "category";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    isActive: "isActive";
+    category: "category";
     price: "price";
+    key: "key";
+    icon: "icon";
     premiumOnly: "premiumOnly";
     themeColor: "themeColor";
 }>;
 export declare const PackItemScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
-    id: "id";
     data: "data";
+    id: "id";
     createdAt: "createdAt";
+    type: "type";
     packId: "packId";
     refId: "refId";
 }>;
@@ -2966,27 +2966,27 @@ export declare const UserPackScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const FiresideScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    title: "title";
-    expiresAt: "expiresAt";
     createdAt: "createdAt";
+    title: "title";
+    isActive: "isActive";
+    expiresAt: "expiresAt";
     creatorId: "creatorId";
     participantIds: "participantIds";
 }>;
 export declare const FiresideReactionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    emoji: "emoji";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
+    emoji: "emoji";
     firesideId: "firesideId";
 }>;
 export declare const MemoryJournalScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
+    createdAt: "createdAt";
     title: "title";
+    userId: "userId";
     content: "content";
     summary: "summary";
-    createdAt: "createdAt";
     periodStart: "periodStart";
     periodEnd: "periodEnd";
     sourceCount: "sourceCount";
@@ -3001,17 +3001,17 @@ export declare const ComparisonCardScalarFieldEnumSchema: z.ZodEnum<{
     autoGenerated: "autoGenerated";
 }>;
 export declare const MicroMissionScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    type: "type";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    rarity: "rarity";
-    title: "title";
-    rewardGold: "rewardGold";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    isActive: "isActive";
+    type: "type";
+    key: "key";
     rewardXP: "rewardXP";
+    rarity: "rarity";
     durationSec: "durationSec";
+    rewardGold: "rewardGold";
     rewardItem: "rewardItem";
     skipCostFood: "skipCostFood";
     skipCostGold: "skipCostGold";
@@ -3020,17 +3020,17 @@ export declare const MicroMissionScalarFieldEnumSchema: z.ZodEnum<{
 export declare const UserMicroMissionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
+    completedAt: "completedAt";
     userId: "userId";
     startedAt: "startedAt";
-    completedAt: "completedAt";
     missionId: "missionId";
 }>;
 export declare const AvatarMoodScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    source: "source";
-    mood: "mood";
     updatedAt: "updatedAt";
+    source: "source";
+    userId: "userId";
+    mood: "mood";
     pose: "pose";
     emotionScore: "emotionScore";
 }>;
@@ -3051,20 +3051,20 @@ export declare const UserMoodLogScalarFieldEnumSchema: z.ZodEnum<{
     loggedAt: "loggedAt";
 }>;
 export declare const MoodPresetScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    isActive: "isActive";
-    description: "description";
-    title: "title";
-    region: "region";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    region: "region";
+    isActive: "isActive";
+    key: "key";
     toneProfile: "toneProfile";
 }>;
 export declare const MentorNPCScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
-    name: "name";
     createdAt: "createdAt";
+    name: "name";
+    isActive: "isActive";
+    key: "key";
     archetypeAffinity: "archetypeAffinity";
     personality: "personality";
     introText: "introText";
@@ -3079,16 +3079,16 @@ export declare const UserMentorScalarFieldEnumSchema: z.ZodEnum<{
     lastInteractionAt: "lastInteractionAt";
 }>;
 export declare const SeasonStorylineScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
+    title: "title";
     description: "description";
+    isActive: "isActive";
+    key: "key";
     startDate: "startDate";
     endDate: "endDate";
-    title: "title";
     xpBonus: "xpBonus";
     goldBonus: "goldBonus";
-    createdAt: "createdAt";
     themeColor: "themeColor";
     eventModifier: "eventModifier";
     npcIds: "npcIds";
@@ -3096,25 +3096,25 @@ export declare const SeasonStorylineScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const StorylineAchievementScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
-    seasonId: "seasonId";
-    title: "title";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
     rewardXP: "rewardXP";
+    seasonId: "seasonId";
     rewardItem: "rewardItem";
 }>;
 export declare const WalletScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
-    diamonds: "diamonds";
     funds: "funds";
+    diamonds: "diamonds";
     tenantId: "tenantId";
     badgesClaimedCount: "badgesClaimedCount";
 }>;
 export declare const LedgerEntryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    amount: "amount";
     createdAt: "createdAt";
+    amount: "amount";
     walletId: "walletId";
     note: "note";
     refId: "refId";
@@ -3126,12 +3126,12 @@ export declare const LedgerEntryScalarFieldEnumSchema: z.ZodEnum<{
 export declare const ProductScalarFieldEnumSchema: z.ZodEnum<{
     active: "active";
     id: "id";
-    description: "description";
-    title: "title";
-    region: "region";
     createdAt: "createdAt";
-    payload: "payload";
+    title: "title";
+    description: "description";
+    region: "region";
     slug: "slug";
+    payload: "payload";
     kind: "kind";
     stackable: "stackable";
 }>;
@@ -3146,9 +3146,9 @@ export declare const PriceScalarFieldEnumSchema: z.ZodEnum<{
 export declare const PurchaseScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
+    createdAt: "createdAt";
     userId: "userId";
     quantity: "quantity";
-    createdAt: "createdAt";
     tenantId: "tenantId";
     productId: "productId";
     totalMinor: "totalMinor";
@@ -3156,17 +3156,17 @@ export declare const PurchaseScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const EntitlementScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     meta: "meta";
-    createdAt: "createdAt";
     tenantId: "tenantId";
     productId: "productId";
 }>;
 export declare const SubscriptionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     stripeSubId: "stripeSubId";
     plan: "plan";
     currentPeriodEnd: "currentPeriodEnd";
@@ -3174,35 +3174,35 @@ export declare const SubscriptionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserProfileScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     updatedAt: "updatedAt";
+    userId: "userId";
     equippedAvatarId: "equippedAvatarId";
     equippedBackgroundId: "equippedBackgroundId";
     equippedSkinId: "equippedSkinId";
 }>;
 export declare const BadgeScalarFieldEnumSchema: z.ZodEnum<{
     active: "active";
-    key: "key";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
-    description: "description";
-    icon: "icon";
-    rarity: "rarity";
-    unlockType: "unlockType";
-    requirementValue: "requirementValue";
-    seasonId: "seasonId";
     title: "title";
+    description: "description";
+    isActive: "isActive";
+    key: "key";
+    rarity: "rarity";
+    seasonId: "seasonId";
     rewardType: "rewardType";
     rewardValue: "rewardValue";
-    createdAt: "createdAt";
+    icon: "icon";
     rarityId: "rarityId";
     slug: "slug";
+    unlockType: "unlockType";
+    requirementValue: "requirementValue";
 }>;
 export declare const UserBadgeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     unlockedAt: "unlockedAt";
     claimedAt: "claimedAt";
     isClaimed: "isClaimed";
@@ -3210,38 +3210,38 @@ export declare const UserBadgeScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const FailedLoginAttemptScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    email: "email";
     createdAt: "createdAt";
+    email: "email";
     ipAddress: "ipAddress";
 }>;
 export declare const PasswordResetScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     expiresAt: "expiresAt";
-    createdAt: "createdAt";
     token: "token";
 }>;
 export declare const EmailVerifyScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     expiresAt: "expiresAt";
-    createdAt: "createdAt";
     token: "token";
 }>;
 export declare const AuditLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    action: "action";
-    meta: "meta";
     createdAt: "createdAt";
+    action: "action";
+    userId: "userId";
+    meta: "meta";
     ip: "ip";
 }>;
 export declare const GenerationBatchScalarFieldEnumSchema: z.ZodEnum<{
     failed: "failed";
-    language: "language";
     id: "id";
     status: "status";
     createdAt: "createdAt";
+    language: "language";
     targetCount: "targetCount";
     finishedAt: "finishedAt";
     startedAt: "startedAt";
@@ -3251,15 +3251,15 @@ export declare const GenerationBatchScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const GenerationJobScalarFieldEnumSchema: z.ZodEnum<{
     error: "error";
-    language: "language";
     id: "id";
     status: "status";
-    batchId: "batchId";
     createdAt: "createdAt";
+    language: "language";
     finishedAt: "finishedAt";
     startedAt: "startedAt";
     retryCount: "retryCount";
     sssCategoryId: "sssCategoryId";
+    batchId: "batchId";
     aiLogId: "aiLogId";
     moderatorNotes: "moderatorNotes";
     moderatorScore: "moderatorScore";
@@ -3271,15 +3271,15 @@ export declare const GenerationJobScalarFieldEnumSchema: z.ZodEnum<{
 export declare const AIResponseLogScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     createdAt: "createdAt";
+    model: "model";
     prompt: "prompt";
     response: "response";
     tokensIn: "tokensIn";
     tokensOut: "tokensOut";
-    model: "model";
 }>;
 export declare const AccountScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
+    type: "type";
     userId: "userId";
     provider: "provider";
     providerAccountId: "providerAccountId";
@@ -3303,22 +3303,22 @@ export declare const VerificationTokenScalarFieldEnumSchema: z.ZodEnum<{
     identifier: "identifier";
 }>;
 export declare const UserSubmissionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
     status: "status";
-    userId: "userId";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     title: "title";
-    content: "content";
+    description: "description";
     region: "region";
+    categoryId: "categoryId";
+    type: "type";
+    userId: "userId";
     score: "score";
     metadata: "metadata";
-    createdAt: "createdAt";
-    tags: "tags";
-    updatedAt: "updatedAt";
-    categoryId: "categoryId";
+    content: "content";
     moderatorId: "moderatorId";
     reviewedAt: "reviewedAt";
+    tags: "tags";
     imageUrl: "imageUrl";
     approvedAt: "approvedAt";
     languageId: "languageId";
@@ -3328,21 +3328,21 @@ export declare const UserSubmissionScalarFieldEnumSchema: z.ZodEnum<{
     rejectedAt: "rejectedAt";
 }>;
 export declare const EventScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
     status: "status";
-    startDate: "startDate";
-    endDate: "endDate";
-    title: "title";
-    visibility: "visibility";
-    metadata: "metadata";
     createdAt: "createdAt";
-    localeCode: "localeCode";
     updatedAt: "updatedAt";
+    title: "title";
+    description: "description";
+    type: "type";
+    visibility: "visibility";
+    localeCode: "localeCode";
+    metadata: "metadata";
     isFlagged: "isFlagged";
     flagReason: "flagReason";
     rewardXP: "rewardXP";
+    startDate: "startDate";
+    endDate: "endDate";
     creatorId: "creatorId";
     imageUrl: "imageUrl";
     rewardDiamonds: "rewardDiamonds";
@@ -3350,8 +3350,8 @@ export declare const EventScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const VoteScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     sessionId: "sessionId";
     voteType: "voteType";
     submissionId: "submissionId";
@@ -3359,39 +3359,39 @@ export declare const VoteScalarFieldEnumSchema: z.ZodEnum<{
 export declare const SeasonScalarFieldEnumSchema: z.ZodEnum<{
     number: "number";
     id: "id";
-    name: "name";
     status: "status";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
+    name: "name";
+    metadata: "metadata";
     startDate: "startDate";
     endDate: "endDate";
     displayName: "displayName";
-    metadata: "metadata";
-    createdAt: "createdAt";
-    updatedAt: "updatedAt";
 }>;
 export declare const SeasonArchiveScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     seasonId: "seasonId";
-    achievements: "achievements";
-    createdAt: "createdAt";
     finalKarma: "finalKarma";
+    achievements: "achievements";
     finalXP: "finalXP";
     finalCoins: "finalCoins";
     finalRank: "finalRank";
 }>;
 export declare const CosmeticItemScalarFieldEnumSchema: z.ZodEnum<{
     active: "active";
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
+    region: "region";
+    type: "type";
+    price: "price";
+    metadata: "metadata";
     rarity: "rarity";
     seasonId: "seasonId";
-    region: "region";
-    metadata: "metadata";
-    createdAt: "createdAt";
     rarityId: "rarityId";
-    price: "price";
     slug: "slug";
     imageUrl: "imageUrl";
     seasonOnly: "seasonOnly";
@@ -3405,35 +3405,35 @@ export declare const UserCosmeticScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const SeasonalEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
     status: "status";
-    startDate: "startDate";
-    endDate: "endDate";
-    title: "title";
-    metadata: "metadata";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    metadata: "metadata";
     bonusType: "bonusType";
     bonusValue: "bonusValue";
+    startDate: "startDate";
+    endDate: "endDate";
 }>;
 export declare const MirrorEventScalarFieldEnumSchema: z.ZodEnum<{
     active: "active";
-    key: "key";
     id: "id";
+    createdAt: "createdAt";
+    title: "title";
     description: "description";
+    theme: "theme";
+    key: "key";
+    rewardXP: "rewardXP";
     startDate: "startDate";
     endDate: "endDate";
-    title: "title";
-    theme: "theme";
-    createdAt: "createdAt";
-    rewardXP: "rewardXP";
     rewardBadgeId: "rewardBadgeId";
     questionSet: "questionSet";
 }>;
 export declare const WildcardEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    description: "description";
-    title: "title";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
     rewardXP: "rewardXP";
     rewardKarma: "rewardKarma";
     flavorText: "flavorText";
@@ -3441,52 +3441,52 @@ export declare const WildcardEventScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserWildcardEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     redeemedAt: "redeemedAt";
     wildcardId: "wildcardId";
     redeemed: "redeemed";
 }>;
 export declare const ShareCardScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
+    type: "type";
     userId: "userId";
     expiresAt: "expiresAt";
-    caption: "caption";
-    createdAt: "createdAt";
     imageUrl: "imageUrl";
+    caption: "caption";
 }>;
 export declare const PosterCardScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    title: "title";
     createdAt: "createdAt";
+    title: "title";
+    userId: "userId";
     imageUrl: "imageUrl";
     statsJson: "statsJson";
     isShared: "isShared";
 }>;
 export declare const DreamEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    title: "title";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    isActive: "isActive";
     effect: "effect";
     triggerType: "triggerType";
     flavorTone: "flavorTone";
 }>;
 export declare const UserDreamEventScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    resolved: "resolved";
     createdAt: "createdAt";
+    userId: "userId";
     resolvedAt: "resolvedAt";
+    resolved: "resolved";
     dreamId: "dreamId";
 }>;
 export declare const GenerationRecordScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     generationNumber: "generationNumber";
     prestigeId: "prestigeId";
     inheritedPerks: "inheritedPerks";
@@ -3496,24 +3496,24 @@ export declare const FeedbackScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
     id: "id";
     status: "status";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     context: "context";
     reviewedBy: "reviewedBy";
     reviewedAt: "reviewedAt";
     screenshotUrl: "screenshotUrl";
 }>;
 export declare const CreatorPackScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    description: "description";
     status: "status";
+    createdAt: "createdAt";
     title: "title";
+    description: "description";
     region: "region";
+    type: "type";
+    metadata: "metadata";
     rewardType: "rewardType";
     rewardValue: "rewardValue";
-    metadata: "metadata";
-    createdAt: "createdAt";
     publishedAt: "publishedAt";
     creatorId: "creatorId";
     approvedBy: "approvedBy";
@@ -3522,20 +3522,20 @@ export declare const CreatorPackScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserCreatedPackScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
     isPublished: "isPublished";
     packId: "packId";
     earnedRewards: "earnedRewards";
 }>;
 export declare const ItemRecipeScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
+    xpReward: "xpReward";
     itemId: "itemId";
     ingredients: "ingredients";
     craftTime: "craftTime";
-    createdAt: "createdAt";
-    xpReward: "xpReward";
     discoveredBy: "discoveredBy";
 }>;
 export declare const ItemDiscoveryScalarFieldEnumSchema: z.ZodEnum<{
@@ -3545,22 +3545,22 @@ export declare const ItemDiscoveryScalarFieldEnumSchema: z.ZodEnum<{
     discoveredAt: "discoveredAt";
 }>;
 export declare const UserReflectionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
+    type: "type";
     userId: "userId";
     stats: "stats";
-    content: "content";
     date: "date";
-    summary: "summary";
     metadata: "metadata";
-    createdAt: "createdAt";
+    content: "content";
+    summary: "summary";
     sentiment: "sentiment";
     mirrorEventId: "mirrorEventId";
 }>;
 export declare const ReflectionConversationScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
     prompt: "prompt";
     response: "response";
     reflectionId: "reflectionId";
@@ -3569,10 +3569,10 @@ export declare const ReflectionConversationScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserStatsScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    metadata: "metadata";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    userId: "userId";
+    metadata: "metadata";
     totalXP: "totalXP";
     totalCoins: "totalCoins";
     totalKarma: "totalKarma";
@@ -3588,10 +3588,9 @@ export declare const UserStatsScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const UserWeeklyStatsScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     metadata: "metadata";
-    createdAt: "createdAt";
-    karmaGain: "karmaGain";
     weekStart: "weekStart";
     weekEnd: "weekEnd";
     questionsCount: "questionsCount";
@@ -3599,10 +3598,11 @@ export declare const UserWeeklyStatsScalarFieldEnumSchema: z.ZodEnum<{
     rankChange: "rankChange";
     xpGain: "xpGain";
     coinsGain: "coinsGain";
+    karmaGain: "karmaGain";
 }>;
 export declare const ChronicleScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
+    type: "type";
     userId: "userId";
     seasonId: "seasonId";
     generatedAt: "generatedAt";
@@ -3611,12 +3611,12 @@ export declare const ChronicleScalarFieldEnumSchema: z.ZodEnum<{
     summaryText: "summaryText";
 }>;
 export declare const RegionScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    createdAt: "createdAt";
+    isActive: "isActive";
+    key: "key";
     buffType: "buffType";
     buffValue: "buffValue";
     orderIndex: "orderIndex";
@@ -3626,44 +3626,44 @@ export declare const RegionScalarFieldEnumSchema: z.ZodEnum<{
 export declare const UserRegionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     userId: "userId";
-    regionId: "regionId";
     isUnlocked: "isUnlocked";
+    regionId: "regionId";
     visitedAt: "visitedAt";
     activeBuff: "activeBuff";
     lastTravelAt: "lastTravelAt";
 }>;
 export declare const QuestScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    type: "type";
     id: "id";
-    isActive: "isActive";
-    description: "description";
-    requirementValue: "requirementValue";
-    title: "title";
-    isRepeatable: "isRepeatable";
-    rewardGold: "rewardGold";
     createdAt: "createdAt";
+    title: "title";
+    description: "description";
+    isActive: "isActive";
+    type: "type";
+    key: "key";
     rewardXP: "rewardXP";
     rewardKarma: "rewardKarma";
+    rewardGold: "rewardGold";
     rewardItem: "rewardItem";
+    requirementValue: "requirementValue";
     requirementType: "requirementType";
     rewardBadge: "rewardBadge";
+    isRepeatable: "isRepeatable";
 }>;
 export declare const UserQuestScalarFieldEnumSchema: z.ZodEnum<{
     progress: "progress";
     id: "id";
+    completedAt: "completedAt";
     userId: "userId";
     startedAt: "startedAt";
-    completedAt: "completedAt";
     questId: "questId";
     isCompleted: "isCompleted";
     isClaimed: "isClaimed";
 }>;
 export declare const UserLoreEntryScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    text: "text";
     createdAt: "createdAt";
+    text: "text";
+    userId: "userId";
     tone: "tone";
     sourceId: "sourceId";
     sourceType: "sourceType";
@@ -3690,121 +3690,121 @@ export declare const SharedMissionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     status: "status";
     createdAt: "createdAt";
+    completedAt: "completedAt";
     rewardXP: "rewardXP";
     missionKey: "missionKey";
-    completedAt: "completedAt";
     participants: "participants";
 }>;
 export declare const CurrencyScalarFieldEnumSchema: z.ZodEnum<{
     symbol: "symbol";
-    key: "key";
     id: "id";
-    name: "name";
     createdAt: "createdAt";
+    name: "name";
+    key: "key";
     isPremium: "isPremium";
     exchangeRate: "exchangeRate";
 }>;
 export declare const UserWalletScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
     updatedAt: "updatedAt";
+    userId: "userId";
     currencyKey: "currencyKey";
     balance: "balance";
 }>;
 export declare const MarketItemScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     name: "name";
     description: "description";
-    rarity: "rarity";
     category: "category";
-    createdAt: "createdAt";
     price: "price";
+    rarity: "rarity";
     currencyKey: "currencyKey";
     stock: "stock";
     isEventItem: "isEventItem";
 }>;
 export declare const TransactionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    userId: "userId";
-    amount: "amount";
-    itemId: "itemId";
     createdAt: "createdAt";
+    type: "type";
+    userId: "userId";
+    itemId: "itemId";
     currencyKey: "currencyKey";
+    amount: "amount";
     note: "note";
 }>;
 export declare const BalanceSettingScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
-    value: "value";
     id: "id";
     updatedAt: "updatedAt";
+    key: "key";
+    value: "value";
 }>;
 export declare const EconomyPresetScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    name: "name";
-    description: "description";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    description: "description";
     modifiers: "modifiers";
 }>;
 export declare const SystemAlertScalarFieldEnumSchema: z.ZodEnum<{
     message: "message";
-    type: "type";
     id: "id";
+    createdAt: "createdAt";
+    type: "type";
     level: "level";
     metadata: "metadata";
-    createdAt: "createdAt";
     resolvedAt: "resolvedAt";
     autoResolved: "autoResolved";
 }>;
 export declare const AlertWebhookScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    isActive: "isActive";
-    name: "name";
-    url: "url";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    name: "name";
+    isActive: "isActive";
+    type: "type";
+    url: "url";
 }>;
 export declare const MetaSeasonScalarFieldEnumSchema: z.ZodEnum<{
-    key: "key";
     id: "id";
-    isActive: "isActive";
+    createdAt: "createdAt";
+    title: "title";
     description: "description";
+    region: "region";
+    isActive: "isActive";
+    key: "key";
     startDate: "startDate";
     endDate: "endDate";
-    title: "title";
-    region: "region";
-    createdAt: "createdAt";
 }>;
 export declare const PrestigeRecordScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    seasonId: "seasonId";
     createdAt: "createdAt";
+    userId: "userId";
     prestigeCount: "prestigeCount";
     prestigeTitle: "prestigeTitle";
     prestigeBadgeId: "prestigeBadgeId";
     prestigeColorTheme: "prestigeColorTheme";
+    seasonId: "seasonId";
     rewardBadgeId: "rewardBadgeId";
     oldLevel: "oldLevel";
     legacyXP: "legacyXP";
 }>;
 export declare const TrendingQuestionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    region: "region";
-    score: "score";
-    questionId: "questionId";
     updatedAt: "updatedAt";
+    region: "region";
+    questionId: "questionId";
+    score: "score";
     windowStart: "windowStart";
     windowEnd: "windowEnd";
     reactions24h: "reactions24h";
 }>;
 export declare const SkillScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
     name: "name";
     description: "description";
+    type: "type";
     icon: "icon";
     power: "power";
     cooldown: "cooldown";
@@ -3819,31 +3819,31 @@ export declare const UserSkillScalarFieldEnumSchema: z.ZodEnum<{
     cooldownRemaining: "cooldownRemaining";
 }>;
 export declare const PetScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
     name: "name";
     description: "description";
-    icon: "icon";
-    rarity: "rarity";
     region: "region";
+    type: "type";
+    rarity: "rarity";
+    icon: "icon";
     bonus: "bonus";
 }>;
 export declare const UserPetScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    userId: "userId";
-    level: "level";
-    xp: "xp";
-    petId: "petId";
     createdAt: "createdAt";
+    userId: "userId";
+    xp: "xp";
+    level: "level";
     equipped: "equipped";
+    petId: "petId";
     nickname: "nickname";
 }>;
 export declare const CombatSessionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    isActive: "isActive";
-    userId: "userId";
     createdAt: "createdAt";
     updatedAt: "updatedAt";
+    isActive: "isActive";
+    userId: "userId";
     currentStreak: "currentStreak";
     xpGained: "xpGained";
     goldGained: "goldGained";
@@ -3858,22 +3858,22 @@ export declare const CombatSessionScalarFieldEnumSchema: z.ZodEnum<{
 }>;
 export declare const EnemyScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
+    updatedAt: "updatedAt";
     name: "name";
-    icon: "icon";
-    rarity: "rarity";
     level: "level";
+    rarity: "rarity";
+    icon: "icon";
     power: "power";
     defense: "defense";
     maxHp: "maxHp";
     lootTable: "lootTable";
-    createdAt: "createdAt";
-    updatedAt: "updatedAt";
 }>;
 export declare const PublicComparisonScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
     createdAt: "createdAt";
-    question: "question";
     updatedAt: "updatedAt";
+    question: "question";
     reactionsLike: "reactionsLike";
     reactionsLaugh: "reactionsLaugh";
     reactionsThink: "reactionsThink";
@@ -3881,90 +3881,90 @@ export declare const PublicComparisonScalarFieldEnumSchema: z.ZodEnum<{
     answers: "answers";
 }>;
 export declare const FeedPostScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    userId: "userId";
-    content: "content";
-    visibility: "visibility";
     createdAt: "createdAt";
+    type: "type";
+    userId: "userId";
+    visibility: "visibility";
+    content: "content";
     refId: "refId";
 }>;
 export declare const FeedCommentScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     content: "content";
-    createdAt: "createdAt";
     postId: "postId";
 }>;
 export declare const FeedReactionScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
-    emoji: "emoji";
-    userId: "userId";
     createdAt: "createdAt";
+    userId: "userId";
+    emoji: "emoji";
     postId: "postId";
 }>;
 export declare const ComparePostScalarFieldEnumSchema: z.ZodEnum<{
-    value: "value";
     id: "id";
-    userId: "userId";
-    content: "content";
-    visibility: "visibility";
     createdAt: "createdAt";
-    questionId: "questionId";
     updatedAt: "updatedAt";
+    userId: "userId";
+    questionId: "questionId";
+    visibility: "visibility";
+    value: "value";
+    content: "content";
 }>;
 export declare const CompareReactionScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    userId: "userId";
     createdAt: "createdAt";
+    type: "type";
+    userId: "userId";
     postId: "postId";
 }>;
 export declare const CompareCommentScalarFieldEnumSchema: z.ZodEnum<{
     id: "id";
+    createdAt: "createdAt";
     userId: "userId";
     content: "content";
-    createdAt: "createdAt";
     postId: "postId";
 }>;
 export declare const NotificationScalarFieldEnumSchema: z.ZodEnum<{
-    type: "type";
     id: "id";
-    userId: "userId";
-    title: "title";
-    body: "body";
     createdAt: "createdAt";
+    title: "title";
+    type: "type";
+    userId: "userId";
     isRead: "isRead";
     refId: "refId";
+    body: "body";
 }>;
 export declare const SortOrderSchema: z.ZodEnum<{
-    desc: "desc";
     asc: "asc";
+    desc: "desc";
 }>;
 export declare const NullableJsonNullValueInputSchema: z.ZodPipe<z.ZodEnum<{
-    JsonNull: "JsonNull";
     DbNull: "DbNull";
-}>, z.ZodTransform<any, "JsonNull" | "DbNull">>;
+    JsonNull: "JsonNull";
+}>, z.ZodTransform<Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull, "DbNull" | "JsonNull">>;
 export declare const JsonNullValueInputSchema: z.ZodPipe<z.ZodEnum<{
     JsonNull: "JsonNull";
-}>, z.ZodTransform<any, "JsonNull">>;
+}>, z.ZodTransform<Prisma.NullTypes.JsonNull, "JsonNull">>;
 export declare const QueryModeSchema: z.ZodEnum<{
     default: "default";
     insensitive: "insensitive";
 }>;
 export declare const JsonNullValueFilterSchema: z.ZodPipe<z.ZodEnum<{
-    JsonNull: "JsonNull";
     DbNull: "DbNull";
+    JsonNull: "JsonNull";
     AnyNull: "AnyNull";
-}>, z.ZodTransform<any, "JsonNull" | "DbNull" | "AnyNull">>;
+}>, z.ZodTransform<Prisma.NullTypes.DbNull | Prisma.NullTypes.JsonNull | Prisma.NullTypes.AnyNull, "DbNull" | "JsonNull" | "AnyNull">>;
 export declare const NullsOrderSchema: z.ZodEnum<{
     first: "first";
     last: "last";
 }>;
 export declare const CulturalFilterSeveritySchema: z.ZodEnum<{
-    block: "block";
     info: "info";
     warn: "warn";
+    block: "block";
 }>;
 export type CulturalFilterSeverityType = `${z.infer<typeof CulturalFilterSeveritySchema>}`;
 export declare const ContentVisibilitySchema: z.ZodEnum<{
@@ -3979,9 +3979,9 @@ export declare const ModerationContentTypeSchema: z.ZodEnum<{
 }>;
 export type ModerationContentTypeType = `${z.infer<typeof ModerationContentTypeSchema>}`;
 export declare const FeedbackStatusSchema: z.ZodEnum<{
+    NEW: "NEW";
     REVIEWED: "REVIEWED";
     RESOLVED: "RESOLVED";
-    NEW: "NEW";
 }>;
 export type FeedbackStatusType = `${z.infer<typeof FeedbackStatusSchema>}`;
 export declare const CreatorPackTypeSchema: z.ZodEnum<{
@@ -3991,32 +3991,32 @@ export declare const CreatorPackTypeSchema: z.ZodEnum<{
 }>;
 export type CreatorPackTypeType = `${z.infer<typeof CreatorPackTypeSchema>}`;
 export declare const CreatorPackStatusSchema: z.ZodEnum<{
-    REJECTED: "REJECTED";
-    APPROVED: "APPROVED";
     DRAFT: "DRAFT";
+    APPROVED: "APPROVED";
+    REJECTED: "REJECTED";
 }>;
 export type CreatorPackStatusType = `${z.infer<typeof CreatorPackStatusSchema>}`;
 export declare const CreatorRewardTypeSchema: z.ZodEnum<{
-    gold: "gold";
     diamonds: "diamonds";
     xp: "xp";
     badge: "badge";
+    gold: "gold";
 }>;
 export type CreatorRewardTypeType = `${z.infer<typeof CreatorRewardTypeSchema>}`;
 export declare const SystemAlertTypeSchema: z.ZodEnum<{
-    cache: "cache";
+    cron: "cron";
     api: "api";
     db: "db";
-    cron: "cron";
+    cache: "cache";
     memory: "memory";
     cpu: "cpu";
 }>;
 export type SystemAlertTypeType = `${z.infer<typeof SystemAlertTypeSchema>}`;
 export declare const SystemAlertLevelSchema: z.ZodEnum<{
-    error: "error";
-    critical: "critical";
     info: "info";
     warn: "warn";
+    error: "error";
+    critical: "critical";
 }>;
 export type SystemAlertLevelType = `${z.infer<typeof SystemAlertLevelSchema>}`;
 export declare const WebhookTypeSchema: z.ZodEnum<{
@@ -4034,18 +4034,18 @@ export declare const QuestionTypeSchema: z.ZodEnum<{
 }>;
 export type QuestionTypeType = `${z.infer<typeof QuestionTypeSchema>}`;
 export declare const UserRoleSchema: z.ZodEnum<{
-    ADMIN: "ADMIN";
-    DEVOPS: "DEVOPS";
     USER: "USER";
+    ADMIN: "ADMIN";
     MOD: "MOD";
+    DEVOPS: "DEVOPS";
 }>;
 export type UserRoleType = `${z.infer<typeof UserRoleSchema>}`;
 export declare const TaskStatusSchema: z.ZodEnum<{
+    NEW: "NEW";
+    ROUTED: "ROUTED";
     IN_PROGRESS: "IN_PROGRESS";
     DONE: "DONE";
     BLOCKED: "BLOCKED";
-    NEW: "NEW";
-    ROUTED: "ROUTED";
 }>;
 export type TaskStatusType = `${z.infer<typeof TaskStatusSchema>}`;
 export declare const TaskSourceSchema: z.ZodEnum<{
@@ -4060,9 +4060,9 @@ export declare const AssigneeTypeSchema: z.ZodEnum<{
 }>;
 export type AssigneeTypeType = `${z.infer<typeof AssigneeTypeSchema>}`;
 export declare const AuthorTypeSchema: z.ZodEnum<{
-    SYSTEM: "SYSTEM";
-    USER: "USER";
     VA: "VA";
+    USER: "USER";
+    SYSTEM: "SYSTEM";
 }>;
 export type AuthorTypeType = `${z.infer<typeof AuthorTypeSchema>}`;
 export declare const WorkflowTriggerSchema: z.ZodEnum<{
@@ -4079,10 +4079,10 @@ export declare const WorkflowActionSchema: z.ZodEnum<{
 }>;
 export type WorkflowActionType = `${z.infer<typeof WorkflowActionSchema>}`;
 export declare const RunStatusSchema: z.ZodEnum<{
+    QUEUED: "QUEUED";
     RUNNING: "RUNNING";
     SUCCEEDED: "SUCCEEDED";
     FAILED: "FAILED";
-    QUEUED: "QUEUED";
 }>;
 export type RunStatusType = `${z.infer<typeof RunStatusSchema>}`;
 export declare const IntegrationTypeSchema: z.ZodEnum<{
@@ -4092,14 +4092,14 @@ export declare const IntegrationTypeSchema: z.ZodEnum<{
 }>;
 export type IntegrationTypeType = `${z.infer<typeof IntegrationTypeSchema>}`;
 export declare const QuestionSourceSchema: z.ZodEnum<{
-    user: "user";
     ai: "ai";
+    user: "user";
     import: "import";
 }>;
 export type QuestionSourceType = `${z.infer<typeof QuestionSourceSchema>}`;
 export declare const TagTypeSchema: z.ZodEnum<{
-    content: "content";
     tone: "tone";
+    content: "content";
 }>;
 export type TagTypeType = `${z.infer<typeof TagTypeSchema>}`;
 export declare const CurrencyTypeSchema: z.ZodEnum<{
@@ -4126,16 +4126,16 @@ export declare const PurchaseStatusSchema: z.ZodEnum<{
 export type PurchaseStatusType = `${z.infer<typeof PurchaseStatusSchema>}`;
 export declare const BatchStatusSchema: z.ZodEnum<{
     RUNNING: "RUNNING";
-    DONE: "DONE";
     FAILED: "FAILED";
+    DONE: "DONE";
     PENDING: "PENDING";
     PAUSED: "PAUSED";
 }>;
 export type BatchStatusType = `${z.infer<typeof BatchStatusSchema>}`;
 export declare const JobStatusSchema: z.ZodEnum<{
     RUNNING: "RUNNING";
-    DONE: "DONE";
     FAILED: "FAILED";
+    DONE: "DONE";
     PENDING: "PENDING";
 }>;
 export type JobStatusType = `${z.infer<typeof JobStatusSchema>}`;
@@ -4147,8 +4147,8 @@ export declare const SubmissionTypeSchema: z.ZodEnum<{
 export type SubmissionTypeType = `${z.infer<typeof SubmissionTypeSchema>}`;
 export declare const SubmissionStatusSchema: z.ZodEnum<{
     PENDING: "PENDING";
-    REJECTED: "REJECTED";
     APPROVED: "APPROVED";
+    REJECTED: "REJECTED";
     FLAGGED: "FLAGGED";
 }>;
 export type SubmissionStatusType = `${z.infer<typeof SubmissionStatusSchema>}`;
@@ -4160,8 +4160,8 @@ export declare const EventTypeSchema: z.ZodEnum<{
 }>;
 export type EventTypeType = `${z.infer<typeof EventTypeSchema>}`;
 export declare const EventStatusSchema: z.ZodEnum<{
-    ACTIVE: "ACTIVE";
     DRAFT: "DRAFT";
+    ACTIVE: "ACTIVE";
     UPCOMING: "UPCOMING";
     ENDED: "ENDED";
     CANCELLED: "CANCELLED";
@@ -4202,8 +4202,8 @@ export declare const SeasonalEventStatusSchema: z.ZodEnum<{
 }>;
 export type SeasonalEventStatusType = `${z.infer<typeof SeasonalEventStatusSchema>}`;
 export declare const ReflectionTypeSchema: z.ZodEnum<{
-    WEEKLY: "WEEKLY";
     DAILY: "DAILY";
+    WEEKLY: "WEEKLY";
     MONTHLY: "MONTHLY";
     MILESTONE: "MILESTONE";
 }>;
@@ -4233,28 +4233,28 @@ export declare const UserSynchTestStatusSchema: z.ZodEnum<{
 }>;
 export type UserSynchTestStatusType = `${z.infer<typeof UserSynchTestStatusSchema>}`;
 export declare const FactionBuffTypeSchema: z.ZodEnum<{
-    gold: "gold";
     karma: "karma";
-    custom: "custom";
     xp: "xp";
+    custom: "custom";
+    gold: "gold";
     luck: "luck";
 }>;
 export type FactionBuffTypeType = `${z.infer<typeof FactionBuffTypeSchema>}`;
 export declare const RegionScopeSchema: z.ZodEnum<{
-    regional: "regional";
     global: "global";
+    regional: "regional";
 }>;
 export type RegionScopeType = `${z.infer<typeof RegionScopeSchema>}`;
 export declare const CreationTypeSchema: z.ZodEnum<{
-    item: "item";
     question: "question";
     other: "other";
+    item: "item";
     mission: "mission";
 }>;
 export type CreationTypeType = `${z.infer<typeof CreationTypeSchema>}`;
 export declare const CreationStatusSchema: z.ZodEnum<{
-    pending: "pending";
     approved: "approved";
+    pending: "pending";
     rejected: "rejected";
 }>;
 export type CreationStatusType = `${z.infer<typeof CreationStatusSchema>}`;
@@ -4277,9 +4277,9 @@ export declare const ForkChoiceSchema: z.ZodEnum<{
 }>;
 export type ForkChoiceType = `${z.infer<typeof ForkChoiceSchema>}`;
 export declare const DuetRunTypeSchema: z.ZodEnum<{
+    challenge: "challenge";
     reflect: "reflect";
     collect: "collect";
-    challenge: "challenge";
 }>;
 export type DuetRunTypeType = `${z.infer<typeof DuetRunTypeSchema>}`;
 export declare const DuetRunStatusSchema: z.ZodEnum<{
@@ -4296,26 +4296,26 @@ export declare const RitualTimeOfDaySchema: z.ZodEnum<{
 }>;
 export type RitualTimeOfDayType = `${z.infer<typeof RitualTimeOfDaySchema>}`;
 export declare const MicroClanBuffTypeSchema: z.ZodEnum<{
-    gold: "gold";
     karma: "karma";
     xp: "xp";
-    compare: "compare";
+    gold: "gold";
     reflect: "reflect";
+    compare: "compare";
 }>;
 export type MicroClanBuffTypeType = `${z.infer<typeof MicroClanBuffTypeSchema>}`;
 export declare const LootTriggerSchema: z.ZodEnum<{
-    levelup: "levelup";
-    mission: "mission";
     reflection: "reflection";
+    mission: "mission";
     comparison: "comparison";
+    levelup: "levelup";
     random: "random";
 }>;
 export type LootTriggerType = `${z.infer<typeof LootTriggerSchema>}`;
 export declare const LootRewardTypeSchema: z.ZodEnum<{
-    gold: "gold";
-    item: "item";
-    cosmetic: "cosmetic";
     xp: "xp";
+    item: "item";
+    gold: "gold";
+    cosmetic: "cosmetic";
     emote: "emote";
 }>;
 export type LootRewardTypeType = `${z.infer<typeof LootRewardTypeSchema>}`;
@@ -4354,40 +4354,40 @@ export declare const ChronicleTypeSchema: z.ZodEnum<{
 }>;
 export type ChronicleTypeType = `${z.infer<typeof ChronicleTypeSchema>}`;
 export declare const RegionBuffTypeSchema: z.ZodEnum<{
-    gold: "gold";
     xp: "xp";
-    mood: "mood";
     reflection: "reflection";
+    gold: "gold";
+    mood: "mood";
 }>;
 export type RegionBuffTypeType = `${z.infer<typeof RegionBuffTypeSchema>}`;
 export declare const UnlockRequirementTypeSchema: z.ZodEnum<{
-    level: "level";
-    gold: "gold";
-    achievement: "achievement";
     task: "task";
+    level: "level";
+    achievement: "achievement";
+    gold: "gold";
 }>;
 export type UnlockRequirementTypeType = `${z.infer<typeof UnlockRequirementTypeSchema>}`;
 export declare const QuestTypeSchema: z.ZodEnum<{
-    daily: "daily";
     weekly: "weekly";
+    daily: "daily";
     story: "story";
     side: "side";
 }>;
 export type QuestTypeType = `${z.infer<typeof QuestTypeSchema>}`;
 export declare const QuestRequirementTypeSchema: z.ZodEnum<{
-    gold: "gold";
-    custom: "custom";
     xp: "xp";
-    missions: "missions";
     reflections: "reflections";
+    custom: "custom";
+    gold: "gold";
+    missions: "missions";
 }>;
 export type QuestRequirementTypeType = `${z.infer<typeof QuestRequirementTypeSchema>}`;
 export declare const LoreSourceTypeSchema: z.ZodEnum<{
-    event: "event";
+    reflection: "reflection";
     item: "item";
+    event: "event";
     quest: "quest";
     system: "system";
-    reflection: "reflection";
 }>;
 export type LoreSourceTypeType = `${z.infer<typeof LoreSourceTypeSchema>}`;
 export declare const LoreToneSchema: z.ZodEnum<{
@@ -4441,14 +4441,14 @@ export declare const CronJobStatusSchema: z.ZodEnum<{
 }>;
 export type CronJobStatusType = `${z.infer<typeof CronJobStatusSchema>}`;
 export declare const ActivityTypeSchema: z.ZodEnum<{
-    social: "social";
-    badge: "badge";
-    achievement: "achievement";
-    quest: "quest";
-    system: "system";
     question: "question";
     other: "other";
     reflection: "reflection";
+    achievement: "achievement";
+    badge: "badge";
+    quest: "quest";
+    system: "system";
+    social: "social";
 }>;
 export type ActivityTypeType = `${z.infer<typeof ActivityTypeSchema>}`;
 export declare const ArchetypeAffinitySchema: z.ZodEnum<{
@@ -4460,10 +4460,10 @@ export declare const ArchetypeAffinitySchema: z.ZodEnum<{
 }>;
 export type ArchetypeAffinityType = `${z.infer<typeof ArchetypeAffinitySchema>}`;
 export declare const NPCToneSchema: z.ZodEnum<{
-    neutral: "neutral";
     serious: "serious";
     poetic: "poetic";
     sarcastic: "sarcastic";
+    neutral: "neutral";
 }>;
 export type NPCToneType = `${z.infer<typeof NPCToneSchema>}`;
 export declare const DialogueRaritySchema: z.ZodEnum<{
@@ -4473,19 +4473,19 @@ export declare const DialogueRaritySchema: z.ZodEnum<{
 }>;
 export type DialogueRarityType = `${z.infer<typeof DialogueRaritySchema>}`;
 export declare const DialogueTriggerTypeSchema: z.ZodEnum<{
+    reflection: "reflection";
     event: "event";
     quest: "quest";
-    reflection: "reflection";
     random: "random";
     greeting: "greeting";
 }>;
 export type DialogueTriggerTypeType = `${z.infer<typeof DialogueTriggerTypeSchema>}`;
 export declare const QuestionTemplateCategorySchema: z.ZodEnum<{
-    event: "event";
     archetype: "archetype";
-    daily: "daily";
-    weekly: "weekly";
+    event: "event";
     wildcard: "wildcard";
+    weekly: "weekly";
+    daily: "daily";
 }>;
 export type QuestionTemplateCategoryType = `${z.infer<typeof QuestionTemplateCategorySchema>}`;
 export declare const QuestionToneSchema: z.ZodEnum<{
@@ -4510,9 +4510,9 @@ export declare const BattleAchievementRaritySchema: z.ZodEnum<{
 }>;
 export type BattleAchievementRarityType = `${z.infer<typeof BattleAchievementRaritySchema>}`;
 export declare const GlobalMoodTypeSchema: z.ZodEnum<{
+    chaos: "chaos";
     neutral: "neutral";
     calm: "calm";
-    chaos: "chaos";
 }>;
 export type GlobalMoodTypeType = `${z.infer<typeof GlobalMoodTypeSchema>}`;
 export declare const UserSchema: z.ZodObject<{
@@ -4522,10 +4522,10 @@ export declare const UserSchema: z.ZodObject<{
         PRIVATE: "PRIVATE";
     }>;
     role: z.ZodEnum<{
-        ADMIN: "ADMIN";
-        DEVOPS: "DEVOPS";
         USER: "USER";
+        ADMIN: "ADMIN";
         MOD: "MOD";
+        DEVOPS: "DEVOPS";
     }>;
     lang: z.ZodEnum<{
         en: "en";
@@ -4549,7 +4549,7 @@ export declare const UserSchema: z.ZodObject<{
     banned: z.ZodBoolean;
     motto: z.ZodNullable<z.ZodString>;
     theme: z.ZodNullable<z.ZodString>;
-    funds: z.ZodCustom<any, any>;
+    funds: z.ZodCustom<Prisma.Decimal, Prisma.Decimal>;
     diamonds: z.ZodNumber;
     xp: z.ZodNumber;
     level: z.ZodNumber;
@@ -4634,11 +4634,11 @@ export declare const MembershipSchema: z.ZodObject<{
 export type Membership = z.infer<typeof MembershipSchema>;
 export declare const TaskSchema: z.ZodObject<{
     status: z.ZodEnum<{
+        NEW: "NEW";
+        ROUTED: "ROUTED";
         IN_PROGRESS: "IN_PROGRESS";
         DONE: "DONE";
         BLOCKED: "BLOCKED";
-        NEW: "NEW";
-        ROUTED: "ROUTED";
     }>;
     source: z.ZodEnum<{
         WEB: "WEB";
@@ -4673,9 +4673,9 @@ export declare const AttachmentSchema: z.ZodObject<{
 export type Attachment = z.infer<typeof AttachmentSchema>;
 export declare const TaskMessageSchema: z.ZodObject<{
     authorType: z.ZodEnum<{
-        SYSTEM: "SYSTEM";
-        USER: "USER";
         VA: "VA";
+        USER: "USER";
+        SYSTEM: "SYSTEM";
     }>;
     id: z.ZodCUID;
     taskId: z.ZodString;
@@ -4706,10 +4706,10 @@ export declare const WorkflowSchema: z.ZodObject<{
 export type Workflow = z.infer<typeof WorkflowSchema>;
 export declare const RunSchema: z.ZodObject<{
     status: z.ZodEnum<{
+        QUEUED: "QUEUED";
         RUNNING: "RUNNING";
         SUCCEEDED: "SUCCEEDED";
         FAILED: "FAILED";
-        QUEUED: "QUEUED";
     }>;
     id: z.ZodCUID;
     taskId: z.ZodString;
@@ -4735,8 +4735,8 @@ export declare const IntegrationSchema: z.ZodObject<{
 export type Integration = z.infer<typeof IntegrationSchema>;
 export declare const QuestionSchema: z.ZodObject<{
     source: z.ZodEnum<{
-        user: "user";
         ai: "ai";
+        user: "user";
         import: "import";
     }>;
     lang: z.ZodNullable<z.ZodEnum<{
@@ -4787,8 +4787,8 @@ export declare const QuestionVersionSchema: z.ZodObject<{
 export type QuestionVersion = z.infer<typeof QuestionVersionSchema>;
 export declare const QuestionTagSchema: z.ZodObject<{
     type: z.ZodEnum<{
-        content: "content";
         tone: "tone";
+        content: "content";
     }>;
     id: z.ZodCUID;
     name: z.ZodString;
@@ -4885,15 +4885,15 @@ export declare const UserSynchTestSchema: z.ZodObject<{
 export type UserSynchTest = z.infer<typeof UserSynchTestSchema>;
 export declare const FactionSchema: z.ZodObject<{
     buffType: z.ZodNullable<z.ZodEnum<{
-        gold: "gold";
         karma: "karma";
-        custom: "custom";
         xp: "xp";
+        custom: "custom";
+        gold: "gold";
         luck: "luck";
     }>>;
     regionScope: z.ZodEnum<{
-        regional: "regional";
         global: "global";
+        regional: "regional";
     }>;
     id: z.ZodCUID;
     key: z.ZodString;
@@ -4928,14 +4928,14 @@ export declare const UserFactionSchema: z.ZodObject<{
 export type UserFaction = z.infer<typeof UserFactionSchema>;
 export declare const CommunityCreationSchema: z.ZodObject<{
     type: z.ZodEnum<{
-        item: "item";
         question: "question";
         other: "other";
+        item: "item";
         mission: "mission";
     }>;
     status: z.ZodEnum<{
-        pending: "pending";
         approved: "approved";
+        pending: "pending";
         rejected: "rejected";
     }>;
     id: z.ZodCUID;
@@ -5017,9 +5017,9 @@ export declare const UserDailyForkSchema: z.ZodObject<{
 export type UserDailyFork = z.infer<typeof UserDailyForkSchema>;
 export declare const DuetRunSchema: z.ZodObject<{
     type: z.ZodEnum<{
+        challenge: "challenge";
         reflect: "reflect";
         collect: "collect";
-        challenge: "challenge";
     }>;
     id: z.ZodCUID;
     missionKey: z.ZodString;
@@ -5076,11 +5076,11 @@ export declare const UserRitualSchema: z.ZodObject<{
 export type UserRitual = z.infer<typeof UserRitualSchema>;
 export declare const MicroClanSchema: z.ZodObject<{
     buffType: z.ZodEnum<{
-        gold: "gold";
         karma: "karma";
         xp: "xp";
-        compare: "compare";
+        gold: "gold";
         reflect: "reflect";
+        compare: "compare";
     }>;
     id: z.ZodCUID;
     name: z.ZodString;
@@ -5105,17 +5105,17 @@ export declare const MicroClanStatsSchema: z.ZodObject<{
 export type MicroClanStats = z.infer<typeof MicroClanStatsSchema>;
 export declare const LootMomentSchema: z.ZodObject<{
     trigger: z.ZodEnum<{
-        levelup: "levelup";
-        mission: "mission";
         reflection: "reflection";
+        mission: "mission";
         comparison: "comparison";
+        levelup: "levelup";
         random: "random";
     }>;
     rewardType: z.ZodEnum<{
-        gold: "gold";
-        item: "item";
-        cosmetic: "cosmetic";
         xp: "xp";
+        item: "item";
+        gold: "gold";
+        cosmetic: "cosmetic";
         emote: "emote";
     }>;
     rarity: z.ZodEnum<{
@@ -5189,9 +5189,9 @@ export declare const ModerationLogSchema: z.ZodObject<{
 export type ModerationLog = z.infer<typeof ModerationLogSchema>;
 export declare const CulturalFilterSchema: z.ZodObject<{
     severity: z.ZodEnum<{
-        block: "block";
         info: "info";
         warn: "warn";
+        block: "block";
     }>;
     id: z.ZodCUID;
     region: z.ZodString;
@@ -5311,14 +5311,14 @@ export declare const MarketingCampaignSchema: z.ZodObject<{
 export type MarketingCampaign = z.infer<typeof MarketingCampaignSchema>;
 export declare const ActivitySchema: z.ZodObject<{
     type: z.ZodEnum<{
-        social: "social";
-        badge: "badge";
-        achievement: "achievement";
-        quest: "quest";
-        system: "system";
         question: "question";
         other: "other";
         reflection: "reflection";
+        achievement: "achievement";
+        badge: "badge";
+        quest: "quest";
+        system: "system";
+        social: "social";
     }>;
     id: z.ZodCUID;
     userId: z.ZodString;
@@ -6768,10 +6768,10 @@ export declare const NpcProfileSchema: z.ZodObject<{
         wanderer: "wanderer";
     }>;
     tone: z.ZodEnum<{
-        neutral: "neutral";
         serious: "serious";
         poetic: "poetic";
         sarcastic: "sarcastic";
+        neutral: "neutral";
     }>;
     id: z.ZodCUID;
     npcId: z.ZodString;
@@ -6844,9 +6844,9 @@ export declare const NpcAffinitySchema: z.ZodObject<{
 export type NpcAffinity = z.infer<typeof NpcAffinitySchema>;
 export declare const NPCDialogueSchema: z.ZodObject<{
     triggerType: z.ZodEnum<{
+        reflection: "reflection";
         event: "event";
         quest: "quest";
-        reflection: "reflection";
         random: "random";
         greeting: "greeting";
     }>;
@@ -7729,11 +7729,11 @@ export declare const UserQuestionSchema: z.ZodObject<{
 export type UserQuestion = z.infer<typeof UserQuestionSchema>;
 export declare const QuestionTemplateSchema: z.ZodObject<{
     category: z.ZodEnum<{
-        event: "event";
         archetype: "archetype";
-        daily: "daily";
-        weekly: "weekly";
+        event: "event";
         wildcard: "wildcard";
+        weekly: "weekly";
+        daily: "daily";
     }>;
     archetypeAffinity: z.ZodNullable<z.ZodEnum<{
         chaos: "chaos";
@@ -7979,9 +7979,9 @@ export declare const AvatarMoodSchema: z.ZodObject<{
 export type AvatarMood = z.infer<typeof AvatarMoodSchema>;
 export declare const GlobalMoodSchema: z.ZodObject<{
     dominantMood: z.ZodEnum<{
+        chaos: "chaos";
         neutral: "neutral";
         calm: "calm";
-        chaos: "chaos";
     }>;
     id: z.ZodCUID;
     calmScore: z.ZodNumber;
@@ -7993,9 +7993,9 @@ export declare const GlobalMoodSchema: z.ZodObject<{
 export type GlobalMood = z.infer<typeof GlobalMoodSchema>;
 export declare const UserMoodLogSchema: z.ZodObject<{
     mood: z.ZodEnum<{
+        chaos: "chaos";
         neutral: "neutral";
         calm: "calm";
-        chaos: "chaos";
     }>;
     id: z.ZodCUID;
     userId: z.ZodString;
@@ -8065,7 +8065,7 @@ export declare const WalletSchema: z.ZodObject<{
     id: z.ZodCUID;
     userId: z.ZodString;
     tenantId: z.ZodString;
-    funds: z.ZodCustom<any, any>;
+    funds: z.ZodCustom<Prisma.Decimal, Prisma.Decimal>;
     diamonds: z.ZodNumber;
     badgesClaimedCount: z.ZodNumber;
 }, z.core.$strip>;
@@ -8238,8 +8238,8 @@ export type AuditLog = z.infer<typeof AuditLogSchema>;
 export declare const GenerationBatchSchema: z.ZodObject<{
     status: z.ZodEnum<{
         RUNNING: "RUNNING";
-        DONE: "DONE";
         FAILED: "FAILED";
+        DONE: "DONE";
         PENDING: "PENDING";
         PAUSED: "PAUSED";
     }>;
@@ -8258,8 +8258,8 @@ export type GenerationBatch = z.infer<typeof GenerationBatchSchema>;
 export declare const GenerationJobSchema: z.ZodObject<{
     status: z.ZodEnum<{
         RUNNING: "RUNNING";
-        DONE: "DONE";
         FAILED: "FAILED";
+        DONE: "DONE";
         PENDING: "PENDING";
     }>;
     id: z.ZodCUID;
@@ -8326,8 +8326,8 @@ export declare const UserSubmissionSchema: z.ZodObject<{
     }>;
     status: z.ZodEnum<{
         PENDING: "PENDING";
-        REJECTED: "REJECTED";
         APPROVED: "APPROVED";
+        REJECTED: "REJECTED";
         FLAGGED: "FLAGGED";
     }>;
     id: z.ZodCUID;
@@ -8361,8 +8361,8 @@ export declare const EventSchema: z.ZodObject<{
         COMMUNITY: "COMMUNITY";
     }>;
     status: z.ZodEnum<{
-        ACTIVE: "ACTIVE";
         DRAFT: "DRAFT";
+        ACTIVE: "ACTIVE";
         UPCOMING: "UPCOMING";
         ENDED: "ENDED";
         CANCELLED: "CANCELLED";
@@ -8573,9 +8573,9 @@ export declare const GenerationRecordSchema: z.ZodObject<{
 export type GenerationRecord = z.infer<typeof GenerationRecordSchema>;
 export declare const FeedbackSchema: z.ZodObject<{
     status: z.ZodEnum<{
+        NEW: "NEW";
         REVIEWED: "REVIEWED";
         RESOLVED: "RESOLVED";
-        NEW: "NEW";
     }>;
     id: z.ZodCUID;
     userId: z.ZodNullable<z.ZodString>;
@@ -8594,15 +8594,15 @@ export declare const CreatorPackSchema: z.ZodObject<{
         MISSION: "MISSION";
     }>;
     status: z.ZodEnum<{
-        REJECTED: "REJECTED";
-        APPROVED: "APPROVED";
         DRAFT: "DRAFT";
+        APPROVED: "APPROVED";
+        REJECTED: "REJECTED";
     }>;
     rewardType: z.ZodNullable<z.ZodEnum<{
-        gold: "gold";
         diamonds: "diamonds";
         xp: "xp";
         badge: "badge";
+        gold: "gold";
     }>>;
     id: z.ZodCUID;
     creatorId: z.ZodString;
@@ -8647,8 +8647,8 @@ export declare const ItemDiscoverySchema: z.ZodObject<{
 export type ItemDiscovery = z.infer<typeof ItemDiscoverySchema>;
 export declare const UserReflectionSchema: z.ZodObject<{
     type: z.ZodEnum<{
-        WEEKLY: "WEEKLY";
         DAILY: "DAILY";
+        WEEKLY: "WEEKLY";
         MONTHLY: "MONTHLY";
         MILESTONE: "MILESTONE";
     }>;
@@ -8726,16 +8726,16 @@ export declare const ChronicleSchema: z.ZodObject<{
 export type Chronicle = z.infer<typeof ChronicleSchema>;
 export declare const RegionSchema: z.ZodObject<{
     buffType: z.ZodEnum<{
-        gold: "gold";
         xp: "xp";
-        mood: "mood";
         reflection: "reflection";
+        gold: "gold";
+        mood: "mood";
     }>;
     unlockRequirementType: z.ZodNullable<z.ZodEnum<{
-        level: "level";
-        gold: "gold";
-        achievement: "achievement";
         task: "task";
+        level: "level";
+        achievement: "achievement";
+        gold: "gold";
     }>>;
     id: z.ZodCUID;
     key: z.ZodString;
@@ -8760,17 +8760,17 @@ export declare const UserRegionSchema: z.ZodObject<{
 export type UserRegion = z.infer<typeof UserRegionSchema>;
 export declare const QuestSchema: z.ZodObject<{
     type: z.ZodEnum<{
-        daily: "daily";
         weekly: "weekly";
+        daily: "daily";
         story: "story";
         side: "side";
     }>;
     requirementType: z.ZodEnum<{
-        gold: "gold";
-        custom: "custom";
         xp: "xp";
-        missions: "missions";
         reflections: "reflections";
+        custom: "custom";
+        gold: "gold";
+        missions: "missions";
     }>;
     id: z.ZodCUID;
     key: z.ZodString;
@@ -8800,11 +8800,11 @@ export declare const UserQuestSchema: z.ZodObject<{
 export type UserQuest = z.infer<typeof UserQuestSchema>;
 export declare const UserLoreEntrySchema: z.ZodObject<{
     sourceType: z.ZodEnum<{
-        event: "event";
+        reflection: "reflection";
         item: "item";
+        event: "event";
         quest: "quest";
         system: "system";
-        reflection: "reflection";
     }>;
     tone: z.ZodEnum<{
         serious: "serious";
@@ -8880,7 +8880,7 @@ export declare const UserWalletSchema: z.ZodObject<{
     id: z.ZodCUID;
     userId: z.ZodString;
     currencyKey: z.ZodString;
-    balance: z.ZodCustom<any, any>;
+    balance: z.ZodCustom<Prisma.Decimal, Prisma.Decimal>;
     updatedAt: z.ZodCoercedDate<unknown>;
 }, z.core.$strip>;
 export type UserWallet = z.infer<typeof UserWalletSchema>;
@@ -8893,7 +8893,7 @@ export declare const MarketItemSchema: z.ZodObject<{
     id: z.ZodCUID;
     name: z.ZodString;
     description: z.ZodString;
-    price: z.ZodCustom<any, any>;
+    price: z.ZodCustom<Prisma.Decimal, Prisma.Decimal>;
     currencyKey: z.ZodString;
     rarity: z.ZodNullable<z.ZodString>;
     stock: z.ZodNullable<z.ZodNumber>;
@@ -8911,7 +8911,7 @@ export declare const TransactionSchema: z.ZodObject<{
     id: z.ZodCUID;
     userId: z.ZodString;
     itemId: z.ZodNullable<z.ZodString>;
-    amount: z.ZodCustom<any, any>;
+    amount: z.ZodCustom<Prisma.Decimal, Prisma.Decimal>;
     currencyKey: z.ZodString;
     note: z.ZodNullable<z.ZodString>;
     createdAt: z.ZodCoercedDate<unknown>;
@@ -8935,18 +8935,18 @@ export declare const EconomyPresetSchema: z.ZodObject<{
 export type EconomyPreset = z.infer<typeof EconomyPresetSchema>;
 export declare const SystemAlertSchema: z.ZodObject<{
     type: z.ZodEnum<{
-        cache: "cache";
+        cron: "cron";
         api: "api";
         db: "db";
-        cron: "cron";
+        cache: "cache";
         memory: "memory";
         cpu: "cpu";
     }>;
     level: z.ZodEnum<{
-        error: "error";
-        critical: "critical";
         info: "info";
         warn: "warn";
+        error: "error";
+        critical: "critical";
     }>;
     id: z.ZodCUID;
     message: z.ZodString;

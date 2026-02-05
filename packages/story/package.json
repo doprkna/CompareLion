@@ -17,8 +17,8 @@
       "default": "./stubs/storyChallengeService.js"
     },
     "./storyCollectionService": {
-      "types": "./stubs/storyCollectionService.d.ts",
-      "default": "./stubs/storyCollectionService.js"
+      "types": "./src/storyCollectionService.ts",
+      "default": "./src/storyCollectionService.ts"
     },
     "./storyDraftService": {
       "types": "./stubs/storyDraftService.d.ts",
@@ -37,8 +37,8 @@
       "default": "./stubs/storyService.js"
     },
     "./storyTemplateService": {
-      "types": "./stubs/storyTemplateService.d.ts",
-      "default": "./stubs/storyTemplateService.js"
+      "types": "./src/storyTemplateService.ts",
+      "default": "./src/storyTemplateService.ts"
     },
     "./weeklyStoryService": {
       "types": "./stubs/weeklyStoryService.d.ts",

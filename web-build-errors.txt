@@ -1,0 +1,3053 @@
+﻿
+> @parel/web@0.12.8 build C:\Users\doprk\parel-mvp\apps\web
+> node ../../node_modules/next/dist/bin/next build
+
+   Γû▓ Next.js 14.0.4
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+node.exe : <w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Managed item 
+C:\Users\doprk\parel-mvp\apps\web\node_modules\@sentry\nextjs isn't a directory or doesn't contain a package.json (see 
+snapshot.managedPaths option)
+At C:\Users\doprk\AppData\Roaming\npm\pnpm.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/pnpm/bin/pnpm.cjs" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (<w> [webpack.ca...edPaths option):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Managed item 
+C:\Users\doprk\parel-mvp\apps\web\node_modules\@sentry\nextjs isn't a directory or doesn't contain a package.json (see 
+snapshot.managedPaths option)
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Managed item 
+C:\Users\doprk\parel-mvp\apps\web\node_modules\@sentry\nextjs isn't a directory or doesn't contain a package.json (see 
+snapshot.managedPaths option)
+ ΓÜá Compiled with warnings
+
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrume
+ntation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrume
+ntation.js
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+../../node_modules/@prisma/instrumentation/dist/index.js
+../../node_modules/@sentry/node/build/cjs/integrations/tracing/prisma.js
+../../node_modules/@sentry/node/build/cjs/index.js
+../../node_modules/@sentry/nextjs/build/cjs/index.server.js
+./components/ErrorBoundary.tsx
+
+../../node_modules/require-in-the-middle/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+../../node_modules/require-in-the-middle/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/index.js
+../../node_modules/@sentry/node/build/cjs/integrations/tracing/postgresjs.js
+../../node_modules/@sentry/node/build/cjs/index.js
+../../node_modules/@sentry/nextjs/build/cjs/index.server.js
+./components/ErrorBoundary.tsx
+
+./app/api/health/extended/route.ts
+Attempted import error: 'getFlags' is not exported from '@parel/core/config/flags' (imported as 'getFlags').
+
+Import trace for requested module:
+./app/api/health/extended/route.ts
+
+./app/api/metrics/route.ts
+Attempted import error: 'getFlags' is not exported from '@parel/core/config/flags' (imported as 'getFlags').
+
+Import trace for requested module:
+./app/api/metrics/route.ts
+
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+[Redis] Connected
+ΓÜá∩╕Å Missing env var: STRIPE_PUBLISHABLE_KEY ΓÇô using fallback (dummy_stripe_pk)
+ΓÜá∩╕Å Missing env var: OPENAI_API_KEY ΓÇô using fallback ()
+ΓÜá∩╕Å Missing env var: APP_URL ΓÇô using fallback (http://localhost:3000)
+ ΓÜá Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/612) ...
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[2026-02-05T11:33:25.653Z] [ERROR] [AURE Interaction] Failed to generate mix collage { error: { digest: 
+'DYNAMIC_SERVER_USAGE' } }
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[2026-02-05T11:33:29.919Z] [ERROR] [AURE Life] Failed to generate wrap share card { error: { digest: 
+'DYNAMIC_SERVER_USAGE' } }
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[Redis] Connected
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Cannot read properties of undefined (reading 'findFirst')",
+  stack: undefined
+}
+[ERROR] Cannot read properties of undefined (reading 'findFirst') {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+prisma:error 
+Invalid `prisma.event.findMany()` invocation:
+
+{
+  where: {
+    active: true,
+    ~~~~~~
+    startAt: {
+      lte: new Date("2026-02-05T11:33:37.417Z")
+    },
+    endAt: {
+      gte: new Date("2026-02-05T11:33:37.417Z")
+    },
+?   AND?: EventWhereInput | EventWhereInput[],
+?   OR?: EventWhereInput[],
+?   NOT?: EventWhereInput | EventWhereInput[],
+?   id?: StringFilter | String,
+?   title?: StringFilter | String,
+?   description?: StringFilter | String,
+?   type?: EnumEventTypeFilter | EventType,
+?   status?: EnumEventStatusFilter | EventStatus,
+?   startDate?: DateTimeFilter | DateTime,
+?   endDate?: DateTimeFilter | DateTime,
+?   rewardXP?: IntFilter | Int,
+?   rewardDiamonds?: IntFilter | Int,
+?   imageUrl?: StringNullableFilter | String | Null,
+?   metadata?: JsonNullableFilter,
+?   participants?: IntFilter | Int,
+?   creatorId?: StringNullableFilter | String | Null,
+?   createdAt?: DateTimeFilter | DateTime,
+?   updatedAt?: DateTimeFilter | DateTime,
+?   localeCode?: StringNullableFilter | String | Null,
+?   isFlagged?: BoolFilter | Boolean,
+?   flagReason?: StringNullableFilter | String | Null,
+?   visibility?: EnumContentVisibilityFilter | ContentVisibility,
+?   creator?: UserNullableRelationFilter | UserWhereInput | Null
+  },
+  include: {
+    effects: true
+  },
+  orderBy: {
+    startAt: "asc"
+  }
+}
+
+Unknown argument `active`. Available options are marked with ?.
+[2026-02-05T11:33:38.864Z] [ERROR] [EventEngine] Failed to get active events { name: 'PrismaClientValidationError', 
+clientVersion: '5.22.0' }
+
+   Generating static pages (153/612) 
+prisma:error 
+Invalid `prisma.globalEvent.findMany()` invocation:
+
+
+The column `global_events.region` does not exist in the current database.
+[ERROR] [API_ERROR] {
+  error: '\n' +
+    'Invalid `prisma.globalEvent.findMany()` invocation:\n' +
+    '\n' +
+    '\n' +
+    'The column `global_events.region` does not exist in the current database.',
+  stack: undefined
+}
+[ERROR] Database error {
+  error: undefined,
+  status: 500,
+  code: 'DATABASE_ERROR',
+  details: { code: 'P2022' }
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] { error: '(0 , d.getFlags) is not a function', stack: undefined }
+[ERROR] (0 , d.getFlags) is not a function {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+prisma:error 
+Invalid `prisma.moodPreset.findMany()` invocation:
+
+
+The column `mood_presets.region` does not exist in the current database.
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+
+   Generating static pages (306/612) 
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `nextUrl.searchParams`. See more 
+info here: https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+prisma:error 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Raw query failed. Code: `42P01`. Message: `relation "QuestionTemplate" does not exist`
+[2026-02-05T11:33:47.542Z] [ERROR] [QOTD] Failed to get question of the day {
+  error: {
+    name: 'PrismaClientKnownRequestError',
+    code: 'P2010',
+    clientVersion: '5.22.0',
+    meta: {
+      code: '42P01',
+      message: 'relation "QuestionTemplate" does not exist'
+    }
+  }
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Cannot read properties of undefined (reading 'findMany')",
+  stack: undefined
+}
+[ERROR] Cannot read properties of undefined (reading 'findMany') {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[2026-02-05T11:33:47.907Z] [ERROR] [EventEngine] Error fetching active events {}
+[2026-02-05T11:33:47.924Z] [ERROR] [SeasonEngine] Failed to get current season {}
+[2026-02-05T11:33:47.933Z] [ERROR] Admin auth error { digest: 'DYNAMIC_SERVER_USAGE' }
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+prisma:error 
+Invalid `prisma.item.findMany()` invocation:
+
+
+The column `items.slot` does not exist in the current database.
+[ERROR] [API_ERROR] {
+  error: '\n' +
+    'Invalid `prisma.item.findMany()` invocation:\n' +
+    '\n' +
+    '\n' +
+    'The column `items.slot` does not exist in the current database.',
+  stack: undefined
+}
+[ERROR] Database error {
+  error: undefined,
+  status: 500,
+  code: 'DATABASE_ERROR',
+  details: { code: 'P2022' }
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [StoryCollection] Failed to get public collections {
+  error: TypeError: Cannot read properties of undefined (reading 'findMany')
+      at u (C:\Users\doprk\parel-mvp\apps\web\.next\server\chunks\37903.js:1:9006)
+      at C:\Users\doprk\parel-mvp\apps\web\.next\server\app\api\story\collections\public\route.js:1:560
+      at C:\Users\doprk\parel-mvp\apps\web\.next\server\app\api\achievements\route.js:1:3549
+      at C:\Users\doprk\parel-mvp\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:41966
+      at C:\Users\doprk\parel-mvp\node_modules\next\dist\server\lib\trace\tracer.js:133:36
+      at NoopContextManager.with 
+(C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\context\NoopContextManager.js:25:19)
+      at ContextAPI.with (C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\api\context.js:60:46)
+      at NoopTracer.startActiveSpan 
+(C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\trace\NoopTracer.js:65:31)
+      at ProxyTracer.startActiveSpan 
+(C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\trace\ProxyTracer.js:36:24)
+      at C:\Users\doprk\parel-mvp\node_modules\next\dist\server\lib\trace\tracer.js:122:103
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[2026-02-05T11:33:48.331Z] [ERROR] [Story] Failed to generate story export { error: { digest: 'DYNAMIC_SERVER_USAGE' } 
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [StoryTemplate] Failed to get public templates {
+  error: TypeError: Cannot read properties of undefined (reading 'findMany')
+      at i (C:\Users\doprk\parel-mvp\apps\web\.next\server\app\api\story\templates\public\route.js:1:9698)
+      at C:\Users\doprk\parel-mvp\apps\web\.next\server\app\api\story\templates\public\route.js:1:566
+      at C:\Users\doprk\parel-mvp\apps\web\.next\server\app\api\micro-clans\[id]\route.js:1:2719
+      at C:\Users\doprk\parel-mvp\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:41966
+      at C:\Users\doprk\parel-mvp\node_modules\next\dist\server\lib\trace\tracer.js:133:36
+      at NoopContextManager.with 
+(C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\context\NoopContextManager.js:25:19)
+      at ContextAPI.with (C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\api\context.js:60:46)
+      at NoopTracer.startActiveSpan 
+(C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\trace\NoopTracer.js:65:31)
+      at ProxyTracer.startActiveSpan 
+(C:\Users\doprk\parel-mvp\node_modules\@opentelemetry\api\build\src\trace\ProxyTracer.js:36:24)
+      at C:\Users\doprk\parel-mvp\node_modules\next\dist\server\lib\trace\tracer.js:122:103
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+
+   Generating static pages (459/612) 
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `headers`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+[ERROR] [API_ERROR] {
+  error: "Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info 
+here: https://nextjs.org/docs/messages/dynamic-server-error",
+  stack: undefined
+}
+[ERROR] Dynamic server usage: Page couldn't be rendered statically because it used `request.url`. See more info here: 
+https://nextjs.org/docs/messages/dynamic-server-error {
+  error: undefined,
+  status: 500,
+  code: 'INTERNAL_ERROR',
+  details: undefined
+}
+
+ Γ£ô Generating static pages (612/612) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                        Size     First Load JS
+Γöî ╬╗ /                                              867 B            93 kB
+Γö£ ╬╗ /_not-found                                    0 B                0 B
+Γö£ ╬╗ /achievements                                  2.82 kB        85.1 kB
+Γö£ ╬╗ /activity                                      5.1 kB         94.5 kB
+Γö£ ╬╗ /api/achievements                              0 B                0 B
+Γö£ ╬╗ /api/achievements/categories                   0 B                0 B
+Γö£ ╬╗ /api/achievements/unlock                       0 B                0 B
+Γö£ ╬╗ /api/activity                                  0 B                0 B
+Γö£ ╬╗ /api/activity/recent                           0 B                0 B
+Γö£ ╬╗ /api/ads/reward                                0 B                0 B
+Γö£ ╬╗ /api/adventure                                 0 B                0 B
+Γö£ ╬╗ /api/adventure/event                           0 B                0 B
+Γö£ ╬╗ /api/adventure/reward                          0 B                0 B
+Γö£ ╬╗ /api/affinities                                0 B                0 B
+Γö£ ╬╗ /api/affinities/accept                         0 B                0 B
+Γö£ ╬╗ /api/affinities/remove                         0 B                0 B
+Γö£ ╬╗ /api/affinities/request                        0 B                0 B
+Γö£ ╬╗ /api/ai/context                                0 B                0 B
+Γö£ Γùï /api/ai/quote                                  0 B                0 B
+Γö£ ╬╗ /api/ai/reflection                             0 B                0 B
+Γö£ ╬╗ /api/answers/voice                             0 B                0 B
+Γö£ ╬╗ /api/answers/vote                              0 B                0 B
+Γö£ ╬╗ /api/answers/votes                             0 B                0 B
+Γö£ ╬╗ /api/archetype/evolve                          0 B                0 B
+Γö£ ╬╗ /api/archetype/history                         0 B                0 B
+Γö£ ╬╗ /api/archetypes/current                        0 B                0 B
+Γö£ ╬╗ /api/archetypes/fuse                           0 B                0 B
+Γö£ ╬╗ /api/archetypes/fusion-options                 0 B                0 B
+Γö£ ╬╗ /api/arena/fight                               0 B                0 B
+Γö£ ╬╗ /api/audit                                     0 B                0 B
+Γö£ ╬╗ /api/aure/assist/coach                         0 B                0 B
+Γö£ ╬╗ /api/aure/assist/coach/analysis                0 B                0 B
+Γö£ ╬╗ /api/aure/assist/coach/generate-goals          0 B                0 B
+Γö£ ╬╗ /api/aure/assist/coach/summary                 0 B                0 B
+Γö£ ╬╗ /api/aure/assist/coach/update-progress         0 B                0 B
+Γö£ ╬╗ /api/aure/assist/screenshot                    0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/aivshuman                0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/aivshuman/vote           0 B                0 B
+Γö£ Γùï /api/aure/interaction/battles                  0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/battles/contribute       0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/battles/current          0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/battles/my-contribution  0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/battles/resolve          0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/mix/collage              0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/mix/create               0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/mixmode                  0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/quests                   0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/quests/active            0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/quests/complete          0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/quests/progress          0 B                0 B
+Γö£ ╬╗ /api/aure/interaction/quests/refresh           0 B                0 B
+Γö£ ╬╗ /api/aure/life/archetype                       0 B                0 B
+Γö£ ╬╗ /api/aure/life/archetype/recalculate           0 B                0 B
+Γö£ ╬╗ /api/aure/life/timeline                        0 B                0 B
+Γö£ ╬╗ /api/aure/life/update-archetype                0 B                0 B
+Γö£ ╬╗ /api/aure/life/weekly-vibe                     0 B                0 B
+Γö£ ╬╗ /api/aure/life/yearly-wrap                     0 B                0 B
+Γö£ ╬╗ /api/aure/life/yearly-wrap/share               0 B                0 B
+Γö£ ╬╗ /api/auth/[...nextauth]                        0 B                0 B
+Γö£ ╬╗ /api/auth/login                                0 B                0 B
+Γö£ ╬╗ /api/auth/logout                               0 B                0 B
+Γö£ ╬╗ /api/auth/request-reset                        0 B                0 B
+Γö£ ╬╗ /api/auth/request-verify                       0 B                0 B
+Γö£ ╬╗ /api/auth/reset                                0 B                0 B
+Γö£ ╬╗ /api/auth/signup                               0 B                0 B
+Γö£ ╬╗ /api/auth/verify                               0 B                0 B
+Γö£ ╬╗ /api/avatar/auto-update                        0 B                0 B
+Γö£ ╬╗ /api/avatar/mood                               0 B                0 B
+Γö£ Γùï /api/avatar/themes                             0 B                0 B
+Γö£ ╬╗ /api/badges                                    0 B                0 B
+Γö£ ╬╗ /api/badges/claim                              0 B                0 B
+Γö£ ╬╗ /api/badges/unlock                             0 B                0 B
+Γö£ ╬╗ /api/badges/user                               0 B                0 B
+Γö£ ╬╗ /api/battle/achievements                       0 B                0 B
+Γö£ ╬╗ /api/battle/achievements/claim                 0 B                0 B
+Γö£ ╬╗ /api/battle/achievements/update                0 B                0 B
+Γö£ ╬╗ /api/battlepass                                0 B                0 B
+Γö£ ╬╗ /api/battlepass/activate-premium               0 B                0 B
+Γö£ ╬╗ /api/battlepass/admin/seed                     0 B                0 B
+Γö£ ╬╗ /api/battlepass/claim                          0 B                0 B
+Γö£ ╬╗ /api/battlepass/progress                       0 B                0 B
+Γö£ ╬╗ /api/battlepass/xp                             0 B                0 B
+Γö£ ╬╗ /api/categories/health                         0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/ai-comment                0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/integrity                 0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/leaderboard               0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/list                      0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/pairing                   0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/scam-flag                 0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/upload                    0 B                0 B
+Γö£ ╬╗ /api/challenge/photo/vote                      0 B                0 B
+Γö£ ╬╗ /api/challenges                                0 B                0 B
+Γö£ ╬╗ /api/challenges/active                         0 B                0 B
+Γö£ ╬╗ /api/challenges/complete                       0 B                0 B
+Γö£ ╬╗ /api/challenges/join                           0 B                0 B
+Γö£ Γùï /api/changelog                                 0 B                0 B
+Γö£ ╬╗ /api/chronicle/latest                          0 B                0 B
+Γö£ ╬╗ /api/chronicle/season/[id]                     0 B                0 B
+Γö£ ╬╗ /api/chronicles/generate                       0 B                0 B
+Γö£ ╬╗ /api/chronicles/latest                         0 B                0 B
+Γö£ ╬╗ /api/combat/fight                              0 B                0 B
+Γö£ ╬╗ /api/combat/logs                               0 B                0 B
+Γö£ ╬╗ /api/combat/logs/[fightId]                     0 B                0 B
+Γö£ ╬╗ /api/combat/use-skill                          0 B                0 B
+Γö£ ╬╗ /api/comments                                  0 B                0 B
+Γö£ ╬╗ /api/comments/[targetId]                       0 B                0 B
+Γö£ ╬╗ /api/community/approved                        0 B                0 B
+Γö£ ╬╗ /api/community/like                            0 B                0 B
+Γö£ ╬╗ /api/community/moderate                        0 B                0 B
+Γö£ ╬╗ /api/community/submit                          0 B                0 B
+Γö£ ╬╗ /api/companion                                 0 B                0 B
+Γö£ ╬╗ /api/companion/buy                             0 B                0 B
+Γö£ ╬╗ /api/companion/unequip                         0 B                0 B
+Γö£ ╬╗ /api/compare                                   0 B                0 B
+Γö£ ╬╗ /api/compare/[userA]/[userB]                   0 B                0 B
+Γö£ ╬╗ /api/comparison-cards/generate                 0 B                0 B
+Γö£ ╬╗ /api/comparison-cards/latest                   0 B                0 B
+Γö£ ╬╗ /api/comparison-cards/share/[id]               0 B                0 B
+Γö£ ╬╗ /api/crafting/craft                            0 B                0 B
+Γö£ ╬╗ /api/crafting/perform                          0 B                0 B
+Γö£ ╬╗ /api/crafting/recipes                          0 B                0 B
+Γö£ ╬╗ /api/creator/packs                             0 B                0 B
+Γö£ ╬╗ /api/creator/publish                           0 B                0 B
+Γö£ ╬╗ /api/creator/published                         0 B                0 B
+Γö£ ╬╗ /api/creator/submit                            0 B                0 B
+Γö£ ╬╗ /api/creator/use                               0 B                0 B
+Γö£ ╬╗ /api/db/health                                 0 B                0 B
+Γö£ ╬╗ /api/drafts/approve                            0 B                0 B
+Γö£ ╬╗ /api/drafts/boost                              0 B                0 B
+Γö£ ╬╗ /api/drafts/create                             0 B                0 B
+Γö£ ╬╗ /api/drafts/my                                 0 B                0 B
+Γö£ ╬╗ /api/drafts/pending                            0 B                0 B
+Γö£ ╬╗ /api/drafts/reject                             0 B                0 B
+Γö£ ╬╗ /api/drafts/request-review                     0 B                0 B
+Γö£ ╬╗ /api/dreamspace/history                        0 B                0 B
+Γö£ ╬╗ /api/dreamspace/resolve                        0 B                0 B
+Γö£ ╬╗ /api/dreamspace/trigger                        0 B                0 B
+Γö£ ╬╗ /api/duels                                     0 B                0 B
+Γö£ ╬╗ /api/duet-runs/active                          0 B                0 B
+Γö£ ╬╗ /api/duet-runs/complete                        0 B                0 B
+Γö£ ╬╗ /api/duet-runs/progress                        0 B                0 B
+Γö£ ╬╗ /api/duet-runs/start                           0 B                0 B
+Γö£ ╬╗ /api/economy/summary                           0 B                0 B
+Γö£ ╬╗ /api/enemies/[id]                              0 B                0 B
+Γö£ ╬╗ /api/enemies/random                            0 B                0 B
+Γö£ ╬╗ /api/entitlements                              0 B                0 B
+Γö£ ╬╗ /api/equip                                     0 B                0 B
+Γö£ ╬╗ /api/errors                                    0 B                0 B
+Γö£ ╬╗ /api/events                                    0 B                0 B
+Γö£ ╬╗ /api/events/active                             0 B                0 B
+Γö£ ╬╗ /api/events/archive                            0 B                0 B
+Γö£ Γùï /api/events/current                            0 B                0 B
+Γö£ ╬╗ /api/events/effects                            0 B                0 B
+Γö£ ╬╗ /api/events/join                               0 B                0 B
+Γö£ ╬╗ /api/events/today                              0 B                0 B
+Γö£ ╬╗ /api/factions                                  0 B                0 B
+Γö£ ╬╗ /api/factions/apply-buffs                      0 B                0 B
+Γö£ ╬╗ /api/factions/contribute                       0 B                0 B
+Γö£ ╬╗ /api/factions/create                           0 B                0 B
+Γö£ ╬╗ /api/factions/join                             0 B                0 B
+Γö£ ╬╗ /api/factions/map                              0 B                0 B
+Γö£ ╬╗ /api/factions/reset                            0 B                0 B
+Γö£ ╬╗ /api/feed                                      0 B                0 B
+Γö£ ╬╗ /api/feed/comment                              0 B                0 B
+Γö£ ╬╗ /api/feed/post                                 0 B                0 B
+Γö£ ╬╗ /api/feed/post/[id]                            0 B                0 B
+Γö£ ╬╗ /api/feed/react                                0 B                0 B
+Γö£ ╬╗ /api/feed/status                               0 B                0 B
+Γö£ ╬╗ /api/feedback                                  0 B                0 B
+Γö£ ╬╗ /api/feedback/submit                           0 B                0 B
+Γö£ ╬╗ /api/fight/enemies                             0 B                0 B
+Γö£ ╬╗ /api/fight/history                             0 B                0 B
+Γö£ ╬╗ /api/fight/start                               0 B                0 B
+Γö£ ╬╗ /api/firesides                                 0 B                0 B
+Γö£ ╬╗ /api/firesides/[id]                            0 B                0 B
+Γö£ ╬╗ /api/firesides/close                           0 B                0 B
+Γö£ ╬╗ /api/firesides/react                           0 B                0 B
+Γö£ ╬╗ /api/flow-answers                              0 B                0 B
+Γö£ ╬╗ /api/flow-questions                            0 B                0 B
+Γö£ ╬╗ /api/flow/[id]/answer                          0 B                0 B
+Γö£ ╬╗ /api/flow/[id]/next                            0 B                0 B
+Γö£ ╬╗ /api/flow/[id]/skip                            0 B                0 B
+Γö£ ╬╗ /api/flow/answer                               0 B                0 B
+Γö£ Γùï /api/flow/categories                           0 B                0 B
+Γö£ ╬╗ /api/flow/next                                 0 B                0 B
+Γö£ ╬╗ /api/flow/question                             0 B                0 B
+Γö£ ╬╗ /api/flow/result                               0 B                0 B
+Γö£ ╬╗ /api/flow/start                                0 B                0 B
+Γö£ ╬╗ /api/flows                                     0 B                0 B
+Γö£ ╬╗ /api/flows/[id]                                0 B                0 B
+Γö£ ╬╗ /api/flows/[id]/steps                          0 B                0 B
+Γö£ ╬╗ /api/flows/[id]/steps/[stepId]                 0 B                0 B
+Γö£ ╬╗ /api/forks/choose                              0 B                0 B
+Γö£ ╬╗ /api/forks/today                               0 B                0 B
+Γö£ ╬╗ /api/friends                                   0 B                0 B
+Γö£ ╬╗ /api/generation/ascend                         0 B                0 B
+Γö£ ╬╗ /api/generation/current                        0 B                0 B
+Γö£ ╬╗ /api/generation/history                        0 B                0 B
+Γö£ ╬╗ /api/groups                                    0 B                0 B
+Γö£ ╬╗ /api/groups/[id]                               0 B                0 B
+Γö£ ╬╗ /api/groups/[id]/join                          0 B                0 B
+Γö£ ╬╗ /api/groups/[id]/reflections                   0 B                0 B
+Γö£ ╬╗ /api/groups/[id]/stats                         0 B                0 B
+Γö£ ╬╗ /api/groups/[id]/stats/recompute               0 B                0 B
+Γö£ ╬╗ /api/guilds                                    0 B                0 B
+Γö£ ╬╗ /api/guilds/[id]/join                          0 B                0 B
+Γö£ ╬╗ /api/guilds/[id]/leave                         0 B                0 B
+Γö£ ╬╗ /api/guilds/my-guild                           0 B                0 B
+Γö£ Γäç /api/health                                    0 B                0 B
+Γö£ Γùï /api/health/app                                0 B                0 B
+Γö£ Γùï /api/health/db                                 0 B                0 B
+Γö£ ╬╗ /api/health/extended                           0 B                0 B
+Γö£ Γùï /api/health/queue                              0 B                0 B
+Γö£ ╬╗ /api/i18n                                      0 B                0 B
+Γö£ ╬╗ /api/i18n/suggest                              0 B                0 B
+Γö£ ╬╗ /api/init                                      0 B                0 B
+Γö£ ╬╗ /api/insights/generate                         0 B                0 B
+Γö£ ╬╗ /api/inventory                                 0 B                0 B
+Γö£ ╬╗ /api/inventory/add                             0 B                0 B
+Γö£ ╬╗ /api/inventory/equip                           0 B                0 B
+Γö£ ╬╗ /api/inventory/grant                           0 B                0 B
+Γö£ ╬╗ /api/inventory/unequip                         0 B                0 B
+Γö£ ╬╗ /api/inventory/use                             0 B                0 B
+Γö£ ╬╗ /api/invite                                    0 B                0 B
+Γö£ ╬╗ /api/invite/track                              0 B                0 B
+Γö£ ╬╗ /api/items                                     0 B                0 B
+Γö£ ╬╗ /api/items/craft                               0 B                0 B
+Γö£ ╬╗ /api/items/discoveries                         0 B                0 B
+Γö£ ╬╗ /api/items/recipes                             0 B                0 B
+Γö£ ╬╗ /api/jobs/[id]                                 0 B                0 B
+Γö£ ╬╗ /api/jobs/start/[ssscId]                       0 B                0 B
+Γö£ Γùï /api/languages                                 0 B                0 B
+Γö£ ╬╗ /api/leaderboard                               0 B                0 B
+Γö£ ╬╗ /api/lingo/rate                                0 B                0 B
+Γö£ ╬╗ /api/logout                                    0 B                0 B
+Γö£ ╬╗ /api/loot/check                                0 B                0 B
+Γö£ ╬╗ /api/loot/fight-drop                           0 B                0 B
+Γö£ ╬╗ /api/loot/open-chest                           0 B                0 B
+Γö£ ╬╗ /api/loot/recent                               0 B                0 B
+Γö£ ╬╗ /api/loot/redeem                               0 B                0 B
+Γö£ ╬╗ /api/loot/tables                               0 B                0 B
+Γö£ ╬╗ /api/lore/all                                  0 B                0 B
+Γö£ ╬╗ /api/lore/generate                             0 B                0 B
+Γö£ ╬╗ /api/lore/latest                               0 B                0 B
+Γö£ ╬╗ /api/lore/tone                                 0 B                0 B
+Γö£ ╬╗ /api/market                                    0 B                0 B
+Γö£ ╬╗ /api/market/buy                                0 B                0 B
+Γö£ ╬╗ /api/market/buy/[id]                           0 B                0 B
+Γö£ ╬╗ /api/market/cancel                             0 B                0 B
+Γö£ ╬╗ /api/market/items                              0 B                0 B
+Γö£ ╬╗ /api/market/list                               0 B                0 B
+Γö£ ╬╗ /api/market/list/[id]                          0 B                0 B
+Γö£ ╬╗ /api/market/listings                           0 B                0 B
+Γö£ ╬╗ /api/market/transactions                       0 B                0 B
+Γö£ ╬╗ /api/market/user                               0 B                0 B
+Γö£ ╬╗ /api/marketplace                               0 B                0 B
+Γö£ ╬╗ /api/marketplace/buy                           0 B                0 B
+Γö£ ╬╗ /api/marketplace/cancel                        0 B                0 B
+Γö£ ╬╗ /api/marketplace/list                          0 B                0 B
+Γö£ ╬╗ /api/materials                                 0 B                0 B
+Γö£ Γùï /api/me                                        0 B                0 B
+Γö£ ╬╗ /api/memory/all                                0 B                0 B
+Γö£ ╬╗ /api/memory/generate                           0 B                0 B
+Γö£ ╬╗ /api/memory/latest                             0 B                0 B
+Γö£ ╬╗ /api/mentors                                   0 B                0 B
+Γö£ ╬╗ /api/mentors/assign                            0 B                0 B
+Γö£ ╬╗ /api/mentors/interact                          0 B                0 B
+Γö£ ╬╗ /api/mentors/user                              0 B                0 B
+Γö£ ╬╗ /api/messages                                  0 B                0 B
+Γö£ ╬╗ /api/messages/send                             0 B                0 B
+Γö£ ╬╗ /api/messages/thread/[userId]                  0 B                0 B
+Γö£ ╬╗ /api/meta/legacy                               0 B                0 B
+Γö£ ╬╗ /api/meta/prestige                             0 B                0 B
+Γö£ ╬╗ /api/meta/season                               0 B                0 B
+Γö£ ╬╗ /api/metrics                                   0 B                0 B
+Γö£ ╬╗ /api/micro-clans                               0 B                0 B
+Γö£ ╬╗ /api/micro-clans/[id]                          0 B                0 B
+Γö£ ╬╗ /api/micro-clans/create                        0 B                0 B
+Γö£ ╬╗ /api/micro-clans/join                          0 B                0 B
+Γö£ ╬╗ /api/micro-clans/leave                         0 B                0 B
+Γö£ ╬╗ /api/micro-missions/accept                     0 B                0 B
+Γö£ ╬╗ /api/micro-missions/complete                   0 B                0 B
+Γö£ ╬╗ /api/micro-missions/skip                       0 B                0 B
+Γö£ ╬╗ /api/micro-missions/trigger                    0 B                0 B
+Γö£ ╬╗ /api/mirror-events/active                      0 B                0 B
+Γö£ ╬╗ /api/mirror-events/submit                      0 B                0 B
+Γö£ ╬╗ /api/missions                                  0 B                0 B
+Γö£ ╬╗ /api/missions/claim                            0 B                0 B
+Γö£ ╬╗ /api/moderation/action                         0 B                0 B
+Γö£ ╬╗ /api/moderation/ban                            0 B                0 B
+Γö£ ╬╗ /api/moderation/delete                         0 B                0 B
+Γö£ ╬╗ /api/moderation/flag                           0 B                0 B
+Γö£ ╬╗ /api/moderation/flagged                        0 B                0 B
+Γö£ ╬╗ /api/moderation/logs                           0 B                0 B
+Γö£ ╬╗ /api/moderation/review                         0 B                0 B
+Γö£ Γùï /api/mood/global                               0 B                0 B
+Γö£ ╬╗ /api/mood/log                                  0 B                0 B
+Γö£ Γùï /api/moods                                     0 B                0 B
+Γö£ Γùï /api/moods/global                              0 B                0 B
+Γö£ ╬╗ /api/mounts/trials                             0 B                0 B
+Γö£ ╬╗ /api/mounts/trials/attempt                     0 B                0 B
+Γö£ Γùï /api/music/themes                              0 B                0 B
+Γö£ ╬╗ /api/newsletter                                0 B                0 B
+Γö£ ╬╗ /api/notifications                             0 B                0 B
+Γö£ ╬╗ /api/notifications/[id]                        0 B                0 B
+Γö£ ╬╗ /api/notifications/mark-all-read               0 B                0 B
+Γö£ ╬╗ /api/notifications/read                        0 B                0 B
+Γö£ ╬╗ /api/notifications/read-all                    0 B                0 B
+Γö£ ╬╗ /api/notifications/send                        0 B                0 B
+Γö£ ╬╗ /api/notifications/subscribe                   0 B                0 B
+Γö£ ╬╗ /api/notify                                    0 B                0 B
+Γö£ ╬╗ /api/npc/[id]/dialogue                         0 B                0 B
+Γö£ ╬╗ /api/npc/interact                              0 B                0 B
+Γö£ ╬╗ /api/npc/list                                  0 B                0 B
+Γö£ ╬╗ /api/npc/memory                                0 B                0 B
+Γö£ ╬╗ /api/npc/random                                0 B                0 B
+Γö£ ╬╗ /api/onboarding/complete                       0 B                0 B
+Γö£ ╬╗ /api/onboarding/start                          0 B                0 B
+Γö£ ╬╗ /api/onboarding/submit                         0 B                0 B
+Γö£ ╬╗ /api/packs                                     0 B                0 B
+Γö£ ╬╗ /api/packs/[id]                                0 B                0 B
+Γö£ ╬╗ /api/packs/active-content                      0 B                0 B
+Γö£ ╬╗ /api/packs/seed                                0 B                0 B
+Γö£ ╬╗ /api/packs/unlock                              0 B                0 B
+Γö£ ╬╗ /api/pets                                      0 B                0 B
+Γö£ ╬╗ /api/pets/equip                                0 B                0 B
+Γö£ ╬╗ /api/pets/equipped                             0 B                0 B
+Γö£ ╬╗ /api/pets/grant-xp                             0 B                0 B
+Γö£ ╬╗ /api/pets/rename                               0 B                0 B
+Γö£ ╬╗ /api/pets/unlock                               0 B                0 B
+Γö£ ╬╗ /api/ping                                      0 B                0 B
+Γö£ ╬╗ /api/polls                                     0 B                0 B
+Γö£ ╬╗ /api/polls/[id]                                0 B                0 B
+Γö£ ╬╗ /api/polls/respond                             0 B                0 B
+Γö£ ╬╗ /api/polls/results/[id]                        0 B                0 B
+Γö£ ╬╗ /api/postcards/inbox                           0 B                0 B
+Γö£ ╬╗ /api/postcards/read                            0 B                0 B
+Γö£ ╬╗ /api/postcards/send                            0 B                0 B
+Γö£ ╬╗ /api/postcards/sent                            0 B                0 B
+Γö£ ╬╗ /api/posters/generate                          0 B                0 B
+Γö£ ╬╗ /api/posters/recent                            0 B                0 B
+Γö£ ╬╗ /api/posters/trending                          0 B                0 B
+Γö£ ╬╗ /api/presence                                  0 B                0 B
+Γö£ ╬╗ /api/prestige/activate                         0 B                0 B
+Γö£ ╬╗ /api/prestige/history                          0 B                0 B
+Γö£ ╬╗ /api/prestige/status                           0 B                0 B
+Γö£ ╬╗ /api/profile                                   0 B                0 B
+Γö£ ╬╗ /api/profile/[id]                              0 B                0 B
+Γö£ ╬╗ /api/profile/can-be-added                      0 B                0 B
+Γö£ ╬╗ /api/profile/flows                             0 B                0 B
+Γö£ ╬╗ /api/profile/privacy                           0 B                0 B
+Γö£ ╬╗ /api/progression/select-archetype              0 B                0 B
+Γö£ ╬╗ /api/progression/stats                         0 B                0 B
+Γö£ ╬╗ /api/purchase                                  0 B                0 B
+Γö£ ╬╗ /api/purchase/diamonds                         0 B                0 B
+Γö£ ╬╗ /api/question/[id]/tags                        0 B                0 B
+Γö£ ╬╗ /api/questions                                 0 B                0 B
+Γö£ ╬╗ /api/questions/[id]                            0 B                0 B
+Γö£ ╬╗ /api/questions/answer                          0 B                0 B
+Γö£ ╬╗ /api/questions/bookmark                        0 B                0 B
+Γö£ ╬╗ /api/questions/bookmarks                       0 B                0 B
+Γö£ ╬╗ /api/questions/insights                        0 B                0 B
+Γö£ ╬╗ /api/questions/next                            0 B                0 B
+Γö£ ╬╗ /api/questions/poll/create                     0 B                0 B
+Γö£ ╬╗ /api/questions/poll/results                    0 B                0 B
+Γö£ ╬╗ /api/questions/poll/vote                       0 B                0 B
+Γö£ Γùï /api/questions/qotd                            0 B                0 B
+Γö£ ╬╗ /api/questions/skip                            0 B                0 B
+Γö£ ╬╗ /api/questions/summary                         0 B                0 B
+Γö£ ╬╗ /api/quests                                    0 B                0 B
+Γö£ ╬╗ /api/quests/active                             0 B                0 B
+Γö£ ╬╗ /api/quests/claim                              0 B                0 B
+Γö£ ╬╗ /api/quests/complete                           0 B                0 B
+Γö£ ╬╗ /api/quests/today                              0 B                0 B
+Γö£ ╬╗ /api/quests/update                             0 B                0 B
+Γö£ ╬╗ /api/quiz/submit                               0 B                0 B
+Γö£ ╬╗ /api/quiz/today                                0 B                0 B
+Γö£ Γùï /api/rarities                                  0 B                0 B
+Γö£ ╬╗ /api/rarities/seed                             0 B                0 B
+Γö£ ╬╗ /api/rating/comparison                         0 B                0 B
+Γö£ ╬╗ /api/rating/create                             0 B                0 B
+Γö£ ╬╗ /api/rating/deep-dive                          0 B                0 B
+Γö£ ╬╗ /api/rating/detect-category                    0 B                0 B
+Γö£ ╬╗ /api/rating/flavor                             0 B                0 B
+Γö£ ╬╗ /api/rating/history                            0 B                0 B
+Γö£ ╬╗ /api/rating/result                             0 B                0 B
+Γö£ ╬╗ /api/rating/session/complete-item              0 B                0 B
+Γö£ ╬╗ /api/rating/session/next                       0 B                0 B
+Γö£ ╬╗ /api/rating/session/start                      0 B                0 B
+Γö£ ╬╗ /api/rating/session/summary                    0 B                0 B
+Γö£ ╬╗ /api/rating/share-card                         0 B                0 B
+Γö£ ╬╗ /api/reaction                                  0 B                0 B
+Γö£ ╬╗ /api/reactions                                 0 B                0 B
+Γö£ ╬╗ /api/realtime                                  0 B                0 B
+Γö£ ╬╗ /api/realtime/sse                              0 B                0 B
+Γö£ ╬╗ /api/realtime/status                           0 B                0 B
+Γö£ ╬╗ /api/referrals                                 0 B                0 B
+Γö£ ╬╗ /api/reflection                                0 B                0 B
+Γö£ ╬╗ /api/reflection/conversation/[id]              0 B                0 B
+Γö£ ╬╗ /api/reflection/converse                       0 B                0 B
+Γö£ ╬╗ /api/reflection/latest                         0 B                0 B
+Γö£ ╬╗ /api/regions                                   0 B                0 B
+Γö£ ╬╗ /api/regions/current                           0 B                0 B
+Γö£ ╬╗ /api/regions/travel                            0 B                0 B
+Γö£ ╬╗ /api/regions/unlock                            0 B                0 B
+Γö£ ╬╗ /api/reports                                   0 B                0 B
+Γö£ ╬╗ /api/reports/db-performance                    0 B                0 B
+Γö£ ╬╗ /api/reports/qa                                0 B                0 B
+Γö£ ╬╗ /api/rewards/preview                           0 B                0 B
+Γö£ ╬╗ /api/rituals/complete                          0 B                0 B
+Γö£ ╬╗ /api/rituals/today                             0 B                0 B
+Γö£ Γùï /api/roast-presets                             0 B                0 B
+Γö£ ╬╗ /api/rpg/equip                                 0 B                0 B
+Γö£ Γùï /api/rpg/events                                0 B                0 B
+Γö£ ╬╗ /api/rpg/stats                                 0 B                0 B
+Γö£ ╬╗ /api/rpg/unequip                               0 B                0 B
+Γö£ ╬╗ /api/score/update                              0 B                0 B
+Γö£ ╬╗ /api/season/add-xp                             0 B                0 B
+Γö£ ╬╗ /api/season/claim                              0 B                0 B
+Γö£ Γùï /api/season/current                            0 B                0 B
+Γö£ ╬╗ /api/season/leaderboard                        0 B                0 B
+Γö£ Γùï /api/seasons/active                            0 B                0 B
+Γö£ ╬╗ /api/seasons/all                               0 B                0 B
+Γö£ ╬╗ /api/seasons/end                               0 B                0 B
+Γö£ ╬╗ /api/seasons/start                             0 B                0 B
+Γö£ ╬╗ /api/sessions                                  0 B                0 B
+Γö£ ╬╗ /api/sessions/[id]/answer                      0 B                0 B
+Γö£ ╬╗ /api/sessions/[id]/current                     0 B                0 B
+Γö£ ╬╗ /api/sessions/[id]/finish                      0 B                0 B
+Γö£ ╬╗ /api/sessions/[id]/progress                    0 B                0 B
+Γö£ Γäç /api/share                                     0 B                0 B
+Γö£ ╬╗ /api/share/[id]                                0 B                0 B
+Γö£ ╬╗ /api/share/generate                            0 B                0 B
+Γö£ ╬╗ /api/shop                                      0 B                0 B
+Γö£ ╬╗ /api/shop/buy                                  0 B                0 B
+Γö£ ╬╗ /api/shop/checkout                             0 B                0 B
+Γö£ ╬╗ /api/shop/entitlements                         0 B                0 B
+Γö£ ╬╗ /api/shop/items                                0 B                0 B
+Γö£ ╬╗ /api/shop/products                             0 B                0 B
+Γö£ ╬╗ /api/shop/purchase                             0 B                0 B
+Γö£ ╬╗ /api/shop/stripe/checkout                      0 B                0 B
+Γö£ ╬╗ /api/shop/stripe/portal                        0 B                0 B
+Γö£ ╬╗ /api/shop/webhook                              0 B                0 B
+Γö£ ╬╗ /api/signup                                    0 B                0 B
+Γö£ ╬╗ /api/skills                                    0 B                0 B
+Γö£ ╬╗ /api/skills/equip-active                       0 B                0 B
+Γö£ ╬╗ /api/skills/level-up                           0 B                0 B
+Γö£ ╬╗ /api/skills/unlock                             0 B                0 B
+Γö£ ╬╗ /api/social/compare                            0 B                0 B
+Γö£ ╬╗ /api/social/duels                              0 B                0 B
+Γö£ ╬╗ /api/social/duels/complete                     0 B                0 B
+Γö£ ╬╗ /api/social/duels/start                        0 B                0 B
+Γö£ ╬╗ /api/social/feed                               0 B                0 B
+Γö£ ╬╗ /api/social/follow                             0 B                0 B
+Γö£ ╬╗ /api/social/followers                          0 B                0 B
+Γö£ ╬╗ /api/social/following                          0 B                0 B
+Γö£ ╬╗ /api/social/friends                            0 B                0 B
+Γö£ ╬╗ /api/social/friends/remove                     0 B                0 B
+Γö£ ╬╗ /api/social/friends/request                    0 B                0 B
+Γö£ ╬╗ /api/social/shared-missions/start              0 B                0 B
+Γö£ ╬╗ /api/social/unfollow                           0 B                0 B
+Γö£ ╬╗ /api/sssc                                      0 B                0 B
+Γö£ ╬╗ /api/stats                                     0 B                0 B
+Γö£ ╬╗ /api/stats/allocate                            0 B                0 B
+Γö£ ╬╗ /api/story/analytics                           0 B                0 B
+Γö£ ╬╗ /api/story/audio/clear                         0 B                0 B
+Γö£ ╬╗ /api/story/audio/set                           0 B                0 B
+Γö£ ╬╗ /api/story/audio/tts                           0 B                0 B
+Γö£ Γùï /api/story/challenges                          0 B                0 B
+Γö£ ╬╗ /api/story/challenges/entries                  0 B                0 B
+Γö£ ╬╗ /api/story/challenges/submit                   0 B                0 B
+Γö£ ╬╗ /api/story/collections/[id]                    0 B                0 B
+Γö£ ╬╗ /api/story/collections/add                     0 B                0 B
+Γö£ ╬╗ /api/story/collections/create                  0 B                0 B
+Γö£ ╬╗ /api/story/collections/mine                    0 B                0 B
+Γö£ Γùï /api/story/collections/public                  0 B                0 B
+Γö£ ╬╗ /api/story/collections/remove                  0 B                0 B
+Γö£ ╬╗ /api/story/create                              0 B                0 B
+Γö£ ╬╗ /api/story/create-extended                     0 B                0 B
+Γö£ ╬╗ /api/story/drafts                              0 B                0 B
+Γö£ ╬╗ /api/story/drafts/publish                      0 B                0 B
+Γö£ ╬╗ /api/story/drafts/update                       0 B                0 B
+Γö£ ╬╗ /api/story/export                              0 B                0 B
+Γö£ ╬╗ /api/story/feed                                0 B                0 B
+Γö£ ╬╗ /api/story/mine                                0 B                0 B
+Γö£ ╬╗ /api/story/panels                              0 B                0 B
+Γö£ ╬╗ /api/story/publish                             0 B                0 B
+Γö£ ╬╗ /api/story/react                               0 B                0 B
+Γö£ ╬╗ /api/story/remix/count                         0 B                0 B
+Γö£ ╬╗ /api/story/remix/create                        0 B                0 B
+Γö£ ╬╗ /api/story/remix/metadata                      0 B                0 B
+Γö£ ╬╗ /api/story/remix/source                        0 B                0 B
+Γö£ ╬╗ /api/story/stickers                            0 B                0 B
+Γö£ ╬╗ /api/story/templates/[id]                      0 B                0 B
+Γö£ ╬╗ /api/story/templates/create                    0 B                0 B
+Γö£ ╬╗ /api/story/templates/mine                      0 B                0 B
+Γö£ Γùï /api/story/templates/public                    0 B                0 B
+Γö£ ╬╗ /api/story/upload-image                        0 B                0 B
+Γö£ ╬╗ /api/story/view                                0 B                0 B
+Γö£ ╬╗ /api/story/visibility                          0 B                0 B
+Γö£ ╬╗ /api/story/weekly                              0 B                0 B
+Γö£ ╬╗ /api/stripe/checkout                           0 B                0 B
+Γö£ Γùï /api/subscription                              0 B                0 B
+Γö£ ╬╗ /api/subscription/checkout                     0 B                0 B
+Γö£ ╬╗ /api/subscription/status                       0 B                0 B
+Γö£ ╬╗ /api/subscription/webhook                      0 B                0 B
+Γö£ ╬╗ /api/synch-tests/answer                        0 B                0 B
+Γö£ Γùï /api/synch-tests/available                     0 B                0 B
+Γö£ ╬╗ /api/synch-tests/complete                      0 B                0 B
+Γö£ ╬╗ /api/synch-tests/result/[id]                   0 B                0 B
+Γö£ ╬╗ /api/synch-tests/start                         0 B                0 B
+Γö£ Γùï /api/tags                                      0 B                0 B
+Γö£ ╬╗ /api/tasks                                     0 B                0 B
+Γö£ ╬╗ /api/tasks/[id]                                0 B                0 B
+Γö£ ╬╗ /api/tasks/[id]/messages                       0 B                0 B
+Γö£ ╬╗ /api/tasks/[id]/route                          0 B                0 B
+Γö£ ╬╗ /api/telemetry                                 0 B                0 B
+Γö£ ╬╗ /api/telemetry/batch                           0 B                0 B
+Γö£ ╬╗ /api/telemetry/client                          0 B                0 B
+Γö£ ╬╗ /api/templates/[id]                            0 B                0 B
+Γö£ ╬╗ /api/templates/create                          0 B                0 B
+Γö£ ╬╗ /api/templates/own                             0 B                0 B
+Γö£ Γùï /api/themes                                    0 B                0 B
+Γö£ ╬╗ /api/themes/apply                              0 B                0 B
+Γö£ ╬╗ /api/trending                                  0 B                0 B
+Γö£ ╬╗ /api/typing                                    0 B                0 B
+Γö£ ╬╗ /api/ugc/moderate                              0 B                0 B
+Γö£ ╬╗ /api/ugc/question                              0 B                0 B
+Γö£ ╬╗ /api/user/gold                                 0 B                0 B
+Γö£ ╬╗ /api/user/settings/mood                        0 B                0 B
+Γö£ ╬╗ /api/user/settings/roast                       0 B                0 B
+Γö£ ╬╗ /api/user/stats                                0 B                0 B
+Γö£ ╬╗ /api/user/summary                              0 B                0 B
+Γö£ ╬╗ /api/version                                   0 B                0 B
+Γö£ ╬╗ /api/vote                                      0 B                0 B
+Γö£ ╬╗ /api/vs/create                                 0 B                0 B
+Γö£ ╬╗ /api/vs/result                                 0 B                0 B
+Γö£ ╬╗ /api/vs/vote                                   0 B                0 B
+Γö£ ╬╗ /api/waitlist                                  0 B                0 B
+Γö£ ╬╗ /api/wallet                                    0 B                0 B
+Γö£ ╬╗ /api/wallet/convert                            0 B                0 B
+Γö£ ╬╗ /api/wallet/transactions                       0 B                0 B
+Γö£ ╬╗ /api/wildcards/check                           0 B                0 B
+Γö£ ╬╗ /api/wildcards/recent                          0 B                0 B
+Γö£ ╬╗ /api/wildcards/redeem                          0 B                0 B
+Γö£ ╬╗ /api/workflows                                 0 B                0 B
+Γö£ ╬╗ /arena/history                                 4.7 kB          104 kB
+Γö£ ╬╗ /aure/assist                                   5.16 kB         104 kB
+Γö£ ╬╗ /aure/assist/coach                             2.64 kB         105 kB
+Γö£ ╬╗ /aure/interaction                              197 B          82.5 kB
+Γö£ ╬╗ /aure/interaction/battles                      3.8 kB          103 kB
+Γö£ ╬╗ /aure/interaction/mix                          5.34 kB         105 kB
+Γö£ ╬╗ /aure/interaction/quests                       5.13 kB         104 kB
+Γö£ ╬╗ /aure/life                                     5.72 kB         105 kB
+Γö£ ╬╗ /aure/life/wrap                                5.45 kB         105 kB
+Γö£ ╬╗ /battlepass                                    5.21 kB         105 kB
+Γö£ ╬╗ /bookmarks                                     3.28 kB         109 kB
+Γö£ ╬╗ /challenges                                    5.37 kB         116 kB
+Γö£ ╬╗ /changelog                                     1.19 kB        83.5 kB
+Γö£ ╬╗ /chronicle                                     4.84 kB        94.2 kB
+Γö£ ╬╗ /community                                     2.29 kB        84.6 kB
+Γö£ ╬╗ /community/submit                              2.19 kB        84.5 kB
+Γö£ ╬╗ /compare                                       2.64 kB        95.6 kB
+Γö£ ╬╗ /compare/[id]                                  5.17 kB        94.5 kB
+Γö£ ╬╗ /crafting                                      5.19 kB         115 kB
+Γö£ ╬╗ /create                                        4.41 kB         104 kB
+Γö£ ╬╗ /developers/api                                3.25 kB        92.6 kB
+Γö£ ╬╗ /drafts/create                                 4.14 kB         104 kB
+Γö£ ╬╗ /duels                                         3.67 kB         107 kB
+Γö£ ╬╗ /events                                        3.78 kB         103 kB
+Γö£ ╬╗ /events/archive                                1.19 kB        83.5 kB
+Γö£ ╬╗ /factions                                      2.63 kB        84.9 kB
+Γö£ ╬╗ /feed                                          4.48 kB         110 kB
+Γö£ ╬╗ /feed/post/[id]                                4.27 kB         107 kB
+Γö£ ╬╗ /feed/trending                                 4.49 kB         107 kB
+Γö£ ╬╗ /feedback                                      6.65 kB         116 kB
+Γö£ ╬╗ /firesides                                     746 B          93.4 kB
+Γö£ ╬╗ /firesides/[id]                                832 B          86.7 kB
+Γö£ ╬╗ /flow-demo                                     9.93 kB         105 kB
+Γö£ ╬╗ /flow/[categoryId]                             3.01 kB         122 kB
+Γö£ ╬╗ /flow/[categoryId]/result                      168 B          82.5 kB
+Γö£ ╬╗ /following                                     3.46 kB         116 kB
+Γö£ ╬╗ /friends                                       5.82 kB         105 kB
+Γö£ ╬╗ /groups                                        1.5 kB         90.6 kB
+Γö£ ╬╗ /groups/[id]                                   1.99 kB        84.3 kB
+Γö£ ╬╗ /guilds                                        287 B            94 kB
+Γö£ ╬╗ /info/contact                                  168 B          82.5 kB
+Γö£ ╬╗ /info/faq                                      168 B          82.5 kB
+Γö£ ╬╗ /info/privacy                                  168 B          82.5 kB
+Γö£ ╬╗ /info/terms                                    168 B          82.5 kB
+Γö£ ╬╗ /inventory                                     4.46 kB         114 kB
+Γö£ ╬╗ /invite                                        6.47 kB         106 kB
+Γö£ ╬╗ /karma                                         752 B            83 kB
+Γö£ ╬╗ /landing                                       7.34 kB         143 kB
+Γö£ ╬╗ /leaderboard                                   5.43 kB         111 kB
+Γö£ ╬╗ /legal                                         956 B          83.2 kB
+Γö£ ╬╗ /lingo                                         5.05 kB         104 kB
+Γö£ ╬╗ /locales/editor                                3.04 kB        92.4 kB
+Γö£ ╬╗ /login                                         4.21 kB        96.3 kB
+Γö£ ╬╗ /lore                                          7.66 kB         107 kB
+Γö£ ╬╗ /main                                          14.8 kB         153 kB
+Γö£ ╬╗ /maintenance                                   3.22 kB         122 kB
+Γö£ ╬╗ /market                                        286 B            94 kB
+Γö£ ╬╗ /marketplace                                   9.83 kB         129 kB
+Γö£ ╬╗ /mirror                                        10.7 kB         110 kB
+Γö£ ╬╗ /missions                                      5.23 kB         105 kB
+Γö£ ╬╗ /moderation                                    5.28 kB         104 kB
+Γö£ ╬╗ /moderation/ai-context                         1.89 kB        84.2 kB
+Γö£ ╬╗ /narrative                                     752 B            83 kB
+Γö£ ╬╗ /notifications                                 3.32 kB         116 kB
+Γö£ ╬╗ /offline                                       184 B          89.3 kB
+Γö£ ╬╗ /onboarding                                    7.53 kB         141 kB
+Γö£ ╬╗ /packs                                         1.66 kB        90.7 kB
+Γö£ ╬╗ /packs/[id]                                    1.59 kB        83.9 kB
+Γö£ ╬╗ /play                                          10.1 kB         112 kB
+Γö£ ╬╗ /play/adventure                                5.43 kB         115 kB
+Γö£ ╬╗ /play/fight                                    5.94 kB         115 kB
+Γö£ ╬╗ /play/stats                                    5.39 kB         102 kB
+Γö£ ╬╗ /polls                                         1.42 kB        90.5 kB
+Γö£ ╬╗ /polls/[id]                                    1.99 kB        84.3 kB
+Γö£ ╬╗ /postcards                                     3.26 kB        85.5 kB
+Γö£ ╬╗ /press                                         6.95 kB         133 kB
+Γö£ ╬╗ /prestige                                      9.22 kB         108 kB
+Γö£ ╬╗ /profile                                       10.8 kB         176 kB
+Γö£ ╬╗ /profile/[username]                            3.95 kB        93.3 kB
+Γö£ ╬╗ /profile/achievements                          7.7 kB          111 kB
+Γö£ ╬╗ /profile/affinities                            1.53 kB        93.6 kB
+Γö£ ╬╗ /profile/archetype                             6.63 kB         113 kB
+Γö£ ╬╗ /profile/badges                                9.21 kB         148 kB
+Γö£ ╬╗ /profile/chronicle                             7.11 kB         106 kB
+Γö£ ╬╗ /profile/combat-log                            194 B          82.5 kB
+Γö£ ╬╗ /profile/combat-settings                       6.36 kB         103 kB
+Γö£ ╬╗ /profile/companions                            6.44 kB         116 kB
+Γö£ ╬╗ /profile/comparison-cards                      1.3 kB         83.6 kB
+Γö£ ╬╗ /profile/market                                6.92 kB         106 kB
+Γö£ ╬╗ /profile/memory                                1.75 kB          84 kB
+Γö£ ╬╗ /profile/pets                                  5.41 kB         115 kB
+Γö£ ╬╗ /profile/reflections                           1.05 kB        83.3 kB
+Γö£ ╬╗ /profile/settings                              8.5 kB          108 kB
+Γö£ ╬╗ /profile/shop                                  7.62 kB         144 kB
+Γö£ ╬╗ /profile/skills                                3.69 kB         113 kB
+Γö£ ╬╗ /profile/stats                                 6.06 kB         116 kB
+Γö£ ╬╗ /profile/vibe                                  3.17 kB        95.3 kB
+Γö£ ╬╗ /progression                                   10.6 kB         109 kB
+Γö£ ╬╗ /question-categories                           1.04 kB        83.3 kB
+Γö£ ╬╗ /questions                                     1.59 kB        90.7 kB
+Γö£ ╬╗ /quests                                        10.3 kB         146 kB
+Γö£ ╬╗ /quiz                                          168 B          82.5 kB
+Γö£ ╬╗ /quiz/today                                    5.48 kB         142 kB
+Γö£ ╬╗ /rating                                        13.5 kB         149 kB
+Γö£ ╬╗ /regional-events                               752 B            83 kB
+Γö£ ╬╗ /reports                                       107 kB          189 kB
+Γö£ ╬╗ /rewards                                       6.05 kB         142 kB
+Γö£ ╬╗ /roadmap                                       831 B          90.2 kB
+Γö£ ╬╗ /season                                        4.41 kB        96.5 kB
+Γö£ ╬╗ /shop                                          4.45 kB        98.2 kB
+Γö£ ╬╗ /signup                                        2.26 kB        94.4 kB
+Γö£ ╬╗ /social                                        6.36 kB         110 kB
+Γö£ ╬╗ /story/challenges                              3.36 kB         111 kB
+Γö£ ╬╗ /story/challenges/[id]                         4.79 kB         112 kB
+Γö£ ╬╗ /story/collections                             4.8 kB          107 kB
+Γö£ ╬╗ /story/collections/[id]                        6.07 kB         109 kB
+Γö£ ╬╗ /story/collections/create                      4.73 kB         104 kB
+Γö£ ╬╗ /story/create                                  7.4 kB          107 kB
+Γö£ ╬╗ /story/drafts                                  5.03 kB         108 kB
+Γö£ ╬╗ /story/feed                                    4.98 kB         111 kB
+Γö£ ╬╗ /story/mine                                    6.11 kB         109 kB
+Γö£ ╬╗ /story/remix/[id]                              5.75 kB         105 kB
+Γö£ ╬╗ /story/templates                               5.77 kB         108 kB
+Γö£ ╬╗ /story/view/[id]                               7.64 kB         107 kB
+Γö£ ╬╗ /story/weekly                                  5.71 kB         105 kB
+Γö£ ╬╗ /subscribe                                     168 B          82.5 kB
+Γö£ ╬╗ /synch-tests                                   2.04 kB        84.3 kB
+Γö£ ╬╗ /synch-tests/[id]                              2.59 kB        84.9 kB
+Γö£ ╬╗ /tasks                                         168 B          82.5 kB
+Γö£ ╬╗ /timezone                                      752 B            83 kB
+Γö£ ╬╗ /waitlist                                      5.9 kB          136 kB
+Γöö ╬╗ /world                                         9.66 kB         145 kB
++ First Load JS shared by all                      82.3 kB
+  Γö£ chunks/1dd3208c-284a5ef710f4d75a.js            53.3 kB
+  Γö£ chunks/4016-2978252b7660a108.js                26.8 kB
+  Γö£ chunks/main-app-a7f8d05eb93f17e1.js            228 B
+  Γöö chunks/webpack-540af50bd0e79aa3.js             1.96 kB
+
+
+╞Æ Middleware                                       41.5 kB
+
+Γùï  (Static)        prerendered as static content
+╬╗  (Dynamic)       server-rendered on demand using Node.js
+Γäç  (Edge Runtime)  server-rendered on demand using the Edge Runtime
+
+

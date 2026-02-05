@@ -8,7 +8,7 @@ const nextConfig = {
   },
   
   // Transpile monorepo packages
-  transpilePackages: ['@parel/db', '@parel/features', '@parel/core'],
+  transpilePackages: ['@parel/db', '@parel/features', '@parel/core', '@parel/api', '@parel/ui', '@parel/redis', '@parel/story'],
   
   // Performance optimizations (v0.11.1)
   swcMinify: true,
@@ -71,24 +71,34 @@ const nextConfig = {
   // Webpack optimizations
   webpack: (config, { isServer }) => {
     const path = require('path');
-    const prismaClientPath = require.resolve('@prisma/client');
+    const root = path.resolve(__dirname, '../..');
+    const prismaClientPath = require.resolve('@prisma/client', { paths: [root] });
     const prismaClientDir = path.dirname(prismaClientPath);
+    const prismaGenerated = path.join(root, 'node_modules', '.prisma', 'client');
     
     // Fix pnpm resolution for @prisma/client and runtime modules
     config.resolve.alias = {
-      '@parel/features/flow': path.resolve(__dirname, '../../packages/features/flow'),
+      '@parel/db/client': path.resolve(__dirname, '../../packages/db/src/client.ts'),
+      '@parel/db': path.resolve(__dirname, '../../packages/db'),
+      '@parel/api': path.resolve(__dirname, '../../packages/api'),
+      '@parel/ui': path.resolve(__dirname, '../../packages/ui'),
+      '@parel/core/config': path.resolve(__dirname, '../../packages/core/config'),
+      '@parel/redis': path.resolve(__dirname, '../../packages/redis'),
       ...config.resolve.alias,
       '@prisma/client$': prismaClientPath,
+      '.prisma/client': prismaGenerated,
+      '.prisma/client/default': path.join(prismaGenerated, 'default.js'),
       '@prisma/client/runtime/library.js': path.join(prismaClientDir, 'runtime', 'library.js'),
       '@prisma/client/runtime/library$': path.join(prismaClientDir, 'runtime', 'library.js'),
       '@prisma/client/runtime/index-browser.js': path.join(prismaClientDir, 'runtime', 'index-browser.js'),
       '@prisma/client/runtime/index-browser$': path.join(prismaClientDir, 'runtime', 'index-browser.js'),
     };
     
-    // Add runtime path to resolve modules
+    // Add runtime path and workspace root so @parel/* resolve and use package exports
     config.resolve.modules = [
       ...((config.resolve.modules) || []),
       path.join(prismaClientDir, 'runtime'),
+      path.join(root, 'node_modules'),
     ];
     
     // Bundle analyzer (only in production builds with ANALYZE=true)

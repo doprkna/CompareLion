@@ -1,0 +1,25 @@
+Next build error summary (after root-cause fixes)
+
+Error classes:
+A) Module not found (aliases/exports/workspace)
+   - FIXED: @parel/redis — was unresolved from packages/core (config, cache). Added next.config.js alias and transpilePackages.
+   - FIXED: "Default condition should be last one" (app/providers.tsx) — @parel/core "./hooks/useRealtime" had "default" not last. Moved default to last in packages/core/package.json.
+
+B) TS / attempted import errors (package exports or stubs)
+   - FIXED: @parel/features/flow — removed alias; use package exports; fixed flow-skeleton.ts syntax (missing } in prisma.user.update data). Added @parel/db and @parel/db/client aliases so flow resolves @parel/db.
+   - FIXED: @parel/core/config/flags — export reordered (default last).
+   - FIXED: @parel/story storyCollectionService and storyTemplateService — exports now point to ./src/...ts so getPublicCollections/getPublicTemplates resolve; @parel/story in transpilePackages.
+   - REMAINING (optional): getFlags from @parel/core/config/flags in some routes (build still exits 0).
+
+C) Prisma / OpenTelemetry (warnings only)
+   - Critical dependency warnings from @prisma/instrumentation and require-in-the-middle; Sentry/ErrorBoundary import trace. Non-blocking.
+
+D) Managed paths
+   - Warning: apps/web/node_modules/@sentry/nextjs not a directory or no package.json. Non-blocking.
+
+Top 3 root causes addressed:
+1. Package exports "default" condition order (Node/Next require default last) — packages/core package.json "./hooks/useRealtime".
+2. Workspace package @parel/redis not resolved when required from @parel/core — next.config.js resolve.alias and transpilePackages.
+3. (Partial) Remaining "Attempted import error" set stems from package exports pointing to stubs or source that bundler doesn't see as exporting those names; would need package-level export/build fixes (story stubs, features/flow build, or core config entry).
+
+Build status after fixes: pnpm --filter @parel/web run build exits 0 (compiles with warnings). No more "Failed to compile" or "Can't resolve '@parel/redis'".

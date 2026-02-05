@@ -1,5 +1,13 @@
 ﻿# PAREL MVP - Aggressive Cursor Ignore
 
+# Manual
+**/__gen_backup/**
+packages/core/src/hooks/**/*.d.ts
+packages/core/src/hooks/**/*.js
+packages/core/src/hooks/**/*.jsx
+packages/core/src/hooks/**/*.map
+
+
 # Dependencies
 **/node_modules/
 **/.pnpm-store/

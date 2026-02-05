@@ -7,7 +7,7 @@
 'use client';
 
 import { createStore } from '../factory';
-import { updateStreak, getStreakMessage, type StreakData } from '../../hooks/streak';
+import { updateStreak, getStreakMessage, type StreakData } from '../../src/hooks/streak';
 
 // Local stub for sonner (missing dependency)
 const toast = { success: (_?: string) => {}, error: (_?: string) => {}, info: (_?: string) => {} };

@@ -1,5 +1,61 @@
 # CHANGELOG
 
+## [0.43.3] - 2026-02-04
+
+### Fixed
+  - apps/web build: "Cannot find module '...apps/web/node_modules/next/dist/bin/next'": With node-linker=hoisted, pnpm does not place next in apps/web/node_modules, so the .bin shim failed. build, build:web, start, and lint scripts now invoke the root Next binary explicitly (node ../../node_modules/next/dist/bin/next ...), matching the existing dev script. Optional: junction apps/web/node_modules/next → root node_modules/next restores the shim for direct `next` usage.
+  - Next module resolution for @parel/core/hooks/useXpPopup: @parel/core now emits .js for all hooks (no .jsx). Set packages/core/tsconfig.json compilerOptions.jsx to "react-jsx" (overrides base "preserve"); clean rebuild emits useXpPopup.js, useLifeRewardScreen.js, useFlowRewardScreen.js. Updated package.json exports for "./hooks/useXpPopup", "./hooks/useLifeRewardScreen", "./hooks/useFlowRewardScreen" to point to .js. require.resolve('@parel/core/hooks/useXpPopup') from apps/web resolves to dist/src/hooks/useXpPopup.js. Clear apps/web/.next when testing.
+  - pnpm workspace discovery (Windows): pnpm-workspace.yaml was rewritten in UTF-8 without BOM (PowerShell/System.IO.File + UTF8Encoding(false)) so pnpm detects workspace packages; packages: apps/*, packages/*, archive/*. Ran pnpm -w install. Verified pnpm -r exec runs in all workspace directories; no invalid package.json in apps/*, packages/*, archive/*. Node resolve from apps/web: require.resolve('@parel/core/hooks/usePresence') succeeds.
+  - @parel/core hooks under TypeScript build root: hooks moved from packages/core/hooks/* to packages/core/src/hooks/* so they are compiled to dist. Updated src/index.ts to export from './hooks/index'; state stores (streakStore, flowRewardStore, lifeRewardStore) to import from '../../src/hooks/...'; tsconfig include to drop hooks/** (now under src/**); all package.json exports from ./dist/hooks/ to ./dist/src/hooks/; fixed relative imports inside src/hooks (../utils|config|state → ../../). Core build emits dist/src/hooks/*.js; apps/web imports unchanged.
+  - @parel/core/hooks/useXpPopup resolution: packages/core/package.json export for "./hooks/useXpPopup" now includes "default" and "types" first (same pattern as usePresence/useRealtime) so Next/bundlers resolve the subpath. Source at packages/core/src/hooks/useXpPopup.tsx; build output dist/src/hooks/useXpPopup.jsx; apps/web imports unchanged. Core build green; Next resolves all @parel/core/hooks/* (remaining build failures are Prisma/@parel/api, not hook exports).
+  - Next build (webpack resolution): apps/web/next.config.js updated so production build succeeds. (1) Prisma: resolve alias `.prisma/client` and `.prisma/client/default` to root `node_modules/.prisma/client` (run `pnpm prisma:generate` before build). (2) @parel/api: alias to `packages/api` so core dist hooks resolve it. (3) @parel/ui: alias to `packages/ui` and added to transpilePackages. (4) @parel/core/config: alias so packages/ui/atoms (tooltip) resolve at build time. (5) Workspace root `node_modules` added to resolve.modules. (6) @prisma/client resolved from root via `paths: [root]`. Next build completes successfully.
+  - @parel/core/hooks/useRealtime Next dev resolution: export order in packages/core/package.json set to types → default → import → require (match usePresence). Cleared apps/web/.next and packages/core/dist; rebuilt core. require.resolve('@parel/core/hooks/useRealtime') from apps/web already returned correct path; fix was cache + export order for Turbopack. Next dev compiles.
+  - @parel/core/hooks/usePresence and @parel/core/hooks/useRealtime: packages/core/package.json exports fixed for Next resolution. (1) "./hooks/usePresence" had "import" pointing to "./hooks/usePresence.js" (missing "dist/") — set to "./dist/hooks/usePresence.js". (2) Both hooks now include "default" condition and "types" first so bundlers resolve correctly. No import-site or tsconfig path changes; barrels already export both from packages/core/hooks/index.ts.
+
+
+## [0.43.2] - 2026-02-03
+
+### Fixed
+  - Vercel workspace root: vercel.json installCommand → `pnpm -w install --frozen-lockfile`, buildCommand → `pnpm -w build:vercel` so install/build run from workspace root (fixes packages/redis ioredis resolve and node_modules missing).
+  - Deterministic CI / hoisted layout: root `.npmrc` sets `node-linker=hoisted` so dependencies are hoisted to root node_modules and packages/redis (and other workspace packages) resolve deps (e.g. ioredis) from root in Vercel/CI.
+  - packages/redis build: diagnostic step now wraps require.resolve('ioredis') in try/catch and logs error without exiting non-zero; tsc -b still runs so CI logs are useful and build only fails on actual tsc errors.
+  - TS2307 @parel/db: packages/notifications and apps/worker already declare `"@parel/db": "workspace:*"` in dependencies; packages/db has `"name": "@parel/db"`. No code changes; pnpm strict resolution satisfied.
+  - Monorepo build (node-linker=hoisted): workspace package build scripts now use `pnpm -w exec tsc -b` (or `pnpm -w exec tsc`) instead of `tsc -b` / `tsc` so TypeScript is resolved from the workspace root in CI/Vercel where local node_modules/.bin/tsc is not present (packages: notifications, validation, core, ui, api, rating, utils, shared, features/flow, narrative, lore, types; manual: apps/worker build script and vercel.json installCommand/buildCommand if not yet set).
+
+
+
+## [0.43.1] - 2026-02-03
+
+### Fixed 
+  - Production finally alive after month!!!
+  - @parel/features/flow barrel: consolidated re-exports from flow-skeleton so getNextQuestion, startFlow, getFlowResult, getAvailableCategories, answerQuestion, skipQuestion, isUserAuthenticated and types FlowSession, FlowQuestion, FlowResult are all exported from one place (aligns with apps/web imports; build green).
+  - Clean monorepo build (@parel/core resolving @parel/types): packages/types build script now removes tsconfig.tsbuildinfo when dist is missing so tsc -b always emits dist after a clean; @parel/core then resolves @parel/types and build:vercel passes.
+  - @parel/redis: build script logs cwd, node version, and require.resolve('ioredis') before tsc -b for CI diagnostics; ioredis remains in dependencies.
+  - @parel/validation: package.json exports added for "./job", "./question", "./sssc" pointing to dist so Next/Vercel can resolve those subpaths.
+
+## [0.42.39] - 2026-02-02
+
+### Fixed
+  - Missing exports (build:vercel): (A) @parel/validation/auth — added package.json exports "./auth" so SignupSchema resolves. (B) @parel/features/flow — re-export getNextQuestion, getFlowResult, startFlow, getAvailableCategories from flow-skeleton. (C) @parel/core/config/flags — added getFlags() returning getFeaturesConfig() for health/extended. (D) apps/web barrels: formatSession exported from lib/services/combatService; logFlowEvent stub in lib/metrics; TelemetryEvents in lib/telemetry.
+  - DATABASE_URL build crash for /api/health/db: route now uses getPrisma() from @/lib/db inside handler; when DATABASE_URL missing returns 200 with dbSkipped: true (no throw at import).
+
+  - MAX_FEATURED_ITEMS import: added MAX_FEATURED_ITEMS, MarketItem, and MarketItemCategory to apps/web/lib/marketplace/types.ts so imports from './types' resolve (no import-site changes).
+  - Prisma build-time crash: lazy db client in lib/db.ts — no PrismaClient or throw at module load; getPrisma() returns singleton or null when DATABASE_URL missing; /api/loot/check uses getPrisma() inside handler and returns 503 when DB not configured so build succeeds without DATABASE_URL.
+
+  - Vercel / strict pnpm: added missing workspace deps to apps/web so @parel/core, @parel/ui, @parel/story, @parel/features, @parel/validation resolve in clean installs: @parel/features, @parel/story, @parel/ui, @parel/validation (all workspace:*).
+  - @prisma/client shadowing: removed path override in apps/web/tsconfig.json that mapped @prisma/client to packages/db/generated (zod schemas). @prisma/client now resolves to the real Prisma client; @parel/db/client re-exports from real @prisma/client.
+  - Missing module @/lib/config/itemEffects: added re-export from @parel/core/config/itemEffects
+
+## [0.42.38] - 2026-02-02
+
+### Fixed
+  - Missing modules: added @/components/ui/separator, @/lib/telemetry/telemetry-tracker (stub)
+  - Invalid UTF-8 in app/shop/page.tsx (corrupted emoji fallback and tip text)
+  - Syntax error in app/story/feed/page.tsx (handleStoryClick extra braces/dead code)
+  - Duplicate variable redis in lib/middleware/culturalFilter.ts
+  - Missing @/store/useRegionStore (stub for shop page)
+
+
 ## [0.42.37] - 2026-01-30
 
 ### Fixed
@@ -112,7 +168,7 @@ packages/core/config/index.ts — Same fix, packages/core/hooks/index.ts — Rem
 - Major changes include monorepo restructuring, @parel/core refactor,
   Next.js + pnpm stabilization, and demo resurrection.
 
-### Major changes since 0.36
+### Major changes since 0.36 - LOST Changelog
 - Refactored monorepo structure - more than 300 fixes
 - Introduced strict package exports
 - Split core logic into @parel/core
