@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import { safeAsync, notFoundError } from '@/lib/api-handler';
 
 // Get the current question in a session

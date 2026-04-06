@@ -1,0 +1,7 @@
+/**
+ * GET /api/user/stats
+ * Get user combat stats
+ * v0.36.35 - Combat Engine 2.0
+ */
+export declare const runtime = "nodejs";
+export declare const GET: any;

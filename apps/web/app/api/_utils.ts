@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 

@@ -1,7 +1,18 @@
 'use client';
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/apiBase";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { apiFetch } from '@/lib/apiBase';
+
+const ReportsCharts = dynamic(() => import('./ReportsCharts'), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-card border-2 border-border rounded-xl p-6 space-y-8">
+      <div className="h-80 animate-pulse bg-bg rounded-lg" />
+      <div className="h-96 animate-pulse bg-bg rounded-lg" />
+    </div>
+  ),
+});
 
 export default function ReportsPage() {
   const [data, setData] = useState<any>(null);
@@ -77,71 +88,11 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* XP Distribution Chart */}
-        <div className="bg-card border-2 border-border rounded-xl p-6">
-          <h2 className="text-2xl font-bold text-text mb-6">XP Distribution</h2>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.xpDistribution}>
-                <XAxis 
-                  dataKey="range" 
-                  stroke="#94a3b8"
-                  style={{ fill: '#f1f5f9' }}
-                />
-                <YAxis 
-                  stroke="#94a3b8"
-                  style={{ fill: '#f1f5f9' }}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1e293b', 
-                    border: '2px solid #334155',
-                    borderRadius: '8px',
-                    color: '#f1f5f9'
-                  }}
-                />
-                <Bar dataKey="count" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Top Users Pie Chart */}
-        <div className="bg-card border-2 border-border rounded-xl p-6">
-          <h2 className="text-2xl font-bold text-text mb-6">Top 10 Users by XP</h2>
-          <div className="h-96">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data.topUsers}
-                  dataKey="xp"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={120}
-                  fill="#3b82f6"
-                  label={({ name, xp }) => `${name}: ${xp}`}
-                  labelStyle={{ fill: '#f1f5f9', fontSize: '12px' }}
-                >
-                  {data.topUsers.map((_: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1e293b', 
-                    border: '2px solid #334155',
-                    borderRadius: '8px',
-                    color: '#f1f5f9'
-                  }}
-                />
-                <Legend 
-                  wrapperStyle={{ color: '#f1f5f9' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {/* Charts (recharts loaded dynamically) */}
+        <ReportsCharts
+          xpDistribution={data.xpDistribution}
+          topUsers={data.topUsers}
+        />
 
         {/* Top Users Table */}
         <div className="bg-card border-2 border-border rounded-xl p-6">

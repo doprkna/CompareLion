@@ -2,6 +2,7 @@
  * Item Service
  * Handles item generation, effects application, and stat calculations
  * v0.26.5 - Items 2.0: Rarity, Power & Effects
+ * Alpha: Inventory canon = UserItem (stash). CharacterEquipment uses userItemId.
  */
 
 import { prisma } from '@/lib/db';
@@ -77,36 +78,31 @@ export async function generateItem(
 }
 
 /**
- * Apply item effects based on equipped items and trigger event
+ * Apply item effects based on equipped items (dual-read: CharacterEquipment.userItemId first, InventoryItem fallback)
  */
 export async function applyItemEffects(
   userId: string,
   trigger: EffectTrigger,
   baseStats: Record<string, number> = {}
 ): Promise<Record<string, number>> {
-  // Get all equipped items with effects
-  const equippedItems = await prisma.inventoryItem.findMany({
+  const modifiers: Record<string, number> = { ...baseStats };
+
+  // Canonical: CharacterEquipment.userItemId -> UserItem has no effectKey; Item has effect (string). Skip for now.
+  // Legacy: InventoryItem equipped with effectKey
+  const legacyItems = await prisma.inventoryItem.findMany({
     where: {
       userId,
       equipped: true,
       effectKey: { not: null },
     },
-    select: {
-      effectKey: true,
-    },
+    select: { effectKey: true },
   });
 
-  // Start with provided base stats
-  const modifiers: Record<string, number> = { ...baseStats };
-
-  for (const invItem of equippedItems) {
+  for (const invItem of legacyItems) {
     if (!invItem.effectKey) continue;
-
     const def = ITEM_EFFECTS[invItem.effectKey];
     if (!def || def.trigger !== trigger) continue;
-
     logger.debug('[ItemEffect]', { userId, trigger, effectKey: invItem.effectKey });
-
     switch (def.type) {
       case 'buff':
       case 'passive': {
@@ -122,40 +118,52 @@ export async function applyItemEffects(
     }
   }
 
-  // Safety caps for multipliers (<= 3x)
   for (const [key, value] of Object.entries(modifiers)) {
-    if (key.endsWith('Mult')) {
-      modifiers[key] = Math.min(value, 3.0);
-    }
+    if (key.endsWith('Mult')) modifiers[key] = Math.min(value, 3.0);
   }
-
   return modifiers;
 }
 
 /**
- * Get total power bonus from equipped items (with rarity multipliers)
+ * Get total power bonus from equipped items (dual-read: CharacterEquipment.userItemId first, InventoryItem fallback)
  */
 export async function getTotalItemPower(userId: string): Promise<number> {
-  const equippedItems = await prisma.inventoryItem.findMany({
-    where: {
-      userId,
-      equipped: true,
-    },
-  });
-
   let totalPower = 0;
 
-  for (const item of equippedItems) {
+  // Canonical: CharacterEquipment with userItemId -> UserItem -> Item
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { activeCharacterId: true },
+  });
+  if (user?.activeCharacterId) {
+    const equip = await prisma.characterEquipment.findMany({
+      where: { characterId: user.activeCharacterId, userItemId: { not: null } },
+      include: { userItem: { include: { item: true } } },
+    });
+    for (const e of equip) {
+      if (!e.userItem?.item) continue;
+      const item = e.userItem.item;
+      const rarity = (item.rarity || 'common') as RarityKey;
+      const power = item.power ?? 0;
+      const rarityDef = RARITIES[rarity] || RARITIES.common;
+      totalPower += power * rarityDef.rarityMultiplier;
+    }
+  }
+
+  // Legacy: InventoryItem equipped
+  const legacyItems = await prisma.inventoryItem.findMany({
+    where: { userId, equipped: true },
+  });
+  for (const item of legacyItems) {
     const rarityDef = RARITIES[item.rarity as RarityKey] || RARITIES.common;
-    const itemPower = item.power * rarityDef.rarityMultiplier;
-    totalPower += itemPower;
+    totalPower += item.power * rarityDef.rarityMultiplier;
   }
 
   return Math.floor(totalPower);
 }
 
 /**
- * Create inventory item from generated item data
+ * Create inventory item from generated item data (legacy - do not use from RPG paths)
  */
 export async function createInventoryItem(
   userId: string,
@@ -167,6 +175,9 @@ export async function createInventoryItem(
     itemKey: string;
   }
 ): Promise<{ id: string }> {
+  if (process.env.NODE_ENV === 'development') {
+    logger.warn('[ItemService] InventoryItem created (legacy). Check caller - use addItemToInventory for RPG.');
+  }
   const inventoryItem = await prisma.inventoryItem.create({
     data: {
       userId,
@@ -183,9 +194,9 @@ export async function createInventoryItem(
 }
 
 /**
- * Equip an item - moves from inventory to equipped slot
- * Unequips existing item of same type if any
- * v0.36.3 - Equipment/inventory sync
+ * Equip an item (DEPRECATED - writes InventoryItem, legacy only)
+ * Use equipCharacterItem(userId, characterId, slot, userItemId) for canonical RPG.
+ * Kept for non-RPG callers; RPG routes use canonical API.
  */
 export async function equipItem(
   userId: string,
@@ -196,88 +207,12 @@ export async function equipItem(
   unequippedItem?: any;
   stats: any;
 }> {
-  // Verify ownership and get item with type
-  const inventoryItem = await prisma.inventoryItem.findUnique({
-    where: { id: inventoryItemId },
-    include: {
-      item: true,
-    },
-  });
-
-  if (!inventoryItem) {
-    throw new Error('Inventory item not found');
-  }
-
-  if (inventoryItem.userId !== userId) {
-    throw new Error('Not authorized to equip this item');
-  }
-
-  // If already equipped, do nothing
-  if (inventoryItem.equipped) {
-    const stats = await updateHeroStats(userId);
-    return {
-      success: true,
-      equippedItem: inventoryItem,
-      stats,
-    };
-  }
-
-  // Find existing equipped item of same type (if slot-based)
-  // For now, we allow multiple items equipped, but we can unequip same type if needed
-  const itemType = inventoryItem.item?.type;
-  let unequippedItem = null;
-
-  if (itemType) {
-    // Find other equipped items of same type and unequip them (one per type)
-    const existingEquipped = await prisma.inventoryItem.findFirst({
-      where: {
-        userId,
-        equipped: true,
-        item: {
-          type: itemType,
-        },
-        id: { not: inventoryItemId },
-      },
-    });
-
-    if (existingEquipped) {
-      unequippedItem = await prisma.inventoryItem.update({
-        where: { id: existingEquipped.id },
-        data: { equipped: false },
-      });
-    }
-  }
-
-  // Equip the new item
-  const equippedItem = await prisma.inventoryItem.update({
-    where: { id: inventoryItemId },
-    data: { equipped: true },
-    include: {
-      item: true,
-    },
-  });
-
-  // Update hero stats
-  const stats = await updateHeroStats(userId);
-
-  logger.info('[ItemService] Item equipped', {
-    userId,
-    inventoryItemId,
-    itemType,
-    unequippedItemId: unequippedItem?.id,
-  });
-
-  return {
-    success: true,
-    equippedItem,
-    unequippedItem: unequippedItem || undefined,
-    stats,
-  };
+  throw new Error('Use canonical equip API (characterId, slot, userItemId). equipItem is deprecated for RPG.');
 }
 
 /**
- * Unequip an item - moves from equipped slot back to inventory
- * v0.36.3 - Equipment/inventory sync
+ * Unequip an item (DEPRECATED - wrote InventoryItem, legacy only)
+ * Use unequipCharacterSlot(userId, characterId, slot) for canonical RPG.
  */
 export async function unequipItem(
   userId: string,
@@ -287,55 +222,100 @@ export async function unequipItem(
   unequippedItem: any;
   stats: any;
 }> {
-  // Verify ownership
-  const inventoryItem = await prisma.inventoryItem.findUnique({
-    where: { id: inventoryItemId },
-  });
+  throw new Error('Use canonical unequip API (characterId, slot). unequipItem is deprecated for RPG.');
+}
 
-  if (!inventoryItem) {
-    throw new Error('Inventory item not found');
+/**
+ * Equip item to character slot (alpha canonical - UserItem)
+ * Validates character and userItem belong to same user.
+ * Inventory canon: UserItem.
+ */
+export async function equipCharacterItem(
+  userId: string,
+  characterId: string,
+  slot: string,
+  userItemId: string
+): Promise<{
+  success: boolean;
+  equipment: { characterId: string; slot: string; userItemId: string };
+}> {
+  const [character, userItem] = await Promise.all([
+    prisma.character.findFirst({ where: { id: characterId, userId } }),
+    prisma.userItem.findUnique({
+      where: { id: userItemId },
+      include: { item: true },
+    }),
+  ]);
+
+  if (!character) {
+    throw new Error('Character not found or not owned');
+  }
+  if (!userItem) {
+    throw new Error('Item not found in stash');
+  }
+  if (userItem.userId !== userId) {
+    throw new Error('Item does not belong to you');
   }
 
-  if (inventoryItem.userId !== userId) {
-    throw new Error('Not authorized to unequip this item');
-  }
-
-  if (!inventoryItem.equipped) {
-    // Already unequipped, just return stats
-    const stats = await updateHeroStats(userId);
-    return {
-      success: true,
-      unequippedItem: inventoryItem,
-      stats,
-    };
-  }
-
-  // Unequip the item
-  const unequippedItem = await prisma.inventoryItem.update({
-    where: { id: inventoryItemId },
-    data: { equipped: false },
-    include: {
-      item: true,
+  await prisma.characterEquipment.upsert({
+    where: {
+      characterId_slot: { characterId, slot },
+    },
+    create: {
+      characterId,
+      slot,
+      userItemId,
+    },
+    update: {
+      userItemId,
+      inventoryItemId: null, // clear legacy when setting canonical
     },
   });
 
-  // Update hero stats
-  const stats = await updateHeroStats(userId);
-
-  logger.info('[ItemService] Item unequipped', {
+  logger.info('[ItemService] Character item equipped', {
     userId,
-    inventoryItemId,
+    characterId,
+    slot,
+    userItemId,
   });
 
   return {
     success: true,
-    unequippedItem,
-    stats,
+    equipment: { characterId, slot, userItemId },
   };
 }
 
 /**
- * Equip a UserItem by itemId
+ * Unequip character slot (alpha canonical)
+ */
+export async function unequipCharacterSlot(
+  userId: string,
+  characterId: string,
+  slot: string
+): Promise<{ success: boolean }> {
+  const character = await prisma.character.findFirst({
+    where: { id: characterId, userId },
+  });
+
+  if (!character) {
+    throw new Error('Character not found or not owned');
+  }
+
+  await prisma.characterEquipment.deleteMany({
+    where: { characterId, slot },
+  });
+
+  logger.info('[ItemService] Character slot unequipped', {
+    userId,
+    characterId,
+    slot,
+  });
+
+  return { success: true };
+}
+
+/**
+ * Equip a UserItem by itemId (legacy - non-character equip)
  * Enforces slot rules: only 1 item per slot, unequips previous item in same slot
  * v0.36.34 - Standardized inventory system
  */

@@ -1,5 +1,4 @@
-#!/usr/bin/env tsx
-/**
+﻿/**
  * Data Flow Audit Script
  * Detects hard-coded demo users, mock data, and DB connection issues
  * that prevent the UI from displaying real data from PostgreSQL
@@ -163,7 +162,7 @@ function scanFile(filePath: string): void {
       });
     });
   } catch (error) {
-    console.warn(`⚠️  Could not scan ${filePath}:`, error);
+    console.warn(`âš ï¸  Could not scan ${filePath}:`, error);
   }
 }
 
@@ -182,16 +181,16 @@ function scanDirectory(dir: string): void {
       }
     });
   } catch (error) {
-    console.warn(`⚠️  Could not scan directory ${dir}:`, error);
+    console.warn(`âš ï¸  Could not scan directory ${dir}:`, error);
   }
 }
 
 function printReport(): void {
-  console.log('\n🔍 DATA FLOW AUDIT REPORT\n');
+  console.log('\nðŸ” DATA FLOW AUDIT REPORT\n');
   console.log('=' .repeat(80));
   
   if (issues.length === 0) {
-    console.log('\n✅ No issues found! Your data flow looks healthy.\n');
+    console.log('\nâœ… No issues found! Your data flow looks healthy.\n');
     return;
   }
   
@@ -201,22 +200,22 @@ function printReport(): void {
   const medium = issues.filter(i => i.severity === 'medium');
   const low = issues.filter(i => i.severity === 'low');
   
-  console.log(`\n📊 SUMMARY:`);
-  console.log(`   🔴 Critical: ${critical.length}`);
-  console.log(`   🟠 High: ${high.length}`);
-  console.log(`   🟡 Medium: ${medium.length}`);
-  console.log(`   🟢 Low: ${low.length}`);
+  console.log(`\nðŸ“Š SUMMARY:`);
+  console.log(`   ðŸ”´ Critical: ${critical.length}`);
+  console.log(`   ðŸŸ  High: ${high.length}`);
+  console.log(`   ðŸŸ¡ Medium: ${medium.length}`);
+  console.log(`   ðŸŸ¢ Low: ${low.length}`);
   console.log(`   Total: ${issues.length}\n`);
   
   // Print critical issues first
   if (critical.length > 0) {
-    console.log('\n🔴 CRITICAL ISSUES (Fix these first!):\n');
+    console.log('\nðŸ”´ CRITICAL ISSUES (Fix these first!):\n');
     critical.forEach((issue, idx) => {
       console.log(`${idx + 1}. [${issue.type.toUpperCase()}] ${issue.file}:${issue.line}`);
       console.log(`   ${issue.message}`);
       console.log(`   Code: ${issue.code}`);
       if (issue.suggestedFix) {
-        console.log(`   ✅ Fix: ${issue.suggestedFix}`);
+        console.log(`   âœ… Fix: ${issue.suggestedFix}`);
       }
       console.log();
     });
@@ -224,13 +223,13 @@ function printReport(): void {
   
   // Print high severity issues
   if (high.length > 0) {
-    console.log('\n🟠 HIGH PRIORITY ISSUES:\n');
+    console.log('\nðŸŸ  HIGH PRIORITY ISSUES:\n');
     high.forEach((issue, idx) => {
       console.log(`${idx + 1}. [${issue.type.toUpperCase()}] ${issue.file}:${issue.line}`);
       console.log(`   ${issue.message}`);
       console.log(`   Code: ${issue.code}`);
       if (issue.suggestedFix) {
-        console.log(`   ✅ Fix: ${issue.suggestedFix}`);
+        console.log(`   âœ… Fix: ${issue.suggestedFix}`);
       }
       console.log();
     });
@@ -238,7 +237,7 @@ function printReport(): void {
   
   // Print medium severity issues (condensed)
   if (medium.length > 0) {
-    console.log('\n🟡 MEDIUM PRIORITY ISSUES:\n');
+    console.log('\nðŸŸ¡ MEDIUM PRIORITY ISSUES:\n');
     const grouped = medium.reduce((acc, issue) => {
       const key = issue.type;
       if (!acc[key]) acc[key] = [];
@@ -259,7 +258,7 @@ function printReport(): void {
   }
   
   console.log('\n' + '=' .repeat(80));
-  console.log('\n💡 NEXT STEPS:\n');
+  console.log('\nðŸ’¡ NEXT STEPS:\n');
   console.log('1. Fix all CRITICAL issues (demo user references and session mismatches)');
   console.log('2. Review HIGH priority issues (mock data and role filters)');
   console.log('3. Verify DATABASE_URL is consistent in all .env files');
@@ -268,10 +267,10 @@ function printReport(): void {
 }
 
 // Main execution
-console.log('🔍 Starting data flow audit...\n');
+console.log('ðŸ” Starting data flow audit...\n');
 
 SCAN_DIRS.forEach(dir => {
-  console.log(`📁 Scanning ${dir}...`);
+  console.log(`ðŸ“ Scanning ${dir}...`);
   scanDirectory(dir);
 });
 
@@ -279,7 +278,7 @@ printReport();
 
 // Generate fix script suggestions
 if (issues.filter(i => i.severity === 'critical').length > 0) {
-  console.log('\n📝 Generating automated fixes...\n');
+  console.log('\nðŸ“ Generating automated fixes...\n');
   console.log('Run these commands to auto-fix some issues:\n');
   
   // Group critical issues by file

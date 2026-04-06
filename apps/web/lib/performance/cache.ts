@@ -1,228 +1,105 @@
 /**
- * Performance Caching Layer (v0.11.1)
- * 
- * Redis-backed caching for API endpoints to improve response times.
+ * Performance Caching Layer - Redis when enabled, no-op otherwise.
  */
-
-import Redis from "ioredis";
-import { logger } from "@/lib/logger";
-
-const REDIS_URL = process.env.REDIS_URL;
-
-let _redis: Redis | null = null;
-
-function getRedis(): Redis | null {
-  if (!_redis && REDIS_URL) {
-    try {
-      _redis = new Redis(REDIS_URL, {
-        maxRetriesPerRequest: 3,
-        enableReadyCheck: true,
-        lazyConnect: true,
-      });
-      
-      _redis.on("error", (err) => {
-        logger.warn("[Cache] Redis connection error", { message: err.message });
-      });
-      
-      _redis.on("ready", () => {
-        // Connected
-      });
-    } catch (error) {
-      logger.warn("[Cache] Redis initialization failed, falling back to no-cache");
-      _redis = null;
-    }
-  }
-  return _redis;
-}
+import { getRedisClient, hasRedis } from '@parel/redis';
 
 export interface CacheOptions {
-  ttl?: number; // Time to live in seconds
-  tags?: string[]; // Cache tags for invalidation
+  ttl?: number;
+  tags?: string[];
 }
 
-/**
- * Default TTL values for different endpoint types
- */
 export const CACHE_TTL = {
-  FEED: 30, // 30 seconds
-  LEADERBOARD: 60, // 1 minute
-  ACTIVITY: 30, // 30 seconds
-  USER_PROFILE: 120, // 2 minutes
-  STATIC_DATA: 300, // 5 minutes
-  STATS: 60, // 1 minute
+  FEED: 30,
+  LEADERBOARD: 60,
+  ACTIVITY: 30,
+  USER_PROFILE: 120,
+  STATIC_DATA: 300,
+  STATS: 60,
 } as const;
 
-/**
- * Get cached data
- */
 export async function getCached<T>(key: string): Promise<T | null> {
-  const redis = getRedis();
+  const redis = getRedisClient();
   if (!redis) return null;
-  
   try {
     const data = await redis.get(key);
     if (!data) return null;
-    
     return JSON.parse(data) as T;
-  } catch (error) {
-    logger.warn('[Cache] Get failed', { key, error });
+  } catch {
     return null;
   }
 }
 
-/**
- * Set cached data
- */
-export async function setCached<T>(
-  key: string,
-  value: T,
-  options: CacheOptions = {}
-): Promise<void> {
-  const redis = getRedis();
+export async function setCached<T>(key: string, value: T, options: CacheOptions = {}): Promise<void> {
+  const redis = getRedisClient();
   if (!redis) return;
-  
   const { ttl = CACHE_TTL.STATIC_DATA, tags = [] } = options;
-  
   try {
-    const serialized = JSON.stringify(value);
-    
-    // Set with TTL
-    await redis.setex(key, ttl, serialized);
-    
-    // Store tags for invalidation
+    await redis.setex(key, ttl, JSON.stringify(value));
     if (tags.length > 0) {
       for (const tag of tags) {
         await redis.sadd(`tag:${tag}`, key);
         await redis.expire(`tag:${tag}`, ttl);
       }
     }
-  } catch (error) {
-    logger.warn('[Cache] Set failed', { key, error });
-  }
+  } catch {}
 }
 
-/**
- * Delete cached data
- */
 export async function deleteCached(key: string): Promise<void> {
-  const redis = getRedis();
+  const redis = getRedisClient();
   if (!redis) return;
-  
-  try {
-    await redis.del(key);
-  } catch (error) {
-    logger.warn('[Cache] Delete failed', { key, error });
-  }
+  try { await redis.del(key); } catch {}
 }
 
-/**
- * Invalidate all cache entries with a specific tag
- */
 export async function invalidateByTag(tag: string): Promise<void> {
-  const redis = getRedis();
+  const redis = getRedisClient();
   if (!redis) return;
-  
   try {
     const keys = await redis.smembers(`tag:${tag}`);
-    
     if (keys.length > 0) {
       await redis.del(...keys);
       await redis.del(`tag:${tag}`);
     }
-  } catch (error) {
-    logger.warn('[Cache] Invalidate tag failed', { tag, error });
-  }
+  } catch {}
 }
 
-/**
- * Wrapper for caching API responses
- */
 export async function withCache<T>(
   key: string,
   fetcher: () => Promise<T>,
   options: CacheOptions = {}
 ): Promise<T> {
-  // Try cache first
   const cached = await getCached<T>(key);
-  if (cached !== null) {
-    return cached;
-  }
-  
-  // Fetch fresh data
+  if (cached !== null) return cached;
   const data = await fetcher();
-  
-  // Cache for next time
   await setCached(key, data, options);
-  
   return data;
 }
 
-/**
- * Generate cache key from request parameters
- */
 export function getCacheKey(
   endpoint: string,
   params: Record<string, string | number | boolean | undefined> = {}
 ): string {
   const sortedParams = Object.keys(params)
     .sort()
-    .map((key) => `${key}=${params[key]}`)
-    .join("&");
-  
+    .map((k) => `${k}=${params[k]}`)
+    .join('&');
   return sortedParams ? `${endpoint}?${sortedParams}` : endpoint;
 }
 
-/**
- * Clear all cache
- */
 export async function clearCache(): Promise<void> {
-  const redis = getRedis();
+  const redis = getRedisClient();
   if (!redis) return;
-  
-  try {
-    await redis.flushdb();
-  } catch (error) {
-    logger.warn("[Cache] Clear all failed", error);
-  }
+  try { await redis.flushdb(); } catch {}
 }
 
-/**
- * Get cache statistics
- */
-export async function getCacheStats(): Promise<{
-  connected: boolean;
-  keys: number;
-  memory: string;
-}> {
-  const redis = getRedis();
-  if (!redis) {
-    return { connected: false, keys: 0, memory: "0" };
-  }
-  
+export async function getCacheStats(): Promise<{ connected: boolean; keys: number; memory: string }> {
+  const redis = getRedisClient();
+  if (!redis) return { connected: false, keys: 0, memory: '0' };
   try {
     const dbsize = await redis.dbsize();
-    const info = await redis.info("memory");
-    const memoryMatch = info.match(/used_memory_human:([^\r\n]+)/);
-    const memory = memoryMatch ? memoryMatch[1] : "unknown";
-    
-    return {
-      connected: true,
-      keys: dbsize,
-      memory,
-    };
-  } catch (error) {
-    return { connected: false, keys: 0, memory: "0" };
+    const info = await redis.info('memory');
+    const m = info.match(/used_memory_human:([^\r\n]+)/);
+    return { connected: true, keys: dbsize, memory: m ? m[1] : 'unknown' };
+  } catch {
+    return { connected: false, keys: 0, memory: '0' };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

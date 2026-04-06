@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { startFlow } from '@parel/features/flow';
 import { safeAsync, successResponse, authError, notFoundError } from '@/lib/api-handler';
+import { logEvent } from '@/lib/logEvent';
 import { z } from 'zod';
 
 // Force Node.js runtime for Prisma (v0.35.16d)
@@ -40,7 +41,12 @@ export const POST = safeAsync(async (req: NextRequest) => {
   
   // Start flow
   const flowSession = await startFlow(user.id, categoryId);
-  
+  logEvent({
+    type: 'flow_start',
+    userId: user.id,
+    message: 'Flow started',
+    params: { categoryId, channel: 'flow_demo' },
+  });
   return successResponse(flowSession, 'Flow started');
 });
 

@@ -11,8 +11,8 @@ async function main() {
     const passwordHash = await hash("password123", 10);
     await prisma.user.upsert({
       where: { email },
-      update: {},
-      create: { email, passwordHash, theme: "light" }
+      update: { birthYear: 1990 },
+      create: { email, passwordHash, theme: "light", birthYear: 1990 }
     });
   }
 

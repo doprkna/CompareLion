@@ -1,0 +1,20 @@
+import { TaskSchema } from '@parel/db/generated';
+import { z } from 'zod';
+export type TaskDTO = z.infer<typeof TaskSchema>;
+export declare function toTaskDTO(t: unknown): TaskDTO;
+export declare function toTaskDTOSafe(t: unknown): z.ZodSafeParseResult<{
+    status: "NEW" | "ROUTED" | "IN_PROGRESS" | "DONE" | "BLOCKED";
+    source: "WEB" | "EMAIL" | "API";
+    assigneeType: "AUTO" | "VA";
+    id: string;
+    orgId: string;
+    createdById: string;
+    title: string;
+    description: string | null;
+    region: string | null;
+    priority: string;
+    assigneeId: string | null;
+    dueAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+}>;

@@ -1,0 +1,10 @@
+{
+  "packKey": "alpha-feedback-v01",
+  "version": "1.0.0",
+  "type": "polls",
+  "title": "Alpha Feedback – v0.1",
+  "description": "5-question feedback pack for alpha testers.",
+  "schemaVersion": 1,
+  "createdAt": "2026-03-02",
+  "source": "ensureAlphaFeedbackPoll migration"
+}

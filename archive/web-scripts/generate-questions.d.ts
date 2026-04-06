@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Question Generation Worker Script
  *

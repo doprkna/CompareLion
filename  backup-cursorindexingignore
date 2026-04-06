@@ -1,0 +1,60 @@
+# Cursor Index Clamp
+
+# --- HARD CLAMP ---
+apps/
+packages/
+
+!apps/web/
+!apps/web/app/
+!apps/web/app/**
+
+# --- whitelist: web backend surfaces ---
+!apps/web/app/api/
+!apps/web/app/api/**
+!apps/web/lib/
+!apps/web/lib/**
+!apps/web/hooks/
+!apps/web/hooks/**
+
+!apps/web/app/**/page.tsx
+!apps/web/app/**/layout.tsx
+!apps/web/app/**/loading.tsx
+!apps/web/app/**/error.tsx
+!apps/web/app/**/not-found.tsx
+
+!packages/core/src/
+!packages/core/src/**
+
+# --- cut big UI forests (do not index full UI) ---
+apps/web/components/
+apps/web/components/**
+apps/web/app/**/components/
+apps/web/app/**/components/**
+apps/web/public/
+apps/web/public/**
+
+# --- generated / build / deps ---
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/.turbo/
+**/.vercel/
+**/.pnpm-store/
+**/coverage/
+archive/
+**/archive/
+packages/**/prisma/
+**/*.log
+**/*.tsbuildinfo
+**/*.map
+
+# --- OPTIONAL: whitelist package src (uncomment only if needed) ---
+# !packages/core/src/
+# !packages/core/src/**
+# !packages/db/src/
+# !packages/db/src/**
+# !packages/validation/src/
+# !packages/validation/src/**
+# !packages/types/src/
+# !packages/types/src/**

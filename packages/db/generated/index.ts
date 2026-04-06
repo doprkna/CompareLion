@@ -78,7 +78,13 @@ export const isValidDecimalInput =
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const UserScalarFieldEnumSchema = z.enum(['id','email','passwordHash','name','phone','language','country','dateOfBirth','avatarUrl','username','bio','statusMessage','karma','avatarFrameId','isPublicProfile','visibility','banned','motto','theme','funds','diamonds','xp','level','lastLoginAt','lastActiveAt','createdAt','image','streakCount','lastAnsweredAt','score','questionsAnswered','questionsCreated','emailVerified','emailVerifiedAt','newsletterOptIn','role','archetype','archetypeKey','stats','lastArchetypeReroll','settings','lang','localeCode','ageGroup','region','interests','tone','onboardingCompleted','combatKills','combatBattles','combatHighestStreak','statCreativity','statHealth','statKnowledge','statSleep','statSocial','allowPublicCompare','canBeAdded','badgeType','karmaScore','prestigeScore','showBadges','coins','seasonalXP','seasonLevel','seasonXP','prestigeCount','legacyPerk','prestigeTitle','prestigeBadgeId','prestigeColorTheme','currentGeneration','avatarTheme','moodFeed','equippedTitle','equippedIcon','equippedBackground']);
+export const UserScalarFieldEnumSchema = z.enum(['id','email','passwordHash','name','phone','language','country','dateOfBirth','birthYear','avatarUrl','username','bio','statusMessage','karma','avatarFrameId','isPublicProfile','visibility','banned','motto','theme','funds','diamonds','xp','level','lastLoginAt','lastActiveAt','createdAt','image','streakCount','lastAnsweredAt','score','questionsAnswered','questionsCreated','predictionCorrectCount','predictionResolvedCount','emailVerified','emailVerifiedAt','newsletterOptIn','role','allowFollow','isPrivate','archetype','archetypeKey','stats','lastArchetypeReroll','settings','lastNewsSeenAt','starterFlowCompletedAt','feedbackRewardClaimed','isBeta','lang','localeCode','ageGroup','region','countryCode','interests','tone','onboardingCompleted','combatKills','combatBattles','combatHighestStreak','rpgEnabled','rpgCreatedAt','rpgPromptSeenAt','rpgDismissedAt','activeCharacterId','statCreativity','statHealth','statKnowledge','statSleep','statSocial','allowPublicCompare','canBeAdded','badgeType','karmaScore','prestigeScore','showBadges','coins','seasonalXP','seasonLevel','seasonXP','prestigeCount','legacyPerk','prestigeTitle','prestigeBadgeId','prestigeColorTheme','currentGeneration','avatarTheme','moodFeed','equippedTitle','equippedIcon','equippedBackground']);
+
+export const FlowRewardLogScalarFieldEnumSchema = z.enum(['id','userId','type','amount','rarity','createdAt']);
+
+export const AppVisitScalarFieldEnumSchema = z.enum(['id','userId','createdAt']);
+
+export const TranslationSuggestionScalarFieldEnumSchema = z.enum(['id','userId','entityType','entityId','language','original','suggestion','status','createdAt']);
 
 export const AffinityScalarFieldEnumSchema = z.enum(['id','sourceId','targetId','type','strength','mutual','visibility','createdAt','updatedAt']);
 
@@ -108,11 +114,25 @@ export const QuestionVersionTagScalarFieldEnumSchema = z.enum(['id','questionVer
 
 export const QuestionGenerationScalarFieldEnumSchema = z.enum(['id','ssscId','targetCount','status','prompt','insertedCount','rawResponse','finishedAt','createdAt','updatedAt']);
 
-export const FlowQuestionScalarFieldEnumSchema = z.enum(['id','categoryId','locale','text','type','isActive','createdAt','updatedAt']);
+export const FlowQuestionScalarFieldEnumSchema = z.enum(['id','categoryId','locale','tags','arcStep','text','type','isActive','challengeEnabled','wikiFillCandidate','worldContextKey','worldContextRegionPolicy','worldContextLabel','createdAt','updatedAt']);
+
+export const OpsRunScalarFieldEnumSchema = z.enum(['id','type','status','startedAt','finishedAt','durationMs','counts','message','reportPath','triggeredBy','entityType','entityId','entityLabel','params','warnings','errorStack']);
 
 export const FlowQuestionOptionScalarFieldEnumSchema = z.enum(['id','questionId','label','value','order']);
 
 export const UserResponseScalarFieldEnumSchema = z.enum(['id','userId','questionId','optionIds','numericVal','textVal','skipped','createdAt','updatedAt']);
+
+export const QuestionBookmarkScalarFieldEnumSchema = z.enum(['id','userId','questionId','createdAt']);
+
+export const PremiumUnlockScalarFieldEnumSchema = z.enum(['id','userId','kind','refId','createdAt']);
+
+export const QuestionReactionScalarFieldEnumSchema = z.enum(['id','userId','questionId','type','createdAt']);
+
+export const UserFollowScalarFieldEnumSchema = z.enum(['id','followerId','followedId','createdAt']);
+
+export const QuestionChallengeScalarFieldEnumSchema = z.enum(['id','questionId','challengerId','challengedId','status','challengerAnswerId','challengedAnswerId','xpGranted','createdAt','completedAt']);
+
+export const QuestionReportScalarFieldEnumSchema = z.enum(['id','userId','questionId','reason','createdAt']);
 
 export const SynchTestScalarFieldEnumSchema = z.enum(['id','key','title','description','region','questions','resultTextTemplates','rewardXP','rewardKarma','isActive','createdAt']);
 
@@ -292,7 +312,7 @@ export const BlockedUserScalarFieldEnumSchema = z.enum(['id','userId','blockedUs
 
 export const ContentReviewScalarFieldEnumSchema = z.enum(['id','contentType','contentId','content','flagged','confidence','categories','reviewed','reviewedBy','reviewedAt','approved','createdAt']);
 
-export const UserStreakScalarFieldEnumSchema = z.enum(['id','userId','currentStreak','longestStreak','lastLoginAt','lastQuizAt','lastDuelAt','lastChallengeAt','loginStreak','quizStreak','duelStreak','totalDaysActive','updatedAt']);
+export const UserStreakScalarFieldEnumSchema = z.enum(['id','userId','currentStreak','longestStreak','lastLoginAt','lastQuizAt','lastDuelAt','lastChallengeAt','loginStreak','quizStreak','duelStreak','totalDaysActive','predictionCorrectStreak','predictionLongestStreak','updatedAt']);
 
 export const RewardCalendarScalarFieldEnumSchema = z.enum(['id','userId','calendarType','day','rewardType','rewardAmount','rewardItemId','claimed','claimedAt','cycleStart','createdAt']);
 
@@ -500,7 +520,7 @@ export const SubCategoryScalarFieldEnumSchema = z.enum(['id','name','categoryId'
 
 export const SubSubCategoryScalarFieldEnumSchema = z.enum(['id','name','subCategoryId']);
 
-export const SssCategoryScalarFieldEnumSchema = z.enum(['id','name','subSubCategoryId','status','generatedAt','error','review','finalText','responseType','outcome','multiplication','difficulty','ageCategory','gender','author','wildcard']);
+export const SssCategoryScalarFieldEnumSchema = z.enum(['id','name','slug','isStarter','visibleInBrowse','subSubCategoryId','status','generatedAt','error','review','finalText','responseType','outcome','multiplication','difficulty','ageCategory','gender','author','wildcard']);
 
 export const UserQuestionScalarFieldEnumSchema = z.enum(['id','userId','questionId','questionTemplateId','status','servedAt','answeredAt','archetypeContext','moodContext','seasonId','createdAt','updatedAt']);
 
@@ -516,11 +536,15 @@ export const GroupStatScalarFieldEnumSchema = z.enum(['id','groupId','totalXP','
 
 export const UserGroupScalarFieldEnumSchema = z.enum(['id','userId','groupId']);
 
-export const PublicPollScalarFieldEnumSchema = z.enum(['id','title','question','options','region','visibility','creatorId','allowFreetext','premiumCost','rewardXP','createdAt','expiresAt']);
+export const PublicPollScalarFieldEnumSchema = z.enum(['id','title','question','options','packKey','region','visibility','creatorId','allowFreetext','premiumCost','rewardXP','createdAt','expiresAt']);
 
 export const PollResponseScalarFieldEnumSchema = z.enum(['id','pollId','userId','optionIdx','freetext','region','createdAt']);
 
 export const PublicChallengeScalarFieldEnumSchema = z.enum(['id','title','description','region','rewardXP','rewardItem','activeFrom','activeTo','isActive','createdAt']);
+
+export const PredictionQuestionScalarFieldEnumSchema = z.enum(['id','title','description','categoryId','options','correctOptionIdx','resolutionDate','status','resolvedAt','resolvedBy','createdAt','updatedAt']);
+
+export const PredictionAnswerScalarFieldEnumSchema = z.enum(['id','userId','predictionId','selectedOptionIdx','createdAt']);
 
 export const ContentPackScalarFieldEnumSchema = z.enum(['id','key','title','description','region','category','price','premiumOnly','isActive','themeColor','icon','createdAt','updatedAt']);
 
@@ -656,6 +680,26 @@ export const QuestScalarFieldEnumSchema = z.enum(['id','key','title','descriptio
 
 export const UserQuestScalarFieldEnumSchema = z.enum(['id','userId','questId','progress','isCompleted','isClaimed','startedAt','completedAt']);
 
+export const StoryScalarFieldEnumSchema = z.enum(['id','userId','type','panelCount','coverImageUrl','exportId','status','visibility','title','publishedAt','parentStoryId','remixType','panelMetadata','viewCount','reachScore','audioType','audioTagId','audioUrl','createdAt','updatedAt']);
+
+export const StoryReactionScalarFieldEnumSchema = z.enum(['id','storyId','userId','type','createdAt']);
+
+export const StoryViewScalarFieldEnumSchema = z.enum(['id','storyId','createdAt']);
+
+export const StoryChallengeScalarFieldEnumSchema = z.enum(['id','title','description','promptType','startAt','endAt','isActive','createdAt']);
+
+export const StoryChallengeEntryScalarFieldEnumSchema = z.enum(['id','challengeId','storyId','userId','createdAt']);
+
+export const StoryCollectionScalarFieldEnumSchema = z.enum(['id','userId','name','description','isPublic','createdAt']);
+
+export const StoryCollectionItemScalarFieldEnumSchema = z.enum(['id','collectionId','storyId','createdAt']);
+
+export const StoryTemplateScalarFieldEnumSchema = z.enum(['id','userId','name','description','panelCount','layoutMode','panelLabels','panelHelpTexts','isPublic','createdAt']);
+
+export const RatingRequestScalarFieldEnumSchema = z.enum(['id','userId','category','imageUrl','createdAt']);
+
+export const RatingResultScalarFieldEnumSchema = z.enum(['id','requestId','metrics','summaryText','createdAt']);
+
 export const UserLoreEntryScalarFieldEnumSchema = z.enum(['id','userId','sourceType','sourceId','tone','text','createdAt']);
 
 export const FriendshipScalarFieldEnumSchema = z.enum(['id','userA','userB','status','createdAt','updatedAt']);
@@ -696,6 +740,10 @@ export const UserPetScalarFieldEnumSchema = z.enum(['id','userId','petId','level
 
 export const CombatSessionScalarFieldEnumSchema = z.enum(['id','userId','heroHp','heroMaxHp','enemyHp','enemyMaxHp','enemyName','enemyType','xpGained','goldGained','kills','currentStreak','isActive','lastActionAt','createdAt','updatedAt']);
 
+export const CharacterScalarFieldEnumSchema = z.enum(['id','userId','type','name','createdAt']);
+
+export const CharacterEquipmentScalarFieldEnumSchema = z.enum(['id','characterId','slot','userItemId','inventoryItemId','equippedAt']);
+
 export const EnemyScalarFieldEnumSchema = z.enum(['id','name','level','power','defense','maxHp','rarity','lootTable','icon','createdAt','updatedAt']);
 
 export const PublicComparisonScalarFieldEnumSchema = z.enum(['id','question','answers','isPublic','reactionsLike','reactionsLaugh','reactionsThink','createdAt','updatedAt']);
@@ -714,6 +762,30 @@ export const CompareCommentScalarFieldEnumSchema = z.enum(['id','postId','userId
 
 export const NotificationScalarFieldEnumSchema = z.enum(['id','userId','type','title','body','refId','isRead','createdAt']);
 
+export const NewsPostScalarFieldEnumSchema = z.enum(['id','slug','title','excerpt','content','coverImageUrl','media','category','status','publishedAt','scheduledAt','authorId','createdAt','updatedAt']);
+
+export const NewsReactionScalarFieldEnumSchema = z.enum(['id','userId','postId','type','createdAt']);
+
+export const NewsSeenScalarFieldEnumSchema = z.enum(['id','userId','postId','seenAt']);
+
+export const DailyCharmScalarFieldEnumSchema = z.enum(['id','key','title','description','xpReward','isActive','createdAt']);
+
+export const UserDailyCharmScalarFieldEnumSchema = z.enum(['id','userId','charmId','date','progress','target','completed','completedAt']);
+
+export const RoadmapItemScalarFieldEnumSchema = z.enum(['id','slug','title','shortDescription','longDescription','pillar','status','order','votesCount','createdAt']);
+
+export const RoadmapVoteScalarFieldEnumSchema = z.enum(['id','userId','roadmapItemId','createdAt']);
+
+export const MilestoneRuleScalarFieldEnumSchema = z.enum(['id','key','isActive','titleTemplate','bodyTemplate','triggerType','scope','scopeRefId','triggerConfig','uiVariant','priority','cooldownSeconds','maxPerDay','maxTotal','createdAt','updatedAt']);
+
+export const MilestoneDeliveryScalarFieldEnumSchema = z.enum(['id','userId','ruleId','deliveredAt','context','source','sessionId','dedupeKey']);
+
+export const ModerationEntityScalarFieldEnumSchema = z.enum(['id','entityType','entityId','userId','status','rating','autoFlagScore','isAutoFlagged','lastReviewedAt','reviewedBy','createdAt','updatedAt']);
+
+export const ContentReportScalarFieldEnumSchema = z.enum(['id','reporterId','entityType','entityId','reason','message','createdAt']);
+
+export const EntityModerationActionScalarFieldEnumSchema = z.enum(['id','moderatorId','entityType','entityId','action','note','createdAt']);
+
 export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const NullableJsonNullValueInputSchema = z.enum(['DbNull','JsonNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value);
@@ -725,6 +797,10 @@ export const QueryModeSchema = z.enum(['default','insensitive']);
 export const JsonNullValueFilterSchema = z.enum(['DbNull','JsonNull','AnyNull',]).transform((value) => value === 'JsonNull' ? Prisma.JsonNull : value === 'DbNull' ? Prisma.DbNull : value === 'AnyNull' ? Prisma.AnyNull : value);
 
 export const NullsOrderSchema = z.enum(['first','last']);
+
+export const QuestionReactionTypeSchema = z.enum(['LIKE','DISLIKE']);
+
+export type QuestionReactionTypeType = `${z.infer<typeof QuestionReactionTypeSchema>}`
 
 export const CulturalFilterSeveritySchema = z.enum(['info','warn','block']);
 
@@ -1050,6 +1126,34 @@ export const BattleAchievementTriggerTypeSchema = z.enum(['duelWin','duelLose','
 
 export type BattleAchievementTriggerTypeType = `${z.infer<typeof BattleAchievementTriggerTypeSchema>}`
 
+export const NewsCategorySchema = z.enum(['FEATURE','UPDATE','NEWS','PROMO','ALERT']);
+
+export type NewsCategoryType = `${z.infer<typeof NewsCategorySchema>}`
+
+export const NewsStatusSchema = z.enum(['DRAFT','SCHEDULED','PUBLISHED','ARCHIVED']);
+
+export type NewsStatusType = `${z.infer<typeof NewsStatusSchema>}`
+
+export const MilestoneTriggerTypeSchema = z.enum(['ANSWER_COUNT','LEVEL_UP']);
+
+export type MilestoneTriggerTypeType = `${z.infer<typeof MilestoneTriggerTypeSchema>}`
+
+export const MilestoneScopeSchema = z.enum(['GLOBAL','FLOW']);
+
+export type MilestoneScopeType = `${z.infer<typeof MilestoneScopeSchema>}`
+
+export const ModerationStatusSchema = z.enum(['VISIBLE','PENDING_REVIEW','FLAGGED','REJECTED','APPROVED','SHADOW_BANNED']);
+
+export type ModerationStatusType = `${z.infer<typeof ModerationStatusSchema>}`
+
+export const ModerationReportReasonSchema = z.enum(['SPAM','HARASSMENT','HATE','SEXUAL','VIOLENCE','MISINFORMATION','OTHER']);
+
+export type ModerationReportReasonType = `${z.infer<typeof ModerationReportReasonSchema>}`
+
+export const ContentRatingSchema = z.enum(['GENERAL','TEEN','ADULT']);
+
+export type ContentRatingType = `${z.infer<typeof ContentRatingSchema>}`
+
 export const BattleAchievementRaritySchema = z.enum(['common','rare','epic','legendary']);
 
 export type BattleAchievementRarityType = `${z.infer<typeof BattleAchievementRaritySchema>}`
@@ -1078,6 +1182,7 @@ export const UserSchema = z.object({
   language: z.string().nullable(),
   country: z.string().nullable(),
   dateOfBirth: z.coerce.date().nullable(),
+  birthYear: z.number().int().nullable(),
   avatarUrl: z.string().nullable(),
   username: z.string().nullable(),
   bio: z.string().nullable(),
@@ -1101,23 +1206,37 @@ export const UserSchema = z.object({
   score: z.number().int(),
   questionsAnswered: z.number().int(),
   questionsCreated: z.number().int(),
+  predictionCorrectCount: z.number().int(),
+  predictionResolvedCount: z.number().int(),
   emailVerified: z.coerce.date().nullable(),
   emailVerifiedAt: z.coerce.date().nullable(),
   newsletterOptIn: z.boolean(),
+  allowFollow: z.boolean(),
+  isPrivate: z.boolean(),
   archetype: z.string().nullable(),
   archetypeKey: z.string().nullable(),
   stats: JsonValueSchema.nullable(),
   lastArchetypeReroll: z.coerce.date().nullable(),
   settings: JsonValueSchema.nullable(),
+  lastNewsSeenAt: z.coerce.date().nullable(),
+  starterFlowCompletedAt: z.coerce.date().nullable(),
+  feedbackRewardClaimed: z.boolean(),
+  isBeta: z.boolean(),
   localeCode: z.string(),
   ageGroup: z.string().nullable(),
   region: z.string().nullable(),
+  countryCode: z.string().nullable(),
   interests: z.string().array(),
   tone: z.string().nullable(),
   onboardingCompleted: z.boolean(),
   combatKills: z.number().int(),
   combatBattles: z.number().int(),
   combatHighestStreak: z.number().int(),
+  rpgEnabled: z.boolean(),
+  rpgCreatedAt: z.coerce.date().nullable(),
+  rpgPromptSeenAt: z.coerce.date().nullable(),
+  rpgDismissedAt: z.coerce.date().nullable(),
+  activeCharacterId: z.string().nullable(),
   statCreativity: z.number().int(),
   statHealth: z.number().int(),
   statKnowledge: z.number().int(),
@@ -1147,6 +1266,51 @@ export const UserSchema = z.object({
 })
 
 export type User = z.infer<typeof UserSchema>
+
+/////////////////////////////////////////
+// FLOW REWARD LOG SCHEMA
+/////////////////////////////////////////
+
+export const FlowRewardLogSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  type: z.string(),
+  amount: z.number().int(),
+  rarity: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type FlowRewardLog = z.infer<typeof FlowRewardLogSchema>
+
+/////////////////////////////////////////
+// APP VISIT SCHEMA
+/////////////////////////////////////////
+
+export const AppVisitSchema = z.object({
+  id: z.cuid(),
+  userId: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type AppVisit = z.infer<typeof AppVisitSchema>
+
+/////////////////////////////////////////
+// TRANSLATION SUGGESTION SCHEMA
+/////////////////////////////////////////
+
+export const TranslationSuggestionSchema = z.object({
+  id: z.cuid(),
+  userId: z.string().nullable(),
+  entityType: z.string(),
+  entityId: z.string(),
+  language: z.string(),
+  original: z.string(),
+  suggestion: z.string(),
+  status: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type TranslationSuggestion = z.infer<typeof TranslationSuggestionSchema>
 
 /////////////////////////////////////////
 // AFFINITY SCHEMA
@@ -1401,13 +1565,45 @@ export const FlowQuestionSchema = z.object({
   id: z.cuid(),
   categoryId: z.string().nullable(),
   locale: z.string(),
+  tags: z.string().array(),
+  arcStep: z.string().nullable(),
   text: z.string(),
   isActive: z.boolean(),
+  challengeEnabled: z.boolean(),
+  wikiFillCandidate: z.boolean(),
+  worldContextKey: z.string().nullable(),
+  worldContextRegionPolicy: z.string().nullable(),
+  worldContextLabel: z.string().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 })
 
 export type FlowQuestion = z.infer<typeof FlowQuestionSchema>
+
+/////////////////////////////////////////
+// OPS RUN SCHEMA
+/////////////////////////////////////////
+
+export const OpsRunSchema = z.object({
+  id: z.cuid(),
+  type: z.string(),
+  status: z.string(),
+  startedAt: z.coerce.date(),
+  finishedAt: z.coerce.date().nullable(),
+  durationMs: z.number().int().nullable(),
+  counts: JsonValueSchema.nullable(),
+  message: z.string().nullable(),
+  reportPath: z.string().nullable(),
+  triggeredBy: z.string().nullable(),
+  entityType: z.string().nullable(),
+  entityId: z.string().nullable(),
+  entityLabel: z.string().nullable(),
+  params: JsonValueSchema.nullable(),
+  warnings: JsonValueSchema.nullable(),
+  errorStack: z.string().nullable(),
+})
+
+export type OpsRun = z.infer<typeof OpsRunSchema>
 
 /////////////////////////////////////////
 // FLOW QUESTION OPTION SCHEMA
@@ -1440,6 +1636,93 @@ export const UserResponseSchema = z.object({
 })
 
 export type UserResponse = z.infer<typeof UserResponseSchema>
+
+/////////////////////////////////////////
+// QUESTION BOOKMARK SCHEMA
+/////////////////////////////////////////
+
+export const QuestionBookmarkSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  questionId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type QuestionBookmark = z.infer<typeof QuestionBookmarkSchema>
+
+/////////////////////////////////////////
+// PREMIUM UNLOCK SCHEMA
+/////////////////////////////////////////
+
+export const PremiumUnlockSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  kind: z.string(),
+  refId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type PremiumUnlock = z.infer<typeof PremiumUnlockSchema>
+
+/////////////////////////////////////////
+// QUESTION REACTION SCHEMA
+/////////////////////////////////////////
+
+export const QuestionReactionSchema = z.object({
+  type: QuestionReactionTypeSchema,
+  id: z.cuid(),
+  userId: z.string(),
+  questionId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type QuestionReaction = z.infer<typeof QuestionReactionSchema>
+
+/////////////////////////////////////////
+// USER FOLLOW SCHEMA
+/////////////////////////////////////////
+
+export const UserFollowSchema = z.object({
+  id: z.cuid(),
+  followerId: z.string(),
+  followedId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type UserFollow = z.infer<typeof UserFollowSchema>
+
+/////////////////////////////////////////
+// QUESTION CHALLENGE SCHEMA
+/////////////////////////////////////////
+
+export const QuestionChallengeSchema = z.object({
+  id: z.cuid(),
+  questionId: z.string(),
+  challengerId: z.string(),
+  challengedId: z.string().nullable(),
+  status: z.string(),
+  challengerAnswerId: z.string().nullable(),
+  challengedAnswerId: z.string().nullable(),
+  xpGranted: z.boolean(),
+  createdAt: z.coerce.date(),
+  completedAt: z.coerce.date().nullable(),
+})
+
+export type QuestionChallenge = z.infer<typeof QuestionChallengeSchema>
+
+/////////////////////////////////////////
+// QUESTION REPORT SCHEMA
+/////////////////////////////////////////
+
+export const QuestionReportSchema = z.object({
+  id: z.cuid(),
+  userId: z.string().nullable(),
+  questionId: z.string(),
+  reason: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type QuestionReport = z.infer<typeof QuestionReportSchema>
 
 /////////////////////////////////////////
 // SYNCH TEST SCHEMA
@@ -3156,6 +3439,8 @@ export const UserStreakSchema = z.object({
   quizStreak: z.number().int(),
   duelStreak: z.number().int(),
   totalDaysActive: z.number().int(),
+  predictionCorrectStreak: z.number().int(),
+  predictionLongestStreak: z.number().int(),
   updatedAt: z.coerce.date(),
 })
 
@@ -5333,6 +5618,9 @@ export type SubSubCategory = z.infer<typeof SubSubCategorySchema>
 export const SssCategorySchema = z.object({
   id: z.cuid(),
   name: z.string(),
+  slug: z.string().nullable(),
+  isStarter: z.boolean(),
+  visibleInBrowse: z.boolean(),
   subSubCategoryId: z.string(),
   status: z.string(),
   generatedAt: z.coerce.date().nullable(),
@@ -5493,6 +5781,7 @@ export const PublicPollSchema = z.object({
   title: z.string(),
   question: z.string(),
   options: z.string().array(),
+  packKey: z.string().nullable(),
   region: z.string().nullable(),
   visibility: z.string(),
   creatorId: z.string(),
@@ -5539,6 +5828,41 @@ export const PublicChallengeSchema = z.object({
 })
 
 export type PublicChallenge = z.infer<typeof PublicChallengeSchema>
+
+/////////////////////////////////////////
+// PREDICTION QUESTION SCHEMA
+/////////////////////////////////////////
+
+export const PredictionQuestionSchema = z.object({
+  id: z.cuid(),
+  title: z.string(),
+  description: z.string().nullable(),
+  categoryId: z.string().nullable(),
+  options: z.string().array(),
+  correctOptionIdx: z.number().int().nullable(),
+  resolutionDate: z.coerce.date().nullable(),
+  status: z.string(),
+  resolvedAt: z.coerce.date().nullable(),
+  resolvedBy: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type PredictionQuestion = z.infer<typeof PredictionQuestionSchema>
+
+/////////////////////////////////////////
+// PREDICTION ANSWER SCHEMA
+/////////////////////////////////////////
+
+export const PredictionAnswerSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  predictionId: z.string(),
+  selectedOptionIdx: z.number().int(),
+  createdAt: z.coerce.date(),
+})
+
+export type PredictionAnswer = z.infer<typeof PredictionAnswerSchema>
 
 /////////////////////////////////////////
 // CONTENT PACK SCHEMA
@@ -6734,6 +7058,167 @@ export const UserQuestSchema = z.object({
 export type UserQuest = z.infer<typeof UserQuestSchema>
 
 /////////////////////////////////////////
+// STORY SCHEMA
+/////////////////////////////////////////
+
+export const StorySchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  type: z.string(),
+  panelCount: z.number().int(),
+  coverImageUrl: z.string().nullable(),
+  exportId: z.string().nullable(),
+  status: z.string(),
+  visibility: z.string(),
+  title: z.string().nullable(),
+  publishedAt: z.coerce.date().nullable(),
+  parentStoryId: z.string().nullable(),
+  remixType: z.string().nullable(),
+  panelMetadata: JsonValueSchema.nullable(),
+  viewCount: z.number().int(),
+  reachScore: z.number().int(),
+  audioType: z.string().nullable(),
+  audioTagId: z.string().nullable(),
+  audioUrl: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type Story = z.infer<typeof StorySchema>
+
+/////////////////////////////////////////
+// STORY REACTION SCHEMA
+/////////////////////////////////////////
+
+export const StoryReactionSchema = z.object({
+  id: z.cuid(),
+  storyId: z.string(),
+  userId: z.string(),
+  type: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryReaction = z.infer<typeof StoryReactionSchema>
+
+/////////////////////////////////////////
+// STORY VIEW SCHEMA
+/////////////////////////////////////////
+
+export const StoryViewSchema = z.object({
+  id: z.cuid(),
+  storyId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryView = z.infer<typeof StoryViewSchema>
+
+/////////////////////////////////////////
+// STORY CHALLENGE SCHEMA
+/////////////////////////////////////////
+
+export const StoryChallengeSchema = z.object({
+  id: z.cuid(),
+  title: z.string(),
+  description: z.string(),
+  promptType: z.string(),
+  startAt: z.coerce.date(),
+  endAt: z.coerce.date(),
+  isActive: z.boolean(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryChallenge = z.infer<typeof StoryChallengeSchema>
+
+/////////////////////////////////////////
+// STORY CHALLENGE ENTRY SCHEMA
+/////////////////////////////////////////
+
+export const StoryChallengeEntrySchema = z.object({
+  id: z.cuid(),
+  challengeId: z.string(),
+  storyId: z.string(),
+  userId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryChallengeEntry = z.infer<typeof StoryChallengeEntrySchema>
+
+/////////////////////////////////////////
+// STORY COLLECTION SCHEMA
+/////////////////////////////////////////
+
+export const StoryCollectionSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  name: z.string(),
+  description: z.string(),
+  isPublic: z.boolean(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryCollection = z.infer<typeof StoryCollectionSchema>
+
+/////////////////////////////////////////
+// STORY COLLECTION ITEM SCHEMA
+/////////////////////////////////////////
+
+export const StoryCollectionItemSchema = z.object({
+  id: z.cuid(),
+  collectionId: z.string(),
+  storyId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryCollectionItem = z.infer<typeof StoryCollectionItemSchema>
+
+/////////////////////////////////////////
+// STORY TEMPLATE SCHEMA
+/////////////////////////////////////////
+
+export const StoryTemplateSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  name: z.string(),
+  description: z.string(),
+  panelCount: z.number().int(),
+  layoutMode: z.string(),
+  panelLabels: z.string().array(),
+  panelHelpTexts: z.string().array(),
+  isPublic: z.boolean(),
+  createdAt: z.coerce.date(),
+})
+
+export type StoryTemplate = z.infer<typeof StoryTemplateSchema>
+
+/////////////////////////////////////////
+// RATING REQUEST SCHEMA
+/////////////////////////////////////////
+
+export const RatingRequestSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  category: z.string(),
+  imageUrl: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type RatingRequest = z.infer<typeof RatingRequestSchema>
+
+/////////////////////////////////////////
+// RATING RESULT SCHEMA
+/////////////////////////////////////////
+
+export const RatingResultSchema = z.object({
+  id: z.cuid(),
+  requestId: z.string(),
+  metrics: JsonValueSchema,
+  summaryText: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type RatingResult = z.infer<typeof RatingResultSchema>
+
+/////////////////////////////////////////
 // USER LORE ENTRY SCHEMA
 /////////////////////////////////////////
 
@@ -7071,6 +7556,35 @@ export const CombatSessionSchema = z.object({
 export type CombatSession = z.infer<typeof CombatSessionSchema>
 
 /////////////////////////////////////////
+// CHARACTER SCHEMA
+/////////////////////////////////////////
+
+export const CharacterSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  type: z.string(),
+  name: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type Character = z.infer<typeof CharacterSchema>
+
+/////////////////////////////////////////
+// CHARACTER EQUIPMENT SCHEMA
+/////////////////////////////////////////
+
+export const CharacterEquipmentSchema = z.object({
+  id: z.cuid(),
+  characterId: z.string(),
+  slot: z.string(),
+  userItemId: z.string().nullable(),
+  inventoryItemId: z.string().nullable(),
+  equippedAt: z.coerce.date(),
+})
+
+export type CharacterEquipment = z.infer<typeof CharacterEquipmentSchema>
+
+/////////////////////////////////////////
 // ENEMY SCHEMA
 /////////////////////////////////////////
 
@@ -7213,3 +7727,213 @@ export const NotificationSchema = z.object({
 })
 
 export type Notification = z.infer<typeof NotificationSchema>
+
+/////////////////////////////////////////
+// NEWS POST SCHEMA
+/////////////////////////////////////////
+
+export const NewsPostSchema = z.object({
+  category: NewsCategorySchema,
+  status: NewsStatusSchema,
+  id: z.cuid(),
+  slug: z.string(),
+  title: z.string(),
+  excerpt: z.string().nullable(),
+  content: JsonValueSchema,
+  coverImageUrl: z.string().nullable(),
+  media: JsonValueSchema.nullable(),
+  publishedAt: z.coerce.date().nullable(),
+  scheduledAt: z.coerce.date().nullable(),
+  authorId: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type NewsPost = z.infer<typeof NewsPostSchema>
+
+/////////////////////////////////////////
+// NEWS REACTION SCHEMA
+/////////////////////////////////////////
+
+export const NewsReactionSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  postId: z.string(),
+  type: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type NewsReaction = z.infer<typeof NewsReactionSchema>
+
+/////////////////////////////////////////
+// NEWS SEEN SCHEMA
+/////////////////////////////////////////
+
+export const NewsSeenSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  postId: z.string(),
+  seenAt: z.coerce.date(),
+})
+
+export type NewsSeen = z.infer<typeof NewsSeenSchema>
+
+/////////////////////////////////////////
+// DAILY CHARM SCHEMA
+/////////////////////////////////////////
+
+export const DailyCharmSchema = z.object({
+  id: z.cuid(),
+  key: z.string(),
+  title: z.string(),
+  description: z.string().nullable(),
+  xpReward: z.number().int(),
+  isActive: z.boolean(),
+  createdAt: z.coerce.date(),
+})
+
+export type DailyCharm = z.infer<typeof DailyCharmSchema>
+
+/////////////////////////////////////////
+// USER DAILY CHARM SCHEMA
+/////////////////////////////////////////
+
+export const UserDailyCharmSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  charmId: z.string(),
+  date: z.coerce.date(),
+  progress: z.number().int(),
+  target: z.number().int(),
+  completed: z.boolean(),
+  completedAt: z.coerce.date().nullable(),
+})
+
+export type UserDailyCharm = z.infer<typeof UserDailyCharmSchema>
+
+/////////////////////////////////////////
+// ROADMAP ITEM SCHEMA
+/////////////////////////////////////////
+
+export const RoadmapItemSchema = z.object({
+  id: z.cuid(),
+  slug: z.string(),
+  title: z.string(),
+  shortDescription: z.string(),
+  longDescription: z.string().nullable(),
+  pillar: z.string(),
+  status: z.string(),
+  order: z.number().int(),
+  votesCount: z.number().int(),
+  createdAt: z.coerce.date(),
+})
+
+export type RoadmapItem = z.infer<typeof RoadmapItemSchema>
+
+/////////////////////////////////////////
+// ROADMAP VOTE SCHEMA
+/////////////////////////////////////////
+
+export const RoadmapVoteSchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  roadmapItemId: z.string(),
+  createdAt: z.coerce.date(),
+})
+
+export type RoadmapVote = z.infer<typeof RoadmapVoteSchema>
+
+/////////////////////////////////////////
+// MILESTONE RULE SCHEMA
+/////////////////////////////////////////
+
+export const MilestoneRuleSchema = z.object({
+  triggerType: MilestoneTriggerTypeSchema,
+  scope: MilestoneScopeSchema,
+  id: z.cuid(),
+  key: z.string(),
+  isActive: z.boolean(),
+  titleTemplate: z.string(),
+  bodyTemplate: z.string(),
+  scopeRefId: z.string().nullable(),
+  triggerConfig: JsonValueSchema,
+  uiVariant: z.string().nullable(),
+  priority: z.number().int(),
+  cooldownSeconds: z.number().int(),
+  maxPerDay: z.number().int().nullable(),
+  maxTotal: z.number().int().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type MilestoneRule = z.infer<typeof MilestoneRuleSchema>
+
+/////////////////////////////////////////
+// MILESTONE DELIVERY SCHEMA
+/////////////////////////////////////////
+
+export const MilestoneDeliverySchema = z.object({
+  id: z.cuid(),
+  userId: z.string(),
+  ruleId: z.string(),
+  deliveredAt: z.coerce.date(),
+  context: JsonValueSchema.nullable(),
+  source: z.string().nullable(),
+  sessionId: z.string().nullable(),
+  dedupeKey: z.string().nullable(),
+})
+
+export type MilestoneDelivery = z.infer<typeof MilestoneDeliverySchema>
+
+/////////////////////////////////////////
+// MODERATION ENTITY SCHEMA
+/////////////////////////////////////////
+
+export const ModerationEntitySchema = z.object({
+  status: ModerationStatusSchema,
+  rating: ContentRatingSchema,
+  id: z.cuid(),
+  entityType: z.string(),
+  entityId: z.string(),
+  userId: z.string().nullable(),
+  autoFlagScore: z.number().int(),
+  isAutoFlagged: z.boolean(),
+  lastReviewedAt: z.coerce.date().nullable(),
+  reviewedBy: z.string().nullable(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+})
+
+export type ModerationEntity = z.infer<typeof ModerationEntitySchema>
+
+/////////////////////////////////////////
+// CONTENT REPORT SCHEMA
+/////////////////////////////////////////
+
+export const ContentReportSchema = z.object({
+  reason: ModerationReportReasonSchema,
+  id: z.cuid(),
+  reporterId: z.string(),
+  entityType: z.string(),
+  entityId: z.string(),
+  message: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type ContentReport = z.infer<typeof ContentReportSchema>
+
+/////////////////////////////////////////
+// ENTITY MODERATION ACTION SCHEMA
+/////////////////////////////////////////
+
+export const EntityModerationActionSchema = z.object({
+  id: z.cuid(),
+  moderatorId: z.string(),
+  entityType: z.string(),
+  entityId: z.string(),
+  action: z.string(),
+  note: z.string().nullable(),
+  createdAt: z.coerce.date(),
+})
+
+export type EntityModerationAction = z.infer<typeof EntityModerationActionSchema>

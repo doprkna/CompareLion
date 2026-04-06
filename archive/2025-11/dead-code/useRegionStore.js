@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { DEFAULT_REGION } from '@parel/core/config/regions';
+import { DEFAULT_REGION } from '@parel/core/config';
 export const useRegionStore = create()(persist((set) => ({
     region: DEFAULT_REGION,
     language: "en",

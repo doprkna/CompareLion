@@ -1,6 +1,4 @@
-#!/usr/bin/env tsx
-
-/**
+﻿/**
  * Database Watchdog - Auto-healing database monitor
  * 
  * Monitors database health and automatically repairs when needed:
@@ -68,9 +66,9 @@ class DatabaseWatchdog {
     if (!existsSync(logsDir)) {
       try {
         mkdirSync(logsDir, { recursive: true });
-        this.log(`📁 Created logs directory: ${logsDir}`);
+        this.log(`ðŸ“ Created logs directory: ${logsDir}`);
       } catch (error) {
-        this.log(`⚠️ Failed to create logs directory: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        this.log(`âš ï¸ Failed to create logs directory: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
   }
@@ -85,7 +83,7 @@ class DatabaseWatchdog {
 
       // Check if .env exists
       if (!existsSync(join(process.cwd(), '.env'))) {
-        this.log('❌ .env file not found - skipping watchdog');
+        this.log('âŒ .env file not found - skipping watchdog');
         return;
       }
 
@@ -94,10 +92,10 @@ class DatabaseWatchdog {
         log: ['error'],
       });
 
-      this.log('🔍 Database Watchdog initialized');
+      this.log('ðŸ” Database Watchdog initialized');
       await this.checkDatabaseHealth();
     } catch (error) {
-      this.log(`❌ Watchdog initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.log(`âŒ Watchdog initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       process.exit(1);
     } finally {
       if (this.prisma) {
@@ -112,7 +110,7 @@ class DatabaseWatchdog {
         throw new Error('Prisma client not initialized');
       }
 
-      this.log('🔍 Checking database health...');
+      this.log('ðŸ” Checking database health...');
 
       // Run health checks in parallel
       const [users, questions, achievements, items] = await Promise.all([
@@ -154,19 +152,19 @@ class DatabaseWatchdog {
       }
 
       if (health.isHealthy) {
-        this.log(`✅ DB verified. ${health.totalRecords} records. Version v0.12.6`);
+        this.log(`âœ… DB verified. ${health.totalRecords} records. Version v0.12.6`);
         this.writeLog(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] DB verified. ${health.totalRecords} records. Version v0.12.6`);
       } else {
-        this.log(`🚨 DB health issues detected: ${health.issues.join(', ')}`);
+        this.log(`ðŸš¨ DB health issues detected: ${health.issues.join(', ')}`);
         await this.triggerReseed();
       }
 
     } catch (error) {
-      this.log(`❌ Database health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.log(`âŒ Database health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
       // If it's a connection error, try to repair
       if (error instanceof Error && error.message.includes('connect')) {
-        this.log('🔧 Connection error detected - attempting repair...');
+        this.log('ðŸ”§ Connection error detected - attempting repair...');
         await this.triggerReseed();
       }
     }
@@ -174,35 +172,35 @@ class DatabaseWatchdog {
 
   private async triggerReseed(): Promise<void> {
     try {
-      this.log('🚨 DB empty or unhealthy — auto-repair triggered');
+      this.log('ðŸš¨ DB empty or unhealthy â€” auto-repair triggered');
       this.writeLog(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] Auto-repair triggered`);
 
       // Step 1: Push schema
-      this.log('📋 Pushing database schema...');
+      this.log('ðŸ“‹ Pushing database schema...');
       const { stdout: pushOutput, stderr: pushError } = await execAsync('pnpm db:push', {
         cwd: process.cwd(),
       });
 
       if (pushError && !pushError.includes('warnings')) {
-        this.log(`⚠️ Schema push warnings: ${pushError}`);
+        this.log(`âš ï¸ Schema push warnings: ${pushError}`);
       } else {
-        this.log('✅ Schema pushed successfully');
+        this.log('âœ… Schema pushed successfully');
       }
 
       // Step 2: Seed database
-      this.log('🌱 Seeding database...');
+      this.log('ðŸŒ± Seeding database...');
       const { stdout: seedOutput, stderr: seedError } = await execAsync('pnpm db:seed', {
         cwd: process.cwd(),
       });
 
       if (seedError && !seedError.includes('warnings')) {
-        this.log(`⚠️ Seed warnings: ${seedError}`);
+        this.log(`âš ï¸ Seed warnings: ${seedError}`);
       } else {
-        this.log('✅ Database seeded successfully');
+        this.log('âœ… Database seeded successfully');
       }
 
       // Step 3: Verify repair
-      this.log('🔍 Verifying repair...');
+      this.log('ðŸ” Verifying repair...');
       if (this.prisma) {
         await this.prisma.$disconnect();
         this.prisma = new PrismaClient({ log: ['error'] });
@@ -218,7 +216,7 @@ class DatabaseWatchdog {
       const totalRecords = users + questions + achievements + items;
       const timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss');
 
-      this.log(`✅ Auto-repair completed. ${totalRecords} records. Version v0.12.6`);
+      this.log(`âœ… Auto-repair completed. ${totalRecords} records. Version v0.12.6`);
       this.writeLog(`[${timestamp}] Auto-repair completed. ${totalRecords} records. Version v0.12.6`);
 
       // Step 4: Update changelog
@@ -228,7 +226,7 @@ class DatabaseWatchdog {
       await this.webhookNotifier.notifyReseed(totalRecords, timestamp);
 
     } catch (error) {
-      this.log(`❌ Auto-repair failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.log(`âŒ Auto-repair failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       this.writeLog(`[${dayjs().format('YYYY-MM-DD HH:mm:ss')}] Auto-repair failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       throw error;
     }
@@ -237,11 +235,11 @@ class DatabaseWatchdog {
   private async updateChangelog(timestamp: string, recordCount: number): Promise<void> {
     try {
       if (!existsSync(this.config.changelogFile)) {
-        this.log('⚠️ Changelog file not found - skipping update');
+        this.log('âš ï¸ Changelog file not found - skipping update');
         return;
       }
 
-      const changelogEntry = `\n✅ Auto-reseed ${timestamp} (${recordCount} records)\n`;
+      const changelogEntry = `\nâœ… Auto-reseed ${timestamp} (${recordCount} records)\n`;
       
       // Read current changelog
       const currentContent = readFileSync(this.config.changelogFile, 'utf-8');
@@ -256,15 +254,15 @@ class DatabaseWatchdog {
           currentContent.slice(insertIndex);
         
         writeFileSync(this.config.changelogFile, newContent);
-        this.log('📝 Changelog updated with reseed timestamp');
+        this.log('ðŸ“ Changelog updated with reseed timestamp');
       } else {
         // Fallback: append to end
         appendFileSync(this.config.changelogFile, changelogEntry);
-        this.log('📝 Changelog updated (appended)');
+        this.log('ðŸ“ Changelog updated (appended)');
       }
 
     } catch (error) {
-      this.log(`⚠️ Failed to update changelog: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.log(`âš ï¸ Failed to update changelog: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -301,12 +299,12 @@ class DatabaseWatchdog {
         for (const dateStr of dateMatches) {
           const date = dayjs(dateStr);
           if (date.isAfter(now)) {
-            this.log(`⚠️ Future date detected in changelog: ${dateStr} (time-travel detected!)`);
+            this.log(`âš ï¸ Future date detected in changelog: ${dateStr} (time-travel detected!)`);
           }
         }
       }
     } catch (error) {
-      this.log(`⚠️ Changelog validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      this.log(`âš ï¸ Changelog validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 }
@@ -324,19 +322,19 @@ async function main() {
 
 // Handle uncaught errors
 process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught exception:', error);
+  console.error('âŒ Uncaught exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason) => {
-  console.error('❌ Unhandled rejection:', reason);
+  console.error('âŒ Unhandled rejection:', reason);
   process.exit(1);
 });
 
 // Run if called directly
 if (require.main === module) {
   main().catch((error) => {
-    console.error('❌ Watchdog failed:', error);
+    console.error('âŒ Watchdog failed:', error);
     process.exit(1);
   });
 }

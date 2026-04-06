@@ -133,6 +133,7 @@ export const authOptions: NextAuthOptions = {
               email: user.email!,
               name: user.name,
               image: user.image,
+              birthYear: 1990,
             },
           });
         }
@@ -149,39 +150,35 @@ export const authOptions: NextAuthOptions = {
         token.image = user.image;
         token.role = (user as any).role;
         
-        // Fetch premium status from DB (v0.36.21)
+        // Fetch level from DB (v0.46.08 feature gates). Premium gating not wired; User has no isPremium in schema.
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: user.id },
-            select: { isPremium: true, premiumUntil: true },
+            select: { level: true },
           });
-          
           if (dbUser) {
-            token.isPremium = dbUser.isPremium || false;
-            token.premiumUntil = dbUser.premiumUntil?.toISOString() || null;
+            token.level = dbUser.level ?? 1;
+          } else {
+            token.level = 1;
           }
+          token.isPremium = false;
+          token.premiumUntil = null;
         } catch (error) {
-          logger.warn('[Auth] Failed to fetch premium status', error);
+          logger.warn('[Auth] Failed to fetch user level', error);
+          token.level = 1;
           token.isPremium = false;
           token.premiumUntil = null;
         }
       } else if (token.id) {
-        // Refresh premium status on each request (check if expired)
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id as string },
-            select: { isPremium: true, premiumUntil: true },
+            select: { level: true },
           });
-          
           if (dbUser) {
-            // Check if premium expired
-            const now = new Date();
-            const isExpired = dbUser.premiumUntil && new Date(dbUser.premiumUntil) < now;
-            
-            token.isPremium = dbUser.isPremium && !isExpired;
-            token.premiumUntil = dbUser.premiumUntil?.toISOString() || null;
+            token.level = dbUser.level ?? 1;
           }
-        } catch (error) {
+        } catch {
           // Silent fail - keep existing token values
         }
       }
@@ -200,6 +197,7 @@ export const authOptions: NextAuthOptions = {
           role: token.role as string,
           isPremium: (token.isPremium as boolean) || false,
           premiumUntil: token.premiumUntil ? new Date(token.premiumUntil as string) : null,
+          level: (token.level as number) ?? 1,
         };
       }
       

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { User, Settings, LogOut, Shield, Rocket } from "lucide-react";
 import Link from "next/link";
+import { Sigil } from "@/components/profile/Sigil";
 import { BetaInfoModal, useBetaInfoModal } from "@/components/BetaInfoModal";
 import { logger } from "@/lib/logger";
 
@@ -42,6 +43,7 @@ export function ProfileMenu() {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="flex items-center space-x-2">
+          {session.user.id && <Sigil userId={session.user.id} size="sm" expandOnClick={false} className="rounded-md" />}
           <User className="w-4 h-4" />
           <span className="hidden sm:inline">
             {session.user.email}

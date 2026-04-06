@@ -1,9 +1,11 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { isObservabilityEnabled } from '@/lib/observability/isObservabilityEnabled';
+
 // Client-safe Sentry wrapper (prevents server-only instrumentation from being bundled)
 const captureException = (error: Error) => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') return;
+  if (typeof window === 'undefined' || !isObservabilityEnabled()) return;
   try {
     import('@sentry/nextjs').then((Sentry) => {
       Sentry.captureException(error);
@@ -11,7 +13,7 @@ const captureException = (error: Error) => {
   } catch {}
 };
 const withScope = (callback: (scope: any) => void) => {
-  if (typeof window === 'undefined' || process.env.NODE_ENV !== 'production') {
+  if (typeof window === 'undefined' || !isObservabilityEnabled()) {
     callback({ setTag: () => {}, setContext: () => {} });
     return;
   }

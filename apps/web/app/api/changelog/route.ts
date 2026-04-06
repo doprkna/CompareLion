@@ -7,6 +7,9 @@ import { safeAsync } from '@/lib/api-handler';
 interface ChangelogEntry {
   version: string;
   date: string;
+  month?: string;
+  year?: number;
+  counts?: { added: number; fixed: number; changed: number; docs: number };
   sections: Record<string, string[]>;
 }
 
@@ -35,12 +38,12 @@ function parseChangelog(md: string): ChangelogEntry[] {
       if (h3) {
         current = h3[1].trim();
         sections[current] = [];
-      } else if (line.startsWith("- ") && current) {
-        sections[current].push(line.substring(2));
-      } else if (/^\s+- /.test(line) && current && sections[current].length > 0) {
-        // nested bullet
-        const last = sections[current].pop() || "";
-        sections[current].push(last + "\n  " + line.trim().substring(2));
+      } else if (current) {
+        const bullet = line.match(/^\s*-\s+(.*)$/);
+        if (bullet) {
+          const text = bullet[1].trim();
+          if (text) sections[current].push(text);
+        }
       }
     }
     
@@ -115,8 +118,31 @@ export const GET = safeAsync(async (req: NextRequest) => {
     
   }
   
-  const entries = parseChangelog(content);
-  
+  const rawEntries = parseChangelog(content);
+  const entries = rawEntries.map((e) => {
+    const date = e.date || '';
+    const [y, m] = date.split('-');
+    const year = parseInt(y, 10) || new Date().getFullYear();
+    const monthNum = parseInt(m, 10) || 1;
+    const month = date.length >= 7 ? date.slice(0, 7) : `${year}-${String(monthNum).padStart(2, '0')}`;
+    const sections = e.sections || {};
+    const getCount = (key: string) => {
+      const k = Object.keys(sections).find((x) => x.toLowerCase() === key.toLowerCase());
+      return k ? (sections[k]?.length || 0) : 0;
+    };
+    return {
+      ...e,
+      month: month || `${year}-${String(parseInt(m, 10) || 1).padStart(2, '0')}`,
+      year,
+      counts: {
+        added: getCount('Added'),
+        fixed: getCount('Fixed'),
+        changed: getCount('Changed'),
+        docs: getCount('Docs'),
+      },
+    };
+  });
+
   const response = NextResponse.json({ 
     success: true, 
     entries

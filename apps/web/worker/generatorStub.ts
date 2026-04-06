@@ -1,4 +1,4 @@
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 
 export async function generateAndInsertOneQuestion(ssscId: number, runVersion: string) {
   // Determine defaults for a new question

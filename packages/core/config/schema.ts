@@ -503,10 +503,28 @@ export interface AppCacheConfig {
   inventoryDedupingInterval: number; // 5000 (5 seconds)
 }
 
+export interface AppMetaConfig {
+  version: string;
+  name: string;
+  description: string;
+  isProduction: boolean;
+  isDevelopment: boolean;
+  isBeta: boolean;
+  appUrl: string;
+  features: Record<string, boolean>;
+  feedback: { enabled: boolean; rewardXp: number; rewardCoins: number };
+  stripe: { secretKey: string; webhookSecret: string; publishableKey: string };
+  buildInfo: { version: string; buildId: string; buildTime: string; environment: string };
+  qgenBatchSize: number;
+  qgenDailyLimit: number;
+  schedulerIntervalMs: number;
+}
+
 export interface AppConfig {
   limits: AppLimitsConfig;
   polling: AppPollingConfig;
   cache: AppCacheConfig;
+  meta: AppMetaConfig;
 }
 
 // ============================================================================

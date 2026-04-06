@@ -6,7 +6,7 @@
  */
 import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
-import { GEN_CONFIG } from '@parel/core/config/generator';
+import { GEN_CONFIG } from '@parel/core/config';
 // Force Node.js runtime for Prisma (v0.35.16d)
 export const runtime = 'nodejs';
 /**

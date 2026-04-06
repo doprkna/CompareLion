@@ -66,6 +66,7 @@ async function seedUsers(tx: any = prisma): Promise<number> {
         level: template.level,
         karmaScore: template.karma,
         prestigeScore: template.prestige,
+        birthYear: 1990,
       },
       create: {
         email: template.email,
@@ -80,6 +81,7 @@ async function seedUsers(tx: any = prisma): Promise<number> {
         prestigeScore: template.prestige,
         emailVerified: new Date(),
         image: `https://i.pravatar.cc/150?u=${template.email}`,
+        birthYear: 1990,
       },
     });
   }

@@ -161,9 +161,10 @@ export async function getWeeklyActivity(userId: string): Promise<WeeklyActivity>
     // Get quest completions
     let questHighlights: string[] = [];
     try {
-      const questCompletions = await prisma.questProgress.findMany({
+      const questCompletions = await prisma.userQuest.findMany({
         where: {
           userId,
+          isCompleted: true,
           completedAt: {
             gte: sevenDaysAgo,
           },

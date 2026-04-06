@@ -6,7 +6,7 @@
 
 import { prisma } from '@/lib/db';
 import { logger } from '@/lib/logger';
-import { generateItem, createInventoryItem } from './itemService';
+import { generateItem, addItemToInventory } from './itemService'; // Alpha: UserItem canon
 
 export interface RewardResult {
   xp: number;
@@ -120,27 +120,19 @@ export async function grantRewardItem(
     });
 
     if (existingItem) {
-      // Create inventory item from existing item
-      const inventoryItem = await prisma.inventoryItem.create({
-        data: {
-          userId,
-          itemId: existingItem.id,
-          itemKey: existingItem.key || undefined,
-          rarity: existingItem.rarity,
-          power: existingItem.power || 0,
-          equipped: false,
-        },
-      });
-
-      return { id: inventoryItem.id };
+      const result = await addItemToInventory(userId, existingItem.id, 1);
+      return { id: result.id };
     }
 
-    // If itemId is a string like "potion", "fang", "dagger", etc., generate item
-    // For now, generate a random item
-    const itemData = await generateItem();
-    const inventoryItem = await createInventoryItem(userId, itemId, itemData);
-
-    return inventoryItem;
+    // If itemId refers to key - find base item and add
+    const baseItem = await prisma.item.findFirst({
+      where: { OR: [{ id: itemId }, { key: itemId }] },
+    });
+    if (baseItem) {
+      const result = await addItemToInventory(userId, baseItem.id, 1);
+      return { id: result.id };
+    }
+    return null;
   } catch (error) {
     logger.error('[RewardsEngine] Failed to grant reward item', error);
     return null;

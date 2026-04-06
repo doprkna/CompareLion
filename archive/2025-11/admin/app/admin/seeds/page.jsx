@@ -9,7 +9,7 @@
  */
 "use client";
 import { useEffect, useState } from "react";
-import { GEN_CONFIG } from '@parel/core/config/generator";;
+import { GEN_CONFIG } from '@parel/core/config";;
 import { ErrorPlaceholder } from "@/components/ErrorPlaceholder";
 import { LoadingPlaceholder } from "@/components/ErrorPlaceholder";
 export default function SeedsAdmin() {

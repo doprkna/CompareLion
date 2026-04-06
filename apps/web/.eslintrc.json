@@ -38,12 +38,31 @@
     "no-unused-vars": "off", // Use unused-imports/no-unused-vars instead
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "prefer-const": "error",
-    "no-var": "error"
+    "no-var": "error",
+
+    // Import discipline (C11): use public APIs, no src/dist internals
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@parel/*/src/**", "@parel/*/src", "@parel/*/dist/**", "@parel/*/dist"],
+            "message": "Import from package public API (e.g. @parel/db/client), not src/dist internals. See docs/import-discipline.md"
+          }
+        ]
+      }
+    ]
   },
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],
       "parser": "@typescript-eslint/parser"
+    },
+    {
+      "files": ["archive/**/*", "**/archive/**/*"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ]
 }

@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import app from './utils/testServer';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 
 // TODO: Mock authentication middleware to inject testUser.id into sessions
 

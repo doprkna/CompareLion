@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { getNextQuestion } from '@parel/features/flow';
 import { safeAsync, successResponse, authError, notFoundError, getRequiredSearchParam } from '@/lib/api-handler';
+import { logEvent } from '@/lib/logEvent';
 
 /**
  * GET /api/flow/question?categoryId=xxx
@@ -33,6 +34,12 @@ export const GET = safeAsync(async (req: NextRequest) => {
   const question = await getNextQuestion(user.id, categoryId);
   
   if (!question) {
+    logEvent({
+      type: 'flow_complete',
+      userId: user.id,
+      message: 'Flow completed',
+      params: { categoryId, channel: 'flow_demo' },
+    });
     return successResponse({ completed: true }, 'No more questions available');
   }
   

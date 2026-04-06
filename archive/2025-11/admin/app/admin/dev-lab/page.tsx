@@ -8,7 +8,7 @@
 import { requireAdmin } from '@/lib/authGuard';
 import { AdminSystemCard } from '@/components/admin/AdminSystemCard';
 import { prisma } from '@/lib/db';
-import { getFlags } from '@parel/core/config/flags';
+import { getFlags } from '@parel/core/config';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';

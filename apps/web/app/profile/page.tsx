@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import HeroStats from "./components/HeroStats";
 import { WalletBar } from '@/components/rpg/WalletBar';
 import { User, Package, Trophy, ShoppingBag } from "lucide-react";
 import { AmbientManager } from '@/components/AmbientManager';
+import { FeatureGate } from '@/components/FeatureGate';
+import { Sigil } from '@/components/profile/Sigil';
 
 export default function ProfileHub() {
   const { data: session } = useSession();
@@ -43,6 +45,11 @@ export default function ProfileHub() {
                   🧙 Archetype: <span className="text-text">The Adventurer</span>
                 </div>
               </div>
+              {session?.user?.id && (
+                <div className="ml-2">
+                  <Sigil userId={session.user.id} size="lg" className="rounded-xl overflow-hidden shadow-sm" />
+                </div>
+              )}
               <WalletBar showDiamonds={false} compact={false} />
             </div>
           </div>
@@ -92,9 +99,11 @@ export default function ProfileHub() {
           </div>
           {/* Additional Links */}
           <div className="mt-4">
-            <Link href="/profile/market" className="text-accent hover:underline text-sm">
-              🏪 Marketplace →
-            </Link>
+            <FeatureGate feature="MARKETPLACE" mode="placeholder" label="Marketplace">
+              <Link href="/profile/market" className="text-accent hover:underline text-sm">
+                Marketplace
+              </Link>
+            </FeatureGate>
           </div>
 
           {/* Stats Grid */}

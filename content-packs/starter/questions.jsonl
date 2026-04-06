@@ -1,0 +1,5 @@
+{"id":"starter-q-01","text":"Have you ever met a ghost?","type":"SINGLE_CHOICE","opts":[{"label":"Yes","value":"yes","order":0},{"label":"No","value":"no","order":1}],"tags":["ghost","paranormal","supernatural"]}
+{"id":"starter-q-02","text":"How many hours do you usually sleep per night?","type":"NUMERIC"}
+{"id":"starter-q-03","text":"How many hours per day do you spend on your phone?","type":"NUMERIC"}
+{"id":"starter-q-04","text":"How aware are you of your daily spending?","type":"SINGLE_CHOICE","opts":[{"label":"Vague","value":"vague","order":0},{"label":"Somewhat","value":"somewhat","order":1},{"label":"Precise","value":"precise","order":2}]}
+{"id":"starter-q-05","text":"Do you believe in fate or free will?","type":"SINGLE_CHOICE","opts":[{"label":"Fate","value":"fate","order":0},{"label":"Free will","value":"freewill","order":1},{"label":"Both","value":"both","order":2}]}

@@ -17,7 +17,7 @@
       "@parel/api": ["packages/core/stubs/parel-api"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "utils/**/*.ts", "config/**/*.ts", "state/**/*.ts", "stubs/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "utils/**/*.ts", "config/**/*.ts", "state/**/*.ts", "stubs/**/*.ts", "sigils/**/*.ts", "logger/**/*.ts"],
   "references": [{ "path": "../types" }]
 }
 

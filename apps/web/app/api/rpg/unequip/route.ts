@@ -1,80 +1,57 @@
 /**
- * RPG Unequip API
- * Unequip an item back to inventory
- * v0.36.3 - Equipment/inventory sync
+ * RPG Unequip API (canonical - clears CharacterEquipment only, no InventoryItem write)
+ * Body: { characterId, slot } or back-compat: { inventoryItemId } (finds eq by legacy ref)
  */
 
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
-import { safeAsync, unauthorizedError, validationError, successResponse, parseBody } from '@/lib/api-handler';
-import { unequipItem } from '@/lib/services/itemService';
+import { safeAsync, authError, validationError, successResponse, parseBody } from '@/lib/api-handler';
+import { unequipCharacterSlot } from '@/lib/services/itemService';
 
 export const runtime = 'nodejs';
 
-/**
- * POST /api/rpg/unequip
- * Unequip an inventory item
- * Body: { inventoryItemId: string }
- */
 export const POST = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
-
-  if (!session?.user?.email) {
-    return unauthorizedError('Authentication required');
-  }
+  if (!session?.user?.email) return authError();
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     select: { id: true },
   });
-
-  if (!user) {
-    return unauthorizedError('User not found');
-  }
+  if (!user) return authError();
 
   const body = await parseBody<{
-    inventoryItemId: string;
+    characterId?: string;
+    slot?: string;
+    inventoryItemId?: string;
   }>(req);
 
-  if (!body.inventoryItemId) {
-    return validationError('Missing required field: inventoryItemId');
+  let characterId = body.characterId;
+  let slot = body.slot;
+
+  // Back-compat: find CharacterEquipment by inventoryItemId
+  if ((!characterId || !slot) && body.inventoryItemId) {
+    const eq = await prisma.characterEquipment.findFirst({
+      where: { inventoryItemId: body.inventoryItemId, character: { userId: user.id } },
+    });
+    if (eq) {
+      characterId = eq.characterId;
+      slot = eq.slot;
+    }
   }
 
-  // Unequip the item
-  const result = await unequipItem(user.id, body.inventoryItemId);
+  if (!characterId || !slot) {
+    return validationError('Missing characterId and slot (or inventoryItemId for legacy)');
+  }
 
-  // Get updated inventory
-  const inventory = await prisma.inventoryItem.findMany({
-    where: { userId: user.id },
-    include: {
-      item: true,
-    },
-    orderBy: [
-      { equipped: 'desc' },
-      { createdAt: 'desc' },
-    ],
-  });
-
-  return successResponse({
-    success: result.success,
-    unequippedItem: result.unequippedItem,
-    stats: result.stats,
-    inventory: inventory.map(ii => ({
-      id: ii.id,
-      itemId: ii.itemId,
-      equipped: ii.equipped,
-      rarity: ii.rarity,
-      power: ii.power,
-      item: {
-        id: ii.item.id,
-        name: ii.item.name,
-        type: ii.item.type,
-        emoji: ii.item.emoji,
-        icon: ii.item.icon,
-      },
-    })),
-  });
+  try {
+    const result = await unequipCharacterSlot(user.id, characterId, slot);
+    return successResponse(result);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'Unequip failed';
+    return successResponse({ success: false, error: msg }, 400);
+  }
 });
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import { getNextQuestionForUser, answerQuestion, skipQuestion, getUserProgressStats } from '@/lib/services/flowService';
 let userId;
 let ssscId = 'leaf1';

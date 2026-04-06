@@ -11,6 +11,7 @@ declare module "next-auth" {
       role?: string | null
       isPremium?: boolean // v0.36.21 - Premium subscription status
       premiumUntil?: Date | null // v0.36.21 - Premium expiration date (null = ongoing)
+      level?: number // v0.46.08 - User level for feature gates
     }
   }
 
@@ -34,5 +35,6 @@ declare module "next-auth/jwt" {
     role?: string
     isPremium?: boolean // v0.36.21
     premiumUntil?: string | null // v0.36.21 - ISO string in JWT
+    level?: number // v0.46.08 - feature gates
   }
 }

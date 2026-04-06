@@ -11,6 +11,8 @@ import { useSession } from 'next-auth/react';
 import { Trophy, Medal, Award, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { apiFetch } from '@/lib/apiBase';
+import { ProfileSigil } from '@/components/profile/ProfileSigil';
+import type { SigilStats } from '@parel/core';
 
 interface LeaderboardEntry {
   id: string;
@@ -177,6 +179,14 @@ export function PhotoLeaderboard({ category, className = '' }: PhotoLeaderboardP
                   {/* User Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
+                      {entry.user?.id && (
+                        <ProfileSigil
+                          userId={entry.user.id}
+                          stats={toSigilStats(entry)}
+                          size="sm"
+                          className="w-5 h-5"
+                        />
+                      )}
                       {entry.user?.image && (
                         <img
                           src={entry.user.image}
@@ -224,5 +234,19 @@ export function PhotoLeaderboard({ category, className = '' }: PhotoLeaderboardP
       </CardContent>
     </Card>
   );
+}
+
+function toSigilStats(entry: LeaderboardEntry): SigilStats {
+  const archetypeScore = Math.min(100, Math.max(0, Math.round(entry.finalScore)));
+  const streak = Math.max(0, 10 - (entry.rank - 1)); // higher rank → higher streak-ish
+  const bucketsRaw = [
+    entry.appealScore,
+    entry.creativityScore,
+    entry.humanScore || entry.totalScore,
+  ];
+  const percentileBuckets = bucketsRaw.map((v) =>
+    Math.min(100, Math.max(0, Number.isFinite(v) ? v : 0))
+  );
+  return { archetypeScore, streak, percentileBuckets };
 }
 

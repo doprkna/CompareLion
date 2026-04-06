@@ -1,8 +1,9 @@
 /**
  * UserBadge Component
- * 
- * Displays user identity badge based on type.
- * Types: none, subscriber, vip, wtf
+ *
+ * Displays user identity badge based on User.badgeType (header/profile).
+ * Source of truth for display: this badgeConfig; storage: User.badgeType + UserBadge table.
+ * Types: none, subscriber, vip, wtf, alpha_contributor
  */
 
 interface UserBadgeProps {
@@ -30,6 +31,11 @@ const badgeConfig: Record<string, { emoji: string; label: string; description: s
     emoji: "🧠",
     label: "WTF User",
     description: "Wiki Truth Fact Checker",
+  },
+  alpha_contributor: {
+    emoji: "🎯",
+    label: "Alpha Contributor",
+    description: "Completed Alpha Feedback and helped shape Parel",
   },
 };
 

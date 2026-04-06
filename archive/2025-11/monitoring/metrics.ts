@@ -5,7 +5,7 @@
  */
 
 import { logger } from '@/lib/logger';
-import { getFlags } from '@parel/core/config/flags';
+import { getFlags } from '@parel/core/config';
 
 type EventName = 
   | 'app_start' 

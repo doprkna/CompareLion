@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * CI Database Watchdog
  *
@@ -33,7 +32,7 @@ class CIWatchdog {
             };
         }
         catch (error) {
-            console.error('❌ CI health check failed:', error);
+            console.error('âŒ CI health check failed:', error);
             return {
                 users: 0,
                 questions: 0,
@@ -53,12 +52,12 @@ class CIWatchdog {
     async run() {
         const health = await this.checkHealth();
         if (health.isHealthy) {
-            console.log(`✅ CI DB Health Check: ${health.totalRecords} records (${health.users} users, ${health.questions} questions, ${health.achievements} achievements, ${health.items} items)`);
+            console.log(`âœ… CI DB Health Check: ${health.totalRecords} records (${health.users} users, ${health.questions} questions, ${health.achievements} achievements, ${health.items} items)`);
             process.exit(0);
         }
         else {
-            console.log(`❌ CI DB Health Check Failed: ${health.totalRecords} records (${health.users} users, ${health.questions} questions, ${health.achievements} achievements, ${health.items} items)`);
-            console.log('💡 Run "pnpm watchdog" to auto-repair the database');
+            console.log(`âŒ CI DB Health Check Failed: ${health.totalRecords} records (${health.users} users, ${health.questions} questions, ${health.achievements} achievements, ${health.items} items)`);
+            console.log('ðŸ’¡ Run "pnpm watchdog" to auto-repair the database');
             process.exit(1);
         }
     }
@@ -71,7 +70,7 @@ async function main() {
 // Run if called directly
 if (require.main === module) {
     main().catch((error) => {
-        console.error('❌ CI Watchdog failed:', error);
+        console.error('âŒ CI Watchdog failed:', error);
         process.exit(1);
     });
 }

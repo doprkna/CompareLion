@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import bcrypt from 'bcrypt';
 import { SignupSchema } from '@parel/validation/auth';
 import { safeAsync, validationError } from '@/lib/api-handler';

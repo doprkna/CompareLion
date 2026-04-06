@@ -1,0 +1,85 @@
+name: E2E Preview (Vercel)
+
+on:
+  pull_request:
+    branches: [main, develop, staging]
+
+jobs:
+  e2e-preview:
+    name: E2E against Vercel Preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm e2e:install
+
+      - name: Get Vercel Preview URL
+        id: preview
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "::warning::VERCEL_TOKEN and VERCEL_PROJECT_ID must be set. Skipping E2E."
+            echo "url=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          TEAM_ID="${{ secrets.VERCEL_TEAM_ID }}"
+          TEAM_PARAM=""
+          [ -n "$TEAM_ID" ] && TEAM_PARAM="&teamId=$TEAM_ID"
+          SHA="${{ github.sha }}"
+          for i in $(seq 1 20); do
+            RESP=$(curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+              "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}${TEAM_PARAM}&target=preview")
+            URL=$(echo "$RESP" | jq -r --arg s "$SHA" '
+              .deployments[] | select((.meta.githubCommitSha==$s or .meta.gitlabCommitSha==$s) and .readyState=="READY")
+              | .url | select(.!=null) | "https://" + .' | head -1)
+            [ -z "$URL" ] || [ "$URL" = "https://" ] && URL=$(echo "$RESP" | jq -r '
+              .deployments[] | select(.readyState=="READY") | .url | select(.!=null) | "https://" + .' | head -1)
+            if [ -n "$URL" ] && [ "$URL" != "https://" ]; then
+              echo "url=$URL" >> $GITHUB_OUTPUT
+              echo "Preview URL: $URL"
+              exit 0
+            fi
+            echo "Waiting for deployment... ($i/20)"
+            sleep 30
+          done
+          echo "::warning::No READY preview deployment found."
+          echo "url=" >> $GITHUB_OUTPUT
+
+      - name: Run E2E against Preview
+        run: |
+          BASE_URL="${{ steps.preview.outputs.url }}"
+          if [ -z "$BASE_URL" ]; then
+            echo "Skipping E2E (no preview URL)."
+            exit 0
+          fi
+          echo "Running E2E against $BASE_URL"
+          pnpm e2e:preview
+        env:
+          BASE_URL: ${{ steps.preview.outputs.url }}
+          REVIEW_MODE: "true"
+
+      - name: Upload Playwright artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-e2e-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

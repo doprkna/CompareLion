@@ -184,16 +184,9 @@ export async function claimSeasonReward(
       return { success: false, error: 'Reward already claimed' };
     }
 
-    // Check premium requirement
+    // Check premium requirement. TODO: User has no isPremium; wire when schema adds entitlement.
     if (track === 'premium') {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { isPremium: true },
-      });
-
-      if (!user?.isPremium) {
-        return { success: false, error: 'Premium subscription required' };
-      }
+      return { success: false, error: 'Premium subscription required' };
     }
 
     // Get tier and reward

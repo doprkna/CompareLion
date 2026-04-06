@@ -12,7 +12,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Icon } from '../../../../packages/ui/atoms/icon'; // sanity-fix
+import { Icon } from '@parel/ui';
 import { formatDistanceToNow } from 'date-fns';
 
 type FeedPost = {

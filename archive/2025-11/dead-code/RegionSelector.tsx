@@ -1,7 +1,7 @@
 "use client";
 
 import { useRegionStore } from "@/store/useRegionStore";
-import { REGIONS, Region } from '@parel/core/config/regions';
+import { REGIONS, Region } from '@parel/core/config';
 
 export default function RegionSelector() {
   const { region, setRegion, language, setLanguage } = useRegionStore();

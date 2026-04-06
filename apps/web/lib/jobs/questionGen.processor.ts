@@ -1,6 +1,6 @@
 import { Worker } from 'bullmq';
-import { prisma } from '@parel/db/src/client';
-import { getLeafContext } from '@parel/db/src/leaf';
+import { prisma, createOpsRun, finishOpsRun } from '@parel/db';
+import { getLeafContext } from '@parel/db/leaf';
 import { buildPrompt } from '@/lib/prompts/generateQuestions';
 import { GeneratedQuestions } from '@parel/validation/questionGen';
 import { normalizeQuestionText } from '@/lib/text';
@@ -9,10 +9,43 @@ import type { Job } from 'bullmq';
 
 export async function processQuestionGenJob(job: Job) {
   const { ssscId, targetCount = 10, overwrite = false, model } = job.data;
+  const triggeredBy = (job.data as { triggeredBy?: string }).triggeredBy ?? 'cron';
+  const run = await createOpsRun(prisma, 'QUESTION_GEN', triggeredBy, {
+    entityType: 'JOB',
+    entityId: ssscId,
+    params: { ssscId, targetCount, overwrite, model },
+  });
+
+  try {
+    return await doProcess(job, run.id, ssscId, targetCount, overwrite, model);
+  } catch (e) {
+    const err = e as Error;
+    await finishOpsRun(prisma, run.id, 'failed', {
+      message: String(err?.message ?? e),
+      errorStack: err?.stack,
+    });
+    throw e;
+  }
+}
+
+async function doProcess(
+  job: Job,
+  runId: string,
+  ssscId: string,
+  targetCount: number,
+  overwrite: boolean,
+  model?: string
+) {
   const ctx = await getLeafContext(ssscId);
   const existing = await prisma.question.count({ where: { ssscId } });
   const need = Math.max(0, targetCount - (overwrite ? 0 : existing));
-  if (need === 0) return { skipped: true, reason: 'already_satisfied' };
+  if (need === 0) {
+    await finishOpsRun(prisma, runId, 'success', {
+      counts: { scanned: 0, created: 0, updated: 0, skipped: 1, failed: 0, warnings: 0 },
+      message: 'already_satisfied',
+    });
+    return { skipped: true, reason: 'already_satisfied' };
+  }
   const prompt = buildPrompt({ names: ctx.names, locale: ctx.locale, targetCount: need });
   const genLog = await prisma.questionGeneration.create({
     data: { id: job.id as string, ssscId, targetCount: need, status: 'pending', prompt: JSON.stringify(prompt) }
@@ -54,6 +87,23 @@ export async function processQuestionGenJob(job: Job) {
   await prisma.sssCategory.update({
     where: { id: ssscId },
     data: { status: insertedCount > 0 ? 'done' : 'failed', generatedAt: new Date(), ...(insertedCount === 0 && { error: 'generation_failed' }) }
+  });
+
+  const label = [ctx.names?.category, ctx.names?.subCategory, ctx.names?.subSubCategory].filter(Boolean).join(' / ') || ssscId;
+  await prisma.opsRun.update({
+    where: { id: runId },
+    data: { entityLabel: label.slice(0, 200) },
+  });
+  await finishOpsRun(prisma, runId, insertedCount > 0 ? 'success' : 'failed', {
+    counts: {
+      scanned: need,
+      created: insertedCount,
+      updated: 0,
+      skipped: 0,
+      failed: insertedCount === 0 ? 1 : 0,
+      warnings: 0,
+    },
+    message: `ssscId=${ssscId} inserted=${insertedCount}`,
   });
   return { insertedCount };
 }

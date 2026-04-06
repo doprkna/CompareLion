@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Question Generation Worker Script
  *
@@ -49,10 +48,10 @@ async function getLeafCategories() {
  * Run a generation batch for a specific language
  */
 async function runBatch(language) {
-    console.log(`\n🚀 Starting batch generation for language: ${language}`);
+    console.log(`\nðŸš€ Starting batch generation for language: ${language}`);
     const cats = await getLeafCategories();
     const targetCount = cats.length;
-    console.log(`📊 Found ${targetCount} leaf categories to process`);
+    console.log(`ðŸ“Š Found ${targetCount} leaf categories to process`);
     // Create batch record
     const batch = await prisma.generationBatch.create({
         data: {
@@ -62,7 +61,7 @@ async function runBatch(language) {
             note: 'Auto-generated batch'
         },
     });
-    console.log(`📦 Created batch: ${batch.id}`);
+    console.log(`ðŸ“¦ Created batch: ${batch.id}`);
     // Create jobs for each category
     await prisma.generationJob.createMany({
         data: cats.map((c) => ({
@@ -72,7 +71,7 @@ async function runBatch(language) {
             status: 'PENDING',
         })),
     });
-    console.log(`✅ Created ${cats.length} jobs`);
+    console.log(`âœ… Created ${cats.length} jobs`);
     // Mark batch as RUNNING
     await prisma.generationBatch.update({
         where: { id: batch.id },
@@ -88,10 +87,10 @@ async function runBatch(language) {
         where: { batchId: batch.id, status: 'PENDING' },
         include: { sssCategory: true },
     });
-    console.log(`⚙️  Processing ${pendingJobs.length} jobs with concurrency: ${GEN_CONFIG.MAX_CONCURRENCY}`);
-    console.log(`🎲 Generating ${GEN_CONFIG.QUESTIONS_PER_CATEGORY_MIN}-${GEN_CONFIG.QUESTIONS_PER_CATEGORY_MAX} questions per category`);
+    console.log(`âš™ï¸  Processing ${pendingJobs.length} jobs with concurrency: ${GEN_CONFIG.MAX_CONCURRENCY}`);
+    console.log(`ðŸŽ² Generating ${GEN_CONFIG.QUESTIONS_PER_CATEGORY_MIN}-${GEN_CONFIG.QUESTIONS_PER_CATEGORY_MAX} questions per category`);
     if (GEN_CONFIG.DRY_RUN) {
-        console.log('⚠️  DRY RUN MODE - Questions will not be saved to database');
+        console.log('âš ï¸  DRY RUN MODE - Questions will not be saved to database');
     }
     // Process jobs with concurrency control
     await Promise.all(pendingJobs.map((job) => limiter(async () => {
@@ -112,7 +111,7 @@ async function runBatch(language) {
                 cat.subSubCategory?.subCategory?.name,
                 cat.subSubCategory?.name,
             ].filter(Boolean);
-            console.log(`  🔧 [${processed + 1}/${pendingJobs.length}] Generating for: ${cat.name}`);
+            console.log(`  ðŸ”§ [${processed + 1}/${pendingJobs.length}] Generating for: ${cat.name}`);
             // Call GPT API to generate questions
             const result = await generateQuestions({
                 categoryName: cat.name,
@@ -148,11 +147,11 @@ async function runBatch(language) {
                 }));
                 if (questionsToInsert.length > 0) {
                     await prisma.question.createMany({ data: questionsToInsert });
-                    console.log(`    ✅ Saved ${questionsToInsert.length} questions`);
+                    console.log(`    âœ… Saved ${questionsToInsert.length} questions`);
                 }
             }
             else {
-                console.log(`    ⚠️  DRY RUN: Would have saved ${result.questions.length} questions`);
+                console.log(`    âš ï¸  DRY RUN: Would have saved ${result.questions.length} questions`);
             }
             // Update job status to DONE
             await prisma.generationJob.update({
@@ -165,7 +164,7 @@ async function runBatch(language) {
             });
             succeeded += 1;
             const duration = Date.now() - startTime;
-            console.log(`    ⏱️  Completed in ${duration}ms`);
+            console.log(`    â±ï¸  Completed in ${duration}ms`);
         }
         catch (error) {
             // Update job status to FAILED
@@ -178,7 +177,7 @@ async function runBatch(language) {
                 },
             });
             failed += 1;
-            console.error(`    ❌ Job failed:`, error?.message || error);
+            console.error(`    âŒ Job failed:`, error?.message || error);
             logError(error, `generateQuestions job ${job.id}`);
         }
         finally {
@@ -199,7 +198,7 @@ async function runBatch(language) {
             finishedAt: new Date(),
         },
     });
-    console.log(`\n✨ Batch ${batch.id} complete:`);
+    console.log(`\nâœ¨ Batch ${batch.id} complete:`);
     console.log(`   Processed: ${processed}`);
     console.log(`   Succeeded: ${succeeded}`);
     console.log(`   Failed: ${failed}`);
@@ -209,30 +208,30 @@ async function runBatch(language) {
  * Main entry point
  */
 async function main() {
-    console.log('🤖 Question Generation Worker Starting...\n');
+    console.log('ðŸ¤– Question Generation Worker Starting...\n');
     // Validate configuration
     const validation = validateGeneratorConfig();
     if (!validation.valid) {
-        console.error('❌ Configuration errors:');
+        console.error('âŒ Configuration errors:');
         validation.errors.forEach(err => console.error(`   - ${err}`));
         process.exit(1);
     }
-    console.log('⚙️  Configuration:');
+    console.log('âš™ï¸  Configuration:');
     console.log(`   Languages: ${GEN_CONFIG.LANGUAGES.join(', ')}`);
     console.log(`   Concurrency: ${GEN_CONFIG.MAX_CONCURRENCY}`);
     console.log(`   Questions per category: ${GEN_CONFIG.QUESTIONS_PER_CATEGORY_MIN}-${GEN_CONFIG.QUESTIONS_PER_CATEGORY_MAX}`);
-    console.log(`   GPT URL: ${GEN_CONFIG.GPT_URL ? '✅ Configured' : '❌ Not configured'}`);
+    console.log(`   GPT URL: ${GEN_CONFIG.GPT_URL ? 'âœ… Configured' : 'âŒ Not configured'}`);
     console.log(`   Dry run: ${GEN_CONFIG.DRY_RUN ? 'Yes' : 'No'}`);
     // Process each configured language
     for (const lang of GEN_CONFIG.LANGUAGES) {
         await runBatch(lang);
     }
     await prisma.$disconnect();
-    console.log('✅ All batches complete. Worker finished.\n');
+    console.log('âœ… All batches complete. Worker finished.\n');
 }
 // Run the worker
 main().catch((error) => {
-    console.error('\n❌ Fatal error:', error);
+    console.error('\nâŒ Fatal error:', error);
     logError(error, 'generate-questions main');
     prisma.$disconnect();
     process.exit(1);

@@ -11,6 +11,8 @@ import {
   FileText,
   Settings,
   Shield,
+  Activity,
+  MessageSquare,
 } from 'lucide-react';
 
 interface SidebarNavProps {
@@ -47,6 +49,18 @@ const adminLinks = [
     href: '/admin/reports',
     icon: Flag,
     roles: ['ADMIN', 'MODERATOR'],
+  },
+  {
+    name: 'Ops Runs',
+    href: '/admin/ops',
+    icon: Activity,
+    roles: ['ADMIN'],
+  },
+  {
+    name: 'Alpha Feedback',
+    href: '/admin/feedback',
+    icon: MessageSquare,
+    roles: ['ADMIN'],
   },
   {
     name: 'System Logs',

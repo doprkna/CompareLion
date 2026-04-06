@@ -164,11 +164,18 @@ export async function checkSignupRateLimit(req: Request): Promise<RateLimitResul
 // Daily rate limiting for login attempts
 export async function checkDailyLoginRateLimit(req: Request): Promise<RateLimitResult> {
   const key = `${defaultKeyGenerator(req)}:daily`;
-  
-  // 50 requests per day
   return checkRateLimit(key, {
-    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    windowMs: 24 * 60 * 60 * 1000,
     maxRequests: 50
+  });
+}
+
+/** Presence ping: 5 requests per 20 seconds per IP */
+export async function checkPresenceRateLimit(req: Request): Promise<RateLimitResult> {
+  const key = `presence:${defaultKeyGenerator(req)}`;
+  return checkRateLimit(key, {
+    windowMs: 20 * 1000,
+    maxRequests: 5
   });
 }
 

@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Icon } from '@parel/ui/atoms';
+import { Icon } from '@parel/ui';
 import { formatDistanceToNow } from 'date-fns';
 import { apiFetch } from '@/lib/apiBase';
 import { getAllStickers, type Sticker } from '@parel/story/stickers';

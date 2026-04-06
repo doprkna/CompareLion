@@ -1,211 +1,66 @@
-# v0.34.6 Repo Cuts
-# Reduce Cursor index by ~40-50% while keeping critical backend + admin visible
+# Cursor Index Clamp
 
-**/__gen_backup/**
-packages/core/src/hooks/**/*.d.ts
-packages/core/src/hooks/**/*.js
-packages/core/src/hooks/**/*.jsx
-packages/core/src/hooks/**/*.map
+# --- HARD CLAMP ---
+apps/
+packages/
 
-# ─── Build & Dependencies ─────────────────────────────────────────
-node_modules/
-.next/
-.pnpm/
-dist/
-build/
-.vercel/
-coverage/
-.turbo/
-out/
-.cache/
-.prisma/
-prisma/generated/
+!apps/web/
+!apps/web/app/
+!apps/web/app/**
 
-# ─── Archived Folders ──────────────────────────────────────────────
-archive/
-docs/
-storybook/
-old/
-legacy/
-playground/
-backup/
-**/__gen_backup/
-deprecated/
-
-# ─── Tests (Global Skip Policy) ────────────────────────────────────
-__tests__/
-tests/
-test/
-e2e/
-playwright/
-*.spec.ts
-*.spec.tsx
-*.test.ts
-*.test.tsx
-*.spec.js
-*.spec.jsx
-*.test.js
-*.test.jsx
-
-# ─── Frontend UI (Heavy Component Load) ────────────────────────────
-apps/web/components/
-apps/web/contexts/
-apps/web/pages/
-apps/web/locales/
-apps/web/types/
-apps/web/data/
-apps/mobile/
-apps/web/app/**/*
+# --- whitelist: web backend surfaces ---
 !apps/web/app/api/
-!apps/web/app/admin/
+!apps/web/app/api/**
+!apps/web/lib/
+!apps/web/lib/**
+!apps/web/hooks/
+!apps/web/hooks/**
 
-# ─── Assets & Static Files ─────────────────────────────────────────
-public/
-assets/
-static/
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-*.ico
-*.woff
-*.woff2
-*.ttf
-*.eot
-*.webp
-*.bmp
-*.tiff
-*.mp4
-*.mp3
-*.wav
-*.avi
-*.mov
+!apps/web/app/**/page.tsx
+!apps/web/app/**/layout.tsx
+!apps/web/app/**/loading.tsx
+!apps/web/app/**/error.tsx
+!apps/web/app/**/not-found.tsx
 
-# ─── Config & Lock Files ───────────────────────────────────────────
+!packages/core/src/
+!packages/core/src/**
+
+# --- cut big UI forests (do not index full UI) ---
+apps/web/components/
+apps/web/components/**
+apps/web/app/**/components/
+apps/web/app/**/components/**
+apps/web/public/
+apps/web/public/**
+
+# --- generated / build / deps ---
+**/node_modules/
+**/.next/
+structure.txt
+**/structure.txt
+**/CHANGELOG-Archive*.md
+packages/db/generated/
+**/web-build-errors.txt
 pnpm-lock.yaml
-yarn.lock
-package-lock.json
-tsconfig.tsbuildinfo
-*.log
-*.csv
-*.tmp
-*.bak
-*.pdf
-*.txt
-!README.md
-!CHANGELOG.md
-*.py
-*.sql
-*.service
-*.example
-Dockerfile
-docker-compose.yml
-*.tree.txt
-api-tree.txt
-apps-tree.txt
-packages-tree.txt
-mobile-tree.txt
-lib-tree.txt
-level1.txt
-temp_*.txt
-*.config.js
-jest.config.js
-ecosystem.config.js
-pm2.config.js
-vercel.json
-.env.example
-env.example
+**/dist/
+**/build/
+**/.turbo/
+**/.vercel/
+**/.pnpm-store/
+**/coverage/
+archive/
+**/archive/
+packages/**/prisma/
+**/*.log
+**/*.tsbuildinfo
+**/*.map
 
-# ─── Scripts & Maintenance ─────────────────────────────────────────
-scripts/
-seed/
-apps/worker/
-apps/web/worker/
-fix_*.py
-remove_*.py
-verify-*.sql
-
-# ─── Documentation (Non-Code) ──────────────────────────────────────
-*.md
-!README.md
-!CHANGELOG.md
-
-# ─── Stable Backend Areas (Reduce Noise) ───────────────────────────
-# Keep API routes but reduce stable config/utils
-apps/web/lib/dto/
-apps/web/lib/config/
-apps/web/lib/validation/
-apps/web/lib/monitoring/
-apps/web/lib/telemetry/
-apps/web/lib/types/
-apps/web/lib/seed-*.ts
-apps/web/lib/i18n/
-apps/web/lib/utils/
-apps/web/lib/middleware/
-apps/web/lib/mounts/
-apps/web/lib/pwa/
-apps/web/lib/regional/
-apps/web/lib/localization/
-apps/web/lib/health/
-apps/web/lib/ui/
-apps/web/lib/audio/
-apps/web/lib/cache/
-apps/web/lib/sentry/
-apps/web/lib/memory/
-
-# ─── Admin & Cron Routes (Stable Infrastructure) ───────────────────
-apps/web/app/api/admin/
-apps/web/app/api/cron/
-
-# ─── More Stable Lib Areas ──────────────────────────────────────────
-apps/web/lib/performance/
-apps/web/lib/queue/
-apps/web/lib/ux/
-apps/web/lib/system/
-apps/web/lib/world/
-apps/web/lib/subscription/
-apps/web/lib/moderation/
-apps/web/lib/db/
-apps/web/lib/server/
-apps/web/lib/security/
-apps/web/lib/timezone/
-apps/web/lib/delight/
-apps/web/lib/events/
-apps/web/lib/marketplace/
-apps/web/lib/rewards/
-
-# ─── Database & Migrations ─────────────────────────────────────────
-migrations/
-packages/db/
-prisma/
-
-# ─── Packages (Mostly Generated/Stable) ────────────────────────────
-packages/core/state/
-packages/core/hooks/
-packages/core/config/
-packages/core/BACKUP*/
-packages/api/
-packages/types/
-packages/shared/
-packages/utils/
-packages/ui/icons/
-packages/ui/atoms/
-packages/validation/
-packages/rating/
-packages/notifications/
-packages/narrative/
-packages/lore/
-packages/features/
-packages/story/
-packages/redis/
-
-# ═══════════════════════════════════════════════════════════════════
-# KEEP INDEXED (Let these through):
-# - apps/web/app/api/ (API routes)
-# - apps/web/app/admin/ (Admin UI)
-# - apps/web/lib/ (Core business logic, except stable areas above)
-# - apps/web/hooks/
-# - apps/web/middleware.ts
-# ═══════════════════════════════════════════════════════════════════
-
+# --- OPTIONAL: whitelist package src (uncomment only if needed) ---
+# !packages/core/src/
+# !packages/core/src/**
+# !packages/db/src/
+# !packages/db/src/**
+# !packages/validation/src/
+# !packages/validation/src/**
+# !packages/types/src/
+# !packages/types/src/**

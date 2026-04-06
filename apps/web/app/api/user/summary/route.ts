@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, notFoundError } from '@/lib/api-handler';
+import { levelProgress } from '@/lib/xp';
 
 export const GET = safeAsync(async (req: NextRequest) => {
   const session = await getServerSession(authOptions);
@@ -70,8 +71,9 @@ export const GET = safeAsync(async (req: NextRequest) => {
         name: user.name,
         image: user.avatarUrl,
         avatarUrl: user.avatarUrl,
-        level: user.level || 1,
-        xp: user.xp || 0,
+        level: user.level ?? 1,
+        xp: user.xp ?? 0,
+        progress: levelProgress(user.xp ?? 0),
         funds: user.funds || 0,
         diamonds: user.diamonds || 0,
         streakCount: user.streakCount || 0,
@@ -80,7 +82,6 @@ export const GET = safeAsync(async (req: NextRequest) => {
         totalQuestions,
         userResponses,
         createdAt: user.createdAt,
-        progress: 0, // Will be calculated on frontend
         achievements: achievements.map(ua => ({
           id: ua.achievement.id,
           code: ua.achievement.code,

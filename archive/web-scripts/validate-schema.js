@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Database Schema Validation Script
  * Validates the Prisma schema for Flow Answers API requirements
@@ -222,12 +221,12 @@ async function validateSchema() {
     return results;
 }
 async function main() {
-    console.log('🔍 Validating Database Schema for Flow Answers API...\n');
+    console.log('ðŸ” Validating Database Schema for Flow Answers API...\n');
     const results = await validateSchema();
     let passed = 0;
     let failed = 0;
     results.forEach(result => {
-        const status = result.passed ? '✅' : '❌';
+        const status = result.passed ? 'âœ…' : 'âŒ';
         console.log(`${status} ${result.test}: ${result.message}`);
         if (result.details && !result.passed) {
             console.log(`   Details: ${JSON.stringify(result.details, null, 2)}`);
@@ -239,15 +238,15 @@ async function main() {
             failed++;
         }
     });
-    console.log(`\n📊 Validation Summary:`);
+    console.log(`\nðŸ“Š Validation Summary:`);
     console.log(`   Passed: ${passed}`);
     console.log(`   Failed: ${failed}`);
     console.log(`   Total:  ${results.length}`);
     if (failed === 0) {
-        console.log('\n🎉 All validations passed! Database schema is ready for Flow Answers API.');
+        console.log('\nðŸŽ‰ All validations passed! Database schema is ready for Flow Answers API.');
     }
     else {
-        console.log('\n⚠️  Some validations failed. Please fix the issues before using Flow Answers API.');
+        console.log('\nâš ï¸  Some validations failed. Please fix the issues before using Flow Answers API.');
         process.exit(1);
     }
 }

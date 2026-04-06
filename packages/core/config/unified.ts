@@ -110,6 +110,27 @@ class ConfigManager {
       process.env.ENABLE_ANALYTICS === '1' || process.env.ENABLE_ANALYTICS === 'true';
     this.config.features.environment = 
       env === 'production' ? 'production' : env === 'development' ? 'development' : 'test';
+
+    // App meta from environment (config unification - from apps/web/lib/config.ts)
+    const isBeta = process.env.NEXT_PUBLIC_ENV === 'beta' || process.env.VERCEL_ENV === 'preview';
+    this.config.app.meta.isProduction = env === 'production';
+    this.config.app.meta.isDevelopment = env === 'development';
+    this.config.app.meta.isBeta = isBeta;
+    this.config.app.meta.appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://parel.app';
+    this.config.app.meta.features.DEV_TOOLS = env === 'development';
+    this.config.app.meta.features.DEBUG_MODE = env === 'development';
+    this.config.app.meta.feedback.enabled =
+      process.env.FEEDBACK_ENABLED === 'true' || process.env.NEXT_PUBLIC_FEEDBACK_ENABLED === 'true';
+    this.config.app.meta.stripe.secretKey = process.env.STRIPE_SECRET_KEY || '';
+    this.config.app.meta.stripe.webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+    this.config.app.meta.stripe.publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+    this.config.app.meta.buildInfo.buildId = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'dev';
+    this.config.app.meta.buildInfo.buildTime = new Date().toISOString();
+    this.config.app.meta.buildInfo.environment = process.env.NEXT_PUBLIC_ENV || env;
+    this.config.app.meta.qgenDailyLimit = Number(process.env.QGEN_DAILY_LIMIT) || 200;
+    const sched = process.env.SCHEDULER_INTERVAL || '15m';
+    const schedMs = sched.endsWith('m') ? parseInt(sched, 10) * 60 * 1000 : parseInt(sched, 10) || 15 * 60 * 1000;
+    this.config.app.meta.schedulerIntervalMs = schedMs;
   }
 
   /**
@@ -220,6 +241,18 @@ export function getUnifiedConfig(): ConfigManager {
     );
   }
   return configManagerInstance;
+}
+
+/**
+ * Idempotent helper: ensures config is initialized, then returns it.
+ * Safe to call multiple times. Does not use browser-only APIs.
+ * Use this when you need config but are unsure if init has run (e.g. app bootstrap).
+ */
+export function ensureUnifiedConfigInitialized(): ConfigManager {
+  if (!configManagerInstance) {
+    initUnifiedConfig();
+  }
+  return configManagerInstance!;
 }
 
 /**

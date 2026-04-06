@@ -1,5 +1,5 @@
 import 'server-only';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 

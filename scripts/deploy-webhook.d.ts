@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Deployment Webhook (v0.11.6)
  *

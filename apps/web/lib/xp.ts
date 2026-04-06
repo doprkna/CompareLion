@@ -72,6 +72,21 @@ export function getLevelRange(level: number): { min: number; max: number } {
   return { min, max };
 }
 
+/**
+ * Get XP progress detail for current level (shared by navbar, profile, dashboard).
+ * @param xp Total XP
+ * @returns currentXP in level, requiredXP for next level, progress 0-1
+ */
+export function getXpProgressDetail(xp: number): { currentXP: number; requiredXP: number; progress: number } {
+  const level = xpToLevel(xp);
+  const currentLevelXp = nextLevelXp(level);
+  const nextLevelXpVal = nextLevelXp(level + 1);
+  const requiredXP = nextLevelXpVal - currentLevelXp;
+  const currentXP = Math.max(0, xp - currentLevelXp);
+  const progress = requiredXP > 0 ? Math.min(1, currentXP / requiredXP) : 1;
+  return { currentXP, requiredXP, progress };
+}
+
 
 
 

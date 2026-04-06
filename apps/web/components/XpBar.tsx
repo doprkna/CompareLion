@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { apiFetch } from '@/lib/apiBase';
 import { Sparkles } from 'lucide-react';
-import { logger } from '@/lib/logger';
+import { useUserSummary } from '@/lib/hooks';
 
 interface XpBarProps {
   variant?: 'header' | 'dropdown';
@@ -13,53 +11,25 @@ interface XpBarProps {
 
 export function XpBar({ variant = 'header' }: XpBarProps) {
   const { data: session, status } = useSession();
-  const [xp, setXp] = useState(0);
-  const [level, setLevel] = useState(1);
-  const [progress, setProgress] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useUserSummary();
 
-  useEffect(() => {
-    if (status === 'loading') {
-      setLoading(true);
-      return;
-    }
-    
-    if (!session?.user) {
-      setLoading(false);
-      return;
-    }
-    
-    loadXpData();
-  }, [session, status]);
-
-  async function loadXpData() {
-    try {
-      const res = await apiFetch('/api/user/summary');
-      if ((res as any).ok && (res as any).data?.user) {
-        const userData = (res as any).data.user;
-        setXp(userData.xp || 0);
-        setLevel(userData.level || 1);
-        setProgress(userData.progress || 0);
-      }
-    } catch (error) {
-      logger.error('Failed to load XP data', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Don't render if user is not authenticated
   if (status === 'loading' || !session?.user) {
     return null;
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center gap-2">
         <div className="h-4 w-16 bg-border rounded animate-pulse" />
       </div>
     );
   }
+
+  if (!data) {
+    return null;
+  }
+
+  const { level, xp, progress } = data;
 
   if (variant === 'dropdown') {
     return (
@@ -81,7 +51,6 @@ export function XpBar({ variant = 'header' }: XpBarProps) {
     );
   }
 
-  // Header variant - minimal inline display
   return (
     <div className="flex items-center gap-2 bg-bg/50 px-3 py-1.5 rounded-full border border-border">
       <Sparkles className="h-3.5 w-3.5 text-accent" />
@@ -100,4 +69,3 @@ export function XpBar({ variant = 'header' }: XpBarProps) {
 }
 
 export default XpBar;
-

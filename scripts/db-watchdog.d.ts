@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Database Watchdog - Auto-healing database monitor
  *

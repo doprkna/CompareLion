@@ -5,23 +5,14 @@
  */
 
 import { Queue, QueueOptions } from "bullmq";
-import Redis from "ioredis";
+import { getRedisClient, hasRedis } from "@parel/redis";
 import os from "os";
 
-const REDIS_URL = process.env.REDIS_URL;
+let _connection: ReturnType<typeof getRedisClient> = null;
 
-/**
- * Redis connection for BullMQ (only if REDIS_URL is set)
- */
-let _connection: Redis | null = null;
-
-function getConnection(): Redis | null {
-  if (!_connection && REDIS_URL) {
-    _connection = new Redis(REDIS_URL, {
-      maxRetriesPerRequest: null, // BullMQ requires this
-      enableReadyCheck: false,
-    });
-  }
+function getConnection() {
+  if (!hasRedis) return null;
+  if (!_connection) _connection = getRedisClient();
   return _connection;
 }
 
@@ -109,14 +100,12 @@ export const QUEUE_CONFIG = {
 } as const;
 
 /**
- * Create queue instance
+ * Create queue instance (returns null when Redis disabled)
  */
-export function createQueue(priority: QueuePriority): Queue {
+export function createQueue(priority: QueuePriority): Queue | null {
   const conn = getConnection();
-  if (!conn) {
-    throw new Error("Queue system not available - REDIS_URL not configured");
-  }
-  
+  if (!conn) return null;
+
   const config = QUEUE_CONFIG[priority];
   
   return new Queue(config.name, {
@@ -169,20 +158,19 @@ export async function getQueueStats(queue: Queue) {
 }
 
 /**
- * Get all queue statistics
+ * Get all queue statistics (empty when Redis disabled)
  */
 export async function getAllQueueStats() {
   const queues = [
     createQueue(QUEUE_PRIORITIES.HIGH),
     createQueue(QUEUE_PRIORITIES.MEDIUM),
     createQueue(QUEUE_PRIORITIES.LOW),
-  ];
-  
+  ].filter((q): q is Queue => q !== null);
+
+  if (queues.length === 0) return [];
+
   const stats = await Promise.all(queues.map((q) => getQueueStats(q)));
-  
-  // Close queues
   await Promise.all(queues.map((q) => q.close()));
-  
   return stats;
 }
 
@@ -234,9 +222,9 @@ export async function addJob(
   }
   
   const queue = createQueue(priority);
+  if (!queue) return null;
   const job = await queue.add(jobType, data, options);
   await queue.close();
-  
   return job;
 }
 

@@ -428,10 +428,54 @@ const apiDefaults: UnifiedConfig['api'] = {
 };
 
 /**
+ * App meta defaults (from apps/web/lib/config.ts)
+ * Consolidated into unified config - env overrides applied in unified.ts
+ */
+const appMetaDefaults: UnifiedConfig['app']['meta'] = {
+  version: '0.25.3',
+  name: 'PareL',
+  description: 'Answer questions, compare yourself with others, and level up through gamified polling and self-discovery',
+  isProduction: false,
+  isDevelopment: true,
+  isBeta: false,
+  appUrl: 'https://parel.app',
+  features: {
+    AUTHENTICATION: true,
+    FLOW_SYSTEM: true,
+    PROFILE: true,
+    FRIENDS: true,
+    LEADERBOARD: true,
+    CHALLENGES: true,
+    INVITE_SYSTEM: true,
+    MESSAGING: true,
+    GROUPS: true,
+    ADMIN_PANEL: true,
+    METRICS_DASHBOARD: true,
+    ECONOMY: false,
+    FACTIONS: false,
+    GUILDS: false,
+    CRAFTING: false,
+    DUELS: false,
+    QUESTS: false,
+    NFT_AVATARS: false,
+    CREATOR_MODE: false,
+    DEV_TOOLS: false,
+    DEBUG_MODE: false,
+  },
+  feedback: { enabled: false, rewardXp: 100, rewardCoins: 50 },
+  stripe: { secretKey: '', webhookSecret: '', publishableKey: '' },
+  buildInfo: { version: '0.25.3', buildId: 'dev', buildTime: '', environment: 'development' },
+  qgenBatchSize: 20,
+  qgenDailyLimit: 200,
+  schedulerIntervalMs: 15 * 60 * 1000, // 15 min default
+};
+
+/**
  * App config defaults
  * Migrated from packages/core/config/constants.ts, hooks, and stores
  */
 const appDefaults: UnifiedConfig['app'] = {
+  meta: appMetaDefaults,
   limits: {
     questions: {
       maxPerDay: 100,

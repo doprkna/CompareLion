@@ -1,5 +1,5 @@
 import { Queue, QueueEvents, JobsOptions } from 'bullmq';
-import { connection } from './connection';
+import { getRedisClient, hasRedis } from '@parel/redis';
 
 const queueName = 'question-gen';
 
@@ -12,9 +12,9 @@ let _questionGenQueue: Queue | null = null;
 let _questionGenEvents: QueueEvents | null = null;
 
 function getQuestionGenQueue(): Queue | null {
+  if (!hasRedis) return null;
   if (!_questionGenQueue) {
-    // Access connection proxy to trigger lazy init
-    const conn = (connection as any);
+    const conn = getRedisClient();
     if (conn) {
       _questionGenQueue = new Queue(queueName, {
         connection: conn,
@@ -26,8 +26,9 @@ function getQuestionGenQueue(): Queue | null {
 }
 
 function getQuestionGenEvents(): QueueEvents | null {
+  if (!hasRedis) return null;
   if (!_questionGenEvents) {
-    const conn = (connection as any);
+    const conn = getRedisClient();
     if (conn) {
       _questionGenEvents = new QueueEvents(queueName, { connection: conn });
     }

@@ -1,0 +1,6 @@
+/**
+ * AURE Interaction Engine - Quests
+ * Placeholder stub for quests functionality
+ * v0.39.0 - AURE Expansion Placeholders
+ */
+export declare const placeholder = true;

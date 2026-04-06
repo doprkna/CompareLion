@@ -4,7 +4,7 @@
  * v0.14.0 - Telemetry & Monitoring
  */
 import { logger } from '@/lib/logger';
-import { getFlags } from '@parel/core/config/flags';
+import { getFlags } from '@parel/core/config';
 // In-memory event queue (max 100 events before auto-flush)
 let eventQueue = [];
 const MAX_QUEUE_SIZE = 100;

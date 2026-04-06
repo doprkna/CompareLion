@@ -1,0 +1,10 @@
+{
+  "packKey": "starter",
+  "version": "1.0.0",
+  "type": "flow-questions",
+  "title": "Starter Flow",
+  "description": "Canonical starter flow for first-time users. 5 curated questions.",
+  "schemaVersion": 1,
+  "createdAt": "2026-03-02",
+  "source": "ensureBaselineData migration"
+}

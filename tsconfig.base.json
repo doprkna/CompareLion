@@ -20,6 +20,6 @@
       "@utils/*": ["packages/utils/*"]
     }
   },
-  "exclude": ["node_modules", "dist", "build", ".next", ".turbo", "coverage"]
+  "exclude": ["node_modules", "dist", "build", ".next", ".turbo", "coverage", "archive"]
 }
 

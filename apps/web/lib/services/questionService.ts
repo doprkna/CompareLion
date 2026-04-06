@@ -1,4 +1,4 @@
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import { normalizeQuestionText } from '@/lib/text';
 import type { AdminUpdateQuestion } from '@parel/validation/questionAdmin';
 

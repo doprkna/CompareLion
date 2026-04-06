@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Data Flow Audit Script
  * Detects hard-coded demo users, mock data, and DB connection issues

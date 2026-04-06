@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync, authError, notFoundError } from '@/lib/api-handler';
+import { logEvent } from '@/lib/logEvent';
 import { recordFlowAnswer, getUserFlowStats } from '@/lib/services/flowService';
 import { addXP, updateHeroStats } from '@/lib/services/progressionService';
 import { publishEvent } from '@/lib/realtime';
@@ -59,6 +60,22 @@ export const POST = safeAsync(async (req: NextRequest) => {
     numericValue,
     skipped: skipped || false,
   });
+
+  if (skipped) {
+    logEvent({
+      type: 'question_skip',
+      userId: user.id,
+      message: 'Skipped question',
+      params: { questionId, channel: 'flow_demo' },
+    });
+  } else {
+    logEvent({
+      type: 'question_answer',
+      userId: user.id,
+      message: 'Answered question',
+      params: { questionId, channel: 'flow_demo' },
+    });
+  }
 
   // Grant XP if not skipped (10 XP per answer)
   let xpResult = null;

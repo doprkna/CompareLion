@@ -33,8 +33,10 @@ export const env = {
   // Database
   DATABASE_URL: safeEnv("DATABASE_URL", "file:./dev.db"),
   
-  // Redis
-  REDIS_URL: safeEnv("REDIS_URL", "redis://localhost:6379"),
+  // Redis (optional in dev; no default - unset => disabled)
+  REDIS_URL: process.env.REDIS_DISABLED === 'true' || process.env.REDIS_DISABLED === '1'
+    ? ''
+    : (process.env.REDIS_URL?.trim() ?? ''),
   
   // Stripe
   STRIPE_SECRET_KEY: safeEnv("STRIPE_SECRET_KEY", "dummy_stripe_key"),
@@ -57,11 +59,22 @@ export const env = {
 // Environment status helpers
 export const isProd = process.env.VERCEL_ENV === "production" || process.env.NEXT_PUBLIC_APP_ENV === "production";
 export const hasDb = Boolean(process.env.DATABASE_URL);
-export const hasRedis = Boolean(process.env.REDIS_URL) || (Boolean(process.env.UPSTASH_REDIS_REST_URL) && Boolean(process.env.UPSTASH_REDIS_REST_TOKEN));
+export const redisDisabled = process.env.REDIS_DISABLED === 'true' || process.env.REDIS_DISABLED === '1';
+// Same logic as @parel/redis - no import to avoid pulling ioredis into Edge
+export const hasRedis = !redisDisabled && !!env.REDIS_URL;
 
-// Optional runtime validation for required vars (skipped in build)
-if (env.IS_PROD && !env.IS_VERCEL) {
+// Strict process.env checks for non-Vercel production *runtime* only.
+// `next build` uses NODE_ENV=production locally; Next sets NEXT_PHASE=phase-production-build
+// while collecting page data (workers inherit it). npm/pnpm set npm_lifecycle_event=build
+// for the root build script—covering phases before NEXT_PHASE is set.
+const isNextProductionBuild =
+  process.env.NEXT_PHASE === 'phase-production-build' ||
+  process.env.npm_lifecycle_event === 'build';
+
+if (env.IS_PROD && !env.IS_VERCEL && !isNextProductionBuild) {
+  const skip = redisDisabled ? ['REDIS_URL'] : [];
   for (const key of requiredInRuntime) {
+    if (skip.includes(key)) continue;
     if (!process.env[key]) {
       console.error(`❌ Fatal: missing required env var ${key}`);
       process.exit(1);

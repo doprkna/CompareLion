@@ -1,0 +1,6 @@
+import { NextRequest } from 'next/server';
+export declare function GET(req: NextRequest, { params }: {
+    params: {
+        id: string;
+    };
+}): Promise<any>;

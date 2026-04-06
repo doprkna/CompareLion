@@ -10,11 +10,12 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
-  			// Design Tokens v0.11.4 - Unified dark theme with WCAG AA compliance
+  			// Design Tokens v0.11.4 + C14 semantic tokens
   			bg: {
   				DEFAULT: '#0a0f1e', // Darker base for better contrast
   				elevated: '#1e293b', // Cards and elevated surfaces
   				muted: '#0f172a', // Subtle backgrounds
+  				surface: '#1e293b', // Panel/card surface (alias for elevated)
   			},
   			text: {
   				DEFAULT: '#f8fafc', // High contrast white
@@ -22,6 +23,8 @@ const config: Config = {
   				muted: '#94a3b8', // Low contrast
   				disabled: '#64748b', // Disabled state
   			},
+  			// Theme-aware: uses CSS var when ThemeManager runs, fallback for SSR
+  			subtle: 'var(--color-subtle, #94a3b8)',
   			border: {
   				DEFAULT: '#334155', // Standard borders
   				light: '#475569', // Lighter borders
@@ -115,6 +118,8 @@ const config: Config = {
   			'glow-success': '0 0 20px rgb(34 197 94 / 0.4)',
   			'glow-warning': '0 0 20px rgb(245 158 11 / 0.4)',
   			'glow-destructive': '0 0 20px rgb(239 68 68 / 0.4)',
+  			// C14 semantic
+  			panel: '0 2px 4px 0 rgb(0 0 0 / 0.15)',
   		},
   		fontSize: {
   			// Design Tokens v0.11.4

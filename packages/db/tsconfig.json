@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["index.ts", "src/**/*.ts", "content/**/*.ts"],
+  "exclude": ["node_modules", "dist", "prisma", "scripts", "seed", "generated", "**/*.seed*", "**/packages", "src/seed.ts"]
+}

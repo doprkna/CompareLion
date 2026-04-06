@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,27 +15,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ChevronDown, Lock, Settings } from "lucide-react";
-import { apiFetch } from "@/lib/apiBase";
 import { isAdminView } from '@parel/core/utils/isAdminView';
+import { FeatureGate } from '@/components/FeatureGate';
+import { useFeatureGate } from '@/lib/hooks';
 
 export default function NavLinks() {
   const { data: session } = useSession();
   const userRole = (session?.user as any)?.role;
-  const [userLevel, setUserLevel] = useState(1);
-  const isDev = process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEV_UNLOCK === 'true';
-
-  useEffect(() => {
-    // Fetch user level for locked features
-    if (session?.user?.email) {
-      apiFetch('/api/user/summary')
-        .then((res: any) => {
-          if (res.ok && res.data?.user) {
-            setUserLevel(res.data.user.level || 1);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [session]);
+  const inviteGate = useFeatureGate('INVITE');
 
   const coreLinks = [
     { href: "/landing", label: "Landing" },
@@ -51,6 +37,9 @@ export default function NavLinks() {
     { href: "/challenges", label: "Challenges" },
     { href: "/invite", label: "Invite Friends" },
   ];
+
+  // Play (RPG Arena) - visible to all logged-in users; page gates by rpgEnabled+hasCharacter
+  const playLink = { href: "/play", label: "Arena" };
 
   const lockedFeatures = [];
 
@@ -82,7 +71,6 @@ export default function NavLinks() {
     { href: "/admin/api", label: "Admin API Map" },
     { href: "/admin/presets", label: "Admin Presets" },
     { href: "/admin/system", label: "Admin System" },
-    { href: "/play", label: "Play (Placeholder)" },
     { href: "/inventory", label: "Inventory" },
     { href: "/shop", label: "Shop" },
     { href: "/market", label: "Market" },
@@ -127,39 +115,14 @@ export default function NavLinks() {
             {link.label}
           </Link>
         ))}
-
-        {lockedFeatures.map((feature: any) => {
-          const isUnlocked = isDev || userLevel >= feature.unlockLevel || userRole === "ADMIN";
-
-          if (isUnlocked) {
-            return (
-              <Link
-                key={feature.href}
-                href={feature.href}
-                className="text-text hover:text-accent font-medium transition-colors"
-              >
-                {feature.label}
-              </Link>
-            );
-          }
-
-          return (
-            <Tooltip key={feature.href}>
-              <TooltipTrigger asChild>
-                <span className="text-subtle opacity-50 font-medium cursor-not-allowed flex items-center gap-1">
-                  {feature.label}
-                  <Lock className="h-3 w-3" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="bg-card border-border">
-                <p className="text-xs font-medium">{feature.tooltip}</p>
-                <p className="text-[10px] text-subtle mt-1">
-                  Unlock at Level {feature.unlockLevel}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
+        <FeatureGate feature="RPG" mode="placeholder" label="Arena">
+          <Link
+            href={playLink.href}
+            className="text-text hover:text-accent font-medium transition-colors"
+          >
+            {playLink.label}
+          </Link>
+        </FeatureGate>
 
       <DropdownMenu>
         <DropdownMenuTrigger className="text-text hover:text-accent font-medium transition-colors flex items-center gap-1">
@@ -167,13 +130,42 @@ export default function NavLinks() {
           <ChevronDown className="h-4 w-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-card border-border">
-          {communityLinks.map((link) => (
-            <DropdownMenuItem key={link.href} asChild>
-              <Link href={link.href} className="text-text hover:text-accent cursor-pointer">
-                {link.label}
-              </Link>
-            </DropdownMenuItem>
-          ))}
+          {communityLinks.map((link) => {
+            const isInvite = link.href === '/invite';
+            if (isInvite && !inviteGate.allowed) {
+              return (
+                <Tooltip key={link.href}>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="opacity-70 cursor-default">
+                      <span className="flex items-center gap-1.5">
+                        {link.label}
+                        <Lock className="h-3 w-3" />
+                      </span>
+                    </DropdownMenuItem>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p className="text-xs">{inviteGate.message}</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+            if (isInvite) {
+              return (
+                <DropdownMenuItem key={link.href} asChild>
+                  <Link href={link.href} className="text-text hover:text-accent cursor-pointer">
+                    {link.label}
+                  </Link>
+                </DropdownMenuItem>
+              );
+            }
+            return (
+              <DropdownMenuItem key={link.href} asChild>
+                <Link href={link.href} className="text-text hover:text-accent cursor-pointer">
+                  {link.label}
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
 

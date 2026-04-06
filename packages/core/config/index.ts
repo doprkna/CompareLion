@@ -12,10 +12,11 @@ export * from './musicThemes';
 export * from './questionSeeds';
 export * from './rarityConfig';
 export * from './regions';
-export { RewardConfig } from './rewardConfig';
+export { RewardConfig, type DifficultyLevel } from './rewardConfig';
 export * from './security';
 export * from './toastTheme';
 export * from './wildcards';
+export * from './featureGates';
 
 // Unified Config System (C6 Step 7 - v0.42.23)
 // Main entrypoint for unified config
@@ -26,6 +27,7 @@ export * from './defaults';
 export {
   initUnifiedConfig,
   getUnifiedConfig,
+  ensureUnifiedConfigInitialized,
   getConfig,
   getConfigValue,
   getGameplayConfig,

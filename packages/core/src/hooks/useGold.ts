@@ -32,11 +32,11 @@ export function useGold(): UseGoldReturn {
     }
 
     try {
-      const res = await fetch('/api/user/gold');
-      const data = await res.json();
-
-      if (data.success) {
-        setGold(data.gold || 0);
+      const res = await fetch('/api/wallet');
+      const json = await res.json();
+      const data = json.data ?? json;
+      if (res.ok && data) {
+        setGold(typeof data.gold === 'number' ? data.gold : 0);
       }
     } catch (error) {
       console.error('[useGold] Error fetching gold:', error);

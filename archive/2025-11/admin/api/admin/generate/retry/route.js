@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
  */
 import { NextResponse } from 'next/server';
 import { prisma } from '@parel/db/src/client';
-import { GEN_CONFIG } from '@parel/core/config/generator';
+import { GEN_CONFIG } from '@parel/core/config';
 /**
  * Simple admin authentication
  * Checks for x-admin-token header

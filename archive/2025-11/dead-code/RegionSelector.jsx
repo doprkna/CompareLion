@@ -1,6 +1,6 @@
 "use client";
 import { useRegionStore } from "@/store/useRegionStore";
-import { REGIONS } from '@parel/core/config/regions';
+import { REGIONS } from '@parel/core/config';
 export default function RegionSelector() {
     const { region, setRegion, language, setLanguage } = useRegionStore();
     return (<div className="flex flex-wrap items-center gap-2 p-2 text-sm">

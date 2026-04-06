@@ -1,22 +1,16 @@
-import IORedis from 'ioredis';
 import { Worker } from 'bullmq';
-import { prisma } from '@parel/db/src/client';
+import { getRedisClient, hasRedis } from '@parel/redis';
+import { prisma } from '@parel/db/client';
 import { questionGenQueue, QuestionGenJob } from '@/lib/jobs/questionGen.queue';
 import { QGEN_DAILY_LIMIT } from '@/lib/config';
 import { logger } from '@/lib/logger';
 
-// Redis connection for scheduler (lazy init)
-let _connection: IORedis | null = null;
-
-function getConnection(): IORedis {
-  if (!_connection) {
-    const redisUrl = process.env.REDIS_URL ?? '';
-    _connection = new IORedis(redisUrl);
-  }
-  return _connection;
+if (!hasRedis) {
+  console.warn('[Scheduler] Redis not configured - exiting. Set REDIS_URL to run.');
+  process.exit(0);
 }
 
-const connection = getConnection();
+const connection = getRedisClient()!;
 
 // Batch size from env
 const batchSize = Number(process.env.QGEN_BATCH_SIZE ?? '50');

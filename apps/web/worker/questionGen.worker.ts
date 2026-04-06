@@ -1,7 +1,13 @@
 import { Worker, Job } from 'bullmq';
+import { hasRedis } from '@parel/redis';
 import { connection } from '@/lib/queue/connection';
+
+if (!hasRedis) {
+  console.warn('[Worker] Redis not configured - exiting. Set REDIS_URL to run the worker.');
+  process.exit(0);
+}
 import { generateAndInsertOneQuestion } from './generatorStub';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 
 const queueName = 'question-gen';
 

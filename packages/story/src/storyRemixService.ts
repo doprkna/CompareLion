@@ -43,7 +43,11 @@ export async function getStoryPanels(storyId: string): Promise<{
   try {
     const story = await prisma.story.findUnique({
       where: { id: storyId },
-      include: {
+      select: {
+        id: true,
+        panelCount: true,
+        panelMetadata: true,
+        createdAt: true,
         user: {
           select: {
             id: true,
@@ -51,13 +55,6 @@ export async function getStoryPanels(storyId: string): Promise<{
             username: true,
           },
         },
-      },
-      select: {
-        id: true,
-        panelCount: true,
-        panelMetadata: true,
-        createdAt: true,
-        user: true,
       },
     });
 
@@ -105,17 +102,17 @@ async function getRemixChainDepth(storyId: string): Promise<number> {
     }
     visited.add(currentStoryId);
 
-    const story = await prisma.story.findUnique({
+    const parentRow: { parentStoryId: string | null } | null = await prisma.story.findUnique({
       where: { id: currentStoryId },
       select: { parentStoryId: true },
     });
 
-    if (!story || !story.parentStoryId) {
+    if (!parentRow || !parentRow.parentStoryId) {
       break;
     }
 
     depth++;
-    currentStoryId = story.parentStoryId;
+    currentStoryId = parentRow.parentStoryId;
   }
 
   return depth;
@@ -137,15 +134,6 @@ export async function createRemixStory(
     // Validate parent story exists and is public
     const parentStory = await prisma.story.findUnique({
       where: { id: parentStoryId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-          },
-        },
-      },
       select: {
         id: true,
         userId: true,
@@ -154,6 +142,13 @@ export async function createRemixStory(
         panelCount: true,
         panelMetadata: true,
         type: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
       },
     });
 
@@ -289,19 +284,6 @@ export async function getRemixMetadata(storyId: string): Promise<RemixMetadata |
   try {
     const story = await prisma.story.findUnique({
       where: { id: storyId },
-      include: {
-        parentStory: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-              },
-            },
-          },
-        },
-      },
       select: {
         parentStoryId: true,
         remixType: true,

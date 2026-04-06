@@ -2,26 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/apiBase";
+import Link from "next/link";
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [showAuditLogs, setShowAuditLogs] = useState(false);
+  const [visitStats, setVisitStats] = useState<{
+    totalVisits: number;
+    visitsToday: number;
+    uniqueUsersToday: number;
+    activeUsers24h: number;
+    activeLoggedUsers24h: number;
+    anonymousVisits24h: number;
+    activeUsers7d: number;
+    activeLoggedUsers7d: number;
+    anonymousUsers7d: number;
+    returningUsers7d: number;
+    returningUsersPct7d: number;
+  } | null>(null);
 
   async function trigger(path: string, label: string) {
     setLoading(true);
     try {
-      const res = await apiFetch(`/api/admin/${path}`, { method: "POST" });
-      const status = (res as any).ok !== false ? "OK" : "Fail";
-      setLogs((l) => [`✅ ${label}: ${status}`, ...l].slice(0, 50));
-      
-      // Refresh audit logs after action
-      if ((res as any).ok !== false) {
+      const wrap = await apiFetch(`/api/admin/${path}`, { method: "POST" });
+      const data = wrap.data as { success?: boolean; error?: string } | undefined;
+      const errText = (wrap.error || data?.error || "").trim();
+      const truncated =
+        errText.length > 280 ? `${errText.slice(0, 280)}…` : errText;
+
+      let line: string;
+      if (!wrap.ok) {
+        line = `❌ ${label}: Fail — ${truncated || "HTTP error"}`;
+      } else if (data?.success === false) {
+        line = `❌ ${label}: Fail — ${truncated || "Unknown error"}`;
+      } else {
+        line = `✅ ${label}: OK`;
+      }
+      setLogs((l) => [line, ...l].slice(0, 50));
+
+      if (wrap.ok && data?.success !== false) {
         await loadAuditLogs();
       }
     } catch (err) {
-      setLogs((l) => [`❌ ${label}: Error`, ...l].slice(0, 50));
+      const msg = err instanceof Error ? err.message : String(err);
+      setLogs((l) => [`❌ ${label}: Error — ${msg}`, ...l].slice(0, 50));
     } finally {
       setLoading(false);
     }
@@ -42,6 +68,58 @@ export default function AdminDashboard() {
     loadAuditLogs();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await apiFetch("/api/admin/visits");
+        if ((res as any).ok && (res as any).data) {
+          const d = (res as any).data;
+          setVisitStats({
+            totalVisits: d.totalVisits ?? 0,
+            visitsToday: d.visitsToday ?? 0,
+            uniqueUsersToday: d.uniqueUsersToday ?? 0,
+            activeUsers24h: d.activeUsers24h ?? 0,
+            activeLoggedUsers24h: d.activeLoggedUsers24h ?? 0,
+            anonymousVisits24h: d.anonymousVisits24h ?? 0,
+            activeUsers7d: d.activeUsers7d ?? 0,
+            activeLoggedUsers7d: d.activeLoggedUsers7d ?? 0,
+            anonymousUsers7d: d.anonymousUsers7d ?? 0,
+            returningUsers7d: d.returningUsers7d ?? 0,
+            returningUsersPct7d: d.returningUsersPct7d ?? 0,
+          });
+        } else {
+          setVisitStats({
+            totalVisits: 0,
+            visitsToday: 0,
+            uniqueUsersToday: 0,
+            activeUsers24h: 0,
+            activeLoggedUsers24h: 0,
+            anonymousVisits24h: 0,
+            activeUsers7d: 0,
+            activeLoggedUsers7d: 0,
+            anonymousUsers7d: 0,
+            returningUsers7d: 0,
+            returningUsersPct7d: 0,
+          });
+        }
+      } catch {
+        setVisitStats({
+          totalVisits: 0,
+          visitsToday: 0,
+          uniqueUsersToday: 0,
+          activeUsers24h: 0,
+          activeLoggedUsers24h: 0,
+          anonymousVisits24h: 0,
+          activeUsers7d: 0,
+          activeLoggedUsers7d: 0,
+          anonymousUsers7d: 0,
+          returningUsers7d: 0,
+          returningUsersPct7d: 0,
+        });
+      }
+    })();
+  }, []);
+
   return (
     <div className="min-h-screen bg-bg p-6">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -53,6 +131,70 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* App visits (internal counter) */}
+          <div className="bg-card border-2 border-border rounded-xl p-6">
+            <h2 className="text-xl font-bold text-text mb-4">📊 App Visits</h2>
+            {visitStats ? (
+              <ul className="space-y-2 text-sm text-text">
+                <li>
+                  <span className="text-subtle">Total visits:</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.totalVisits}</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Today (UTC):</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.visitsToday}</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Unique users today:</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.uniqueUsersToday}</span>
+                </li>
+                <li className="pt-2 border-t border-border mt-2">
+                  <span className="text-subtle">Active users (24h):</span>{' '}
+                  <span className="font-mono font-semibold text-accent">{visitStats.activeUsers24h}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">visit rows in rolling 24h window</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Logged users (24h):</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.activeLoggedUsers24h}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">distinct userIds</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Anonymous (24h):</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.anonymousVisits24h}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">sessions without login</span>
+                </li>
+                <li className="pt-2 border-t border-border mt-2">
+                  <span className="text-subtle">Active users (7d):</span>{' '}
+                  <span className="font-mono font-semibold text-accent">{visitStats.activeUsers7d}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">visit rows in rolling 7d window</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Logged users (7d):</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.activeLoggedUsers7d}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">distinct userIds</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Anonymous (7d):</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.anonymousUsers7d}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">sessions without login</span>
+                </li>
+                <li className="pt-2 border-t border-border mt-2">
+                  <span className="text-subtle">Returning users (7d):</span>{' '}
+                  <span className="font-mono font-semibold text-accent">{visitStats.returningUsers7d}</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">logged-in users with &gt;1 visit in window</span>
+                </li>
+                <li>
+                  <span className="text-subtle">Returning % (7d):</span>{' '}
+                  <span className="font-mono font-semibold">{visitStats.returningUsersPct7d}%</span>
+                  <span className="block text-[11px] text-subtle mt-0.5">of logged users (7d); 0% if none</span>
+                </li>
+              </ul>
+            ) : (
+              <p className="text-subtle text-sm">Loading…</p>
+            )}
+            <p className="text-subtle text-xs mt-3">One log per browser session; 24h/7d = rolling windows. Not full analytics.</p>
+          </div>
+
           {/* Users Card */}
           <div className="bg-card border-2 border-border rounded-xl p-6">
             <h2 className="text-xl font-bold text-text mb-4">👥 Users</h2>
@@ -99,6 +241,18 @@ export default function AdminDashboard() {
           <div className="bg-card border-2 border-border rounded-xl p-6">
             <h2 className="text-xl font-bold text-text mb-4">❓ Questions / Flows</h2>
             <div className="space-y-2">
+              <Link
+                href="/admin/questions"
+                className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center"
+              >
+                Manage Tags
+              </Link>
+              <Link
+                href="/admin/translation"
+                className="block w-full bg-card border-2 border-border text-text px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center text-sm"
+              >
+                🌍 Translation suggestions
+              </Link>
               <button
                 onClick={() => trigger("generate-questions", "Generate Questions")}
                 disabled={loading}
@@ -130,6 +284,19 @@ export default function AdminDashboard() {
               <p className="text-subtle text-xs mt-2">
                 Creates demo users, messages, questions, and badges in one go
               </p>
+            </div>
+          </div>
+
+          {/* Ops Runs Card */}
+          <div className="bg-card border-2 border-border rounded-xl p-6">
+            <h2 className="text-xl font-bold text-text mb-4">⚙️ Ops Runs</h2>
+            <div className="space-y-2">
+              <Link
+                href="/admin/ops"
+                className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center"
+              >
+                View bot runs (QuestionGen, Wiki enrich)
+              </Link>
             </div>
           </div>
 

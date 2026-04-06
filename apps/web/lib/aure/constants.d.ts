@@ -1,0 +1,44 @@
+/**
+ * AURE Constants & Enums
+ * Placeholder enums for AURE expansion modules
+ * v0.39.0 - AURE Expansion Placeholders
+ */
+/**
+ * Archetype IDs
+ */
+export declare enum ArchetypeId {
+    ADVENTURER = "adventurer",
+    SCHOLAR = "scholar",
+    BARD = "bard",
+    SAGE = "sage",
+    WARRIOR = "warrior",
+    EXPLORER = "explorer"
+}
+/**
+ * Quest Types
+ */
+export declare enum QuestType {
+    DAILY = "daily",
+    WEEKLY = "weekly",
+    STORY = "story",
+    CHALLENGE = "challenge",
+    EVENT = "event"
+}
+/**
+ * Battle Modes
+ */
+export declare enum BattleMode {
+    PVP = "pvp",
+    PVE = "pve",
+    COOPERATIVE = "cooperative",
+    TOURNAMENT = "tournament"
+}
+/**
+ * Assist Types
+ */
+export declare enum AssistType {
+    COACH = "coach",
+    SCREENSHOT = "screenshot",
+    ANALYSIS = "analysis",
+    FEEDBACK = "feedback"
+}

@@ -1,17 +1,14 @@
 'use client';
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { AlertCircle, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { debug, error as logError } from '@parel/core/utils/debug'; // sanity-fix
-import { apiFetch } from "@/lib/apiBase";
+import { useUserSummary } from "@/lib/hooks";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 import { useEventBus } from '@parel/core/hooks/useEventBus';
-
-// sanity-fix
-import { xpToLevel, levelProgress } from "@/lib/xp";
+import { xpToLevel } from "@/lib/xp";
 import { LevelUpPopup } from "@/components/LevelUpPopup";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
@@ -28,37 +25,14 @@ import { RitualToast } from "@/components/rituals/RitualToast";
 import { useRituals, useCompleteRitual } from '@parel/core/hooks/useRituals';
 import { ClanBuffBadge } from "@/components/micro-clans/ClanBuffBadge";
 import { useClanBuff } from '@parel/core/hooks/useMicroClans';
+import FooterLocaleToggle from '@/components/FooterLocaleToggle';
 
-// sanity-fix
 const Icon = ({ name, className }: { name: string; className?: string; size?: string }) => <span className={'icon-' + name + ' ' + (className || '')} />;
-
-interface UserSummary {
-  name: string;
-  email: string;
-  image: string | null;
-  xp: number;
-  funds: number;
-  diamonds: number;
-  level: number;
-  progress: number;
-  streakCount: number;
-  questionsAnswered: number;
-  achievements: Array<{
-    id: string;
-    code: string;
-    title: string;
-    description: string;
-    icon: string | null;
-    xpReward: number;
-    earnedAt: string;
-  }>;
-}
 
 export default function MainPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [data, setData] = useState<UserSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, mutate } = useUserSummary();
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLevel, setNewLevel] = useState(0);
   const { fork, userChoice, loading: forkLoading, reload: reloadFork } = useDailyFork();
@@ -78,71 +52,18 @@ export default function MainPage() {
   const [ritualStreak, setRitualStreak] = useState(0);
   const { buff: clanBuff } = useClanBuff();
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    try {
-      debug('Loading user data...');
-      const res = await apiFetch("/api/user/summary");
-      debug('API response received', { ok: res.ok, hasUser: !!res.data?.data?.user });
-      
-      // Handle 401 - session expired, redirect to login
-      if (res.status === 401) {
-        console.warn("Session expired, redirecting to login."); // sanity-fix
-        router.push("/login"); // sanity-fix
-        return;
+  useEventBus("xp:update", useCallback((eventData: { userId?: string; newXp?: number }) => {
+    if (session?.user?.id && eventData?.userId === session.user.id && data && typeof eventData?.newXp === 'number') {
+      const newCalculatedLevel = xpToLevel(eventData.newXp);
+      if (newCalculatedLevel > data.level) {
+        setNewLevel(newCalculatedLevel);
+        setShowLevelUp(true);
       }
-      
-      if (res.ok && res.data?.data?.user) {
-        setData(res.data.data.user);
-      } else {
-        logError("Failed to load user data", res.error, { response: res });
-        setData(null);
-      }
-    } catch (err) {
-      logError("Error loading user data", err);
-      setData(null);
-    } finally {
-      setLoading(false);
+      mutate();
     }
-  }, [router]);
+  }, [session?.user?.id, data, mutate]));
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  // Listen for XP updates
-  useEventBus("xp:update", useCallback((eventData: any) => {
-    if (session?.user?.id && eventData?.userId === session.user.id) { // sanity-fix
-      setData((prev) => {
-        if (!prev) return prev;
-        const newXp = eventData?.newXp ?? prev.xp; // sanity-fix
-        const newCalculatedLevel = xpToLevel(newXp);
-        
-        // Check for level up
-        if (newCalculatedLevel > prev.level) {
-          setNewLevel(newCalculatedLevel);
-          setShowLevelUp(true);
-        }
-        
-        return {
-          ...prev,
-          xp: newXp,
-          level: newCalculatedLevel,
-          progress: levelProgress(newXp),
-        };
-      });
-    }
-  }, [session?.user?.id]));
-
-  // Polling fallback (refresh every 60 seconds)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      loadData();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [loadData]);
-
-  if (loading) {
+  if (isLoading) {
     return <SkeletonLoader variant="profile" />;
   }
 
@@ -157,7 +78,7 @@ export default function MainPage() {
               description="We couldn't fetch your profile data. This might be a temporary issue. Please try refreshing the page or logging in again."
               action={
                 <div className="flex gap-3">
-                  <Button onClick={() => loadData()} variant="outline">
+                  <Button onClick={() => mutate()} variant="outline">
                     Try Again
                   </Button>
                   <Button onClick={() => router.push('/login')}>
@@ -182,9 +103,9 @@ export default function MainPage() {
       />
 
       <div className="min-h-screen bg-bg p-6">
-        {/* Region/Language Selector */}
+        {/* Region/Language Selector - FooterLocaleToggle from @/components/FooterLocaleToggle */}
         <div className="fixed top-2 right-2 z-50">
-          <RegionSelector />
+          <FooterLocaleToggle />
         </div>
 
         <div className="max-w-6xl mx-auto space-y-8">

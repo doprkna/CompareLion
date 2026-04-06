@@ -1,4 +1,4 @@
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import { processQuestionGenJob } from '@/lib/jobs/questionGen.processor';
 import type { Job } from 'bullmq';
 import { callAI } from '@/lib/ai';

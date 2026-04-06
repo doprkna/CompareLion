@@ -35,9 +35,13 @@ export default function NotificationBell() {
 
   async function loadNotifications() {
     try {
-      const res = await apiFetch('/api/notifications');
-      const data = await res.json();
-      if (data.success) {
+      const res = await apiFetch<{
+        success?: boolean;
+        unreadCount?: number;
+        notifications?: Notification[];
+      }>('/api/notifications');
+      const data = res.ok ? res.data : undefined;
+      if (data?.success) {
         setUnreadCount(data.unreadCount || 0);
         if (isOpen) {
           setNotifications(data.notifications || []);
@@ -52,9 +56,13 @@ export default function NotificationBell() {
     setIsOpen(true);
     setLoading(true);
     try {
-      const res = await apiFetch('/api/notifications');
-      const data = await res.json();
-      if (data.success) {
+      const res = await apiFetch<{
+        success?: boolean;
+        unreadCount?: number;
+        notifications?: Notification[];
+      }>('/api/notifications');
+      const data = res.ok ? res.data : undefined;
+      if (data?.success) {
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
       }

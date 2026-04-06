@@ -1,4 +1,4 @@
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 
 export async function getLatestVersion() {
   return prisma.version.findFirst({ orderBy: { createdAt: 'desc' } });

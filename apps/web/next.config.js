@@ -1,5 +1,3 @@
-const { withSentryConfig } = require('@sentry/nextjs');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Environment variables
@@ -82,7 +80,8 @@ const nextConfig = {
       '@parel/db': path.resolve(__dirname, '../../packages/db'),
       '@parel/api': path.resolve(__dirname, '../../packages/api'),
       '@parel/ui': path.resolve(__dirname, '../../packages/ui'),
-      '@parel/core/config': path.resolve(__dirname, '../../packages/core/config'),
+      // Use compiled config so stale `packages/core/config/*.js` beside `.ts` does not shadow exports (e.g. ensureUnifiedConfigInitialized, getFlags).
+      '@parel/core/config': path.resolve(__dirname, '../../packages/core/dist/config'),
       '@parel/redis': path.resolve(__dirname, '../../packages/redis'),
       ...config.resolve.alias,
       '@prisma/client$': prismaClientPath,
@@ -141,18 +140,20 @@ const nextConfig = {
   },
 };
 
-// Only enable Sentry webpack plugin if DSN is configured
-if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+// Only enable Sentry webpack plugin when observability enabled (prod + DSN + not disabled)
+const observabilityEnabled =
+  process.env.NEXT_PUBLIC_SENTRY_DSN &&
+  process.env.DISABLE_OBSERVABILITY !== 'true' &&
+  process.env.NODE_ENV === 'production';
+
+if (observabilityEnabled) {
+  const { withSentryConfig } = require('@sentry/nextjs');
   const sentryWebpackPluginOptions = {
-    silent: true, // Suppresses source map uploading logs during build
+    silent: true,
     org: process.env.SENTRY_ORG,
     project: process.env.SENTRY_PROJECT,
-    disableLogger: true, // Disable Sentry build-time warnings
-    // v0.35.16d - Additional build stability
-    disableClientWebpackPlugin: process.env.NODE_ENV === 'development',
-    disableServerWebpackPlugin: process.env.NODE_ENV === 'development',
+    disableLogger: true,
   };
-  
   module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
 } else {
   module.exports = nextConfig;

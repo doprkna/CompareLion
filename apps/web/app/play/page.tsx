@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { useFightStore, Enemy } from '@parel/core/hooks/useFightStore';
 import { useRewardToast } from '@parel/core/hooks/useRewardToast';
 import { apiFetch } from "@/lib/apiBase";
-import { Icon } from '@parel/ui/atoms';
+import { Icon } from '@parel/ui';
 
 interface HeroStats {
   hp: number;
@@ -25,6 +25,111 @@ interface HeroStats {
   speed: number;
   level: number;
   xp: number;
+}
+
+const CHARACTER_TYPES = [
+  { key: "mage", label: "Mage", emoji: "🧙" },
+  { key: "paladin", label: "Paladin", emoji: "⚔️" },
+  { key: "warrior", label: "Warrior", emoji: "🛡️" },
+  { key: "rogue", label: "Rogue", emoji: "🗡️" },
+  { key: "cleric", label: "Cleric", emoji: "✨" },
+] as const;
+
+function CreateCharacterGate({
+  onCreated,
+  pushToast,
+}: {
+  onCreated: () => void;
+  pushToast: (t: { type: string; message?: string }) => void;
+}) {
+  const [step, setStep] = useState<"prompt" | "select">("prompt");
+  const [selectedType, setSelectedType] = useState<string>("mage");
+  const [name, setName] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  async function handleCreate() {
+    setCreating(true);
+    try {
+      const res = await apiFetch("/api/rpg/character/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: selectedType, name: name || undefined }),
+      });
+      if ((res as any).ok) {
+        pushToast({ type: "success", message: "Character created!" });
+        onCreated();
+      } else {
+        pushToast({ type: "error", message: "Failed to create character" });
+      }
+    } catch {
+      pushToast({ type: "error", message: "Failed to create character" });
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  return (
+    <div className="container mx-auto p-6 max-w-6xl">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Icon name="shield" className="h-8 w-8" size="md" />
+            Arena
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {step === "prompt" ? (
+            <>
+              <p className="text-muted-foreground">
+                Create a character to unlock the Arena and challenge enemies.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={() => setStep("select")}>
+                  <Icon name="user" className="h-4 w-4 mr-2" size="md" />
+                  Create character
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">Choose your class</p>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                {CHARACTER_TYPES.map((t) => (
+                  <Button
+                    key={t.key}
+                    variant={selectedType === t.key ? "default" : "outline"}
+                    onClick={() => setSelectedType(t.key)}
+                  >
+                    <span className="mr-2">{t.emoji}</span>
+                    {t.label}
+                  </Button>
+                ))}
+              </div>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  placeholder="Name (optional)"
+                  className="border rounded px-3 py-2 text-sm max-w-[200px]"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Button onClick={handleCreate} disabled={creating}>
+                  {creating ? (
+                    <Icon name="spinner" className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Confirm"
+                  )}
+                </Button>
+                <Button variant="ghost" onClick={() => setStep("prompt")}>
+                  Back
+                </Button>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default function PlayPage() {
@@ -42,6 +147,28 @@ export default function PlayPage() {
   const [activeEvents, setActiveEvents] = useState<any[]>([]);
   const [adventureState, setAdventureState] = useState<any>(null);
   const [resettingAdventure, setResettingAdventure] = useState(false);
+  const [rpgStatus, setRpgStatus] = useState<{
+    eligible?: boolean;
+    rpgEnabled?: boolean;
+    hasCharacter?: boolean;
+    activeCharacterId?: string | null;
+    shouldPromptCreate?: boolean;
+  } | null>(null);
+
+  // Load RPG status (v0.46.01 - DLC gating)
+  useEffect(() => {
+    async function loadRpgStatus() {
+      try {
+        const res = await apiFetch("/api/rpg/status");
+        if ((res as any).ok && (res as any).data) {
+          setRpgStatus((res as any).data);
+        }
+      } catch {
+        // Ignore - core app works without RPG
+      }
+    }
+    loadRpgStatus();
+  }, []);
 
   // Load hero stats
   useEffect(() => {
@@ -203,6 +330,45 @@ export default function PlayPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <Icon name="spinner" className="h-8 w-8 animate-spin text-primary" />
         </div>
+      </div>
+    );
+  }
+
+  // Gate: no character -> Create character CTA with inline form (v0.46.01)
+  if (rpgStatus && !rpgStatus.hasCharacter) {
+    return (
+      <CreateCharacterGate
+        onCreated={() => setRpgStatus((s) => (s ? { ...s, hasCharacter: true, rpgEnabled: true } : s))}
+        pushToast={pushToast}
+      />
+    );
+  }
+
+  // Gate: has character but RPG disabled -> Enable RPG CTA (v0.46.01)
+  if (rpgStatus && rpgStatus.hasCharacter && !rpgStatus.rpgEnabled) {
+    return (
+      <div className="container mx-auto p-6 max-w-6xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Icon name="shield" className="h-8 w-8" size="md" />
+              Arena
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              Enable RPG to access the Arena and challenge enemies.
+            </p>
+            <Button
+              onClick={async () => {
+                const res = await apiFetch("/api/rpg/enable", { method: "POST" });
+                if ((res as any).ok) setRpgStatus((s: any) => ({ ...s, rpgEnabled: true }));
+              }}
+            >
+              Enable RPG
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

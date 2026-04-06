@@ -15,7 +15,7 @@ import { prisma } from '@/lib/db';
 import { getRuntimeInfo } from '@/lib/build-info';
 import { safeAsync } from '@/lib/api-handler';
 import { getFlags } from '@parel/core/config/flags';
-import { env, hasDb } from '@/lib/env';
+import { env, hasDb, hasRedis } from '@/lib/env';
 import { buildSuccess } from '@parel/api';
 
 // Track startup time for uptime calculation
@@ -196,8 +196,8 @@ export const GET = safeAsync(async (req: NextRequest) => {
     
     // Features
     features: {
-      sentry: !!process.env.NEXT_PUBLIC_SENTRY_DSN, // Public env var - keep as-is
-      redis: !!env.REDIS_URL,
+      sentry: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
+      redis: hasRedis,
       analytics: getFlags().enableAnalytics,
     },
   };

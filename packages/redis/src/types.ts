@@ -1,2 +1,3 @@
-export type RedisClient = ReturnType<typeof import('./client').createRedisClient>;
+import type Redis from 'ioredis';
+export type RedisClient = Redis | null;
 

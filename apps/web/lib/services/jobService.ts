@@ -1,4 +1,4 @@
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 
 // Start a new job in the JobLog table
 export async function startJob(ssscId: number, runVersion: string) {

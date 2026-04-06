@@ -28,6 +28,13 @@ export function useRealtime() {
   const isConnectingRef = useRef<boolean>(false);
 
   useEffect(() => {
+    // Skip when disabled: REALTIME_ENABLED=true required to connect (default OFF)
+    const enabled = process.env.NEXT_PUBLIC_REALTIME_ENABLED === "true";
+    const legacyDisable = process.env.NEXT_PUBLIC_DISABLE_REALTIME === "true";
+    if (!enabled || legacyDisable) {
+      return;
+    }
+
     let mounted = true;
 
     async function checkStatusAndConnect() {

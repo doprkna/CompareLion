@@ -4,6 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 import { prisma } from '@/lib/db';
 import { safeAsync } from '@/lib/api-handler';
 import { logger } from '@/lib/logger';
+import { logEvent } from '@/lib/logEvent';
 
 // Debug framework for systematic testing
 interface DebugStage {
@@ -249,6 +250,22 @@ export const POST = safeAsync(async (request: NextRequest) => {
 
         addDebugStage(debug, 'MOCK_RESPONSE_CREATED', true, mockResponse);
 
+        if (skipped) {
+          logEvent({
+            type: 'question_skip',
+            userId: user.id,
+            message: 'Skipped question',
+            params: { questionId, channel: 'legacy_flow_answers', mock: true },
+          });
+        } else {
+          logEvent({
+            type: 'question_answer',
+            userId: user.id,
+            message: 'Answered question',
+            params: { questionId, channel: 'legacy_flow_answers', mock: true },
+          });
+        }
+
         const result = {
           success: true,
           response: {
@@ -436,6 +453,22 @@ export const POST = safeAsync(async (request: NextRequest) => {
       questionId: response.questionId,
       totalTime: Date.now() - debug.startTime
     });
+
+    if (skipped) {
+      logEvent({
+        type: 'question_skip',
+        userId: user.id,
+        message: 'Skipped question',
+        params: { questionId, channel: 'legacy_flow_answers' },
+      });
+    } else {
+      logEvent({
+        type: 'question_answer',
+        userId: user.id,
+        message: 'Answered question',
+        params: { questionId, channel: 'legacy_flow_answers' },
+      });
+    }
 
     const result = {
       success: true,

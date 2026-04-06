@@ -276,7 +276,7 @@ export async function generateExtendedStory(
         results.forEach((result, idx) => {
           const panelIndex = requestIds.indexOf(result.requestId);
           if (panelIndex >= 0) {
-            aureContexts[panelIndex] = result.summaryText;
+            aureContexts[panelIndex] = result.summaryText ?? '';
           }
         });
       } catch (error) {

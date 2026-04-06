@@ -1,6 +1,5 @@
-import Redis from 'ioredis';
 import { prisma } from '@/lib/db';
-import { safeRuntime } from '@/lib/safe-runtime';
+import { getRedisClient, hasRedis } from '@parel/redis';
 
 type Severity = 'info' | 'warn' | 'block';
 
@@ -26,21 +25,7 @@ export interface EvaluationResult {
   matched: CulturalFilter[];
 }
 
-const REDIS_URL = process.env.REDIS_URL;
-let _redis: Redis | null = null;
-
-function getRedis(): Redis | null {
-  if (!_redis && REDIS_URL) {
-    try {
-      _redis = new Redis(REDIS_URL, { maxRetriesPerRequest: 3, lazyConnect: true });
-    } catch {
-      _redis = null;
-    }
-  }
-  return _redis;
-}
-
-const LOCAL_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const LOCAL_TTL_MS = 5 * 60 * 1000;
 const localCache = new Map<string, { value: CulturalFilter[]; expiresAt: number }>();
 
 function makeKey(region: string) {
@@ -50,7 +35,7 @@ function makeKey(region: string) {
 export async function invalidateFilters(region: string) {
   const key = makeKey(region);
   localCache.delete(key);
-  const redis = getRedis();
+  const redis = getRedisClient();
   if (redis) {
     try { await redis.del(key); } catch {}
   }
@@ -77,7 +62,7 @@ export async function loadActiveFilters(regionInput?: string | null): Promise<Cu
   const cachedLocal = await getFromLocal(key);
   if (cachedLocal) return cachedLocal;
 
-  const redis = getRedis();
+  const redis = getRedisClient();
   if (redis) {
     try {
       const raw = await redis.get(key);
@@ -116,5 +101,3 @@ export async function evaluateContent(input: EvaluationInput): Promise<Evaluatio
   if (hasInfo) return { action: 'info', matched };
   return { action: 'none', matched: [] };
 }
-
-

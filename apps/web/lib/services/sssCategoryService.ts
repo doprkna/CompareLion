@@ -1,4 +1,4 @@
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 // Service functions for SssCategory operations
 export async function getAllSssCategories(filters?: any) {
   // @ts-ignore: bypass missing sssCategory on Prisma client until generated

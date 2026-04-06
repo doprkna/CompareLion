@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@parel/db/src/client';
+import { prisma } from '@parel/db/client';
 import type { Prisma } from '@parel/db/client';
 import { safeAsync } from '@/lib/api-handler';
 

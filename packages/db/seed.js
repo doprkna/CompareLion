@@ -1,32 +1,38 @@
 /**
  * Database Seed Script
  * v0.36.0 - Full Fighting System MVP
+ * Idempotent: uses findFirst + update/create (Enemy has no unique on name); safe for re-runs.
  */
 import { PrismaClient } from '@parel/db/client';
 const prisma = new PrismaClient();
+/** Enemy seed rows: map to Prisma Enemy (name, level, power, defense, maxHp, rarity, lootTable, icon). */
+const ENEMY_ROWS = [
+    { name: 'Tiny Mosquito', level: 1, power: 3, defense: 0, maxHp: 15, rarity: 'common', lootTable: {}, icon: null },
+    { name: 'Angry Hedgehog', level: 1, power: 5, defense: 2, maxHp: 25, rarity: 'common', lootTable: {}, icon: null },
+    { name: 'Local Gym Bro', level: 2, power: 12, defense: 5, maxHp: 45, rarity: 'uncommon', lootTable: {}, icon: null },
+    { name: 'Passive Aggressive Cat', level: 1, power: 8, defense: 3, maxHp: 30, rarity: 'common', lootTable: {}, icon: null },
+    { name: 'Caffeine Goblin', level: 2, power: 10, defense: 2, maxHp: 35, rarity: 'uncommon', lootTable: {}, icon: null },
+    { name: 'Baby Dragon', level: 3, power: 18, defense: 8, maxHp: 60, rarity: 'rare', lootTable: {}, icon: null },
+    { name: 'Overconfident Squirrel', level: 1, power: 6, defense: 1, maxHp: 20, rarity: 'common', lootTable: {}, icon: null },
+    { name: 'Tax Inspector', level: 3, power: 15, defense: 10, maxHp: 50, rarity: 'rare', lootTable: {}, icon: null },
+    { name: 'AI Overlord Placeholder', level: 4, power: 22, defense: 12, maxHp: 80, rarity: 'epic', lootTable: {}, icon: null },
+    { name: 'The Algorithm', level: 5, power: 25, defense: 18, maxHp: 120, rarity: 'legendary', lootTable: {}, icon: null },
+];
 async function seedEnemies() {
-    const enemies = [
-        { name: 'Tiny Mosquito', hp: 15, str: 3, def: 0, speed: 8, rarity: 'common', xpReward: 5, goldReward: 2, sprite: null },
-        { name: 'Angry Hedgehog', hp: 25, str: 5, def: 2, speed: 4, rarity: 'common', xpReward: 10, goldReward: 5, sprite: null },
-        { name: 'Local Gym Bro', hp: 45, str: 12, def: 5, speed: 3, rarity: 'uncommon', xpReward: 25, goldReward: 15, sprite: null },
-        { name: 'Passive Aggressive Cat', hp: 30, str: 8, def: 3, speed: 7, rarity: 'common', xpReward: 15, goldReward: 8, sprite: null },
-        { name: 'Caffeine Goblin', hp: 35, str: 10, def: 2, speed: 9, rarity: 'uncommon', xpReward: 20, goldReward: 12, sprite: null },
-        { name: 'Baby Dragon', hp: 60, str: 18, def: 8, speed: 5, rarity: 'rare', xpReward: 50, goldReward: 30, sprite: null },
-        { name: 'Overconfident Squirrel', hp: 20, str: 6, def: 1, speed: 10, rarity: 'common', xpReward: 12, goldReward: 6, sprite: null },
-        { name: 'Tax Inspector', hp: 50, str: 15, def: 10, speed: 2, rarity: 'rare', xpReward: 40, goldReward: 25, sprite: null },
-        { name: 'AI Overlord Placeholder', hp: 80, str: 22, def: 12, speed: 6, rarity: 'epic', xpReward: 75, goldReward: 50, sprite: null },
-        { name: 'The Algorithm', hp: 120, str: 25, def: 18, speed: 4, rarity: 'legendary', xpReward: 100, goldReward: 75, sprite: null },
-    ];
     console.log('🌱 Seeding enemies...');
-    for (const enemyData of enemies) {
-        await prisma.enemy.upsert({
-            where: { name: enemyData.name },
-            update: enemyData,
-            create: enemyData,
-        });
+    let count = 0;
+    for (const data of ENEMY_ROWS) {
+        const existing = await prisma.enemy.findFirst({ where: { name: data.name } });
+        if (existing) {
+            await prisma.enemy.update({ where: { id: existing.id }, data });
+        }
+        else {
+            await prisma.enemy.create({ data });
+        }
+        count++;
     }
-    console.log(`✅ Seeded ${enemies.length} enemies`);
-    return enemies.length;
+    console.log(`✅ Seeded ${count} enemies`);
+    return count;
 }
 async function main() {
     try {
@@ -43,4 +49,7 @@ async function main() {
         await prisma.$disconnect();
     }
 }
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+});

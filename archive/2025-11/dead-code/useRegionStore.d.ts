@@ -1,4 +1,4 @@
-import { Region } from '@parel/core/config/regions';
+import { Region } from '@parel/core/config';
 type RegionState = {
     region: Region;
     setRegion: (r: Region) => void;

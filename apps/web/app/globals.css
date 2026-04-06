@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* C14: Default theme vars for SSR (ThemeManager overrides at runtime) */
+:root {
+  --color-bg: #0a0f1e;
+  --color-card: #1e293b;
+  --color-accent: #3b82f6;
+  --color-text: #f8fafc;
+  --color-subtle: #94a3b8;
+  --color-border: #334155;
+}
+
 /* v0.21.0: Mobile-specific utilities */
 
 @layer utilities {
@@ -169,4 +179,20 @@
 
 .animate-crit-flash {
   animation: crit-flash 0.2s ease-out;
+}
+
+/* Post-flow reward card (v0.48.01) */
+@keyframes flow-reward-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-flow-reward-pop {
+  animation: flow-reward-pop 0.45s ease-out forwards;
 }

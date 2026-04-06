@@ -28,6 +28,7 @@ model User {
   language            String?
   country             String?
   dateOfBirth         DateTime?
+  birthYear           Int? // for age-gating (moderation)
   avatarUrl           String?
   username            String?        @unique
   bio                 String?
@@ -52,15 +53,23 @@ model User {
   score               Int            @default(0)
   questionsAnswered   Int            @default(0)
   questionsCreated    Int            @default(0)
+  predictionCorrectCount  Int        @default(0) // v0.47.16 - Prediction Battles accuracy
+  predictionResolvedCount Int        @default(0)
   emailVerified       DateTime?
   emailVerifiedAt     DateTime?
   newsletterOptIn     Boolean        @default(false)
   role                UserRole       @default(USER)
+  allowFollow         Boolean        @default(true) // v0.45.16 - quick opt-out
+  isPrivate            Boolean        @default(false) // v0.45.16 - later use
   archetype String?        @default("Adventurer")
   archetypeKey        String? // v0.26.6 - Archetype system key (warrior, thinker, etc.)
   stats               Json? // v0.26.6 - Character stats { str, int, cha, luck, etc. }
   lastArchetypeReroll DateTime? // v0.26.6 - Cooldown for archetype reroll
   settings            Json? // v0.28.27 - User settings { roastLevel: 1-5, etc. }
+  lastNewsSeenAt      DateTime? // v0.45.20 - News unseen badge (Option A)
+  starterFlowCompletedAt DateTime? // Alpha: first-time starter flow completion
+  feedbackRewardClaimed  Boolean   @default(false) // Alpha: rewarded feedback poll completion (once per user)
+  isBeta                 Boolean   @default(false) // Alpha: beta tester flag (feedback modal, etc.)
 
   // Localization (v0.27.0 - Phase M)
   lang       Lang   @default(en)
@@ -70,6 +79,7 @@ model User {
   // Onboarding fields (v0.24.0 - Phase I)
   ageGroup            String? // "kid", "teen", "youngAdult", "adult", "mature", "senior"
   region              String? // e.g. "EU-CZ", "US", "GLOBAL"
+  countryCode         String? // v0.45.18 - ISO 2-letter e.g. "CZ", "DE" for geo filter
   interests           String[] @default([]) // e.g. ["food", "psychology", "memes"]
   tone                String? // "funny", "deep", "random", "roast"
   onboardingCompleted Boolean  @default(false)
@@ -78,6 +88,15 @@ model User {
   combatKills         Int @default(0)
   combatBattles       Int @default(0)
   combatHighestStreak Int @default(0)
+
+  // RPG DLC gating (v0.46.01)
+  rpgEnabled         Boolean   @default(false)
+  rpgCreatedAt       DateTime?
+  rpgPromptSeenAt    DateTime?
+  rpgDismissedAt     DateTime?
+  activeCharacterId  String?    @unique
+  activeCharacter    Character? @relation("ActiveCharacter", fields: [activeCharacterId], references: [id], onDelete: SetNull)
+  characters         Character[] @relation("CharactersOwned")
 
   statCreativity          Int                            @default(0)
   statHealth              Int                            @default(0)
@@ -202,6 +221,9 @@ model User {
   legacyBonuses           UserLegacyBonus[]
   userPreferences         UserPreferences?
   flowResponses           UserResponse[]
+  flowRewardLogs          FlowRewardLog[] // v0.48.01 — post-flow reward log (balancing)
+  appVisits               AppVisit[] // v0.48.02 — session visit counter (admin)
+  translationSuggestions  TranslationSuggestion[] // v0.48.06 — community translation MVP
   userSynchTestsA         UserSynchTest[]                @relation("UserSynchTestsA")
   userSynchTestsB         UserSynchTest[]                @relation("UserSynchTestsB")
   userStreak              UserStreak?
@@ -230,7 +252,22 @@ model User {
   transactions            Transaction[] // v0.29.8 - Transaction history
   prestigeRecords         PrestigeRecord[] // v0.29.9 - Prestige progression
   userWildcardEvents      UserWildcardEvent[] // v0.29.13 - Wildcard Events
+  roadmapVotes            RoadmapVote[] // v0.45.1 - Roadmap voting
+  questionBookmarks       QuestionBookmark[] // v0.45.13
+  questionReactions       QuestionReaction[] // v0.45.18
+  premiumUnlocks          PremiumUnlock[] // v0.45.13
+  challengesAsChallenger  QuestionChallenge[] @relation("Challenger")
+  challengesAsChallenged   QuestionChallenge[] @relation("Challenged")
+  followRelations         UserFollow[] @relation("Following")
+  followedByRelations    UserFollow[] @relation("FollowedBy")
+  milestoneDeliveries    MilestoneDelivery[]
+  contentReports        ContentReport[]
+  entityModerationActions EntityModerationAction[]
   shareCards              ShareCard[] // v0.29.15 - Share Cards
+  newsReactions           NewsReaction[] // v0.45.20
+  newsSeen                NewsSeen[] // v0.45.20
+  newsPostsAuthored       NewsPost[] @relation("NewsPostAuthor") // v0.45.20
+  userDailyCharms        UserDailyCharm[] // v0.45.21 - Daily Charms
   userDreamEvents         UserDreamEvent[] // v0.29.16 - Dreamspace Events
   generationRecords       GenerationRecord[] // v0.29.17 - Generation Records
   feedback                Feedback[] // v0.29.19 - Feedback
@@ -238,6 +275,7 @@ model User {
   itemDiscoveries         ItemDiscovery[] // v0.29.20 - Item Discoveries
   reflectionJournals      Reflection[]
   pollResponses           PollResponse[]
+  predictionAnswers       PredictionAnswer[]
   userArchetypeFusions    UserArchetypeFusion[]
   userPacks               UserPack[]
   memoryJournals          MemoryJournal[]
@@ -266,7 +304,6 @@ model User {
    userCreatedPacks         UserCreatedPack[]              // v0.29.27 - User created packs
    posterCards               PosterCard[]                   // v0.29.28 - Poster cards
    npcAffinities             NpcAffinity[]                 // v0.29.29 - NPC affinity tracking
-
    @@index([emailVerifiedAt])
   @@index([role])
   @@index([username])
@@ -276,8 +313,62 @@ model User {
   comparePosts     ComparePost[]        @relation("ComparePosts")
   compareReactions CompareReaction[]   @relation("CompareReactions")
   compareComments  CompareComment[]    @relation("CompareComments")
+  // Parel Stories (v0.49.x) — social comic panels, challenges, collections
+  stories                Story[]
+  storyReactions         StoryReaction[]
+  storyChallengeEntries  StoryChallengeEntry[]
+  storyCollections       StoryCollection[]
+  storyTemplates         StoryTemplate[]
+  ratingRequests         RatingRequest[]
 
   @@map("users")
+}
+
+// v0.48.01 — Post-flow reward roll (log only for balancing; not inventory)
+model FlowRewardLog {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String // coins | xp | diamond
+  amount    Int
+  rarity    String // common | uncommon | rare
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("flow_reward_logs")
+}
+
+// v0.48.02 — App visit log (one row per browser session; admin stats)
+model AppVisit {
+  id        String   @id @default(cuid())
+  userId    String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@map("app_visits")
+}
+
+// v0.48.06 — Community translation suggestions (admin review; does not replace i18n)
+model TranslationSuggestion {
+  id          String   @id @default(cuid())
+  userId      String?
+  entityType  String // question | poll
+  entityId    String
+  language    String
+  original    String
+  suggestion  String
+  status      String   @default("pending") // pending | approved | rejected
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([entityType, entityId])
+  @@map("translation_suggestions")
 }
 
 model Affinity {
@@ -524,21 +615,54 @@ model QuestionGeneration {
 }
 
 model FlowQuestion {
-  id         String               @id @default(cuid())
-  categoryId String?
-  locale     String               @default("en")
-  text       String
-  type       QuestionType         @default(SINGLE_CHOICE)
-  isActive   Boolean              @default(true)
-  createdAt  DateTime             @default(now())
-  updatedAt  DateTime             @updatedAt
-  options    FlowQuestionOption[]
-  category   SssCategory?         @relation("FlowQuestions", fields: [categoryId], references: [id])
-  responses  UserResponse[]
+  id              String               @id @default(cuid())
+  categoryId      String?
+  locale          String               @default("en")
+  tags            String[]             @default([]) // v0.47.13 - for distance rules / semantic clustering
+  arcStep         String?              // v0.47.17 - entry|context|reflection|comparison|wildcard (C21)
+  text            String
+  type            QuestionType         @default(SINGLE_CHOICE)
+  isActive        Boolean              @default(true)
+  challengeEnabled Boolean             @default(false)
+  wikiFillCandidate Boolean            @default(false)
+  worldContextKey String?
+  worldContextRegionPolicy String?
+  worldContextLabel String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  options         FlowQuestionOption[]
+  category        SssCategory?         @relation("FlowQuestions", fields: [categoryId], references: [id])
+  responses       UserResponse[]
+  bookmarks       QuestionBookmark[]
+  challenges      QuestionChallenge[]
+  reactions       QuestionReaction[]
 
   @@index([categoryId, isActive])
   @@index([locale, isActive])
   @@map("flow_questions")
+}
+
+model OpsRun {
+  id            String    @id @default(cuid())
+  type          String    // QUESTION_GEN | WIKI_ENRICH
+  status        String    // running | success | failed
+  startedAt     DateTime  @default(now())
+  finishedAt    DateTime?
+  durationMs    Int?
+  counts        Json?     // normalized: scanned, created, updated, skipped, failed, warnings
+  message       String?
+  reportPath    String?
+  triggeredBy   String?
+  entityType    String?   // e.g. FLOW | QUESTION | JOB
+  entityId      String?
+  entityLabel   String?
+  params        Json?     // command/job parameters
+  warnings      Json?     // array of warning objects (cap 20)
+  errorStack    String?   // truncated stack (cap 4000)
+
+  @@index([type])
+  @@index([startedAt])
+  @@map("ops_runs")
 }
 
 model FlowQuestionOption {
@@ -570,6 +694,110 @@ model UserResponse {
   @@index([userId])
   @@index([questionId])
   @@map("user_responses")
+}
+
+// v0.45.13 - Question bookmarks (save for later)
+model QuestionBookmark {
+  id         String       @id @default(cuid())
+  userId     String
+  questionId String
+  createdAt  DateTime     @default(now())
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId, createdAt])
+  @@index([questionId, createdAt])
+  @@map("question_bookmarks")
+}
+
+// v0.45.13 - Premium unlock receipts (fast report per question)
+model PremiumUnlock {
+  id        String   @id @default(cuid())
+  userId    String
+  kind      String   // "FAST_REPORT_QUESTION"
+  refId     String   // questionId
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, refId])
+  @@index([userId])
+  @@map("premium_unlocks")
+}
+
+// v0.45.18 - Like/Dislike question + leaderboard
+enum QuestionReactionType {
+  LIKE
+  DISLIKE
+}
+
+model QuestionReaction {
+  id         String              @id @default(cuid())
+  userId     String
+  questionId String
+  type       QuestionReactionType
+  createdAt  DateTime            @default(now())
+
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([questionId, type, createdAt])
+  @@index([userId, createdAt])
+  @@map("question_reactions")
+}
+
+// v0.45.16 - Follow user (MVP)
+model UserFollow {
+  id         String   @id @default(cuid())
+  followerId String
+  followedId String
+  createdAt  DateTime @default(now())
+
+  follower User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation("FollowedBy", fields: [followedId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followedId])
+  @@index([followedId, createdAt])
+  @@index([followerId, createdAt])
+  @@map("user_follows")
+}
+
+// v0.45.15 - Challenge a friend (MVP)
+model QuestionChallenge {
+  id                  String       @id @default(cuid())
+  questionId          String
+  challengerId        String
+  challengedId        String?
+  status              String       // "pending" | "completed" | "expired"
+  challengerAnswerId  String?
+  challengedAnswerId  String?
+  xpGranted           Boolean      @default(false)
+  createdAt           DateTime     @default(now())
+  completedAt         DateTime?
+
+  question  FlowQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  challenger User        @relation("Challenger", fields: [challengerId], references: [id], onDelete: Cascade)
+  challenged User?       @relation("Challenged", fields: [challengedId], references: [id], onDelete: SetNull)
+
+  @@index([questionId])
+  @@index([challengerId])
+  @@index([challengedId])
+  @@map("question_challenges")
+}
+
+// v0.45.3 - Flow question reports (minimal; no moderation yet)
+model QuestionReport {
+  id         String   @id @default(cuid())
+  userId     String?
+  questionId String
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  @@index([questionId])
+  @@map("question_reports")
 }
 
 // Synch Tests (v0.28.16)
@@ -1257,6 +1485,7 @@ model InventoryItem {
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   effect         ItemEffect?     @relation(fields: [effectKey], references: [key], onDelete: SetNull) // v0.26.5
   marketListings MarketListing[]
+  characterEquipment CharacterEquipment[] // v0.46.01
 
   @@unique([userId, itemId])
   @@index([userId])
@@ -1277,6 +1506,7 @@ model UserItem {
   createdAt   DateTime @default(now())
   item        Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  characterEquipment CharacterEquipment[] // alpha canonical equip
 
   @@unique([userId, itemId])
   @@index([userId])
@@ -2267,20 +2497,22 @@ model ContentReview {
 }
 
 model UserStreak {
-  id              String    @id @default(cuid())
-  userId          String    @unique
-  currentStreak   Int       @default(0)
-  longestStreak   Int       @default(0)
-  lastLoginAt     DateTime?
-  lastQuizAt      DateTime?
-  lastDuelAt      DateTime?
-  lastChallengeAt DateTime?
-  loginStreak     Int       @default(0)
-  quizStreak      Int       @default(0)
-  duelStreak      Int       @default(0)
-  totalDaysActive Int       @default(0)
-  updatedAt       DateTime  @updatedAt
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  currentStreak        Int       @default(0)
+  longestStreak        Int       @default(0)
+  lastLoginAt          DateTime?
+  lastQuizAt           DateTime?
+  lastDuelAt           DateTime?
+  lastChallengeAt      DateTime?
+  loginStreak          Int       @default(0)
+  quizStreak           Int       @default(0)
+  duelStreak           Int       @default(0)
+  totalDaysActive      Int       @default(0)
+  predictionCorrectStreak   Int   @default(0) // v0.47.16 - Prediction Battles
+  predictionLongestStreak  Int   @default(0)
+  updatedAt            DateTime  @updatedAt
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("user_streaks")
@@ -4330,6 +4562,9 @@ model SubSubCategory {
 model SssCategory {
   id               String               @id @default(cuid())
   name             String
+  slug             String?              @unique // e.g. "starter" for canonical lookup
+  isStarter        Boolean              @default(false)
+  visibleInBrowse  Boolean              @default(true) // false = hidden until Level 3
   subSubCategoryId String
   status           String               @default("pending")
   generatedAt      DateTime?
@@ -4493,6 +4728,7 @@ model PublicPoll {
   title         String
   question      String
   options       String[]
+  packKey       String?        // e.g. alpha-feedback-v01 for grouped packs
   region        String?
   visibility    String         @default("public")
   creatorId     String
@@ -4536,6 +4772,42 @@ model PublicChallenge {
 
   @@index([region, createdAt])
   @@map("public_challenges")
+}
+
+// v0.47.16 - Prediction Battles: forecast future outcomes, resolve later
+model PredictionQuestion {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?  @db.Text
+  categoryId      String?
+  options         String[] // e.g. ["Yes", "No"]
+  correctOptionIdx Int?    // 0-based when resolved
+  resolutionDate  DateTime?
+  status          String   @default("open") // open | closed | resolved
+  resolvedAt      DateTime?
+  resolvedBy      String?  // admin userId
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  answers         PredictionAnswer[]
+
+  @@index([status, resolutionDate])
+  @@index([categoryId, status])
+  @@map("prediction_questions")
+}
+
+model PredictionAnswer {
+  id            String             @id @default(cuid())
+  userId        String
+  predictionId String
+  selectedOptionIdx Int            // 0-based
+  createdAt     DateTime           @default(now())
+  prediction    PredictionQuestion @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, predictionId])
+  @@index([userId])
+  @@index([predictionId])
+  @@map("prediction_answers")
 }
 
 model ContentPack {
@@ -5749,6 +6021,168 @@ model UserQuest {
   @@map("user_quests")
 }
 
+// --- Parel Stories (v0.49.x) — aligned with @parel/story ---
+
+model Story {
+  id             String    @id @default(cuid())
+  userId         String
+  type           String // simple | extended
+  panelCount     Int       @default(1)
+  coverImageUrl  String?
+  exportId       String?   @unique
+  status         String    @default("draft") // draft | published
+  visibility     String    @default("private") // public | private | friends
+  title          String?
+  publishedAt    DateTime?
+  parentStoryId  String?
+  remixType      String? // response | extend | alt
+  panelMetadata  Json?
+  viewCount      Int       @default(0)
+  reachScore     Int       @default(0)
+  audioType      String?   @default("none")
+  audioTagId     String?
+  audioUrl       String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentStory      Story?                @relation("StoryRemix", fields: [parentStoryId], references: [id], onDelete: SetNull)
+  childStories     Story[]               @relation("StoryRemix")
+  reactions        StoryReaction[]
+  views            StoryView[]
+  challengeEntries StoryChallengeEntry[]
+  collectionItems  StoryCollectionItem[]
+
+  @@index([userId])
+  @@index([status, visibility, createdAt])
+  @@index([parentStoryId])
+  @@map("stories")
+}
+
+model StoryReaction {
+  id        String   @id @default(cuid())
+  storyId   String
+  userId    String
+  type      String
+  createdAt DateTime @default(now())
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId, type])
+  @@index([storyId])
+  @@index([userId])
+  @@map("story_reactions")
+}
+
+model StoryView {
+  id        String   @id @default(cuid())
+  storyId   String
+  createdAt DateTime @default(now())
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@index([storyId])
+  @@map("story_views")
+}
+
+model StoryChallenge {
+  id          String                @id @default(cuid())
+  title       String
+  description String                @db.Text
+  promptType  String
+  startAt     DateTime
+  endAt       DateTime
+  isActive    Boolean               @default(true)
+  createdAt   DateTime              @default(now())
+  entries     StoryChallengeEntry[]
+
+  @@map("story_challenges")
+}
+
+model StoryChallengeEntry {
+  id          String   @id @default(cuid())
+  challengeId String
+  storyId     String
+  userId      String
+  createdAt   DateTime @default(now())
+  challenge   StoryChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  story       Story          @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([challengeId, storyId])
+  @@index([challengeId])
+  @@index([storyId])
+  @@map("story_challenge_entries")
+}
+
+model StoryCollection {
+  id          String                @id @default(cuid())
+  userId      String
+  name        String
+  description String                @default("") @db.Text
+  isPublic    Boolean               @default(false)
+  createdAt   DateTime              @default(now())
+  user        User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       StoryCollectionItem[]
+
+  @@index([userId])
+  @@map("story_collections")
+}
+
+model StoryCollectionItem {
+  id           String   @id @default(cuid())
+  collectionId String
+  storyId      String
+  createdAt DateTime @default(now())
+  collection StoryCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  story      Story           @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([collectionId, storyId])
+  @@index([collectionId])
+  @@map("story_collection_items")
+}
+
+model StoryTemplate {
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  description    String   @db.Text
+  panelCount     Int
+  layoutMode     String
+  panelLabels    String[]
+  panelHelpTexts String[] @default([])
+  isPublic       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isPublic])
+  @@map("story_templates")
+}
+
+model RatingRequest {
+  id        String   @id @default(cuid())
+  userId    String
+  category  String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  result    RatingResult?
+
+  @@index([userId, createdAt])
+  @@map("rating_requests")
+}
+
+model RatingResult {
+  id          String        @id @default(cuid())
+  requestId   String        @unique
+  metrics     Json          @default("{}")
+  summaryText String?       @db.Text
+  createdAt   DateTime      @default(now())
+  request     RatingRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@map("rating_results")
+}
+
 // Lore system (v0.29.5) - User-specific narrative logs
 model UserLoreEntry {
   id         String         @id @default(cuid())
@@ -6293,6 +6727,41 @@ model CombatSession {
   @@map("combat_sessions")
 }
 
+// ========================================
+// RPG CHARACTERS (v0.46.01 - DLC gating, multi-character)
+// ========================================
+
+model Character {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // mage, paladin, warrior, etc.
+  name      String?
+  createdAt DateTime @default(now())
+  user      User     @relation("CharactersOwned", fields: [userId], references: [id], onDelete: Cascade)
+  activeForUser User? @relation("ActiveCharacter")
+  equipment CharacterEquipment[]
+
+  @@index([userId])
+  @@map("characters")
+}
+
+model CharacterEquipment {
+  id              String   @id @default(cuid())
+  characterId     String
+  slot            String   // weapon, armor, trinket, etc.
+  userItemId      String?  // canonical stash (UserItem) - alpha
+  inventoryItemId String?  // legacy; read fallback only; TODO remove post-alpha
+  equippedAt      DateTime @default(now())
+  character       Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  userItem        UserItem? @relation(fields: [userItemId], references: [id], onDelete: Cascade)
+  inventoryItem   InventoryItem? @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+  @@unique([characterId, slot])
+  @@index([characterId])
+  @@index([inventoryItemId])
+  @@index([userItemId])
+  @@map("character_equipment")
+}
 
 // ========================================
 // FIGHT SYSTEM (v0.36.0 - Full Fighting System MVP)
@@ -6788,6 +7257,263 @@ model Notification {
   @@map("notifications")
 }
 
+// v0.45.20 - In-app News / Updates
+enum NewsCategory {
+  FEATURE
+  UPDATE
+  NEWS
+  PROMO
+  ALERT
+}
+
+enum NewsStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model NewsPost {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  title         String
+  excerpt       String?
+  content       Json          // block-based: [{type, text?, items?, url?, caption?}]
+  coverImageUrl String?
+  media         Json?         // [{type:"image"|"gif"|"video", url, caption?}]
+  category      NewsCategory
+  status        NewsStatus    @default(DRAFT)
+  publishedAt   DateTime?
+  scheduledAt   DateTime?
+  authorId      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  author        User?         @relation("NewsPostAuthor", fields: [authorId], references: [id])
+  reactions     NewsReaction[]
+  seen          NewsSeen[]
+
+  @@index([status, publishedAt])
+  @@index([category, publishedAt])
+  @@map("news_posts")
+}
+
+model NewsReaction {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  type      String   // "LIKE" v1
+  createdAt DateTime @default(now())
+
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId, type])
+  @@index([postId, createdAt])
+  @@map("news_reactions")
+}
+
+model NewsSeen {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  seenAt    DateTime @default(now())
+
+  user User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post NewsPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId, seenAt])
+  @@map("news_seen")
+}
+
+// v0.45.21 - Daily Charms (task system v1)
+model DailyCharm {
+  id          String   @id @default(cuid())
+  key         String   @unique // e.g. "answer_3", "view_leaderboard"
+  title       String
+  description String?
+  xpReward    Int      @default(10)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  userEntries UserDailyCharm[]
+
+  @@map("daily_charms")
+}
+
+model UserDailyCharm {
+  id          String    @id @default(cuid())
+  userId      String
+  charmId     String
+  date        DateTime  // normalized to date (00:00 UTC)
+  progress    Int       @default(0)
+  target      Int       @default(1)
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  charm DailyCharm @relation(fields: [charmId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, charmId, date])
+  @@index([userId, date])
+  @@map("user_daily_charms")
+}
+
+model RoadmapItem {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  shortDescription String
+  longDescription String?
+  pillar          String
+  status          String
+  order           Int      @default(0)
+  votesCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  votes           RoadmapVote[]
+
+  @@map("roadmap_items")
+}
+
+model RoadmapVote {
+  id             String   @id @default(cuid())
+  userId         String
+  roadmapItemId  String
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item RoadmapItem @relation(fields: [roadmapItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roadmapItemId])
+  @@map("roadmap_votes")
+}
+
+// Milestone nudge system (Duolingo-style progress illusion)
+enum MilestoneTriggerType {
+  ANSWER_COUNT
+  LEVEL_UP
+}
+
+enum MilestoneScope {
+  GLOBAL
+  FLOW
+}
+
+model MilestoneRule {
+  id             String             @id @default(cuid())
+  key            String             @unique
+  isActive       Boolean            @default(true)
+  titleTemplate  String
+  bodyTemplate   String
+  triggerType    MilestoneTriggerType
+  scope          MilestoneScope
+  scopeRefId     String?
+  triggerConfig  Json               // e.g. { "everyN": 10 } or { "minLevel": 2 }
+  uiVariant      String?
+  priority       Int                @default(0)
+  cooldownSeconds Int              @default(0)
+  maxPerDay      Int?
+  maxTotal       Int?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deliveries     MilestoneDelivery[]
+
+  @@index([scope, scopeRefId, triggerType, isActive])
+  @@map("milestone_rules")
+}
+
+model MilestoneDelivery {
+  id         String        @id @default(cuid())
+  userId     String
+  ruleId     String
+  deliveredAt DateTime     @default(now())
+  context   Json?
+  source    String?
+  sessionId String?
+  dedupeKey String?
+
+  user User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rule MilestoneRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([userId, ruleId, deliveredAt])
+  @@map("milestone_deliveries")
+}
+
+// Moderation layer (v1 foundation)
+enum ModerationStatus {
+  VISIBLE
+  PENDING_REVIEW
+  FLAGGED
+  REJECTED
+  APPROVED
+  SHADOW_BANNED
+}
+
+enum ModerationReportReason {
+  SPAM
+  HARASSMENT
+  HATE
+  SEXUAL
+  VIOLENCE
+  MISINFORMATION
+  OTHER
+}
+
+enum ContentRating {
+  GENERAL
+  TEEN
+  ADULT
+}
+
+model ModerationEntity {
+  id             String           @id @default(cuid())
+  entityType     String
+  entityId       String
+  userId         String?
+  status         ModerationStatus @default(VISIBLE)
+  rating         ContentRating    @default(GENERAL)
+  autoFlagScore  Int              @default(0)
+  isAutoFlagged  Boolean          @default(false)
+  lastReviewedAt DateTime?
+  reviewedBy     String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@unique([entityType, entityId])
+  @@index([status])
+  @@map("moderation_entities")
+}
+
+model ContentReport {
+  id          String               @id @default(cuid())
+  reporterId  String
+  entityType  String
+  entityId    String
+  reason      ModerationReportReason
+  message     String?
+  createdAt   DateTime             @default(now())
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+  @@map("content_reports")
+}
+
+model EntityModerationAction {
+  id          String   @id @default(cuid())
+  moderatorId String
+  entityType  String
+  entityId    String
+  action      String
+  note        String?
+  createdAt   DateTime @default(now())
+
+  moderator User @relation(fields: [moderatorId], references: [id], onDelete: Cascade)
+
+  @@index([entityType, entityId])
+  @@map("entity_moderation_actions")
+}
 
 enum BattleAchievementRarity {
   common

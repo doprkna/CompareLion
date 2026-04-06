@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Trash2 } from 'lucide-react';
-import { getFlags } from '@parel/core/config/flags';
+import { getFlags } from '@parel/core/config';
 
 interface PerfLogEntry {
   timestamp: string;

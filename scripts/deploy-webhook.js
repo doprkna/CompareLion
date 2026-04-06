@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 "use strict";
 /**
  * Deployment Webhook (v0.11.6)
@@ -10,7 +9,7 @@
  */
 async function sendDiscordWebhook(webhookUrl, deployment) {
     const color = deployment.status === "success" ? 5763719 : 15158332;
-    const emoji = deployment.status === "success" ? "✅" : "❌";
+    const emoji = deployment.status === "success" ? "âœ…" : "âŒ";
     const title = deployment.status === "success"
         ? `${emoji} ${deployment.environment.toUpperCase()} Deployment Success`
         : `${emoji} ${deployment.environment.toUpperCase()} Deployment Failed`;
@@ -148,7 +147,7 @@ async function main() {
             ? parseFloat(process.env.COVERAGE)
             : undefined,
     };
-    console.log("📢 Sending deployment webhook...");
+    console.log("ðŸ“¢ Sending deployment webhook...");
     console.log(JSON.stringify(deployment, null, 2));
     const promises = [];
     // Send to Discord
@@ -160,13 +159,13 @@ async function main() {
         promises.push(sendSlackWebhook(process.env.SLACK_WEBHOOK_URL, deployment));
     }
     if (promises.length === 0) {
-        console.log("⚠️  No webhooks configured, skipping notifications");
+        console.log("âš ï¸  No webhooks configured, skipping notifications");
         return;
     }
     await Promise.all(promises);
-    console.log("✅ Webhook notifications sent successfully");
+    console.log("âœ… Webhook notifications sent successfully");
 }
 main().catch((error) => {
-    console.error("❌ Webhook failed:", error);
+    console.error("âŒ Webhook failed:", error);
     process.exit(1);
 });

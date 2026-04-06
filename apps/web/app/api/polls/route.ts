@@ -30,22 +30,27 @@ function resolveRegionChain(region?: string | null): string[] {
 
 export const GET = safeAsync(async (req: NextRequest) => {
   const regionParam = req.nextUrl.searchParams.get('region');
+  const packKey = req.nextUrl.searchParams.get('packKey');
   const limit = Number(req.nextUrl.searchParams.get('limit') || '20');
   const regions = resolveRegionChain(regionParam || undefined);
 
+  const where: any = {
+    visibility: 'public',
+    OR: [
+      { region: { in: regions } },
+      { region: null },
+    ],
+  };
+  if (packKey) where.packKey = packKey;
   const polls = await prisma.publicPoll.findMany({
     where: {
-      visibility: 'public',
-      OR: [
-        { region: { in: regions } },
-        { region: null },
-      ],
+      ...where,
       OR_1: [
         { expiresAt: null },
         { expiresAt: { gt: new Date() } },
       ] as any,
     } as any,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'asc' },
     take: Math.max(1, Math.min(50, limit)),
   });
 

@@ -8,5 +8,6 @@
  *   pnpm tsx scripts/db-integrity-check.ts
  *   pnpm tsx scripts/db-integrity-check.ts --save
  */
-declare function main(): Promise<any>;
+import { IntegritySummary } from '../apps/web/lib/db/integrity-utils';
+declare function main(): Promise<IntegritySummary>;
 export { main };

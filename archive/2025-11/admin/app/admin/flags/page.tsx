@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Flag, RefreshCw, Info } from 'lucide-react';
-import { getFlags, type FeatureFlags } from '@parel/core/config/flags';
+import { getFlags, type FeatureFlags } from '@parel/core/config';
 import { toast } from 'sonner';
 
 export default function AdminFlagsPage() {
@@ -204,7 +204,7 @@ export default function AdminFlagsPage() {
             To use flags in your code:
           </p>
           <pre className="bg-muted p-3 rounded-lg overflow-x-auto">
-{`import { getFlags } from '@parel/core/config/flags';
+{`import { getFlags } from '@parel/core/config';
 
 const flags = getFlags();
 if (flags.enableThemes) {

@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 import { unlockAchievement } from '@/lib/services/achievementService';
 import { RewardConfig } from '@parel/core/config/rewardConfig';
 import { calculateCombatKillReward } from '@/lib/services/rewardService';
-import { applyItemEffects, getTotalItemPower, generateItem, createInventoryItem } from '@/lib/services/itemService'; // v0.26.5
+import { applyItemEffects, getTotalItemPower, generateItem, addItemToInventory } from '@/lib/services/itemService'; // v0.26.5; Alpha: Inventory canon = UserItem
 import {
   calculateStatBasedDamage,
   checkDodge,
@@ -764,7 +764,7 @@ export async function handleKill(userId: string, session: any, powerBonus: numbe
         
         if (baseItem) {
           const itemData = await generateItem(dropRarity as any);
-          const invItem = await createInventoryItem(userId, baseItem.id, itemData);
+          await addItemToInventory(userId, baseItem.id, 1); // Alpha: UserItem stash
           
           // Get item name for toast
           const rarityNames: Record<string, string> = {

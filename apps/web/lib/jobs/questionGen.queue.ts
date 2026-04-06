@@ -1,32 +1,30 @@
 import { Queue } from 'bullmq';
-import { hasRedis } from '@/lib/env';
+import { getRedisClient, hasRedis } from '@parel/redis';
 
 export type QuestionGenJob = {
   ssscId: string;
-  targetCount?: number;  // default 10
-  overwrite?: boolean;   // default false
-  model?: string;        // env fallback
+  targetCount?: number;
+  overwrite?: boolean;
+  model?: string;
 };
 
 let _questionGenQueue: Queue<QuestionGenJob> | null = null;
 
 function getQuestionGenQueue(): Queue<QuestionGenJob> | null {
-  if (!hasRedis) {
-    return null;
-  }
-  if (!_questionGenQueue && process.env.REDIS_HOST && process.env.REDIS_PORT) {
-    _questionGenQueue = new Queue<QuestionGenJob>('question-gen', {
-      connection: {
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-      },
-      defaultJobOptions: {
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 2000 },
-        removeOnComplete: 1000,
-        removeOnFail: 500,
-      },
-    });
+  if (!hasRedis) return null;
+  if (!_questionGenQueue) {
+    const conn = getRedisClient();
+    if (conn) {
+      _questionGenQueue = new Queue<QuestionGenJob>('question-gen', {
+        connection: conn,
+        defaultJobOptions: {
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 2000 },
+          removeOnComplete: 1000,
+          removeOnFail: 500,
+        },
+      });
+    }
   }
   return _questionGenQueue;
 }

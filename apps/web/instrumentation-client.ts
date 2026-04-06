@@ -1,39 +1,35 @@
 /**
  * Next.js Client-side Instrumentation
- * Runs once when the client bundle loads
+ * Runs once when the client bundle loads.
+ * Observability disabled in dev (DISABLE_OBSERVABILITY / NODE_ENV) - v0.45.25
  */
 
-import * as Sentry from '@sentry/nextjs';
+import { isObservabilityEnabled } from '@/lib/observability/isObservabilityEnabled';
 
-// Export router transition hook for Sentry navigation tracking
-export const onRouterTransitionStart = process.env.NEXT_PUBLIC_SENTRY_DSN 
-  ? Sentry.captureRouterTransitionStart 
-  : undefined;
+// Lazy Sentry - only loaded when observability enabled (avoids dev bundle cost)
+export const onRouterTransitionStart =
+  isObservabilityEnabled() && process.env.NEXT_PUBLIC_SENTRY_DSN
+    ? require('@sentry/nextjs').captureRouterTransitionStart
+    : undefined;
 
-// Initialize Sentry for client-side monitoring (production only - v0.35.7)
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
-  Sentry.init({
+if (
+  typeof window !== 'undefined' &&
+  isObservabilityEnabled() &&
+  process.env.NEXT_PUBLIC_SENTRY_DSN
+) {
+  import('@sentry/nextjs').then((Sentry) => {
+    Sentry.init({
       dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-      
-      // Adjust sample rate based on environment
-      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-      
-      // Session replay
+      tracesSampleRate: 0.1,
       replaysOnErrorSampleRate: 1.0,
-      replaysSessionSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 0.1,
-      
-      // Set environment and release info
+      replaysSessionSampleRate: 0.1,
       environment: process.env.NODE_ENV || 'development',
-      
-      // Enable session replay
       integrations: [
         Sentry.replayIntegration({
           maskAllText: false,
           blockAllMedia: false,
         }),
       ],
-      
-      // Filter out noisy browser errors
       beforeSend(event, hint) {
         if (event.exception) {
           const error = hint.originalException;
@@ -51,5 +47,5 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production' && pr
         return event;
       },
     });
+  });
 }
-

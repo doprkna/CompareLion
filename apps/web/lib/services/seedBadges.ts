@@ -98,6 +98,15 @@ const CORE_BADGES = [
     unlockType: 'special',
     requirementValue: 'beta_tester',
   },
+  {
+    key: 'ALPHA_CONTRIBUTOR',
+    name: 'Alpha Contributor',
+    description: 'Completed Alpha Feedback – v0.1 and helped shape Parel',
+    icon: '🎯',
+    rarity: 'rare',
+    unlockType: 'special',
+    requirementValue: 'alpha_feedback_v01',
+  },
 ];
 
 /**

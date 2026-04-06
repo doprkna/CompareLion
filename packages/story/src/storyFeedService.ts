@@ -11,8 +11,7 @@ import { computeStoryRankScore, getActiveChallengeIds, type StoryRankingData } f
 import { getStoryChallenges } from './storyAnalyticsService';
 import { getActiveStoryChallenges } from './storyChallengeService';
 import { createNotification } from '@parel/notifications';
-
-export type StoryVisibility = 'public' | 'private' | 'friends';
+import type { StoryVisibility } from './storyDraftService';
 
 export interface StoryFeedParams {
   limit?: number;
@@ -271,7 +270,7 @@ export async function getPublicStoriesFeed(
       : null;
 
     return {
-      stories: feedItems,
+      stories: storiesToReturn,
       nextCursor,
     };
   } catch (error) {

@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Repository Structure Audit (v0.11.0)
  *
@@ -152,7 +151,7 @@ function checkForDuplicateComponents() {
     }
 }
 function printResults() {
-    console.log("\n🔍 Repository Structure Audit Results\n");
+    console.log("\nðŸ” Repository Structure Audit Results\n");
     console.log("=".repeat(60));
     const byCategory = results.reduce((acc, r) => {
         if (!acc[r.category])
@@ -161,13 +160,13 @@ function printResults() {
         return acc;
     }, {});
     for (const [category, items] of Object.entries(byCategory)) {
-        console.log(`\n📂 ${category.toUpperCase()} (${items.length})`);
+        console.log(`\nðŸ“‚ ${category.toUpperCase()} (${items.length})`);
         console.log("-".repeat(60));
         for (const item of items) {
-            const icon = item.severity === "error" ? "❌" : item.severity === "warning" ? "⚠️" : "ℹ️";
+            const icon = item.severity === "error" ? "âŒ" : item.severity === "warning" ? "âš ï¸" : "â„¹ï¸";
             console.log(`${icon} ${item.message}`);
             if (item.file) {
-                console.log(`   📄 ${item.file}`);
+                console.log(`   ðŸ“„ ${item.file}`);
             }
         }
     }
@@ -175,20 +174,20 @@ function printResults() {
     const errors = results.filter((r) => r.severity === "error").length;
     const warnings = results.filter((r) => r.severity === "warning").length;
     const infos = results.filter((r) => r.severity === "info").length;
-    console.log(`\n📊 Summary: ${errors} errors, ${warnings} warnings, ${infos} info\n`);
+    console.log(`\nðŸ“Š Summary: ${errors} errors, ${warnings} warnings, ${infos} info\n`);
     if (errors > 0) {
-        console.log("❌ Audit failed with errors!");
+        console.log("âŒ Audit failed with errors!");
         process.exit(1);
     }
     else if (warnings > 0) {
-        console.log("⚠️ Audit completed with warnings.");
+        console.log("âš ï¸ Audit completed with warnings.");
     }
     else {
-        console.log("✅ Audit passed!");
+        console.log("âœ… Audit passed!");
     }
 }
 // Run audits
-console.log("🚀 Running repository structure audit...\n");
+console.log("ðŸš€ Running repository structure audit...\n");
 checkNamingConventions("components", "components");
 checkNamingConventions("lib/hooks", "hooks");
 checkForDeadFiles();

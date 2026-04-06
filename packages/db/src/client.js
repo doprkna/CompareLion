@@ -1,3 +1,5 @@
+import { ensureDatabaseUrl } from './resolveDatabaseUrl';
+ensureDatabaseUrl();
 // Re-export real @prisma/client (no path override: resolves to actual client, not packages/db/generated)
 export * from '@prisma/client';
 import { PrismaClient } from '@prisma/client';

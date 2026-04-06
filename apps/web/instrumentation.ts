@@ -4,9 +4,25 @@
  */
 
 import { logger } from '@/lib/logger';
+import { isObservabilityEnabled } from '@/lib/observability/isObservabilityEnabled';
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
+    // Initialize unified config before any request (needed by hooks, flags, etc.)
+    const { ensureUnifiedConfigInitialized } = await import('@parel/core/config/unified');
+    ensureUnifiedConfigInitialized();
+    // Schema drift guard (DEV only - validates critical columns exist)
+    if ((process.env.APP_ENV ?? 'dev') === 'dev' && process.env.NODE_ENV === 'development') {
+      const { validateSchema } = await import('@parel/db/dev/schemaGuard');
+      await validateSchema();
+    }
+    // Redis status (dev only, once)
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        const { hasRedis } = await import('@parel/redis');
+        logger.info(hasRedis ? 'Redis: enabled' : 'Redis: disabled (no REDIS_URL)');
+      } catch {}
+    }
     // Register all cron jobs (v0.33.4 - dynamic import to avoid webpack bundling issues)
     try {
       const { registerAllCronJobs } = await import('@/lib/cron/config');
@@ -15,8 +31,8 @@ export async function register() {
     } catch (err) {
       logger.warn('[Cron] Failed to register cron jobs:', err);
     }
-    // Initialize Sentry for server-side monitoring (production only - v0.35.7)
-    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    // Initialize Sentry for server-side monitoring (observability disabled in dev - v0.45.25)
+    if (isObservabilityEnabled() && process.env.NEXT_PUBLIC_SENTRY_DSN) {
       const Sentry = await import('@sentry/nextjs');
       
       Sentry.init({
@@ -63,9 +79,9 @@ export async function register() {
     // }
   }
   
-  // Edge runtime initialization (production only - v0.35.7)
+  // Edge runtime initialization (observability disabled in dev - v0.45.25)
   if (process.env.NEXT_RUNTIME === 'edge') {
-    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SENTRY_DSN) {
+    if (isObservabilityEnabled() && process.env.NEXT_PUBLIC_SENTRY_DSN) {
       const Sentry = await import('@sentry/nextjs');
       
       Sentry.init({

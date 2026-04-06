@@ -63,7 +63,12 @@ export async function publishDraftStory(
       },
     });
 
-    return updated;
+    return {
+      id: updated.id,
+      status: updated.status as StoryStatus,
+      visibility: updated.visibility as StoryVisibility,
+      publishedAt: updated.publishedAt!,
+    };
   } catch (error) {
     logger.error('[StoryDraft] Failed to publish draft story', { error, userId, storyId, visibility });
     throw error;

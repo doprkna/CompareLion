@@ -1,29 +1,34 @@
 import Redis from 'ioredis';
+import { logRedisErrorOnce } from './logOnce';
+import { hasRedis, REDIS_URL } from './env';
 
-export function createRedisClient() {
-  // TODO-ENV: Consider injecting via config instead of reading process.env directly
-  const url = process.env.REDIS_URL;
+let _client: Redis | null = null;
 
-  if (!url) {
-    console.warn('[Redis] REDIS_URL not set → running in no-cache mode');
-    return null;
-  }
+/**
+ * Get Redis client. Returns null when Redis is disabled or URL is empty.
+ * Attaches error handler to prevent unhandled error events.
+ */
+export function getRedisClient(): Redis | null {
+  if (!hasRedis) return null;
+  if (_client) return _client;
 
-  const client = new Redis(url, {
+  const client = new Redis(REDIS_URL, {
     maxRetriesPerRequest: 3,
     enableReadyCheck: true,
+    lazyConnect: true,
+    retryStrategy(times) {
+      if (times > 3) return null;
+      return Math.min(times * 200, 2000);
+    },
   });
 
   client.on('error', (err: Error) => {
-    console.error('[Redis] Connection error:', err);
+    logRedisErrorOnce(err);
   });
 
-  client.on('connect', () => {
-    console.log('[Redis] Connected');
-  });
-
+  _client = client;
   return client;
 }
 
-export const redis = createRedisClient();
-
+/** @deprecated Use getRedisClient() instead. Kept for backward compat. */
+export const redis = getRedisClient();

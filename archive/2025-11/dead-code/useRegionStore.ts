@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Region, DEFAULT_REGION } from '@parel/core/config/regions';
+import { Region, DEFAULT_REGION } from '@parel/core/config';
 
 type RegionState = {
   region: Region;

@@ -12,4 +12,8 @@ import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronDown, ChevronUp, Trophy } from "lucide-react";
-import { apiFetch } from "@/lib/apiBase"
+import { apiFetch } from "@/lib/apiBase";
+
+export default function CombatLogPage() {
+  return null;
+}
