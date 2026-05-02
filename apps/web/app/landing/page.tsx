@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -13,16 +13,52 @@ import {
   Zap, 
   Target,
   ArrowRight,
-  Check,
   Star,
   Flame
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+const EXAMPLE_QUESTIONS = [
+  'How often do people really argue with their partner?',
+  'Are you more disciplined than others your age?',
+  'Do people actually enjoy their job?',
+  'Is your screen time normal or a cry for help?',
+] as const;
+
+function ExampleQuestionCards({ className }: { className?: string }) {
+  return (
+    <ul
+      className={cn(
+        'grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-left list-none p-0 m-0',
+        className
+      )}
+    >
+      {EXAMPLE_QUESTIONS.map((q, i) => (
+        <li
+          key={q}
+          className={cn(
+            'flex gap-3 items-start rounded-xl border-2 border-border bg-card/90 px-3.5 py-3 shadow-sm',
+            'ring-1 ring-border/50',
+            i === 1 && 'sm:border-dashed sm:border-accent/40 sm:bg-card'
+          )}
+        >
+          <span
+            className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-bg text-[10px] font-mono font-bold text-subtle border border-border"
+            aria-hidden
+          >
+            Q
+          </span>
+          <span className="text-sm sm:text-[15px] leading-snug text-text font-medium">{q}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function LandingPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [email, setEmail] = useState('');
   const [userData, setUserData] = useState<any>(null);
 
   // Fetch user data when authenticated (v0.35.9 - removed auto-redirect to /main)
@@ -53,13 +89,7 @@ export default function LandingPage() {
     }
   };
 
-  const handleJoinBeta = () => {
-    if (email) {
-      router.push(`/waitlist?email=${encodeURIComponent(email)}`);
-    } else {
-      router.push('/waitlist');
-    }
-  };
+
 
   const handleGetStarted = () => {
     router.push('/signup');
@@ -135,135 +165,79 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              {isLoggedIn ? (
-                <>
-                  <div className="mb-4 inline-block px-4 py-2 bg-accent/10 border border-accent/30 rounded-full">
-                    <span className="text-accent font-semibold">Welcome back, {userName}! 👋</span>
-                  </div>
-                  <h1 className="text-5xl md:text-6xl font-bold text-text mb-6 leading-tight">
-                    Ready to{' '}
-                    <span className="bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
-                      Level Up?
-                    </span>
-                  </h1>
-                  <p className="text-xl text-subtle mb-8 max-w-2xl">
-                    Jump back into your journey. Answer more questions, climb the leaderboard, 
-                    and discover new insights about yourself.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h1 className="text-5xl md:text-6xl font-bold text-text mb-6 leading-tight">
-                    Compare Yourself.{' '}
-                    <span className="bg-gradient-to-r from-accent to-blue-500 bg-clip-text text-transparent">
-                      Level Up.
-                    </span>
-                  </h1>
-                  <p className="text-xl text-subtle mb-8 max-w-2xl">
-                    Answer questions, see how you compare with others, and discover insights 
-                    about yourself through gamified polling and self-discovery.
-                  </p>
-                </>
-              )}
-              
-              {/* CTA - Different for logged-in vs guest */}
-              {isLoggedIn ? (
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      {/* Hero — above-the-fold: comparison hook, sample questions, CTA */}
+      <section className="pt-24 pb-14 sm:pt-28 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-border/60 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent/15 via-transparent to-transparent">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-stretch text-center sm:text-left"
+          >
+            {isLoggedIn ? (
+              <>
+                <p className="mb-3 text-sm font-medium text-accent">
+                  Welcome back, {userName}
+                </p>
+                <h1 className="text-text text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-4">
+                  Compare your life with strangers.
+                  <span className="block mt-1 text-3xl sm:text-4xl md:text-5xl font-bold text-subtle italic">
+                    For science. Mostly.
+                  </span>
+                </h1>
+                <p className="text-lg sm:text-xl text-subtle max-w-2xl mb-6 leading-relaxed">
+                  Answer a few weirdly honest questions and see how normal, cursed, or suspiciously average you are.
+                </p>
+                <ExampleQuestionCards className="mb-8 max-w-none" />
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <Button
                     onClick={handleContinueToDashboard}
                     size="lg"
-                    className="bg-gradient-to-r from-accent to-blue-500 px-12 py-6 text-xl font-semibold hover:shadow-xl hover:shadow-accent/30"
+                    className="w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10"
                   >
-                    Continue to Dashboard
-                    <ArrowRight className="ml-2 h-6 w-6" />
+                    Continue to the app
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>
-              ) : (
-                <>
-                  {/* Email capture */}
-                  <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="flex-1 px-6 py-4 rounded-xl bg-card border-2 border-border text-text placeholder:text-subtle focus:outline-none focus:border-accent transition-colors"
-                      onKeyDown={(e) => e.key === 'Enter' && handleJoinBeta()}
-                    />
-                    <Button
-                      onClick={handleJoinBeta}
-                      size="lg"
-                      className="bg-gradient-to-r from-accent to-blue-500 px-8 py-4 text-lg font-semibold hover:shadow-xl hover:shadow-accent/30"
-                    >
-                      Join Beta
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </div>
-                  
-                  <p className="text-sm text-subtle">
-                    Free forever. No credit card required.
-                  </p>
-                </>
-              )}
-            </motion.div>
-
-            {/* Hero Visual */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl">
-                <div className="space-y-4">
-                  {/* Mock question */}
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-semibold text-text mb-4">
-                      How many hours do you sleep per night?
-                    </h3>
-                    <div className="space-y-2">
-                      {['Less than 5', '5-6 hours', '7-8 hours', 'More than 8'].map((option, i) => (
-                        <div
-                          key={i}
-                          className="bg-bg border border-border rounded-lg p-3 hover:border-accent transition-colors cursor-pointer"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-text">{option}</span>
-                            {i === 2 && <Check className="h-4 w-4 text-accent" />}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Mock stats */}
-                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-accent">78%</div>
-                      <div className="text-xs text-subtle">Similar</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-500">+150</div>
-                      <div className="text-xs text-subtle">XP Earned</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-500">Top 20%</div>
-                      <div className="text-xs text-subtle">Rank</div>
-                    </div>
-                  </div>
+                <p className="mt-4 text-sm text-subtle/90 max-w-xl">
+                  No productivity cult. No fake wisdom. Just honest comparisons.
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-text text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-4">
+                  Compare your life with strangers.
+                  <span className="block mt-1 text-3xl sm:text-4xl md:text-5xl font-bold text-subtle italic">
+                    For science. Mostly.
+                  </span>
+                </h1>
+                <p className="text-lg sm:text-xl text-subtle max-w-2xl mx-auto sm:mx-0 mb-6 leading-relaxed">
+                  Answer a few weirdly honest questions and see how normal, cursed, or suspiciously average you are.
+                </p>
+                <ExampleQuestionCards className="mb-8 max-w-none" />
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  <Button
+                    onClick={handleGetStarted}
+                    size="lg"
+                    className="w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10"
+                  >
+                    Try it now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => router.push('/login')}
+                    className="text-sm font-medium text-subtle underline-offset-4 hover:underline hover:text-text"
+                  >
+                    Already have an account? Log in
+                  </button>
                 </div>
-              </div>
-            </motion.div>
-          </div>
+                <p className="mt-4 text-sm text-subtle/90 max-w-xl mx-auto sm:mx-0">
+                  No productivity cult. No fake wisdom. Just honest comparisons.
+                </p>
+              </>
+            )}
+          </motion.div>
         </div>
       </section>
 

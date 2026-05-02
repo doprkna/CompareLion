@@ -1,5 +1,65 @@
+<!-- version-lock: true -->
 
-<<<<<<< HEAD
+
+## [0.50.01] - 2026-05-02
+
+### Changed
+  - **`/landing` hero (above the fold):** New positioning for first-time visitors: headline *Compare your life with strangers.* / *For science. Mostly.*, subheadline + four example question cards (replacing XP/leaderboard mock), primary CTA **Try it now** (`/signup`), log-in link, tagline *No productivity cult. No fake wisdom. Just honest comparisons.* Logged-in users see the same product framing + **Continue to the app**. Removed hero email/waitlist row and side-column stats mock.
+
+### Fixed
+  - **`CHANGELOG.md` merge conflict:** Removed stray Git conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) and ordered sections so `[0.49.xx]` entries appear above `[0.47.xx]`.
+  - **`apps/web/package.json` — `typecheck`:** Uses `node ../../node_modules/typescript/bin/tsc --noEmit` so `pnpm run typecheck` resolves TypeScript when hoisted to the monorepo root (pnpm), matching the existing `build` / `lint` script paths.
+
+### Notes
+  - **Production build:** `pnpm run build` from `apps/web` completed successfully locally (fresh `.next`, optional unset of shell `DATABASE_URL*`; `/landing` in route manifest).
+
+## [0.49.05] - 2026-03-31
+
+### Changed (deploy config alignment)
+  - **Vercel Root Directory = `apps/web`:** Removed **repo-root** `vercel.json` (it pinned `buildCommand` / `installCommand` to `build:light` / `install:light`, `outputDirectory: apps/web/.next`, and `rewrites` to `/apps/web/$1`, which conflict with dashboard defaults when the project root is `apps/web`). Added **`apps/web/vercel.json`** with **`framework`**, **`regions`**, **`env` / `build.env`**, **`headers`**, **`redirects`** only—no `buildCommand`, `installCommand`, `outputDirectory`, `devCommand`, or path rewrites so **Build = `pnpm run build`**, **Install = `pnpm install --frozen-lockfile`**, and **output `.next`** stay dashboard-controlled.
+  - **`apps/web/package.json`:** Set **`packageManager`** to **`pnpm@10.0.0`** (matches workspace root) so installs from the app directory use the intended pnpm version.
+
+### Notes
+  - **Redirect `/docs` → `/BETA_LAUNCH_v0.13.2k.md`:** The markdown file currently lives at the **monorepo root**, not under `apps/web/public`. If the redirect should serve that doc in production, add a copy (or symlink) under **`public/`** or change the destination.
+
+## [0.49.04] - 2026-03-31
+
+### Notes (deploy / build scope)
+  - **Vercel light-build closure:** `packages/rating` and `packages/notifications` are **not** imported by `apps/web`; they appear because `apps/web` depends on `@parel/story`, and `packages/story/package.json` lists them even though current `story` **package exports** send most story APIs to **stubs** (real `src` that imports rating/notifications is not what Next resolves for those entry points). **`@parel/api`** is a direct `apps/web` dependency and is used across many API routes; it stays in the closure.
+
+## [0.49.03] - 2026-03-31
+
+### Fixed
+  - **Build without `DATABASE_URL`:** `lib/env.ts` no longer calls `process.exit(1)` during `next build` when `NODE_ENV=production` and `DATABASE_URL` is unset (e.g. local/CI). Production guard now skips while Next sets **`NEXT_PHASE=phase-production-build`** (page-data workers) or **`npm_lifecycle_event=build`** (root script). Non-Vercel **`next start`** still requires real `process.env` values for `DATABASE_URL`, `STRIPE_SECRET_KEY`, and `REDIS_URL` (unless Redis disabled).
+
+## [0.49.02] - 2026-04-02
+
+### Added
+  - **OpsRun debug (MVP):** `@parel/db` `OpsRun` helpers accept types **`SEED`** and **`API_ERROR`**; `createOpsRun` optional **`message`** on create. **`POST /api/admin/seed-db`** opens an OpsRun before `runSeedWorld`, **`finishOpsRun`** on success (`Seeder completed`) or failure (message + `errorStack`). **`GET /api/progression/stats`** and **`GET /api/admin/visits`** catch paths record **`API_ERROR`** via `createOpsRun` + **`finishOpsRun`** with `params.route`. **`/admin/ops`** client polls every **8s** (`quiet` refresh to avoid loading flicker); blurb updated. Detail page unchanged (message, collapsible stack, params JSON already present).
+  - **User session trace (lightweight):** `apps/web/lib/logEvent.ts` — fire-and-forget `createOpsRun` + `finishOpsRun` (`success`). **Demo pipeline** (`flow_demo`): **`POST /api/flow/start`** → `flow_start`; **`GET /api/flow/question`** (no next) → `flow_complete`; **`POST /api/flow/answer`** → `question_answer` / `question_skip`; each includes **`params.channel`** = `flow_demo`. **Category route** (`/flow/[categoryId]`, `flow_category`): **`GET /api/flow/[categoryId]/next`** → `flow_start` when the user has no prior responses in that category, **`flow_complete` when there is no next question; **`POST .../answer`** and **`POST .../skip`** → `question_answer` / `question_skip`. **Legacy `FlowRunner`:** **`POST /api/flow-answers`** logs `question_answer` / `question_skip` with **`channel: legacy_flow_answers`** (including mock-question path). **Admin:** **`GET /api/admin/ops?userId=`** filters with Prisma JSON **`params.userId`** (latest 50 matches); ops UI debounces the User ID field. Trace rows also set **`params.userId`** for filtering.
+
+### Fixed
+  - **Flow category HTTP API:** `GET /api/flow/[categoryId]/next` called `getNextQuestionForUser` with **arguments reversed** (category id was passed as user id). **`POST /api/flow/[id]/answer`** invoked `answerQuestion` from `flowService` with **two string arguments** while that function expects a **`FlowAnswer`** object, so answers were not persisted correctly; the handler now uses **`recordFlowAnswer`** plus **`addXP`**, **`updateHeroStats`**, and **`publishEvent`** (aligned with **`POST /api/flow/answer`**) and returns basic stats in the JSON body.
+  - **`/flow/[categoryId]` UI:** Uses shared **`QuestionInput`** (same behaviors as **`FlowRunner`**): **RANGE** is a **Radix `Slider`** (1–10, default 5); **NUMBER** / **`NUMERIC`** use a number field; **`MULTIPLE_CHOICE`** is normalized to **`MULTI_CHOICE`**. **Submit** sends JSON (`optionIds`, `textValue`, or `numericValue`). **`POST /api/flow/[id]/answer`** validates **RANGE** as an integer **1–10** and persists a clamped value.
+  - **`/flow-demo`:** Question step refactored to the same **`QuestionInput`** + **`getInitialValue`** / **`isValidAnswer`** / **`toApiPayload`** helpers as category flow; inline radios/checkboxes/inputs removed. **RANGE** and **`NUMERIC`→NUMBER** behavior matches **`/flow/[categoryId]`**; failed submit surfaces API/toast error body when available.
+  - **Notifications:** `NotificationBell` called `res.json()` on `apiFetch` (`safeApiFetch`), which returns `{ ok, data }` — not a `Response`. Load/open handlers now read the JSON body from `res.data`.
+  - **`GET /api/events/today`:** Wrapped cache + Prisma path in `try/catch`; on any failure returns **200** with `{ success: true, event: null, region, timestamp }` so clients never depend on a failing DB/Redis for a valid empty payload.
+  - **`GET /api/progression/stats`:** Wrapped handler in `try/catch`; on throw returns **200** with JSON matching the usual `successResponse` shape (`success`, `data` with null stats / safe defaults, `error: 'fallback'`, `timestamp`) so the client never receives non-JSON or hard failures that break `res.json()`.
+  - **`GET /api/admin/visits`:** `try/catch` around stats queries with `NextResponse.json(visitsEmptyPayload)` on failure (all counters **0**, `ok: true`). Corrected 7d `Promise.all` destructuring (anonymous vs logged `groupBy`) and typo `loggedUsers7dGrouped` → `loggedUsersGrouped7d`, which could cause runtime failure before the catch.
+  - **`POST /api/admin/seed-db`:** Single outer `try/catch` around session, admin check, env gate, and `runSeedWorld()`. On throw: **200** JSON `{ success: false, ok: false, error }` plus structured server log. Success payload includes `success: true` alongside existing `ok` / `message` / `stats`. Auth and production guard still return **401** / **403** with JSON.
+  - **Admin logging / action log:** `POST` admin `trigger()` in `AdminDashboard` reads `apiFetch` failures and JSON `data.success === false` / `data.error` (and truncates long messages ~280 chars). Lines show `Fail — {error}` instead of a bare Fail. **`GET /api/admin/visits`** and **`GET /api/progression/stats`** catch blocks log `console.error('[API ERROR]', { route, error })` and return **200** JSON with `success: false` and truncated `error` where applicable; visits empty payload adds `success: false` + `ok: false` on error. **Seed-db** catch aligned to same `[API ERROR]` log pattern + truncated `error` in body.
+
+## [0.49.01] - 2026-03-31
+
+### Fixed
+  - **@parel/story:** Duplicate `StoryVisibility` re-export from `storyFeedService` vs `storyDraftService` (TS2308) — `storyFeedService` now imports the type from `storyDraftService` instead of redeclaring it.
+
+### Added
+  - **Parel Stories — Prisma:** `Story`, `StoryReaction`, `StoryView`, `StoryChallenge`, `StoryChallengeEntry`, `StoryCollection`, `StoryCollectionItem`, `StoryTemplate`, `RatingRequest`, `RatingResult` in `packages/db/schema.prisma`; `User` relations for the same. Migration `packages/db/migrations/20260331130000_parel_stories/migration.sql`. Run `prisma migrate deploy` (or your usual migrate path) against Postgres before relying on these tables in production.
+  - **@parel/core:** package export `"./cache"` for `storyRankingService` / `weeklyStoryService` imports.
+
+### Fixed
+  - **@parel/story:** TypeScript — `storyFeedService` return used undefined `feedItems` (now `storiesToReturn`); `storyRemixService` invalid `include`+`select` on `findUnique`; `getRemixChainDepth` inference vs `Story` type alias; `storyDraftService` publish return narrowed to draft types; `storyService` AURE context tolerates null `summaryText`; `weeklyStoryService` quest highlights use `userQuest` (existing `user_quests` table) instead of non-existent `questProgress`; `tsconfig` `moduleResolution: "bundler"` for `@parel/core/cache` subpath.
 
 ## [0.47.08] - 2026-03-09
 
@@ -306,52 +366,3 @@
 
 ### Added
   - **db-migrate-deploy.ts:** Wrapper script for `prisma migrate deploy` that loads env files (root .env, .env.local, apps/web/.env, apps/web/.env.local) and resolves DATABASE_URL from DATABASE_URL_DEV or DATABASE_URL_PROD before invoking Prisma. Ensures migrations run correctly regardless of which env vars are defined.
-=======
-## [0.49.05] - 2026-03-31
-
-### Changed (deploy config alignment)
-  - **Vercel Root Directory = `apps/web`:** Removed **repo-root** `vercel.json` (it pinned `buildCommand` / `installCommand` to `build:light` / `install:light`, `outputDirectory: apps/web/.next`, and `rewrites` to `/apps/web/$1`, which conflict with dashboard defaults when the project root is `apps/web`). Added **`apps/web/vercel.json`** with **`framework`**, **`regions`**, **`env` / `build.env`**, **`headers`**, **`redirects`** only—no `buildCommand`, `installCommand`, `outputDirectory`, `devCommand`, or path rewrites so **Build = `pnpm run build`**, **Install = `pnpm install --frozen-lockfile`**, and **output `.next`** stay dashboard-controlled.
-  - **`apps/web/package.json`:** Set **`packageManager`** to **`pnpm@10.0.0`** (matches workspace root) so installs from the app directory use the intended pnpm version.
-
-### Notes
-  - **Redirect `/docs` → `/BETA_LAUNCH_v0.13.2k.md`:** The markdown file currently lives at the **monorepo root**, not under `apps/web/public`. If the redirect should serve that doc in production, add a copy (or symlink) under **`public/`** or change the destination.
-
-## [0.49.04] - 2026-03-31
-
-### Notes (deploy / build scope)
-  - **Vercel light-build closure:** `packages/rating` and `packages/notifications` are **not** imported by `apps/web`; they appear because `apps/web` depends on `@parel/story`, and `packages/story/package.json` lists them even though current `story` **package exports** send most story APIs to **stubs** (real `src` that imports rating/notifications is not what Next resolves for those entry points). **`@parel/api`** is a direct `apps/web` dependency and is used across many API routes; it stays in the closure.
-
-## [0.49.03] - 2026-03-31
-
-### Fixed
-  - **Build without `DATABASE_URL`:** `lib/env.ts` no longer calls `process.exit(1)` during `next build` when `NODE_ENV=production` and `DATABASE_URL` is unset (e.g. local/CI). Production guard now skips while Next sets **`NEXT_PHASE=phase-production-build`** (page-data workers) or **`npm_lifecycle_event=build`** (root script). Non-Vercel **`next start`** still requires real `process.env` values for `DATABASE_URL`, `STRIPE_SECRET_KEY`, and `REDIS_URL` (unless Redis disabled).
-
-## [0.49.02] - 2026-04-02
-
-### Added
-  - **OpsRun debug (MVP):** `@parel/db` `OpsRun` helpers accept types **`SEED`** and **`API_ERROR`**; `createOpsRun` optional **`message`** on create. **`POST /api/admin/seed-db`** opens an OpsRun before `runSeedWorld`, **`finishOpsRun`** on success (`Seeder completed`) or failure (message + `errorStack`). **`GET /api/progression/stats`** and **`GET /api/admin/visits`** catch paths record **`API_ERROR`** via `createOpsRun` + **`finishOpsRun`** with `params.route`. **`/admin/ops`** client polls every **8s** (`quiet` refresh to avoid loading flicker); blurb updated. Detail page unchanged (message, collapsible stack, params JSON already present).
-  - **User session trace (lightweight):** `apps/web/lib/logEvent.ts` — fire-and-forget `createOpsRun` + `finishOpsRun` (`success`). **Demo pipeline** (`flow_demo`): **`POST /api/flow/start`** → `flow_start`; **`GET /api/flow/question`** (no next) → `flow_complete`; **`POST /api/flow/answer`** → `question_answer` / `question_skip`; each includes **`params.channel`** = `flow_demo`. **Category route** (`/flow/[categoryId]`, `flow_category`): **`GET /api/flow/[categoryId]/next`** → `flow_start` when the user has no prior responses in that category, **`flow_complete` when there is no next question; **`POST .../answer`** and **`POST .../skip`** → `question_answer` / `question_skip`. **Legacy `FlowRunner`:** **`POST /api/flow-answers`** logs `question_answer` / `question_skip` with **`channel: legacy_flow_answers`** (including mock-question path). **Admin:** **`GET /api/admin/ops?userId=`** filters with Prisma JSON **`params.userId`** (latest 50 matches); ops UI debounces the User ID field. Trace rows also set **`params.userId`** for filtering.
-
-### Fixed
-  - **Flow category HTTP API:** `GET /api/flow/[categoryId]/next` called `getNextQuestionForUser` with **arguments reversed** (category id was passed as user id). **`POST /api/flow/[id]/answer`** invoked `answerQuestion` from `flowService` with **two string arguments** while that function expects a **`FlowAnswer`** object, so answers were not persisted correctly; the handler now uses **`recordFlowAnswer`** plus **`addXP`**, **`updateHeroStats`**, and **`publishEvent`** (aligned with **`POST /api/flow/answer`**) and returns basic stats in the JSON body.
-  - **`/flow/[categoryId]` UI:** Uses shared **`QuestionInput`** (same behaviors as **`FlowRunner`**): **RANGE** is a **Radix `Slider`** (1–10, default 5); **NUMBER** / **`NUMERIC`** use a number field; **`MULTIPLE_CHOICE`** is normalized to **`MULTI_CHOICE`**. **Submit** sends JSON (`optionIds`, `textValue`, or `numericValue`). **`POST /api/flow/[id]/answer`** validates **RANGE** as an integer **1–10** and persists a clamped value.
-  - **`/flow-demo`:** Question step refactored to the same **`QuestionInput`** + **`getInitialValue`** / **`isValidAnswer`** / **`toApiPayload`** helpers as category flow; inline radios/checkboxes/inputs removed. **RANGE** and **`NUMERIC`→NUMBER** behavior matches **`/flow/[categoryId]`**; failed submit surfaces API/toast error body when available.
-  - **Notifications:** `NotificationBell` called `res.json()` on `apiFetch` (`safeApiFetch`), which returns `{ ok, data }` — not a `Response`. Load/open handlers now read the JSON body from `res.data`.
-  - **`GET /api/events/today`:** Wrapped cache + Prisma path in `try/catch`; on any failure returns **200** with `{ success: true, event: null, region, timestamp }` so clients never depend on a failing DB/Redis for a valid empty payload.
-  - **`GET /api/progression/stats`:** Wrapped handler in `try/catch`; on throw returns **200** with JSON matching the usual `successResponse` shape (`success`, `data` with null stats / safe defaults, `error: 'fallback'`, `timestamp`) so the client never receives non-JSON or hard failures that break `res.json()`.
-  - **`GET /api/admin/visits`:** `try/catch` around stats queries with `NextResponse.json(visitsEmptyPayload)` on failure (all counters **0**, `ok: true`). Corrected 7d `Promise.all` destructuring (anonymous vs logged `groupBy`) and typo `loggedUsers7dGrouped` → `loggedUsersGrouped7d`, which could cause runtime failure before the catch.
-  - **`POST /api/admin/seed-db`:** Single outer `try/catch` around session, admin check, env gate, and `runSeedWorld()`. On throw: **200** JSON `{ success: false, ok: false, error }` plus structured server log. Success payload includes `success: true` alongside existing `ok` / `message` / `stats`. Auth and production guard still return **401** / **403** with JSON.
-  - **Admin logging / action log:** `POST` admin `trigger()` in `AdminDashboard` reads `apiFetch` failures and JSON `data.success === false` / `data.error` (and truncates long messages ~280 chars). Lines show `Fail — {error}` instead of a bare Fail. **`GET /api/admin/visits`** and **`GET /api/progression/stats`** catch blocks log `console.error('[API ERROR]', { route, error })` and return **200** JSON with `success: false` and truncated `error` where applicable; visits empty payload adds `success: false` + `ok: false` on error. **Seed-db** catch aligned to same `[API ERROR]` log pattern + truncated `error` in body.
-
-## [0.49.01] - 2026-03-31
-
-### Fixed
-  - **@parel/story:** Duplicate `StoryVisibility` re-export from `storyFeedService` vs `storyDraftService` (TS2308) — `storyFeedService` now imports the type from `storyDraftService` instead of redeclaring it.
-
-### Added
-  - **Parel Stories — Prisma:** `Story`, `StoryReaction`, `StoryView`, `StoryChallenge`, `StoryChallengeEntry`, `StoryCollection`, `StoryCollectionItem`, `StoryTemplate`, `RatingRequest`, `RatingResult` in `packages/db/schema.prisma`; `User` relations for the same. Migration `packages/db/migrations/20260331130000_parel_stories/migration.sql`. Run `prisma migrate deploy` (or your usual migrate path) against Postgres before relying on these tables in production.
-  - **@parel/core:** package export `"./cache"` for `storyRankingService` / `weeklyStoryService` imports.
-
-### Fixed
-  - **@parel/story:** TypeScript — `storyFeedService` return used undefined `feedItems` (now `storiesToReturn`); `storyRemixService` invalid `include`+`select` on `findUnique`; `getRemixChainDepth` inference vs `Story` type alias; `storyDraftService` publish return narrowed to draft types; `storyService` AURE context tolerates null `summaryText`; `weeklyStoryService` quest highlights use `userQuest` (existing `user_quests` table) instead of non-existent `questProgress`; `tsconfig` `moduleResolution: "bundler"` for `@parel/core/cache` subpath.
->>>>>>> ec7f2b9 (vercel build fix 4.6.2026)

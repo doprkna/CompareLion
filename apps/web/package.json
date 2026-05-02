@@ -30,7 +30,7 @@
                     "start":  "node ../../node_modules/next/dist/bin/next start",
                     "lint":  "node ../../node_modules/next/dist/bin/next lint",
                     "lint:fix":  "next lint --fix \u0026\u0026 prettier --write .",
-                    "typecheck":  "tsc --noEmit",
+                    "typecheck":  "node ../../node_modules/typescript/bin/tsc --noEmit",
                     "format":  "prettier --write .",
                     "format:check":  "prettier --check .",
                     "audit:structure":  "tsx ../../scripts/audit-structure.ts",
