@@ -187,6 +187,9 @@ importers:
       '@parel/features':
         specifier: workspace:*
         version: link:../../packages/features
+      '@parel/redis':
+        specifier: workspace:*
+        version: link:../../packages/redis
       '@parel/story':
         specifier: workspace:*
         version: link:../../packages/story
