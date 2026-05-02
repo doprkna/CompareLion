@@ -15,6 +15,9 @@
 
 ## [0.49.05] - 2026-03-31
 
+### Fixed (Vercel / `@parel/core` resolution)
+  - **`apps/web` build:** `pnpm run build` runs **`pnpm --filter @parel/core run build`** before **`next build`** so **`packages/core/dist`** exists when the installer only builds the web app root. **`@parel/core`** and **`@parel/core/hooks/useEventBus`** (and other `exports`) resolve through compiled output; **`next.config.js`** **`@parel/core/config`** → **`dist/config`** unchanged. Scoped to **`@parel/core`** only—not a recursive monorepo build.
+
 ### Changed (deploy config alignment)
   - **Vercel Root Directory = `apps/web`:** Removed **repo-root** `vercel.json` (it pinned `buildCommand` / `installCommand` to `build:light` / `install:light`, `outputDirectory: apps/web/.next`, and `rewrites` to `/apps/web/$1`, which conflict with dashboard defaults when the project root is `apps/web`). Added **`apps/web/vercel.json`** with **`framework`**, **`regions`**, **`env` / `build.env`**, **`headers`**, **`redirects`** only—no `buildCommand`, `installCommand`, `outputDirectory`, `devCommand`, or path rewrites so **Build = `pnpm run build`**, **Install = `pnpm install --frozen-lockfile`**, and **output `.next`** stay dashboard-controlled.
   - **`apps/web/package.json`:** Set **`packageManager`** to **`pnpm@10.0.0`** (matches workspace root) so installs from the app directory use the intended pnpm version.
