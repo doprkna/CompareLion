@@ -1,10 +1,12 @@
 /**
  * Dev/Prod DB separation: set process.env.DATABASE_URL from APP_ENV.
  * Call ensureDatabaseUrl() immediately before PrismaClient instantiation.
- * - APP_ENV=prod → DATABASE_URL_PROD (required, throw if missing)
- * - else → DATABASE_URL_DEV (required, throw if missing)
- * - Default APP_ENV to "dev" if missing.
+ * During `next build`, missing DATABASE_URL_* is warned instead of fatal (same as .ts).
  */
+function isNextProductionBuild() {
+    return (process.env.NEXT_PHASE === 'phase-production-build' ||
+        process.env.npm_lifecycle_event === 'build');
+}
 export function ensureDatabaseUrl() {
     const appEnv = (process.env.APP_ENV ?? 'dev').toString().toLowerCase();
     const isProd = appEnv === 'prod' || appEnv === 'production';
@@ -14,6 +16,10 @@ export function ensureDatabaseUrl() {
     if (isProd) {
         const url = process.env.DATABASE_URL_PROD;
         if (!url || url.trim() === '') {
+            if (isNextProductionBuild()) {
+                console.warn('[ensureDatabaseUrl] Skipping DATABASE_URL resolution: APP_ENV=prod but DATABASE_URL_PROD is unset during Next production build. Deployed runtime still requires DATABASE_URL_PROD or DATABASE_URL.');
+                return;
+            }
             const msg = 'Fatal: APP_ENV=prod requires DATABASE_URL_PROD to be set.';
             console.error(msg);
             throw new Error(msg);
@@ -23,6 +29,10 @@ export function ensureDatabaseUrl() {
     else {
         const url = process.env.DATABASE_URL_DEV;
         if (!url || url.trim() === '') {
+            if (isNextProductionBuild()) {
+                console.warn('[ensureDatabaseUrl] Skipping DATABASE_URL resolution: APP_ENV=dev but DATABASE_URL_DEV is unset during Next production build. Deployed runtime still requires DATABASE_URL_DEV or DATABASE_URL.');
+                return;
+            }
             const msg = 'Fatal: APP_ENV=dev requires DATABASE_URL_DEV to be set.';
             console.error(msg);
             throw new Error(msg);
