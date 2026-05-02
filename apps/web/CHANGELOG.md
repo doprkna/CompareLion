@@ -7,6 +7,7 @@
   - **`/landing` hero (above the fold):** New positioning for first-time visitors: headline *Compare your life with strangers.* / *For science. Mostly.*, subheadline + four example question cards (replacing XP/leaderboard mock), primary CTA **Try it now** (`/signup`), log-in link, tagline *No productivity cult. No fake wisdom. Just honest comparisons.* Logged-in users see the same product framing + **Continue to the app**. Removed hero email/waitlist row and side-column stats mock.
 
 ### Fixed
+  - **Vercel / `@parel/redis`:** **`@parel/redis` was not listed in `apps/web` dependencies** (only a webpack alias existed). Added **`"@parel/redis": "workspace:*"`**. **`main` / `types`** on the package point at **`dist/`**; **`pnpm run build`** now also runs **`pnpm --filter @parel/redis run build`** before **`next build`** (after **`@parel/core`**), still no **`pnpm -r`** / full monorepo build.
   - **`CHANGELOG.md` merge conflict:** Removed stray Git conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) and ordered sections so `[0.49.xx]` entries appear above `[0.47.xx]`.
   - **`apps/web/package.json` — `typecheck`:** Uses `node ../../node_modules/typescript/bin/tsc --noEmit` so `pnpm run typecheck` resolves TypeScript when hoisted to the monorepo root (pnpm), matching the existing `build` / `lint` script paths.
 
