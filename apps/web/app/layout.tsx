@@ -13,7 +13,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from 'sonner';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { XpProvider } from "@/components/XpProvider";
-import { StagingBanner } from "@/components/StagingBanner";
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/config';
 import { PWAProvider } from '@/components/PWAProvider';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
@@ -37,7 +36,7 @@ export const metadata: Metadata = {
   },
   description: APP_DESCRIPTION,
   applicationName: APP_NAME,
-  generator: `Next.js v0.13.2p`,
+  generator: 'Next.js',
   keywords: ['gamification', 'polling', 'self-discovery', 'comparison', 'questions', 'community', 'leaderboard'],
   authors: [{ name: 'PareL Team' }],
   creator: 'PareL',
@@ -104,7 +103,6 @@ export default function RootLayout({
                 <MusicPlayerProvider>
                   <ErrorBoundary>
                     <LocaleHeaderChip />
-                    <StagingBanner />
                     <RouteProgress />
                     <MobileNav />
                     <ConditionalNav />

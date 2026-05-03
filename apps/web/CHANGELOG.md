@@ -1,6 +1,19 @@
 <!-- version-lock: true -->
 
 
+## [0.50.03] - 2026-05-03
+
+### Removed
+  - **Obsolete beta top banner:** Removed **`StagingBanner`** from **`app/layout.tsx`** and deleted **`components/StagingBanner`**. The fixed gradient strip (*PareL Beta v0.13.2k* / *Public Beta*) no longer appears on **`/login`** or other routes. **`BetaInfoModal`** header copy updated (*About PareL* + **`APP_VERSION`** from config); **`layout`** metadata **`generator`** no longer references an old **v0.13.2p** string.
+
+## [0.50.02] - 2026-05-03
+
+### Added
+  - **Landing Promo Slots v1 (frontend-only):** **`lib/landing/landingPromos.ts`** — **`LandingPromo`**, **`getPromoForSlot`** (per-slot fallback, never throws), **`getPromosForSlot`** (active, optional **`startsAt` / `endsAt`**, priority desc, optional limit). **`LandingPromoCard`**: optional image strip, whole-card **`ctaHref`** via **`next/link`** (internal) or **`<a target="_blank" rel="noreferrer">`** (external). **`/landing`**: **`hero-right`** (~40% desktop / stacked mobile), **`below-hero`** row (≤3 cards), footer (≤2 compact). Placeholder routes **`/faq`**, **`/pricing`**, **`/about`**. Supersedes **`heroPromos`** / **`HeroPromoCard`**.
+
+### Changed
+  - **`/landing` primary CTAs:** Hero (guest + signed-in), top nav (guest + signed-in), and bottom CTA card now use **`/flow-demo`** with label *Find out if you're normal*. **Login** / **Open dashboard** / nav **Dashboard** stay secondary. **`hero-right`** promo + slot fallback **`ctaHref`** updated from **`/login`** / **`/signup`** to **`/flow-demo`** (matching CTA label).
+
 ## [0.50.01] - 2026-05-02
 
 ### Changed

@@ -1,13 +1,12 @@
 'use client';
 
 /**
- * Beta Info Modal
- * Shows beta information and instructions to users
- * v0.13.2k - Beta Launch
+ * Product info modal (help / early-tester notes).
  */
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { APP_VERSION } from '@/lib/config';
 
 interface BetaInfoModalProps {
   isOpen: boolean;
@@ -42,8 +41,8 @@ export function BetaInfoModal({ isOpen, onClose }: BetaInfoModalProps) {
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">🚀</span>
                     <div>
-                      <h2 className="text-2xl font-bold">Welcome to PareL Beta!</h2>
-                      <p className="text-sm opacity-90">v0.13.2k</p>
+                      <h2 className="text-2xl font-bold">About PareL</h2>
+                      <p className="text-sm opacity-90">Version {APP_VERSION}</p>
                     </div>
                   </div>
                   <button

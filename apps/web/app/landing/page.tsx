@@ -17,7 +17,16 @@ import {
   Flame
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LandingPromoCard } from '@/components/landing/LandingPromoCard';
+import {
+  getPromoForSlot,
+  getPromosForSlot,
+} from '@/lib/landing/landingPromos';
 import { cn } from '@/lib/utils';
+
+/** Fastest path to a first question without auth (demo flow). */
+const LANDING_PRIMARY_FLOW_HREF = '/flow-demo';
+const LANDING_PRIMARY_CTA_LABEL = "Find out if you're normal";
 
 const EXAMPLE_QUESTIONS = [
   'How often do people really argue with their partner?',
@@ -91,8 +100,8 @@ export default function LandingPage() {
 
 
 
-  const handleGetStarted = () => {
-    router.push('/signup');
+  const handlePrimaryTryFlow = () => {
+    router.push(LANDING_PRIMARY_FLOW_HREF);
   };
 
   const handleContinueToDashboard = () => {
@@ -101,6 +110,9 @@ export default function LandingPage() {
 
   const isLoggedIn = status === 'authenticated';
   const userName = session?.user?.name || userData?.name || 'there';
+  const heroSlotPromo = getPromoForSlot('hero-right');
+  const belowHeroPromos = getPromosForSlot('below-hero', 3);
+  const footerPromos = getPromosForSlot('footer', 2);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg via-card to-bg">
@@ -119,28 +131,31 @@ export default function LandingPage() {
                 <>
                   {/* User Chip */}
                   {userData && (
-                    <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-card border border-border rounded-full">
+                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded-full">
                       <div className="w-6 h-6 rounded-full bg-gradient-to-r from-accent to-blue-500 flex items-center justify-center text-xs text-white font-bold">
                         {userData.level || 1}
                       </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Sparkles className="h-3.5 w-3.5 text-accent" />
-                        <span className="text-text font-medium">{userData.xp || 0}</span>
-                        {userData.streakCount > 0 && (
-                          <>
-                            <span className="text-border">|</span>
-                            <Flame className="h-3.5 w-3.5 text-orange-500" />
-                            <span className="text-text font-medium">{userData.streakCount}</span>
-                          </>
-                        )}
-                      </div>
+                      {userData.streakCount > 0 ? (
+                        <>
+                          <Flame className="h-3.5 w-3.5 text-orange-500" aria-hidden />
+                          <span className="text-sm text-text font-medium">
+                            {userData.streakCount} day streak
+                          </span>
+                        </>
+                      ) : null}
                     </div>
                   )}
-                  <Button 
+                  <Button
+                    variant="ghost"
                     onClick={handleContinueToDashboard}
+                  >
+                    Dashboard
+                  </Button>
+                  <Button 
+                    onClick={handlePrimaryTryFlow}
                     className="bg-gradient-to-r from-accent to-blue-500 hover:shadow-lg hover:shadow-accent/30"
                   >
-                    Continue to Dashboard
+                    {LANDING_PRIMARY_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </>
@@ -153,10 +168,11 @@ export default function LandingPage() {
                     Login
                   </Button>
                   <Button 
-                    onClick={handleGetStarted}
+                    onClick={handlePrimaryTryFlow}
                     className="bg-gradient-to-r from-accent to-blue-500 hover:shadow-lg hover:shadow-accent/30"
                   >
-                    Get Started
+                    {LANDING_PRIMARY_CTA_LABEL}
+                    <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </>
               )}
@@ -167,13 +183,14 @@ export default function LandingPage() {
 
       {/* Hero — above-the-fold: comparison hook, sample questions, CTA */}
       <section className="pt-24 pb-14 sm:pt-28 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-border/60 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent/15 via-transparent to-transparent">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex flex-col items-stretch text-center sm:text-left"
+            className="flex flex-col lg:grid lg:grid-cols-5 gap-8 lg:gap-10 items-stretch lg:items-start text-center sm:text-left w-full"
           >
+            <div className="lg:col-span-3 flex flex-col items-stretch min-w-0">
             {isLoggedIn ? (
               <>
                 <p className="mb-3 text-sm font-medium text-accent">
@@ -189,15 +206,22 @@ export default function LandingPage() {
                   Answer a few weirdly honest questions and see how normal, cursed, or suspiciously average you are.
                 </p>
                 <ExampleQuestionCards className="mb-8 max-w-none" />
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <Button
-                    onClick={handleContinueToDashboard}
+                    onClick={handlePrimaryTryFlow}
                     size="lg"
                     className="w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10"
                   >
-                    Continue to the app
+                    {LANDING_PRIMARY_CTA_LABEL}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
+                  <button
+                    type="button"
+                    onClick={handleContinueToDashboard}
+                    className="text-sm font-medium text-subtle underline-offset-4 hover:underline hover:text-text"
+                  >
+                    Open dashboard
+                  </button>
                 </div>
                 <p className="mt-4 text-sm text-subtle/90 max-w-xl">
                   No productivity cult. No fake wisdom. Just honest comparisons.
@@ -217,11 +241,11 @@ export default function LandingPage() {
                 <ExampleQuestionCards className="mb-8 max-w-none" />
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <Button
-                    onClick={handleGetStarted}
+                    onClick={handlePrimaryTryFlow}
                     size="lg"
                     className="w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10"
                   >
-                    Try it now
+                    {LANDING_PRIMARY_CTA_LABEL}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                   <button
@@ -237,9 +261,25 @@ export default function LandingPage() {
                 </p>
               </>
             )}
+            </div>
+            <div className="lg:col-span-2 w-full max-w-md mx-auto lg:max-w-none lg:mx-0 shrink-0">
+              <LandingPromoCard promo={heroSlotPromo} />
+            </div>
           </motion.div>
         </div>
       </section>
+
+      {belowHeroPromos.length > 0 ? (
+        <section className="py-10 sm:py-12 px-4 sm:px-6 lg:px-8 border-b border-border/60 bg-bg/80">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+              {belowHeroPromos.map((p) => (
+                <LandingPromoCard key={p.id} promo={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50">
@@ -420,11 +460,11 @@ export default function LandingPage() {
               Join thousands discovering insights through comparison
             </p>
             <Button
-              onClick={handleGetStarted}
+              onClick={handlePrimaryTryFlow}
               size="lg"
               className="bg-gradient-to-r from-accent to-blue-500 px-12 py-6 text-xl font-semibold hover:shadow-2xl hover:shadow-accent/40"
             >
-              Start Your Journey
+              {LANDING_PRIMARY_CTA_LABEL}
               <ArrowRight className="ml-2 h-6 w-6" />
             </Button>
           </motion.div>
@@ -474,7 +514,15 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          
+
+          {footerPromos.length > 0 ? (
+            <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+              {footerPromos.map((p) => (
+                <LandingPromoCard key={p.id} promo={p} size="compact" />
+              ))}
+            </div>
+          ) : null}
+
           <div className="mt-12 pt-8 border-t border-border text-center text-sm text-subtle">
             © {new Date().getFullYear()} PareL. All rights reserved.
           </div>
