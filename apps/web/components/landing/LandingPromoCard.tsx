@@ -1,7 +1,13 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { isExternalHref, type LandingPromo } from "@/lib/landing/landingPromos";
+import {
+  isExternalHref,
+  isFlowDemoHref,
+  type LandingPromo,
+} from "@/lib/landing/landingPromos";
+
+const FLOW_CTA_LOADING_LABEL = "Loading your first question...";
 
 const typeRing: Record<LandingPromo["type"], string> = {
   result: "ring-violet-500/20 border-violet-500/25",
@@ -16,13 +22,24 @@ const baseShell =
 export function LandingPromoCard({
   promo,
   size = "default",
+  onFlowDemoNavigate,
+  flowNavigateBusyId,
 }: {
   promo: LandingPromo;
   size?: "default" | "compact";
+  /** When the CTA is `/flow-demo`, call this instead of `<Link>` so loading state can show immediately. */
+  onFlowDemoNavigate?: () => void;
+  /** Id of the control currently showing navigation loading (e.g. `promo-fallback-hero-right`), or null. */
+  flowNavigateBusyId?: string | null;
 }) {
   const href = promo.ctaHref?.trim();
   const clickable = Boolean(href);
   const external = href ? isExternalHref(href) : false;
+  const flowDemoSourceId = `promo-${promo.id}`;
+  const useFlowDemoButton =
+    Boolean(href && onFlowDemoNavigate && isFlowDemoHref(href) && !external);
+  const isThisFlowLoading = flowNavigateBusyId === flowDemoSourceId;
+  const flowNavLocked = flowNavigateBusyId != null;
 
   const inner = (
     <>
@@ -93,16 +110,29 @@ export function LandingPromoCard({
           <p
             className={cn(
               "mt-3 flex items-center gap-1.5 font-medium text-accent group-hover:underline",
-              size === "compact" ? "text-xs" : "text-xs sm:text-sm"
+              size === "compact" ? "text-xs" : "text-xs sm:text-sm",
+              useFlowDemoButton && flowNavLocked && !isThisFlowLoading && "opacity-60"
             )}
           >
-            {promo.ctaLabel}
-            {clickable ? (
-              <ArrowUpRight
-                className="h-3.5 w-3.5 shrink-0 opacity-80"
-                aria-hidden
-              />
-            ) : null}
+            {isThisFlowLoading ? (
+              <>
+                <Loader2
+                  className="h-3.5 w-3.5 shrink-0 animate-spin"
+                  aria-hidden
+                />
+                {FLOW_CTA_LOADING_LABEL}
+              </>
+            ) : (
+              <>
+                {promo.ctaLabel}
+                {clickable ? (
+                  <ArrowUpRight
+                    className="h-3.5 w-3.5 shrink-0 opacity-80"
+                    aria-hidden
+                  />
+                ) : null}
+              </>
+            )}
           </p>
         ) : null}
       </div>
@@ -126,6 +156,23 @@ export function LandingPromoCard({
   }
 
   if (clickable && href) {
+    if (useFlowDemoButton && onFlowDemoNavigate) {
+      return (
+        <button
+          type="button"
+          className={cn(shellClass, "text-left cursor-pointer disabled:opacity-70 disabled:pointer-events-none")}
+          aria-label={promo.title}
+          disabled={flowNavLocked}
+          aria-busy={isThisFlowLoading}
+          onClick={() => {
+            if (flowNavLocked) return;
+            onFlowDemoNavigate();
+          }}
+        >
+          {inner}
+        </button>
+      );
+    }
     return (
       <Link href={href} className={shellClass} aria-label={promo.title}>
         {inner}

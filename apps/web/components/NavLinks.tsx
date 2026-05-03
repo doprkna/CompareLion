@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { APP_NAME } from "@/lib/config";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,14 +17,65 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ChevronDown, Lock, Settings } from "lucide-react";
-import { isAdminView } from '@parel/core/utils/isAdminView';
+import { isAdmin } from '@/lib/auth/isAdmin';
 import { FeatureGate } from '@/components/FeatureGate';
 import { useFeatureGate } from '@/lib/hooks';
 
 export default function NavLinks() {
-  const { data: session } = useSession();
-  const userRole = (session?.user as any)?.role;
+  const { data: session, status } = useSession();
   const inviteGate = useFeatureGate('INVITE');
+  const adminUser = isAdmin(session?.user);
+
+  if (status === 'loading') {
+    return (
+      <div className="flex flex-1 items-center gap-4 min-h-[40px]">
+        <div className="h-6 w-20 animate-pulse rounded bg-border/60" aria-hidden />
+        <div className="h-9 flex-1 max-w-md animate-pulse rounded bg-border/50" aria-hidden />
+      </div>
+    );
+  }
+
+  if (status === 'unauthenticated') {
+    return (
+      <div className="flex flex-1 flex-wrap items-center gap-x-5 gap-y-2 min-w-0">
+        <Link
+          href="/landing"
+          className="text-xl font-bold text-text hover:text-accent transition-colors shrink-0"
+        >
+          {APP_NAME}
+        </Link>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <Link
+            href="/info/faq"
+            className="text-subtle hover:text-accent font-medium transition-colors"
+          >
+            FAQ
+          </Link>
+          <Link
+            href="/about"
+            className="text-subtle hover:text-accent font-medium transition-colors"
+          >
+            About
+          </Link>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 ml-auto">
+          <Link
+            href="/login"
+            className="text-text hover:text-accent font-medium transition-colors"
+          >
+            Login
+          </Link>
+          <Button
+            asChild
+            size="sm"
+            className="bg-gradient-to-r from-accent to-blue-500 text-white hover:opacity-95 font-semibold shadow-sm whitespace-normal sm:whitespace-nowrap h-auto py-2 px-4 text-left sm:text-center"
+          >
+            <Link href="/flow-demo">Find out if you&apos;re normal</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const coreLinks = [
     { href: "/landing", label: "Landing" },
@@ -101,7 +154,7 @@ export default function NavLinks() {
     { href: "/admin/inventory", label: "[Dev] Item Viewer" },
   ];
 
-  const showAdminExtras = isAdminView() || userRole === 'ADMIN';
+  const showAdminTools = adminUser;
 
   return (
     <TooltipProvider>
@@ -185,7 +238,7 @@ export default function NavLinks() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-        {userRole === "ADMIN" && (
+        {adminUser && (
           <DropdownMenu>
             <DropdownMenuTrigger className="text-destructive hover:text-destructive/80 font-bold transition-colors flex items-center gap-1">
               Admin
@@ -204,7 +257,7 @@ export default function NavLinks() {
         )}
 
         {/* Admin Only Section - v0.35.12 */}
-        {showAdminExtras && (
+        {showAdminTools && (
           <DropdownMenu>
             <DropdownMenuTrigger className="text-accent hover:text-accent/80 font-bold transition-colors flex items-center gap-1.5 border border-accent px-2 py-1 rounded">
               <Settings className="h-3.5 w-3.5" />

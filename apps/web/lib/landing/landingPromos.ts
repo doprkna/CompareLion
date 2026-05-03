@@ -30,6 +30,13 @@ function isExternalHref(href: string): boolean {
 
 export { isExternalHref };
 
+/** True when the promo CTA targets the public flow demo (optional query allowed). */
+export function isFlowDemoHref(href: string | undefined): boolean {
+  if (!href) return false;
+  const path = href.trim().split(/[?#]/)[0];
+  return path === "/flow-demo";
+}
+
 const SLOT_FALLBACK: Record<LandingPromoSlot, LandingPromo> = {
   "hero-right": {
     id: "fallback-hero-right",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -14,19 +14,23 @@ import {
   Target,
   ArrowRight,
   Star,
-  Flame
+  Flame,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LandingPromoCard } from '@/components/landing/LandingPromoCard';
 import {
   getPromoForSlot,
   getPromosForSlot,
+  isFlowDemoHref,
 } from '@/lib/landing/landingPromos';
 import { cn } from '@/lib/utils';
+import { GuestBlockedModal } from '@/components/auth/GuestBlockedModal';
 
 /** Fastest path to a first question without auth (demo flow). */
 const LANDING_PRIMARY_FLOW_HREF = '/flow-demo';
 const LANDING_PRIMARY_CTA_LABEL = "Find out if you're normal";
+const LANDING_FLOW_CTA_LOADING_LABEL = 'Loading your first question...';
 
 const EXAMPLE_QUESTIONS = [
   'How often do people really argue with their partner?',
@@ -69,6 +73,7 @@ export default function LandingPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [userData, setUserData] = useState<any>(null);
+  const [flowNavigateBusyId, setFlowNavigateBusyId] = useState<string | null>(null);
 
   // Fetch user data when authenticated (v0.35.9 - removed auto-redirect to /main)
   useEffect(() => {
@@ -100,12 +105,42 @@ export default function LandingPage() {
 
 
 
-  const handlePrimaryTryFlow = () => {
-    router.push(LANDING_PRIMARY_FLOW_HREF);
+  const beginFlowNavigation = (href: string, sourceId: string) => {
+    if (flowNavigateBusyId != null) return;
+    setFlowNavigateBusyId(sourceId);
+    router.push(href);
   };
+
+  const flowNavLocked = flowNavigateBusyId != null;
 
   const handleContinueToDashboard = () => {
     router.push('/main');
+  };
+
+  const flowNavPrimaryContent = (busyId: string, iconSize: 'sm' | 'lg' | 'xl') => {
+    const isBusy = flowNavigateBusyId === busyId;
+    const spin =
+      iconSize === 'sm' ? 'h-4 w-4' : iconSize === 'lg' ? 'h-5 w-5' : 'h-6 w-6';
+    const arrow =
+      iconSize === 'sm'
+        ? 'h-4 w-4 ml-2'
+        : iconSize === 'lg'
+          ? 'h-5 w-5 ml-2'
+          : 'h-6 w-6 ml-2';
+    if (isBusy) {
+      return (
+        <>
+          <Loader2 className={cn(spin, 'mr-2 shrink-0 animate-spin')} aria-hidden />
+          {LANDING_FLOW_CTA_LOADING_LABEL}
+        </>
+      );
+    }
+    return (
+      <>
+        {LANDING_PRIMARY_CTA_LABEL}
+        <ArrowRight className={cn(arrow, 'shrink-0')} aria-hidden />
+      </>
+    );
   };
 
   const isLoggedIn = status === 'authenticated';
@@ -116,6 +151,9 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg via-card to-bg">
+      <Suspense fallback={null}>
+        <GuestBlockedModal />
+      </Suspense>
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -152,11 +190,15 @@ export default function LandingPage() {
                     Dashboard
                   </Button>
                   <Button 
-                    onClick={handlePrimaryTryFlow}
-                    className="bg-gradient-to-r from-accent to-blue-500 hover:shadow-lg hover:shadow-accent/30"
+                    type="button"
+                    onClick={() =>
+                      beginFlowNavigation(LANDING_PRIMARY_FLOW_HREF, 'nav')
+                    }
+                    disabled={flowNavLocked}
+                    aria-busy={flowNavigateBusyId === 'nav'}
+                    className="inline-flex items-center bg-gradient-to-r from-accent to-blue-500 hover:shadow-lg hover:shadow-accent/30"
                   >
-                    {LANDING_PRIMARY_CTA_LABEL}
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    {flowNavPrimaryContent('nav', 'sm')}
                   </Button>
                 </>
               ) : (
@@ -168,11 +210,15 @@ export default function LandingPage() {
                     Login
                   </Button>
                   <Button 
-                    onClick={handlePrimaryTryFlow}
-                    className="bg-gradient-to-r from-accent to-blue-500 hover:shadow-lg hover:shadow-accent/30"
+                    type="button"
+                    onClick={() =>
+                      beginFlowNavigation(LANDING_PRIMARY_FLOW_HREF, 'nav')
+                    }
+                    disabled={flowNavLocked}
+                    aria-busy={flowNavigateBusyId === 'nav'}
+                    className="inline-flex items-center bg-gradient-to-r from-accent to-blue-500 hover:shadow-lg hover:shadow-accent/30"
                   >
-                    {LANDING_PRIMARY_CTA_LABEL}
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    {flowNavPrimaryContent('nav', 'sm')}
                   </Button>
                 </>
               )}
@@ -208,12 +254,16 @@ export default function LandingPage() {
                 <ExampleQuestionCards className="mb-8 max-w-none" />
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <Button
-                    onClick={handlePrimaryTryFlow}
+                    type="button"
+                    onClick={() =>
+                      beginFlowNavigation(LANDING_PRIMARY_FLOW_HREF, 'hero')
+                    }
+                    disabled={flowNavLocked}
+                    aria-busy={flowNavigateBusyId === 'hero'}
                     size="lg"
-                    className="w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10"
+                    className="inline-flex items-center justify-center w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10 min-h-[60px]"
                   >
-                    {LANDING_PRIMARY_CTA_LABEL}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    {flowNavPrimaryContent('hero', 'lg')}
                   </Button>
                   <button
                     type="button"
@@ -241,12 +291,16 @@ export default function LandingPage() {
                 <ExampleQuestionCards className="mb-8 max-w-none" />
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <Button
-                    onClick={handlePrimaryTryFlow}
+                    type="button"
+                    onClick={() =>
+                      beginFlowNavigation(LANDING_PRIMARY_FLOW_HREF, 'hero')
+                    }
+                    disabled={flowNavLocked}
+                    aria-busy={flowNavigateBusyId === 'hero'}
                     size="lg"
-                    className="w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10"
+                    className="inline-flex items-center justify-center w-full sm:w-auto bg-gradient-to-r from-accent to-blue-600 text-white font-semibold text-lg px-10 py-6 shadow-lg hover:shadow-accent/30 border border-white/10 min-h-[60px]"
                   >
-                    {LANDING_PRIMARY_CTA_LABEL}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    {flowNavPrimaryContent('hero', 'lg')}
                   </Button>
                   <button
                     type="button"
@@ -263,7 +317,19 @@ export default function LandingPage() {
             )}
             </div>
             <div className="lg:col-span-2 w-full max-w-md mx-auto lg:max-w-none lg:mx-0 shrink-0">
-              <LandingPromoCard promo={heroSlotPromo} />
+              <LandingPromoCard
+                promo={heroSlotPromo}
+                onFlowDemoNavigate={
+                  isFlowDemoHref(heroSlotPromo.ctaHref)
+                    ? () =>
+                        beginFlowNavigation(
+                          heroSlotPromo.ctaHref!.trim(),
+                          `promo-${heroSlotPromo.id}`
+                        )
+                    : undefined
+                }
+                flowNavigateBusyId={flowNavigateBusyId}
+              />
             </div>
           </motion.div>
         </div>
@@ -274,7 +340,20 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               {belowHeroPromos.map((p) => (
-                <LandingPromoCard key={p.id} promo={p} />
+                <LandingPromoCard
+                  key={p.id}
+                  promo={p}
+                  onFlowDemoNavigate={
+                    isFlowDemoHref(p.ctaHref)
+                      ? () =>
+                          beginFlowNavigation(
+                            p.ctaHref!.trim(),
+                            `promo-${p.id}`
+                          )
+                      : undefined
+                  }
+                  flowNavigateBusyId={flowNavigateBusyId}
+                />
               ))}
             </div>
           </div>
@@ -460,12 +539,16 @@ export default function LandingPage() {
               Join thousands discovering insights through comparison
             </p>
             <Button
-              onClick={handlePrimaryTryFlow}
+              type="button"
+              onClick={() =>
+                beginFlowNavigation(LANDING_PRIMARY_FLOW_HREF, 'final')
+              }
+              disabled={flowNavLocked}
+              aria-busy={flowNavigateBusyId === 'final'}
               size="lg"
-              className="bg-gradient-to-r from-accent to-blue-500 px-12 py-6 text-xl font-semibold hover:shadow-2xl hover:shadow-accent/40"
+              className="inline-flex items-center justify-center bg-gradient-to-r from-accent to-blue-500 px-12 py-6 text-xl font-semibold hover:shadow-2xl hover:shadow-accent/40 min-h-[72px]"
             >
-              {LANDING_PRIMARY_CTA_LABEL}
-              <ArrowRight className="ml-2 h-6 w-6" />
+              {flowNavPrimaryContent('final', 'xl')}
             </Button>
           </motion.div>
         </div>
@@ -518,7 +601,21 @@ export default function LandingPage() {
           {footerPromos.length > 0 ? (
             <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
               {footerPromos.map((p) => (
-                <LandingPromoCard key={p.id} promo={p} size="compact" />
+                <LandingPromoCard
+                  key={p.id}
+                  promo={p}
+                  size="compact"
+                  onFlowDemoNavigate={
+                    isFlowDemoHref(p.ctaHref)
+                      ? () =>
+                          beginFlowNavigation(
+                            p.ctaHref!.trim(),
+                            `promo-${p.id}`
+                          )
+                      : undefined
+                  }
+                  flowNavigateBusyId={flowNavigateBusyId}
+                />
               ))}
             </div>
           ) : null}

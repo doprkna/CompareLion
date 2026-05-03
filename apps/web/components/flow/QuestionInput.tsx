@@ -2,9 +2,18 @@
 
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { cn } from '@/lib/utils';
+
+const OPTION_CARD_BASE =
+  'flex w-full min-h-[2.75rem] cursor-pointer items-center gap-3 rounded-lg border p-3 outline-none transition-colors duration-75 select-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background';
+
+const OPTION_CARD_IDLE =
+  'border-border bg-card hover:border-accent/60 hover:bg-accent/10';
+
+const OPTION_CARD_SELECTED =
+  'border-accent bg-accent text-white shadow-sm scale-[1.02] hover:border-accent hover:bg-accent';
 
 export interface FlowQuestionOption {
   id: string;
@@ -82,15 +91,35 @@ export function QuestionInput({ question, value, onChange, onSelectForSubmit, di
   if (type === 'SINGLE_CHOICE') {
     const selected = value.kind === 'single' ? value.optionId : '';
     return (
-      <RadioGroup value={selected} onValueChange={handleSingleChange} disabled={disabled}>
-        {options.map((opt) => (
-          <div key={opt.id} data-testid="answer-option" className="flex items-center space-x-2 p-3 border border-border rounded hover:bg-card/50">
-            <RadioGroupItem value={opt.id} id={opt.id} />
-            <Label htmlFor={opt.id} className="flex-1 cursor-pointer">
-              {opt.label}
-            </Label>
-          </div>
-        ))}
+      <RadioGroup
+        value={selected}
+        onValueChange={handleSingleChange}
+        disabled={disabled}
+        className="flex flex-col gap-3"
+      >
+        {options.map((opt) => {
+          const inputId = `${question.id}-${opt.id}`;
+          const isSelected = selected === opt.id;
+          return (
+            <label
+              key={opt.id}
+              htmlFor={inputId}
+              data-testid="answer-option"
+              className={cn(
+                OPTION_CARD_BASE,
+                isSelected ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
+                disabled && 'pointer-events-none cursor-not-allowed opacity-50',
+              )}
+            >
+              <RadioGroupItem
+                value={opt.id}
+                id={inputId}
+                className={isSelected ? 'border-white text-white' : undefined}
+              />
+              <span className="flex-1 cursor-pointer text-sm font-medium leading-snug">{opt.label}</span>
+            </label>
+          );
+        })}
       </RadioGroup>
     );
   }
@@ -98,22 +127,41 @@ export function QuestionInput({ question, value, onChange, onSelectForSubmit, di
   if (type === 'MULTI_CHOICE') {
     const selected = value.kind === 'multi' ? value.optionIds : [];
     return (
-      <div className="space-y-2">
-        {options.map((opt) => (
-          <div
-            key={opt.id}
-            data-testid="answer-option"
-            className={`flex items-center space-x-3 p-3 border border-border rounded transition-colors hover:bg-card/50 ${disabled ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}
-            onClick={() => !disabled && onChange({ kind: 'multi', optionIds: toggleMulti(selected, opt.id) })}
-          >
-            <Checkbox id={opt.id} checked={selected.includes(opt.id)} tabIndex={-1} disabled={disabled} />
-            <Label htmlFor={opt.id} className="flex-1 cursor-pointer">
-              {opt.label}
-            </Label>
-          </div>
-        ))}
+      <div className="flex flex-col gap-3">
+        {options.map((opt) => {
+          const inputId = `multi-${question.id}-${opt.id}`;
+          const isChecked = selected.includes(opt.id);
+          return (
+            <label
+              key={opt.id}
+              htmlFor={inputId}
+              data-testid="answer-option"
+              className={cn(
+                OPTION_CARD_BASE,
+                isChecked ? OPTION_CARD_SELECTED : OPTION_CARD_IDLE,
+                disabled && 'pointer-events-none cursor-not-allowed opacity-50',
+              )}
+            >
+              <Checkbox
+                id={inputId}
+                checked={isChecked}
+                disabled={disabled}
+                className={
+                  isChecked
+                    ? 'border-white data-[state=checked]:bg-white data-[state=checked]:text-accent'
+                    : undefined
+                }
+                onCheckedChange={() => {
+                  if (disabled) return;
+                  onChange({ kind: 'multi', optionIds: toggleMulti(selected, opt.id) });
+                }}
+              />
+              <span className="flex-1 cursor-pointer text-sm font-medium leading-snug">{opt.label}</span>
+            </label>
+          );
+        })}
         {selected.length > 0 && (
-          <p className="text-xs text-accent">
+          <p className="text-xs text-accent px-0.5">
             {selected.length} option{selected.length > 1 ? 's' : ''} selected
           </p>
         )}
@@ -131,7 +179,10 @@ export function QuestionInput({ question, value, onChange, onSelectForSubmit, di
       const v = num ?? defaultVal ?? 5;
       const clamped = Math.min(max, Math.max(min, v));
       return (
-        <div className="space-y-3" data-testid="answer-option">
+        <div
+          className="space-y-3 rounded-lg border border-border bg-card p-4 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background"
+          data-testid="answer-option"
+        >
           <p className="text-xs text-subtle">Drag to choose a value from {min} to {max}.</p>
           <div className="flex items-center justify-between gap-4">
             <span className="text-sm text-subtle tabular-nums">{min}</span>
@@ -148,7 +199,12 @@ export function QuestionInput({ question, value, onChange, onSelectForSubmit, di
               const n = vals[0];
               if (n !== undefined) onChange({ kind: 'number', value: n });
             }}
-            className="w-full"
+            onValueCommit={(vals) => {
+              if (disabled || !onSelectForSubmit) return;
+              const n = vals[0];
+              if (n !== undefined) onSelectForSubmit({ kind: 'number', value: n });
+            }}
+            className="w-full cursor-pointer"
           />
         </div>
       );

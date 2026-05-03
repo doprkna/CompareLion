@@ -1,7 +1,5 @@
-import { requireAdmin } from '@/lib/authGuard';
 import { AdminWipPage } from '../_components/AdminWipPage';
 
-export default async function AdminMetricsPage() {
-  await requireAdmin();
+export default function AdminMetricsPage() {
   return <AdminWipPage title="Growth Metrics" />;
 }

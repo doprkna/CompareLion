@@ -23,7 +23,7 @@ export function ConditionalNav() {
     '/signup',
     '/waitlist',
     '/onboarding',
-    '/', // root page
+  '/flow-demo',
   ];
 
   const shouldHideNav = pagesWithoutGlobalNav.some(path => pathname === path);
@@ -34,8 +34,10 @@ export function ConditionalNav() {
 
   return (
     <nav className="bg-card shadow-sm border-b border-border mb-6 hidden md:block">
-      <div className="flex items-center justify-between px-6 py-3">
-        <NavLinks />
+      <div className="flex items-center justify-between px-6 py-3 gap-4">
+        <div className="min-w-0 flex-1">
+          <NavLinks />
+        </div>
         <div className="flex items-center gap-4">
           <AuthenticatedXpBar />
           <AuthStatus />

@@ -1,7 +1,5 @@
-﻿import { requireAdmin } from '@/lib/authGuard';
-import { AdminWipPage } from '../_components/AdminWipPage';
+﻿import { AdminWipPage } from '../_components/AdminWipPage';
 
-export default async function AdminLogsPage() {
-  await requireAdmin();
+export default function AdminLogsPage() {
   return <AdminWipPage title="System Logs" />;
 }

@@ -1,4 +1,3 @@
-import { requireAdmin } from '@/lib/authGuard';
 import dynamic from 'next/dynamic';
 
 const AdminOpsClient = dynamic(() => import('./AdminOpsClient'), {
@@ -10,7 +9,6 @@ const AdminOpsClient = dynamic(() => import('./AdminOpsClient'), {
   ),
 });
 
-export default async function AdminOpsPage() {
-  await requireAdmin();
+export default function AdminOpsPage() {
   return <AdminOpsClient />;
 }

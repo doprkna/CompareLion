@@ -64,8 +64,6 @@ export default function Footer() {
     fetchVersion();
   }, [refreshKey]);
 
-  const isDev = process.env.NODE_ENV === 'development';
-
   return (
     <footer 
       className="fixed bottom-0 left-0 px-3 py-1.5 text-xs bg-white/90 text-blue-600 backdrop-blur-sm hover:opacity-80 transition-opacity z-50"
@@ -73,22 +71,7 @@ export default function Footer() {
     >
       <span className="font-medium">
         Version: {version || 'N/A'}
-        {isDev && (
-          <>
-            <span className="mx-1.5">–</span>
-            <span className="text-blue-500">DEV MODE (check console)</span>
-          </>
-        )}
       </span>
-      {isDev && (
-        <button 
-          onClick={() => setRefreshKey(prev => prev + 1)}
-          className="ml-2 text-blue-400 hover:text-blue-600 transition-colors"
-          title="Refresh version"
-        >
-          🔄
-        </button>
-      )}
     </footer>
   );
 }

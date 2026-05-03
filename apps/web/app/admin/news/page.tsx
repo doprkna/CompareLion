@@ -1,7 +1,5 @@
-import { requireAdmin } from '@/lib/authGuard';
 import { AdminNewsList } from './AdminNewsList';
 
-export default async function AdminNewsPage() {
-  await requireAdmin();
+export default function AdminNewsPage() {
   return <AdminNewsList />;
 }

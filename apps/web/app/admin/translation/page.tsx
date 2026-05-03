@@ -1,4 +1,3 @@
-import { requireAdmin } from '@/lib/authGuard';
 import dynamic from 'next/dynamic';
 
 const AdminTranslationClient = dynamic(
@@ -13,8 +12,7 @@ const AdminTranslationClient = dynamic(
   }
 );
 
-export default async function AdminTranslationPage() {
-  await requireAdmin();
+export default function AdminTranslationPage() {
   return (
     <div className="min-h-screen bg-bg p-6">
       <div className="max-w-6xl mx-auto space-y-6">

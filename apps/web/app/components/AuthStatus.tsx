@@ -2,6 +2,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { isAdmin } from '@/lib/auth/isAdmin';
 import NotificationBell from './NotificationBell';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
@@ -58,12 +59,11 @@ export default function AuthStatus() {
         ))}
       </select>
       {status === 'authenticated' && <NotificationBell />}
-      <span className="text-text">
-        {status === 'authenticated'
-          ? `Logged in as ${username}`
-          : 'Not logged in'}
-      </span>
-      {userRole === 'ADMIN' && (
+      {status === 'authenticated' && (
+        <span className="text-text">Logged in as {username}</span>
+      )}
+      {status === 'authenticated' &&
+        (isAdmin(session?.user) || isAdmin(userRole ? { role: userRole } : null)) && (
         <>
           <Link 
             href="/admin"

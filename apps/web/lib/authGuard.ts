@@ -17,6 +17,9 @@ export async function requireAdmin() {
   });
 
   if (!user || user.role !== "ADMIN") {
+    console.warn("[requireAdmin] Unauthorized admin access attempt", {
+      email: session.user.email,
+    });
     redirect("/main");
   }
 

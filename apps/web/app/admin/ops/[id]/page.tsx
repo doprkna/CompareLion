@@ -1,4 +1,3 @@
-import { requireAdmin } from '@/lib/authGuard';
 import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -9,7 +8,6 @@ export default async function AdminOpsDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAdmin();
   const { id } = await params;
   const run = await prisma.opsRun.findUnique({ where: { id } });
   if (!run) notFound();

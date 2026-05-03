@@ -1,6 +1,101 @@
 <!-- version-lock: true -->
 
 
+## [0.50.19] - 2026-05-03
+
+### Changed
+  - **`QuestionInput` option UI:** **SINGLE_CHOICE** / **MULTI_CHOICE** options use full-width **card** rows (`border-border`, **`bg-card`**, padded, rounded, **`gap-3`** stack), **hover** (`bg-accent/10`, stronger border), **selected** (`bg-accent`, **`text-white`**, **`scale-[1.02]`**, light shadow). Entire row is a **`<label>`** (pointer, keyboard focus ring via **`focus-within:ring`** on the card). **MULTI_CHOICE** uses **`onCheckedChange`** (no **`tabIndex={-1}`**) so options stay keyboard-reachable. **RANGE** control sits in a matching bordered **`bg-card`** container; slider **`cursor-pointer`**. **`RadioGroupItem`** / **`Checkbox`** now merge **`className`** via **`cn`** for contrast on selected cards.
+
+## [0.50.18] - 2026-05-03
+
+### Changed
+  - **`/flow-demo` question step:** Client-only / fallback flow no longer shows **between-question spinners** or **loading-derived disabled states** on answers (`loadNextQuestion` API path no longer toggles **`loading`**). **`questionSyncing`** + ref guard replace **`setLoading`** for **`/api/flow/answer`**, **`loadNextQuestion`**, checkpoint continue, and skip-suggestion continue—buttons disable without a spinner. **Guests:** **`loadChoices`** skips **`setLoading(true)`** to avoid a brief *Starting your flow…* flash.
+  - **Instant advance:** **`QuestionInput`** **`onSelectForSubmit`** wired from **`flow-demo`**; **RANGE** uses Radix **`onValueCommit`** to submit on release. **Single-choice** (e.g. demo yes/no) advances on tap. **Submit** keeps a check icon (no spinner). **Active** **`scale`** feedback on Submit / Skip.
+  - **Demo UX:** Removed success **toasts** for client-only **submit** and **skip** (no extra "waiting" chrome).
+
+## [0.50.17] - 2026-05-03
+
+### Added
+  - **Guest demo → signup handoff:** **`lib/auth/demoResultHandoff.ts`** — **`from=demo-result`** query contract, **`signupHrefFromDemoResult()`**, **`isFromDemoResultHandoff`**. **`/flow-demo`** result primary CTA navigates to **`/signup?from=demo-result`**. **`/login`** and **`/signup`** read **`from`** and show contextual headline + body (*Save your comparison results* / unlock comparisons copy) only for that param; default copy unchanged otherwise.
+
+## [0.50.16] - 2026-05-03
+
+### Changed
+  - **`lib/flow/demoResultCopy.ts`:** Each **`questionId` + `answerKey`** now maps to **`variants: DemoResultVariantRow[]`** ( **`DemoResultVariant`** + **`breakdownLine`**). One variant per completion is chosen with a **stable hash** of the user’s answer string (`makeDemoResultSeed`)—no `Math.random()`, no hydration surprises. **`DEMO_RESULT_FALLBACK_ENTRY`** includes multiple fallback variants. **`pickDemoResultVariantForAnswer`**, **`makeDemoResultSeed`** exported for tests/extensions.
+
+## [0.50.15] - 2026-05-03
+
+### Added
+  - **`lib/flow/demoResultCopy.ts`:** Central table **`DEMO_RESULT_COPY_TABLE`** (`questionId`, **`answerKey`**, **`verdict`**, **`statLine`**, **`personalityLine`**, plus **`breakdownLine`** for quick-read bullets), **`DEMO_RESULT_COPY_FALLBACK`**, **`DEMO_RESULT_SHARED`** (subtitle, stat body, disclaimer, section title). **`resolveGuestDemoResultCopy`** drives guest client-only **`/flow-demo`** result UI—no result copy hardcoded in the page.
+
+### Changed
+  - **`demoGhostFallback`:** Removed **`getGuestDemoBreakdownLines`**, **`getPersonalityLine`**, **`getDemoResultPersonalityLine`**, **`DEMO_PERSONALITY_FALLBACK`** (replaced by **`demoResultCopy`**).
+
+## [0.50.14] - 2026-05-03
+
+### Added
+  - **Demo result personality line:** **`getPersonalityLine`** + **`getDemoResultPersonalityLine`** in **`lib/flow/demoGhostFallback.ts`** (answer-aware copy for **ghost** / **screen** / **job**, with **`DEMO_PERSONALITY_FALLBACK`**). Guest client-only **`/flow-demo`** result shows one muted line under the comparison card (not a headline). No backend.
+
+## [0.50.13] - 2026-05-03
+
+### Changed
+  - **`/flow-demo` client-only result (guests):** Bottom actions reduced to **two** centered controls — **Create account to save your results** → **`/signup`**, and **Try another question** (restarts demo via existing reset). Removed **`LockedFeatureTeaserCard`** from this screen. Softer outline styling on the secondary action; extra spacing and **`max-w-md`** alignment. **Signed-in** users finishing the same path get **Continue to app** → **`/main`** plus **Try another question** (no duplicate signup CTA). Deleted unused **`LockedFeatureTeaserCard.tsx`**.
+
+## [0.50.12] - 2026-05-03
+
+### Added
+  - **First-question micro-hint:** **`components/flow/FlowFirstQuestionHint.tsx`** — static, muted line (*No right answers. Just pick what feels true.*) shown **only** before the first answer or skip: **`/flow-demo`** (`answeredCount === 0 && skippedCount === 0`) and **`/flow/[categoryId]`** (until first successful submit or skip). No animations on the hint.
+
+## [0.50.11] - 2026-05-03
+
+### Added
+  - **`LockedFeatureTeaserCard`:** Static guest-only teaser (dashed/dimmed card, lock icon) on **`/flow-demo`** client-only **result** step — *Unlock deeper comparisons at Level 5* + body copy, **Create account to start leveling** → **`/signup`**, **Continue demo** (same reset as *Try another flow*). Shown only when **`useSession`** is **`unauthenticated`** (no nav changes, no backend).
+
+## [0.50.10] - 2026-05-03
+
+### Changed
+  - **Guest global navigation (`md+`):** **`NavLinks`** for **`unauthenticated`** users now shows only **`APP_NAME`** (link to **`/landing`**), **FAQ** / **About**, **Login**, and primary CTA *Find out if you're normal* → **`/flow-demo`**. Removed **Home**, **Try demo**, **Create account**, and the **Info** dropdown. **`AuthStatus`** no longer duplicates login/signup for guests (language selector only). **`ConditionalNav`** wraps **`NavLinks`** in **`min-w-0 flex-1`** for safer wrapping. Signed-in **`NavLinks`** unchanged.
+
+## [0.50.09] - 2026-05-03
+
+### Changed
+  - **`/flow-demo` guest (client-only) result:** Replaced row/table-style report with three stacked cards—verdict (*You’re suspiciously average.* / *Not boring. Statistically efficient.*), comparison (*68% answered close to you* + signup upsell), and *Your quick read* bullets from **`getGuestDemoBreakdownLines`** (answer-aware ghost / screen-time / work lines). CTAs: **Create account to save your results** (primary) and **Try another flow** (secondary). Footer disclaimer only: *Demo results use illustrative comparison data.* **`DemoGhostReportRow`** includes optional **`questionId`** for breakdown mapping.
+
+## [0.50.08] - 2026-05-03
+
+### Changed
+  - **`/landing` flow CTAs:** Primary *Find out if you're normal* buttons (top nav, hero, bottom card) now set **`flowNavigateBusyId`** before **`router.push`**, disable all primary flow controls while navigating, show a left **`Loader2`** + *Loading your first question...*, and set **`aria-busy` / `disabled`** on the active control. **`LandingPromoCard`:** internal **`/flow-demo`** links use a full-card **`<button>`** when **`onFlowDemoNavigate`** is passed (hero, below-hero, footer promos) for the same instant feedback without **`Link`** prefetch-only behavior. **`lib/landing/landingPromos`:** **`isFlowDemoHref`**.
+
+## [0.50.07] - 2026-05-03
+
+### Fixed
+  - **`/flow-demo` guest / fallback flow:** **`POST /api/flow/start`** requires sign-in, but anonymous users still received DB topic cards and hit the API on *Start* → generic *Failed to start flow*. **Guests** now only get the client-only **Quick questions** ghost (`isFallback: true`); **`loadChoices`** waits for **`useSession`** and skips the choices API when unauthenticated. **Signed-in** users unchanged (real **`/api/flow/start`**, **`/api/flow/answer`**, etc.). **`lib/flow/demoGhostFallback`:** **`isClientOnlyDemoCategory`**, **`DEMO_CLIENT_FALLBACK_ID_PREFIX`** (`fallback:*`) alongside **`demo-ghost-flow-local`**.
+
+## [0.50.06] - 2026-05-03
+
+### Added
+  - **Admin-only access (frontend + route guard):** **`lib/auth/isAdmin.ts`** — **`ADMIN`** role check (case-insensitive, null-safe). **`components/auth/AdminGuard.tsx`** — client fallback (*Restricted area* / *Back to home* → **`/main`**) + **`console.warn`** on unauthorized client render.
+
+### Changed
+  - **`app/admin/layout.tsx`** and **`app/reports/layout.tsx`** — **`await requireAdmin()`** so all admin and app reports routes are blocked server-side for non-admins (redirect **`/login`** or **`/main`**). **`lib/authGuard` `requireAdmin`** logs **`[requireAdmin] Unauthorized admin access attempt`** with email before redirect.
+  - **`NavLinks`** / **`AuthStatus`** — admin tools and quick links only when **`isAdmin(...)`**; removed unused nav **`userRole`**; **`AuthStatus`** still merges **`/api/me`** role with session for admin links when JWT lags DB.
+
+## [0.50.05] - 2026-05-03
+
+### Added
+  - **Guest access guard (soft gating):** **`middleware.ts`** uses **`next-auth/jwt` `getToken`** + **`lib/guest/publicPaths.ts`**. Unauthenticated requests to non-public routes redirect to **`/landing?blocked=1`**. **`GuestBlockedModal`** ( **`components/auth/GuestBlockedModal.tsx`** ) on **`/landing`** explains with *Create an account to continue* / *Back to demo*. Public paths include **`/landing`**, **`/flow-demo`**, **`/login`**, **`/signup`**, **`/register`**, marketing/legal (**`/faq`**, **`/pricing`**, **`/about`**, **`/changelog`**, **`/info/*`**, **`/waitlist`**), **`/`**, **`/maintenance`**, all **`/api/**`**, and static assets.
+
+### Fixed
+  - **`/landing` GuestBlockedModal:** Restored missing **`import`** for **`GuestBlockedModal`**; component lives at **`components/auth/GuestBlockedModal.tsx`**. When **`blocked=1`** is absent, the modal returns **`null`** (no dialog mount).
+
+### Changed
+  - **`NavLinks`:** Guests see **Home / Try demo / Log in / Create account** + **Info** only (no Social, Profile, Shop, Arena, Community, Admin). **`AuthStatus`:** Guests get **Log in** + **Create account** instead of “Not logged in”. **`ConditionalNav`:** **`/flow-demo`** uses full-bleed demo (no global nav). **`Footer`:** Removed dev-only “DEV MODE” and refresh control. **`DevBar`**, **`EnvBadge`**, **`DebugPanel`:** No-ops (no dev strip / corner badges / debug panel).
+
+## [0.50.04] - 2026-05-03
+
+### Added
+  - **`/flow-demo` client fallback (“ghost”) flow:** When **`GET /api/flow/choices`** returns no categories or fails, the demo injects a built-in **Quick questions** starter (ghost yes/no → screen **RANGE** → job **MULTI_CHOICE**) via **`lib/flow/demoGhostFallback.ts`**. Same **QuestionInput** path as DB flows—no admin/seed messaging. Finishes with comparison-style report rows + **Create account to save your results** → **`/signup`**. Removed public **“No flows available”** / **Admin Seeds** copy.
+
 ## [0.50.03] - 2026-05-03
 
 ### Removed

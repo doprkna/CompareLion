@@ -5,10 +5,11 @@
  * Question step uses shared QuestionInput (RANGE slider, MULTI_CHOICE, NUMERIC alias, etc.)
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icon } from '@parel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import { FeedbackPromptModal, wasFeedbackDismissedThisSession } from '@/components/feedback/FeedbackPromptModal';
@@ -26,6 +27,18 @@ import {
 import { getFlowTopicMood } from '@/lib/flowTopics';
 import type { FlowReward } from '@parel/core';
 import { FlowRewardCard } from '@/components/reward/FlowRewardCard';
+import {
+  DEMO_GHOST_FLOW_CATEGORY_ID,
+  isClientOnlyDemoCategory,
+  getDemoGhostQuestions,
+  formatLocalFallbackYou,
+  buildLocalFallbackReportData,
+  getGlobalHintForDemoQuestion,
+  type DemoGhostReportRow,
+} from '@/lib/flow/demoGhostFallback';
+import { resolveGuestDemoResultCopy } from '@/lib/flow/demoResultCopy';
+import { signupHrefFromDemoResult } from '@/lib/auth/demoResultHandoff';
+import { FlowFirstQuestionHint } from '@/components/flow/FlowFirstQuestionHint';
 
 interface FlowCategory {
   id: string;
@@ -33,14 +46,25 @@ interface FlowCategory {
   questionCount: number;
   slug?: string;
   isStarter?: boolean;
+  /** Client-only demo (no `/api/flow/start` or `/api/flow/answer`); e.g. ghost / guest `/flow-demo`. */
+  isFallback?: boolean;
 }
 
 /** API payload from GET /api/flow/question (features flow shape) */
 type DemoQuestion = FlowQuestion & { difficulty?: string };
 
+const DEMO_FALLBACK_CATEGORY: FlowCategory = {
+  id: DEMO_GHOST_FLOW_CATEGORY_ID,
+  name: 'Quick questions',
+  questionCount: getDemoGhostQuestions().length,
+  isStarter: true,
+  isFallback: true,
+};
+
 export default function FlowDemoPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { status: authStatus } = useSession();
   
   // State
   const [step, setStep] = useState<'category' | 'question' | 'checkpoint' | 'result'>('category');
@@ -49,13 +73,16 @@ export default function FlowDemoPage() {
   const [currentQuestion, setCurrentQuestion] = useState<DemoQuestion | null>(null);
   const [answerValue, setAnswerValue] = useState<AnswerValue>({ kind: 'text', text: '' });
   const [loading, setLoading] = useState(false);
+  /** API flow: guard against double submit without showing a between-question spinner. */
+  const [questionSyncing, setQuestionSyncing] = useState(false);
+  const flowQuestionBusyRef = useRef(false);
   const [answeredCount, setAnsweredCount] = useState(0);
   const [skippedCount, setSkippedCount] = useState(0);
   const [totalXp, setTotalXp] = useState(0);
   const [reportData, setReportData] = useState<{
     headline: string;
     subheader: string;
-    rows: Array<{ question: string; you: string; global: string }>;
+    rows: Array<{ question: string; you: string; global: string; questionId?: string }>;
     worldContextRows?: Array<{ label: string; formatted: string }>;
     identityHint: string;
     unlockNote: string;
@@ -70,11 +97,47 @@ export default function FlowDemoPage() {
     progressPct: number;
     insightText: string;
   } | null>(null);
+  const [flowReward, setFlowReward] = useState<FlowReward | null>(null);
+  const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+  const ghostRowsRef = useRef<DemoGhostReportRow[]>([]);
 
-  // Load flow choices on mount (C18)
-  useEffect(() => {
-    loadChoices();
+  function categoryIsClientOnly(catId: string): boolean {
+    if (isClientOnlyDemoCategory(catId)) return true;
+    return categories.some((c) => c.id === catId && c.isFallback === true);
+  }
+
+  const moveGhostAfterQuestion = useCallback((fromQuestionId: string | undefined) => {
+    const qs = getDemoGhostQuestions();
+    const idx = qs.findIndex((q) => q.id === fromQuestionId);
+    if (idx < 0) return;
+    if (idx < qs.length - 1) {
+      setCurrentQuestion(qs[idx + 1] ?? null);
+    } else {
+      setReportData(buildLocalFallbackReportData(ghostRowsRef.current));
+      setIsStarterCategory(true);
+      setCurrentQuestion(null);
+      setStep('result');
+    }
   }, []);
+
+  function beginFlowQuestionOp(): boolean {
+    if (flowQuestionBusyRef.current) return false;
+    flowQuestionBusyRef.current = true;
+    setQuestionSyncing(true);
+    return true;
+  }
+
+  function endFlowQuestionOp() {
+    flowQuestionBusyRef.current = false;
+    setQuestionSyncing(false);
+  }
+
+  // Load flow choices when auth is known (guests use client-only ghost; signed-in users hit API).
+  useEffect(() => {
+    if (authStatus === 'loading') return;
+    loadChoices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reload topics when login state changes
+  }, [authStatus]);
 
   useEffect(() => {
     if (!currentQuestion) return;
@@ -82,38 +145,66 @@ export default function FlowDemoPage() {
   }, [currentQuestion?.id]);
 
   async function loadChoices(excludeIds?: string[]) {
-    setLoading(true);
+    const guest = authStatus !== 'authenticated';
+    if (!guest) setLoading(true);
     try {
-      const url = excludeIds?.length
-        ? `/api/flow/choices?exclude=${excludeIds.join(',')}`
-        : '/api/flow/choices';
-      const res = await fetch(url);
-      const data = await res.json();
-
-      if (data.success && data.data) {
-        const choices = data.data as Array<{ id: string; name: string; questionCount: number; slug?: string; isStarter?: boolean }>;
+      if (guest) {
+        const choices = [DEMO_FALLBACK_CATEGORY];
         setCategories(choices);
         setSelectedCategory('');
         if (choices.length === 1 && choices[0].isStarter) {
           setSelectedCategory(choices[0].id);
           setIsStarterCategory(true);
           setStep('category');
-          startFlowForCategory(choices[0].id);
+          await startFlowForCategory(choices[0].id);
         }
-      } else {
-        toast({
-          title: 'Error',
-          description: 'Failed to load flow choices',
-          variant: 'destructive'
-        });
+        return;
+      }
+
+      const url = excludeIds?.length
+        ? `/api/flow/choices?exclude=${excludeIds.join(',')}`
+        : '/api/flow/choices';
+      const res = await fetch(url);
+      const data = (await res.json().catch(() => ({}))) as {
+        success?: boolean;
+        data?: unknown;
+      };
+
+      let choices: FlowCategory[] = [];
+      if (data.success && Array.isArray(data.data)) {
+        choices = (data.data as Array<{ id: string; name: string; questionCount: number; slug?: string; isStarter?: boolean }>).map(
+          (c) => ({
+            id: c.id,
+            name: c.name,
+            questionCount: c.questionCount,
+            slug: c.slug,
+            isStarter: c.isStarter,
+            isFallback: false,
+          })
+        );
+      }
+      if (excludeIds?.length) {
+        choices = choices.filter((c) => !excludeIds.includes(c.id));
+      }
+      if (choices.length === 0) {
+        choices = [DEMO_FALLBACK_CATEGORY];
+      }
+
+      setCategories(choices);
+      setSelectedCategory('');
+      if (choices.length === 1 && choices[0].isStarter) {
+        setSelectedCategory(choices[0].id);
+        setIsStarterCategory(true);
+        setStep('category');
+        await startFlowForCategory(choices[0].id);
       }
     } catch (error) {
       console.error('Error loading flow choices:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load flow choices',
-        variant: 'destructive'
-      });
+      setCategories([DEMO_FALLBACK_CATEGORY]);
+      setSelectedCategory(DEMO_FALLBACK_CATEGORY.id);
+      setIsStarterCategory(true);
+      setStep('category');
+      await startFlowForCategory(DEMO_FALLBACK_CATEGORY.id);
     } finally {
       setLoading(false);
     }
@@ -129,6 +220,22 @@ export default function FlowDemoPage() {
   async function startFlowForCategory(catId: string) {
     setSkipSuggestionShown(false);
     setFlowReward(null);
+
+    if (categoryIsClientOnly(catId)) {
+      ghostRowsRef.current = [];
+      setReportData(null);
+      setAnsweredCount(0);
+      setSkippedCount(0);
+      setTotalXp(0);
+      setTotalQuestions(getDemoGhostQuestions().length);
+      setIsStarterCategory(true);
+      const qs = getDemoGhostQuestions();
+      setCurrentQuestion(qs[0] ?? null);
+      setStep('question');
+      return;
+    }
+
+    ghostRowsRef.current = [];
     setLoading(true);
     try {
       const startRes = await fetch('/api/flow/start', {
@@ -174,7 +281,12 @@ export default function FlowDemoPage() {
   ): Promise<{ completed?: boolean; checkpoint?: boolean }> {
     const catId = overrideCategoryId ?? selectedCategory;
     if (!catId) return {};
-    setLoading(true);
+
+    if (categoryIsClientOnly(catId)) {
+      moveGhostAfterQuestion(currentQuestion?.id);
+      return {};
+    }
+
     try {
       const res = await fetch(`/api/flow/question?categoryId=${catId}`);
       const data = await res.json();
@@ -211,18 +323,30 @@ export default function FlowDemoPage() {
         variant: 'destructive'
       });
       return {};
-    } finally {
-      setLoading(false);
     }
   }
 
-  async function submitAnswer() {
+  async function submitAnswer(overrideValue?: AnswerValue) {
+    const value = overrideValue ?? answerValue;
     if (!currentQuestion) return;
-    if (!isValidAnswer(currentQuestion, answerValue)) return;
+    if (!isValidAnswer(currentQuestion, value)) return;
 
-    setLoading(true);
+    if (categoryIsClientOnly(selectedCategory)) {
+      const you = formatLocalFallbackYou(currentQuestion, value);
+      const global = getGlobalHintForDemoQuestion(currentQuestion.id);
+      ghostRowsRef.current = [
+        ...ghostRowsRef.current,
+        { question: currentQuestion.text, you, global, questionId: currentQuestion.id },
+      ];
+      setAnsweredCount((c) => c + 1);
+      setTotalXp((p) => p + 10);
+      moveGhostAfterQuestion(currentQuestion.id);
+      return;
+    }
+
+    if (!beginFlowQuestionOp()) return;
     try {
-      const payload = toApiPayload(currentQuestion, answerValue);
+      const payload = toApiPayload(currentQuestion, value);
       const res = await fetch('/api/flow/answer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -254,7 +378,7 @@ export default function FlowDemoPage() {
         variant: 'destructive'
       });
     } finally {
-      setLoading(false);
+      endFlowQuestionOp();
     }
   }
 
@@ -268,8 +392,22 @@ export default function FlowDemoPage() {
 
   async function skipCurrentQuestion() {
     if (!currentQuestion) return;
-    
-    setLoading(true);
+
+    if (categoryIsClientOnly(selectedCategory)) {
+      const newSkipCount = skippedCount + 1;
+      setSkippedCount(newSkipCount);
+
+      if (newSkipCount >= 2 && !skipSuggestionShown) {
+        setSkipSuggestionShown(true);
+        setShowSkipSuggestionModal(true);
+        trackSkipSuggestion('triggered');
+      } else {
+        moveGhostAfterQuestion(currentQuestion.id);
+      }
+      return;
+    }
+
+    if (!beginFlowQuestionOp()) return;
     try {
       const res = await fetch('/api/flow/answer', {
         method: 'POST',
@@ -296,18 +434,30 @@ export default function FlowDemoPage() {
     } catch (error) {
       console.error('Error skipping question:', error);
     } finally {
-      setLoading(false);
+      endFlowQuestionOp();
     }
   }
 
   function handleSkipSuggestionContinue() {
     setShowSkipSuggestionModal(false);
-    loadNextQuestion();
+    if (categoryIsClientOnly(selectedCategory)) {
+      moveGhostAfterQuestion(currentQuestion?.id);
+    } else {
+      void (async () => {
+        if (!beginFlowQuestionOp()) return;
+        try {
+          await loadNextQuestion();
+        } finally {
+          endFlowQuestionOp();
+        }
+      })();
+    }
   }
 
   function handleSkipSuggestionChooseAnother() {
     setShowSkipSuggestionModal(false);
     trackSkipSuggestion('accepted');
+    ghostRowsRef.current = [];
     setStep('category');
     setSelectedCategory('');
     setCurrentQuestion(null);
@@ -322,12 +472,18 @@ export default function FlowDemoPage() {
 
   async function handleCheckpointContinue() {
     setCheckpointData(null);
-    const result = await loadNextQuestion();
-    if (!result.completed) setStep('question');
+    if (!beginFlowQuestionOp()) return;
+    try {
+      const result = await loadNextQuestion();
+      if (!result.completed) setStep('question');
+    } finally {
+      endFlowQuestionOp();
+    }
   }
 
   function handleCheckpointChangeTopic() {
     setCheckpointData(null);
+    ghostRowsRef.current = [];
     setStep('category');
     setSelectedCategory('');
     setCurrentQuestion(null);
@@ -343,6 +499,7 @@ export default function FlowDemoPage() {
   async function loadResults(catIdOverride?: string) {
     const catId = catIdOverride ?? selectedCategory;
     if (!catId) return;
+    if (categoryIsClientOnly(catId)) return;
     setFlowReward(null);
     try {
       const res = await fetch(`/api/flow/result?categoryId=${catId}`);
@@ -410,10 +567,10 @@ export default function FlowDemoPage() {
             </div>
           ) : categories.length === 0 ? (
             <Card>
-              <CardContent className="p-12 text-center">
-                <p className="text-subtle">No flows available. Please seed the database first.</p>
-                <Button onClick={() => router.push('/admin/seeds')} className="mt-4">
-                  Go to Admin Seeds
+              <CardContent className="p-12 text-center space-y-4">
+                <p className="text-subtle">Something went wrong loading topics.</p>
+                <Button type="button" onClick={() => loadChoices()} variant="outline">
+                  Try again
                 </Button>
               </CardContent>
             </Card>
@@ -474,7 +631,8 @@ export default function FlowDemoPage() {
   // Render question
   if (step === 'question' && currentQuestion) {
     const canSubmit = isValidAnswer(currentQuestion, answerValue);
-    
+    const showFirstQuestionHint = answeredCount === 0 && skippedCount === 0;
+
     return (
       <div className="min-h-screen bg-bg p-6">
         <div className="max-w-3xl mx-auto">
@@ -525,6 +683,9 @@ export default function FlowDemoPage() {
           <Card>
             <CardHeader>
               <div className="space-y-2">
+                {showFirstQuestionHint ? (
+                  <FlowFirstQuestionHint className="text-center sm:text-left max-w-2xl mx-auto sm:mx-0" />
+                ) : null}
                 <CardTitle className="text-2xl">{currentQuestion.text}</CardTitle>
                 {normalizeFlowQuestionType(currentQuestion.type) === 'MULTI_CHOICE' && (
                   <p className="text-sm text-subtle">Select all that apply</p>
@@ -536,23 +697,30 @@ export default function FlowDemoPage() {
                 question={currentQuestion}
                 value={answerValue}
                 onChange={setAnswerValue}
-                disabled={loading}
+                onSelectForSubmit={(v) => {
+                  void submitAnswer(v);
+                }}
+                disabled={loading || questionSyncing}
               />
 
               <div className="flex gap-3 pt-4">
                 <Button
-                  onClick={submitAnswer}
-                  disabled={!canSubmit || loading}
-                  className="flex-1 bg-accent text-white hover:bg-accent/90"
+                  onClick={() => {
+                    void submitAnswer();
+                  }}
+                  disabled={!canSubmit || loading || questionSyncing}
+                  className="flex-1 bg-accent text-white hover:bg-accent/90 active:scale-[0.98] transition-transform duration-75"
                 >
-                  {loading ? <Icon name="spinner" className="h-4 w-4 animate-spin" /> : <Icon name="check-circle" className="h-4 w-4 mr-2" />}
+                  <Icon name="check-circle" className="h-4 w-4 mr-2" />
                   Submit Answer
                 </Button>
                 <Button
-                  onClick={skipCurrentQuestion}
-                  disabled={loading}
+                  onClick={() => {
+                    void skipCurrentQuestion();
+                  }}
+                  disabled={loading || questionSyncing}
                   variant="outline"
-                  className="flex-1"
+                  className="flex-1 active:scale-[0.98] transition-transform duration-75"
                 >
                   <Icon name="skip" className="h-4 w-4 mr-2" size="md" />
                   Skip
@@ -611,6 +779,127 @@ export default function FlowDemoPage() {
   // Render result
   if (step === 'result') {
     if (isStarterCategory && reportData) {
+      if (categoryIsClientOnly(selectedCategory)) {
+        const demoCopy = resolveGuestDemoResultCopy(reportData.rows);
+
+        const handleGuestContinueDemo = () => {
+          setShowFeedbackPrompt(false);
+          ghostRowsRef.current = [];
+          setStep('category');
+          setSelectedCategory('');
+          setAnsweredCount(0);
+          setSkippedCount(0);
+          setTotalXp(0);
+          setReportData(null);
+          setIsStarterCategory(false);
+          setFlowReward(null);
+          loadChoices();
+        };
+
+        return (
+          <div className="min-h-screen bg-gradient-to-b from-bg via-card/30 to-bg p-6">
+            <div className="max-w-lg mx-auto space-y-5">
+              <div className="space-y-5">
+                <Card className="overflow-hidden border-2 border-accent/25 bg-gradient-to-br from-card to-accent/10 shadow-lg">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-text">
+                      {demoCopy.verdictTitle}
+                    </CardTitle>
+                    <CardDescription className="text-base text-subtle mt-3 leading-relaxed">
+                      {demoCopy.verdictSubtitle}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+
+                <Card className="border-border/80 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl font-semibold text-text">
+                      {demoCopy.statTitle}
+                    </CardTitle>
+                    <CardDescription className="text-subtle text-sm leading-relaxed mt-2">
+                      {demoCopy.statDescription}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0 pb-5">
+                    <p className="text-sm text-text/80 leading-snug border-t border-border/40 pt-3 mt-0.5">
+                      {demoCopy.personalityLine}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/80 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold text-text">
+                      {demoCopy.quickReadSectionTitle}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ul className="space-y-3 list-none m-0 p-0">
+                      {demoCopy.breakdownLines.map((line, i) => (
+                        <li
+                          key={`${line}-${i}`}
+                          className="flex gap-3 text-sm sm:text-[15px] text-text leading-snug"
+                        >
+                          <span
+                            className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                            aria-hidden
+                          />
+                          <span>{line}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex flex-col items-center gap-4 pt-4 pb-2 w-full max-w-md mx-auto">
+                {authStatus === 'authenticated' ? (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={() => router.push('/main')}
+                      className="w-full bg-gradient-to-r from-accent to-blue-600 text-white font-semibold py-6 text-base shadow-md hover:opacity-95"
+                    >
+                      Continue to app
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full py-5 text-base border-border text-subtle hover:text-text hover:bg-card"
+                      onClick={handleGuestContinueDemo}
+                    >
+                      Try another question
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={() => router.push(signupHrefFromDemoResult())}
+                      className="w-full bg-gradient-to-r from-accent to-blue-600 text-white font-semibold py-6 text-base shadow-md hover:opacity-95"
+                    >
+                      Create account to save your results
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full py-5 text-base border-border text-subtle hover:text-text hover:bg-card"
+                      onClick={handleGuestContinueDemo}
+                    >
+                      Try another question
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              <p className="text-center text-xs text-subtle px-2 leading-relaxed max-w-md mx-auto">
+                {demoCopy.disclaimer}
+              </p>
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="min-h-screen bg-bg p-6">
           <div className="max-w-3xl mx-auto">
@@ -648,9 +937,19 @@ export default function FlowDemoPage() {
                   onGiveFeedback={() => router.push('/feedback/alpha')}
                   onMaybeLater={() => {}}
                 />
-                <div className="flex gap-3 pt-4">
+                {categoryIsClientOnly(selectedCategory) ? (
+                  <Button
+                    type="button"
+                    onClick={() => router.push(signupHrefFromDemoResult())}
+                    className="w-full bg-gradient-to-r from-accent to-blue-600 text-white font-semibold py-6"
+                  >
+                    Create account to save your results
+                  </Button>
+                ) : null}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <Button onClick={() => {
                     setShowFeedbackPrompt(false);
+                    ghostRowsRef.current = [];
                     setStep('category');
                     setSelectedCategory('');
                     setAnsweredCount(0);

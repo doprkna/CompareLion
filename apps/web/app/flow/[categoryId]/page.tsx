@@ -12,6 +12,7 @@ import {
   type FlowQuestion,
   type AnswerValue,
 } from '@/components/flow/QuestionInput';
+import { FlowFirstQuestionHint } from '@/components/flow/FlowFirstQuestionHint';
 
 /** Matches `FlowQuestion` JSON from `GET /api/flow/[categoryId]/next` (`flowService`). */
 type NextQuestion = {
@@ -40,6 +41,7 @@ export default function FlowPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [answerValue, setAnswerValue] = useState<AnswerValue>({ kind: 'text', text: '' });
+  const [pastFirstQuestion, setPastFirstQuestion] = useState(false);
 
   const inputQuestion = useMemo(() => (question ? toInputQuestion(question) : null), [question]);
 
@@ -99,6 +101,7 @@ export default function FlowPage() {
         setLoading(false);
         return;
       }
+      setPastFirstQuestion(true);
       combatAttack();
       await loadNext();
     } catch {
@@ -122,6 +125,7 @@ export default function FlowPage() {
         setLoading(false);
         return;
       }
+      setPastFirstQuestion(true);
       combatSkip();
       await loadNext();
     } catch {
@@ -158,6 +162,11 @@ export default function FlowPage() {
               transition={{ duration: 0.2 }}
               className="rounded-xl border-2 border-border bg-card p-4 shadow-sm"
             >
+              {!pastFirstQuestion ? (
+                <div className="mb-3">
+                  <FlowFirstQuestionHint />
+                </div>
+              ) : null}
               <p className="mb-3 text-text text-lg leading-snug">{q.question}</p>
               <p className="text-xs text-subtle mb-4">
                 {q.type.replace(/_/g, ' ')} · {q.difficulty || 'medium'}

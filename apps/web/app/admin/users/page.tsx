@@ -1,7 +1,5 @@
-import { requireAdmin } from '@/lib/authGuard';
 import { AdminWipPage } from '../_components/AdminWipPage';
 
-export default async function AdminUsersPage() {
-  await requireAdmin();
+export default function AdminUsersPage() {
   return <AdminWipPage title="User Management" />;
 }

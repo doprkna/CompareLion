@@ -1,7 +1,5 @@
-import { requireAdmin } from '@/lib/authGuard';
 import AdminReportsClient from './AdminReportsClient';
 
-export default async function AdminReportsPage() {
-  await requireAdmin();
+export default function AdminReportsPage() {
   return <AdminReportsClient />;
 }

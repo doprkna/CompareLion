@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { isFromDemoResultHandoff } from '@/lib/auth/demoResultHandoff';
 import { useSession } from 'next-auth/react';
 import { getApiUrl } from '@/lib/apiBase';
 
@@ -45,7 +46,14 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white p-8 rounded shadow">
-        <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
+        <h1 className={`text-2xl font-bold ${fromDemoResult ? 'mb-2' : 'mb-4'}`}>
+          {fromDemoResult ? 'Save your comparison results' : 'Sign Up'}
+        </h1>
+        {fromDemoResult ? (
+          <p className="text-sm text-gray-600 mb-4">
+            Create an account to keep your answers and unlock real comparisons by country, age, and life situation.
+          </p>
+        ) : null}
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">Username</label>

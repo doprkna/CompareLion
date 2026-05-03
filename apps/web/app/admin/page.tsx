@@ -1,4 +1,3 @@
-import { requireAdmin } from '@/lib/authGuard';
 import dynamic from 'next/dynamic';
 
 const AdminDashboard = dynamic(
@@ -13,7 +12,6 @@ const AdminDashboard = dynamic(
   }
 );
 
-export default async function AdminPage() {
-  await requireAdmin();
+export default function AdminPage() {
   return <AdminDashboard />;
 }

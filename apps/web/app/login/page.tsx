@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { isFromDemoResultHandoff } from '@/lib/auth/demoResultHandoff';
 import { useSession, signIn } from 'next-auth/react';
 import { securityConfig } from '@parel/core/config/security';
 import { SocialLoginButtons } from '@/components/SocialLoginButtons';
@@ -12,6 +13,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [captchaToken, setCaptchaToken] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromDemoResult = isFromDemoResultHandoff(searchParams.get('from'));
   const [loading, setLoading] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(false);
   
@@ -145,10 +148,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-md w-full bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-2 text-center text-gray-900 dark:text-gray-100">
-          Welcome Back
+          {fromDemoResult ? 'Save your comparison results' : 'Welcome Back'}
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-          Sign in to continue to PareL
+          {fromDemoResult
+            ? 'Create an account to keep your answers and unlock real comparisons by country, age, and life situation.'
+            : 'Sign in to continue to PareL'}
         </p>
         
         {/* Removed loggedIn state - handled by useSession above */}
