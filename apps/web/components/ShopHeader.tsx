@@ -6,7 +6,7 @@ import LedgerTable from './LedgerTable';
 import { logger } from '@/lib/logger';
 
 export default function ShopHeader() {
-  const [funds, setFunds] = useState<number>(0);
+  const [coins, setCoins] = useState<number>(0);
   const [diamonds, setDiamonds] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [showLedger, setShowLedger] = useState(false);
@@ -17,20 +17,20 @@ export default function ShopHeader() {
       const res = await fetch('/api/wallet');
       const data = await res.json();
       if (data.success) {
-        setFunds(data.funds);
+        setCoins(data.funds);
         setDiamonds(data.diamonds);
       }
     }
     loadWallet();
   }, []);
 
-  const handleCheckout = async (type: 'funds' | 'diamonds') => {
+  const handleCheckout = async (type: 'coins' | 'diamonds') => {
     setLoading(true);
     try {
       const res = await fetch('/api/shop/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: type === 'funds' ? 'funds-pack' : 'diamonds-pack', quantity: 1 }),
+        body: JSON.stringify({ productId: type === 'coins' ? 'funds-pack' : 'diamonds-pack', quantity: 1 }),
       });
       const data = await res.json();
       if (data.success && data.url) {
@@ -62,15 +62,15 @@ export default function ShopHeader() {
     <>
     <div className="bg-white p-4 rounded shadow flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
       <div className="text-lg font-semibold">
-        Funds: <span className="text-blue-600">{funds}</span> • Diamonds: <span className="text-purple-600">{diamonds}</span>
+        Coins: <span className="text-blue-600">{coins}</span> • Diamonds: <span className="text-purple-600">{diamonds}</span>
       </div>
       <div className="mt-4 sm:mt-0 flex gap-2">
         <button
-          onClick={() => handleCheckout('funds')}
+          onClick={() => handleCheckout('coins')}
           disabled={loading}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50"
         >
-          Add Funds
+          Add Coins
         </button>
         <button
           onClick={() => handleCheckout('diamonds')}

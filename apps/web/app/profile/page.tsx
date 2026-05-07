@@ -87,7 +87,7 @@ export default function ProfileHub() {
                 Achievements
               </Button>
             </Link>
-            <Link href="/profile/shop" className="contents">
+            <Link href="/shop" className="contents">
               <Button
                 variant="outline"
                 className="border-2 border-border text-text hover:bg-card/50 h-16 w-full"

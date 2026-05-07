@@ -90,7 +90,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       user.id,
       "purchase",
       `Purchased ${item.name}`,
-      `Spent ${price} gold`
+      `Spent ${price} coins`
     );
 
   // Publish event

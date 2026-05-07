@@ -111,7 +111,7 @@ export default function ChallengePage() {
         <p className="text-subtle">This challenge has expired.</p>
         <Link href="/flow-demo">
           <Button variant="outline" className="mt-4">
-            Start a Flow
+            Start flow
           </Button>
         </Link>
       </div>
@@ -123,10 +123,10 @@ export default function ChallengePage() {
       <div className="min-h-screen bg-bg p-6">
         <div className="max-w-2xl mx-auto">
           <p className="text-text font-medium">Comparison ready</p>
-          <p className="text-sm text-subtle">Both answers are in. (Placeholder)</p>
+          <p className="text-sm text-subtle">Both answers are in. Open a new flow to keep comparing.</p>
           <Link href="/flow-demo">
             <Button variant="outline" className="mt-4">
-              Start a Flow
+              Start flow
             </Button>
           </Link>
         </div>
@@ -138,7 +138,7 @@ export default function ChallengePage() {
     <div className="min-h-screen bg-bg p-6">
       <div className="max-w-2xl mx-auto">
         <Link href="/flow-demo" className="text-sm text-subtle hover:text-accent mb-4 block">
-          ← Back to Flow
+          ← Back to flow
         </Link>
 
         <Card className="bg-card border-border mb-4">
@@ -173,7 +173,7 @@ export default function ChallengePage() {
                 )}
                 <Link href="/flow-demo">
                   <Button variant="outline" className="mt-2">
-                    Start a Flow
+                    Start flow
                   </Button>
                 </Link>
               </div>
@@ -182,7 +182,7 @@ export default function ChallengePage() {
                 <p className="text-subtle">Waiting for your friend...</p>
                 <Link href="/flow-demo">
                   <Button variant="outline" className="mt-2">
-                    Back to Flow
+                    Back to flow
                   </Button>
                 </Link>
               </div>

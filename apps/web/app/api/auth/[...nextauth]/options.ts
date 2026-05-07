@@ -107,6 +107,7 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account }) {
+      // TODO(v-next): keep email verification optional for access, but award a bonus when user verifies email.
       // Grant daily login chest for OAuth/Email logins (v0.36.30)
       if (user?.id && account) {
         try {

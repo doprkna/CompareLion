@@ -184,7 +184,7 @@ export default function ArchetypeSelectionPage() {
       {/* Info */}
       <Card className="mt-6 bg-card border border-border">
         <div className="p-4 text-center text-sm text-subtle">
-          💡 Your archetype defines your base stats and playstyle. You can reroll later for a small gold fee.
+          💡 Your archetype defines your base stats and playstyle. You can reroll later for a small coin fee.
         </div>
       </Card>
 

@@ -223,7 +223,7 @@ export default function MainPage() {
 
           <div className="bg-card border-2 border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-subtle text-sm">Gold</span>
+              <span className="text-subtle text-sm">Coins</span>
               <Icon name="star" className="h-5 w-5 text-yellow-500" />
             </div>
             <div className="text-3xl font-bold text-text">{data.funds}</div>

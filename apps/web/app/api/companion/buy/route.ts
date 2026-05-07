@@ -62,11 +62,11 @@ export const POST = safeAsync(async (req: NextRequest) => {
     return validationError('Companion has no price set');
   }
 
-  // Check if user has enough gold
+  // Check if user has enough coins (stored in legacy `funds`/gold balance)
   const userGold = Number(user.funds || 0);
 
   if (userGold < price) {
-    return validationError(`Not enough gold. Need ${price}, have ${userGold}`);
+    return validationError(`Not enough coins. Need ${price}, have ${userGold}`);
   }
 
   // Find companion by name (matching item name)
@@ -92,7 +92,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     return validationError('You already own this companion');
   }
 
-  // Deduct gold
+  // Deduct coins
   await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -129,7 +129,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     }
   }
 
-  logger.info(`[Companion] User ${user.id} purchased companion ${companion.name} for ${price} gold`);
+  logger.info(`[Companion] User ${user.id} purchased companion ${companion.name} for ${price} coins`);
 
   return successResponse({
     success: true,
@@ -140,6 +140,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       icon: companion.icon,
       autoEquipped: !hasEquipped,
     },
+    remainingCoins: userGold - price,
     remainingGold: userGold - price,
     pricePaid: price,
   });

@@ -102,7 +102,7 @@ export function SocialLoginButtons() {
         {providers.map((provider) => (
           <button
             key={provider.id}
-            onClick={() => provider.active && signIn(provider.id, { callbackUrl: '/main' })}
+            onClick={() => provider.active && signIn(provider.id, { callbackUrl: '/post-login' })}
             disabled={!provider.active}
             className={`
               w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-md

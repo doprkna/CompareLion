@@ -195,7 +195,7 @@ export function FlowRunner({ initialQuestions, locale = 'en' }: FlowRunnerProps)
               onClick={() => router.push('/main')}
               className="w-full bg-card border-2 border-border text-text px-6 py-3 rounded-lg font-medium hover:border-accent transition"
             >
-              Back to Main
+              Go to dashboard
             </button>
           </div>
         </div>

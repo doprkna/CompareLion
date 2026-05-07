@@ -207,7 +207,7 @@ export default function LandingPage() {
                     variant="ghost" 
                     onClick={() => router.push('/login')}
                   >
-                    Login
+                    Log in
                   </Button>
                   <Button 
                     type="button"

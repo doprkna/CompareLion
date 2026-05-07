@@ -74,10 +74,10 @@ export const POST = safeAsync(async (req: NextRequest) => {
     } else if (region.unlockRequirementType === "gold") {
       const requiredGold = parseInt(region.unlockRequirementValue || "0", 10);
       if (user.funds.toNumber() < requiredGold) {
-        return validationError(`Requires ${requiredGold} gold`);
+        return validationError(`Requires ${requiredGold} coins`);
       }
 
-      // Deduct gold
+      // Deduct coins (legacy funds/gold storage)
       await prisma.user.update({
         where: { id: user.id },
         data: {

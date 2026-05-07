@@ -68,7 +68,7 @@ export function WalletBar({ showDiamonds = false, compact = false }: WalletBarPr
 
   return (
     <div className={`flex items-center gap-3 sm:gap-4 ${compact ? 'text-sm' : 'text-base'}`}>
-      {/* Gold */}
+      {/* Coins (soft currency; backed by legacy gold key) */}
       <motion.div
         key={`gold-${pulseKey}`}
         initial={{ scale: 1 }}
@@ -80,7 +80,7 @@ export function WalletBar({ showDiamonds = false, compact = false }: WalletBarPr
         <span className="font-mono font-semibold text-yellow-300">
           {gold.toLocaleString()}
         </span>
-        <span className="text-yellow-400 text-sm">🪙</span>
+        <span className="text-yellow-400 text-sm">Coins</span>
       </motion.div>
 
       {/* Diamonds */}

@@ -16,7 +16,7 @@ export default function CommercePage() {
   }
 
   const links = [
-    { href: '/coinshop', label: 'Coin Shop', desc: 'Spend gold on items and gear', icon: ShoppingBag },
+    { href: '/shop', label: 'Items Shop', desc: 'Spend coins on items and gear', icon: ShoppingBag },
     { href: '/diamondshop', label: 'Diamond Shop', desc: 'Premium diamonds, WIP', icon: Gem },
     { href: '/marketplace', label: 'Marketplace', desc: 'Player-driven market', icon: Store },
     { href: '/profile/market', label: 'My Listings', desc: 'Manage your marketplace listings', icon: List },

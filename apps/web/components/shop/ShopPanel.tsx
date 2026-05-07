@@ -38,7 +38,7 @@ export default function ShopPanel() {
     try {
       const success = await purchaseItem(key);
       if (success) {
-        // Show floating text for gold spent
+        // Show floating text for coins spent
         const id = floatIdCounter;
         setFloatIdCounter(id + 1);
         setSpendFloats((prev) => [...prev, { id, amount: price }]);
@@ -76,7 +76,7 @@ export default function ShopPanel() {
 
   return (
     <>
-      {/* Floating gold spend animations */}
+      {/* Floating coins spend animations */}
       {spendFloats.map((float) => (
         <GoldSpendFloat
           key={float.id}
@@ -145,7 +145,7 @@ export default function ShopPanel() {
                     {isPurchasing ? (
                       '⏳ Purchasing...'
                     ) : !canAfford ? (
-                      '⛔ Insufficient Gold'
+                      '⛔ Insufficient Coins'
                     ) : (
                       '🛒 Buy Now'
                     )}

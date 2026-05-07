@@ -17,8 +17,8 @@ export default function DiamondShopPage() {
           <p className="text-subtle mb-6">
             Premium diamond purchases—coming soon. Use diamonds for exclusive items and perks.
           </p>
-          <Link href="/coinshop" className="text-accent hover:underline font-medium">
-            Browse Coin Shop (spend gold on gear)
+          <Link href="/shop" className="text-accent hover:underline font-medium">
+            Browse Items Shop (spend coins on gear)
           </Link>
         </div>
       </div>

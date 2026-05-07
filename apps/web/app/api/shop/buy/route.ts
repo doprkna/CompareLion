@@ -13,7 +13,7 @@ import { equipCompanion } from '@/lib/rpg/companion';
 
 /**
  * POST /api/shop/buy
- * Purchase a shop item with gold
+ * Purchase a shop item with coins
  * Body: { key: string }
  */
 export const POST = safeAsync(async (req: NextRequest) => {
@@ -59,11 +59,11 @@ export const POST = safeAsync(async (req: NextRequest) => {
     return validationError('Item has no price set');
   }
 
-  // Check if user has enough gold (funds field stores gold as Decimal)
+  // Check if user has enough coins (funds field stores legacy `gold` balance)
   const userGold = Number(user.funds);
 
   if (userGold < price) {
-    return validationError(`Not enough gold. Need ${price}, have ${userGold}`);
+    return validationError(`Not enough coins. Need ${price}, have ${userGold}`);
   }
 
   // Handle companion items differently (v0.36.20 - Unified companion system)
@@ -91,7 +91,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       return validationError('You already own this companion');
     }
 
-    // Deduct gold
+    // Deduct coins
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -128,7 +128,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       }
     }
 
-    logger.info(`[Shop] User ${user.id} purchased companion ${companion.name} for ${price} gold`);
+    logger.info(`[Shop] User ${user.id} purchased companion ${companion.name} for ${price} coins`);
 
     const updatedUser = await prisma.user.findUnique({
       where: { id: user.id },
@@ -151,6 +151,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
         icon: companion.icon,
         autoEquipped: !hasEquipped,
       },
+      remainingCoins: Number(updatedUser?.funds || 0),
       remainingGold: Number(updatedUser?.funds || 0),
       pricePaid: price,
     });
@@ -192,7 +193,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     });
   }
 
-  // Deduct gold (funds field)
+  // Deduct coins (funds field)
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -203,7 +204,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
     },
   });
 
-  logger.info(`[Shop] User ${user.id} purchased ${item.name} for ${price} gold`);
+  logger.info(`[Shop] User ${user.id} purchased ${item.name} for ${price} coins`);
 
   return successResponse({
     success: true,
@@ -214,6 +215,7 @@ export const POST = safeAsync(async (req: NextRequest) => {
       name: item.name,
       emoji: item.emoji || item.icon,
     },
+    remainingCoins: Number(updatedUser.funds),
     remainingGold: Number(updatedUser.funds),
     pricePaid: price,
   });

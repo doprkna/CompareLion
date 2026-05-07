@@ -24,7 +24,7 @@ export default function CoinShopPage() {
                   <ShoppingBag className="h-6 w-6 sm:h-8 sm:w-8 text-accent" />
                   <h1 className="text-3xl sm:text-4xl font-bold text-text">Coin Shop</h1>
                 </div>
-                <p className="text-subtle text-sm sm:text-base">Spend gold on items and gear</p>
+                <p className="text-subtle text-sm sm:text-base">Spend coins on items and gear</p>
               </div>
               <WalletBar showDiamonds />
             </div>
@@ -32,9 +32,9 @@ export default function CoinShopPage() {
           <RpgPanelLayout title="Available Items" icon={<ShoppingBag className="h-5 w-5 text-purple-400" />}>
             <ShopPanel />
           </RpgPanelLayout>
-          <RpgPanelLayout title="Earning Gold" className="bg-gray-800/40">
+          <RpgPanelLayout title="Earning Coins" className="bg-gray-800/40">
             <p className="text-center text-sm text-gray-300">
-              Earn gold by defeating enemies in combat, completing achievements, and more.
+              Earn coins by defeating enemies in combat, completing achievements, and more.
             </p>
           </RpgPanelLayout>
         </div>

@@ -41,7 +41,7 @@ export function FlowRewardScreen({ open, onClose, data }: FlowRewardScreenProps)
     rewards.push({
       type: 'gold',
       amount: data.gold,
-      label: 'Gold',
+      label: 'Coins',
       emoji: '💰',
       color: '#fbbf24',
     });
@@ -51,7 +51,7 @@ export function FlowRewardScreen({ open, onClose, data }: FlowRewardScreenProps)
     rewards.push({
       type: 'diamonds',
       amount: data.diamonds,
-      label: 'Gems',
+      label: 'Diamonds',
       emoji: '💎',
       color: '#a855f7',
     });
@@ -115,7 +115,7 @@ export function FlowRewardScreen({ open, onClose, data }: FlowRewardScreenProps)
   }
   
   actions.push({
-    label: 'Back to Main',
+    label: 'Go to dashboard',
     onClick: () => {
       data.onBackToMain?.();
       onClose();

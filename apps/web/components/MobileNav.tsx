@@ -31,7 +31,7 @@ export function MobileNav() {
 
   const navItems = [
     { href: '/main', label: 'Dashboard', icon: Home },
-    { href: '/flow', label: 'Flow', icon: Zap },
+    { href: '/flow-demo', label: 'Flow', icon: Zap },
     { href: '/friends', label: 'Messages', icon: MessageCircle },
     { href: '/profile', label: 'Profile', icon: User },
     { href: '/settings', label: 'Settings', icon: Settings },

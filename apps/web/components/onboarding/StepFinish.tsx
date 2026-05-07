@@ -49,7 +49,7 @@ export function StepFinish({ data, onSubmit, onBack, submitting }: StepFinishPro
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       transition={{ duration: 0.4 }}
-      className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center"
+      className="bg-card rounded-2xl border border-border shadow-lg p-8 md:p-12 text-center"
     >
       {/* Icon */}
       <div className="mb-6">
@@ -57,44 +57,44 @@ export function StepFinish({ data, onSubmit, onBack, submitting }: StepFinishPro
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 0.5, repeat: 2 }}
         >
-          <PartyPopper size={64} className="mx-auto text-purple-600" />
+          <PartyPopper size={64} className="mx-auto text-accent" />
         </motion.div>
       </div>
 
       {/* Header */}
-      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+      <h1 className="text-4xl md:text-5xl font-bold text-text mb-6">
         Welcome to the chaos!
       </h1>
 
       {/* Summary */}
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 mb-8 text-left">
-        <p className="text-lg text-gray-700 mb-4">
+      <div className="bg-bg rounded-xl border border-border p-6 mb-8 text-left">
+        <p className="text-lg text-text/90 mb-4">
           So you're a{' '}
-          <strong className="text-purple-700">
+          <strong className="text-accent">
             {ageGroup?.shortLabel || 'Mystery Person'}
           </strong>
           {' '}from{' '}
-          <strong className="text-purple-700">
+          <strong className="text-accent">
             {region?.label.replace(region.flag, '').trim() || 'Somewhere'}
           </strong>
           {interests.length > 0 && (
             <>
               , into{' '}
-              <strong className="text-purple-700">
+              <strong className="text-accent">
                 {interests.map(i => i.label).join(', ')}
               </strong>
             </>
           )}
           {', '}
           who likes it{' '}
-          <strong className="text-purple-700">
+          <strong className="text-accent">
             {tone?.id || 'random'}
           </strong>
           .
         </p>
 
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Sparkles size={16} className="text-purple-500" />
+        <div className="flex items-center gap-2 text-sm text-subtle">
+          <Sparkles size={16} className="text-accent" />
           <span>Let's compare your life choices!</span>
         </div>
       </div>
@@ -107,8 +107,8 @@ export function StepFinish({ data, onSubmit, onBack, submitting }: StepFinishPro
           w-full py-4 rounded-xl text-white font-semibold text-lg
           transition-all shadow-lg
           ${submitting
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 hover:shadow-xl hover:scale-105'
+            ? 'bg-card/70 text-subtle cursor-not-allowed'
+            : 'bg-accent hover:bg-accent/90 hover:shadow-xl hover:scale-[1.01]'
           }
         `}
       >
@@ -130,7 +130,7 @@ export function StepFinish({ data, onSubmit, onBack, submitting }: StepFinishPro
       <button
         onClick={onBack}
         disabled={submitting}
-        className="mt-4 flex items-center gap-2 text-gray-500 hover:text-gray-700 transition mx-auto"
+        className="mt-4 flex items-center gap-2 text-subtle hover:text-text transition mx-auto"
       >
         <ArrowLeft size={16} />
         Back

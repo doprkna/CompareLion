@@ -252,7 +252,7 @@ export default function CompanionsPage() {
                         {companion.bonuses.gold > 0 && (
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <Coins className="h-3 w-3" />
-                            +{companion.bonuses.gold}% Gold
+                            +{companion.bonuses.gold}% Coins
                           </div>
                         )}
                       </div>

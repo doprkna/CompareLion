@@ -63,7 +63,7 @@ export default function NavLinks() {
             href="/login"
             className="text-text hover:text-accent font-medium transition-colors"
           >
-            Login
+            Log in
           </Link>
           <Button
             asChild
@@ -79,8 +79,8 @@ export default function NavLinks() {
 
   const coreLinks = [
     { href: "/landing", label: "Landing" },
-    { href: "/main", label: "Home" },
-    { href: "/flow-demo", label: "Play" },
+    { href: "/main", label: "Dashboard" },
+    { href: "/flow-demo", label: "Flow" },
     { href: "/friends", label: "Social" },
     { href: "/profile", label: "Profile" },
   ];

@@ -65,7 +65,7 @@ export default function OnboardingFlow({ initialData, onComplete }: OnboardingFl
       });
       
       if (onComplete) onComplete();
-      else router.push('/daily');
+      else router.push('/main');
     } catch (error) {
       console.error('Skip failed:', error);
     }
@@ -90,7 +90,7 @@ export default function OnboardingFlow({ initialData, onComplete }: OnboardingFl
       localStorage.setItem('onboardingCompleted', 'true');
       
       if (onComplete) onComplete();
-      else router.push('/daily');
+      else router.push('/main');
     } catch (error) {
       console.error('Submit failed:', error);
       alert('Something went wrong. Please try again.');
@@ -103,19 +103,19 @@ export default function OnboardingFlow({ initialData, onComplete }: OnboardingFl
   const progress = (step / totalSteps) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4">
       {/* Skip button */}
       <button
         onClick={skip}
-        className="absolute top-4 right-4 text-sm text-gray-500 hover:text-gray-700 transition"
+        className="absolute top-4 right-4 text-sm text-subtle hover:text-text transition"
       >
         Too cool for setup? Skip → chaos mode
       </button>
 
       {/* Progress bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-card/70">
         <motion.div
-          className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+          className="h-full bg-accent"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3 }}

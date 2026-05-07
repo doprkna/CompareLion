@@ -31,18 +31,18 @@ export function StepRegion({ value, onSelect, onBack }: StepRegionProps) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl shadow-2xl p-8 md:p-12"
+      className="bg-card rounded-2xl border border-border shadow-lg p-8 md:p-12"
     >
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+        <h1 className="text-4xl md:text-5xl font-bold text-text mb-3">
           <MapPin className="inline-block mb-1" size={40} /> Where are you from?
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-subtle text-lg">
           We'll tailor questions to your region
         </p>
         {detected && detected !== 'GLOBAL' && (
-          <p className="text-sm text-purple-600 mt-2">
+          <p className="text-sm text-accent mt-2">
             💡 Auto-detected: {REGIONS.find(r => r.id === detected)?.label}
           </p>
         )}
@@ -56,17 +56,17 @@ export function StepRegion({ value, onSelect, onBack }: StepRegionProps) {
             onClick={() => onSelect(region.id as RegionId)}
             className={`
               p-4 rounded-xl border-2 text-left transition-all
-              hover:border-purple-500 hover:shadow-lg hover:scale-105
+              hover:border-accent/60 hover:shadow-md
               ${value === region.id
-                ? 'border-purple-500 bg-purple-50 shadow-lg'
+                ? 'border-accent bg-accent/10 shadow-md'
                 : detected === region.id
-                ? 'border-purple-300 bg-purple-50/50'
-                : 'border-gray-200 bg-white'
+                ? 'border-accent/50 bg-accent/5'
+                : 'border-border bg-card/80'
               }
             `}
           >
             <span className="text-2xl mr-3">{region.flag}</span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-text">
               {region.label.replace(region.flag, '').trim()}
             </span>
           </button>
@@ -76,7 +76,7 @@ export function StepRegion({ value, onSelect, onBack }: StepRegionProps) {
       {/* Back button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition"
+        className="flex items-center gap-2 text-subtle hover:text-text transition"
       >
         <ArrowLeft size={16} />
         Back

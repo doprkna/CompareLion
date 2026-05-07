@@ -45,7 +45,7 @@ export default function CurrencyPackCard({ product }: { product: CurrencyPackPro
       <div>
         <h3 className="text-lg font-semibold">{product.title}</h3>
         {product.description && <p className="text-sm text-gray-600">{product.description}</p>}
-        <div className="mt-2 font-medium text-blue-600">+{product.payload.amount} Funds</div>
+        <div className="mt-2 font-medium text-blue-600">+{product.payload.amount} Coins</div>
       </div>
       <div className="mt-4">
         <div className="flex flex-wrap gap-2 mb-2">

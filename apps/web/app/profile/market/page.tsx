@@ -280,7 +280,7 @@ export default function ProfileMarketPage() {
 
             {/* Price */}
             <div>
-              <Label className="text-gray-300">Price (Gold)</Label>
+              <Label className="text-gray-300">Price (Coins)</Label>
               <Input
                 type="number"
                 min="1"

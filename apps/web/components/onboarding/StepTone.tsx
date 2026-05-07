@@ -22,14 +22,14 @@ export function StepTone({ value, onSelect, onBack }: StepToneProps) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl shadow-2xl p-8 md:p-12"
+      className="bg-card rounded-2xl border border-border shadow-lg p-8 md:p-12"
     >
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+        <h1 className="text-4xl md:text-5xl font-bold text-text mb-3">
           🎭 What's your vibe?
         </h1>
-        <p className="text-gray-600 text-lg">
+        <p className="text-subtle text-lg">
           How should we talk to you?
         </p>
       </div>
@@ -42,18 +42,18 @@ export function StepTone({ value, onSelect, onBack }: StepToneProps) {
             onClick={() => onSelect(tone.id as ToneId)}
             className={`
               p-6 rounded-xl border-2 text-left transition-all
-              hover:border-purple-500 hover:shadow-lg hover:scale-105
+              hover:border-accent/60 hover:shadow-md
               ${value === tone.id
-                ? 'border-purple-500 bg-purple-50 shadow-lg'
-                : 'border-gray-200 bg-white'
+                ? 'border-accent bg-accent/10 shadow-md'
+                : 'border-border bg-card/80'
               }
             `}
           >
             <div className="text-4xl mb-3">{tone.emoji}</div>
-            <div className="font-semibold text-gray-900 mb-2 text-lg">
+            <div className="font-semibold text-text mb-2 text-lg">
               {tone.label}
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-subtle">
               {tone.desc}
             </div>
           </button>
@@ -63,7 +63,7 @@ export function StepTone({ value, onSelect, onBack }: StepToneProps) {
       {/* Back button */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition"
+        className="flex items-center gap-2 text-subtle hover:text-text transition"
       >
         <ArrowLeft size={16} />
         Back

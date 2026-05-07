@@ -152,7 +152,7 @@ export default function AchievementsPage() {
                                 <div className="text-purple-300">+{achievement.xpReward} XP</div>
                               )}
                               {achievement.rewardGold > 0 && (
-                                <div className="text-yellow-300">+{achievement.rewardGold} gold</div>
+                                <div className="text-yellow-300">+{achievement.rewardGold} coins</div>
                               )}
                               {achievement.unlockedAt && (
                                 <div className="text-gray-300 text-xs mt-1">

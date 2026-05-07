@@ -9,10 +9,10 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/apiBase';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { ShoppingBag, Coins, Package, Palette } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { FeatureGuard } from '@/components/FeatureGuard';
-import PlaceholderPage from '@/components/PlaceholderPage';
 import { isAdminView } from '@parel/core/utils/isAdminView';
 import { useRegionStore } from '@/store/useRegionStore';
 
@@ -78,8 +78,8 @@ function ShopPageContent() {
   async function handlePurchase(item: ShopItem) {
     if (userFunds < item.goldPrice) {
       toast({
-        title: 'Insufficient Funds',
-        description: `You need ${item.goldPrice} gold but only have ${userFunds} gold.`,
+        title: 'Insufficient Coins',
+        description: `You need ${item.goldPrice} coins but only have ${userFunds} coins.`,
         variant: 'destructive',
       });
       return;
@@ -106,7 +106,7 @@ function ShopPageContent() {
         } else {
           toast({
             title: 'Purchase Successful!',
-            description: `Bought ${item.emoji} ${item.name} for ${item.goldPrice} gold`,
+            description: `Bought ${item.emoji} ${item.name} for ${item.goldPrice} coins`,
           });
         }
         
@@ -122,11 +122,6 @@ function ShopPageContent() {
     } catch (error) {
       console.error('Purchase error:', error);
     }
-  }
-
-  // Admin fallback for empty shop
-  if (!loading && items.length === 0 && isAdminView()) {
-    return <PlaceholderPage name="Shop Empty - Run reseed DB from admin panel" />;
   }
 
   const rarityColors: Record<string, string> = {
@@ -145,7 +140,7 @@ function ShopPageContent() {
           <div className="flex items-center gap-3">
             <ShoppingBag className="h-8 w-8 text-accent" />
             <div>
-              <h1 className="text-4xl font-bold text-text">Item Shop</h1>
+              <h1 className="text-4xl font-bold text-text">Shop</h1>
               <p className="text-subtle">Purchase items to enhance your character</p>
             </div>
           </div>
@@ -155,17 +150,17 @@ function ShopPageContent() {
             <div className="flex items-center gap-2">
               <Coins className="h-6 w-6 text-yellow-500" />
               <div>
-                <div className="text-xs text-subtle">Your Gold</div>
+                <div className="text-xs text-subtle">Your Coins</div>
                 <div className="text-2xl font-bold text-accent">{userFunds}</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Shop Items Grid */}
+        {/* Items Shop (Coins) */}
         <Card className="bg-card border-2 border-border text-text">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Available Items</CardTitle>
+            <CardTitle className="text-xl font-semibold">Items Shop (Coins)</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -215,16 +210,35 @@ function ShopPageContent() {
               <div className="text-center py-12">
                 <Package className="h-16 w-16 mx-auto text-subtle opacity-50 mb-4" />
                 <p className="text-subtle text-lg">No items available in shop</p>
-                <p className="text-subtle text-sm mt-2">Check back later or run reseed from admin panel</p>
+                {isAdminView() ? (
+                  <p className="text-subtle text-sm mt-2">
+                    Check inventory seed/admin setup, then refresh to verify the shop catalog.
+                  </p>
+                ) : (
+                  <p className="text-subtle text-sm mt-2">Check back soon for new items.</p>
+                )}
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Premium Shop (Diamonds) */}
+        <Card className="bg-card border border-border text-text">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Premium Shop (Diamonds)</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <p className="text-sm text-subtle">Use diamonds for premium purchases and special offers.</p>
+            <Button type="button" variant="outline" className="mt-4" asChild>
+              <Link href="/diamondshop">Open premium shop</Link>
+            </Button>
           </CardContent>
         </Card>
 
         {/* Shop Info */}
         <Card className="bg-card border border-border text-text">
           <CardContent className="p-4 text-center text-subtle text-sm">
-            Items are permanent and can be equipped in your Profile. Earn gold by completing flows and achievements!
+            Coins are earned through gameplay. Diamonds are premium currency.
           </CardContent>
         </Card>
       </div>

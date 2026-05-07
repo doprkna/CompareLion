@@ -8,8 +8,8 @@
 // Core user routes (v0.35.9 - added Landing)
 export const coreRoutes = [
   { path: '/landing', label: 'Landing' },
-  { path: '/main', label: 'Home' },
-  { path: '/flow-demo', label: 'Play' },
+  { path: '/main', label: 'Dashboard' },
+  { path: '/flow-demo', label: 'Flow' },
   { path: '/friends', label: 'Social' },
   { path: '/profile', label: 'Profile' },
 ];
@@ -31,8 +31,8 @@ export const adminRoutes = [
 // All routes (for backwards compatibility)
 export const routes = [
   { path: '/', label: 'Landing' },
-  { path: '/login', label: 'Login' },
-  { path: '/signup', label: 'Sign Up' },
+  { path: '/login', label: 'Log in' },
+  { path: '/signup', label: 'Create account' },
   ...coreRoutes,
   { path: '/activity', label: 'Activity' },
   { path: '/leaderboard', label: 'Leaderboard' },

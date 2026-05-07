@@ -43,17 +43,17 @@ export default function OnboardingPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50">
+      <div className="min-h-screen flex items-center justify-center bg-bg">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-accent border-t-transparent mx-auto mb-4"></div>
+          <p className="text-subtle">Loading...</p>
         </div>
       </div>
     );
   }
 
   const handleComplete = () => {
-    router.push('/daily');
+    router.push('/main');
   };
 
   return <OnboardingFlow initialData={initialData} onComplete={handleComplete} />;

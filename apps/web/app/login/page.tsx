@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { isFromDemoResultHandoff } from '@/lib/auth/demoResultHandoff';
 import { useSession, signIn } from 'next-auth/react';
@@ -15,15 +16,31 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromDemoResult = isFromDemoResultHandoff(searchParams.get('from'));
+  const signupHref = fromDemoResult ? '/signup?from=demo-result' : '/signup';
   const [loading, setLoading] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(false);
-  
-  // Redirect if already logged in (v0.35.9 - redirect to landing)
-  useEffect(() => {
-    if (status === 'authenticated' && session) {
-      router.push('/landing');
+  const nextParam = searchParams.get('next');
+  const nextAfterLogin = nextParam?.startsWith('/') ? nextParam : null;
+
+  const resolveDestination = async (): Promise<string> => {
+    if (nextAfterLogin) return nextAfterLogin;
+    try {
+      const res = await fetch('/api/onboarding/start', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      return data?.data?.currentState?.onboardingCompleted ? '/main' : '/onboarding';
+    } catch {
+      return '/main';
     }
-  }, [status, session, router]);
+  };
+  
+  // Redirect if already logged in based on onboarding state.
+  useEffect(() => {
+    if (status !== 'authenticated' || !session) return;
+    void (async () => {
+      const destination = await resolveDestination();
+      router.replace(destination);
+    })();
+  }, [status, session, router, nextAfterLogin]);
 
   useEffect(() => {
     // Load hCaptcha script if enabled
@@ -52,7 +69,7 @@ export default function LoginPage() {
       
       if (result?.error) {
         // Show specific error message from our auth configuration
-        let errorMessage = 'Login failed. Please try again.';
+        let errorMessage = 'Log in failed. Please try again.';
         
         if (result.error === 'CredentialsSignin') {
           errorMessage = 'Invalid email or password. Please try again.';
@@ -74,11 +91,12 @@ export default function LoginPage() {
       }
       
       if (result?.ok) {
-        // Login successful - redirect to landing (v0.35.9)
-        router.push('/landing');
+        // Login successful - route to onboarding if incomplete, otherwise main.
+        const destination = await resolveDestination();
+        router.push(destination);
         router.refresh(); // Refresh to update session
       } else {
-        setError('Login failed. Please try again.');
+        setError('Log in failed. Please try again.');
         setLoading(false);
       }
     } catch (err) {
@@ -212,7 +230,7 @@ export default function LoginPage() {
                 className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading || (showCaptcha && !captchaToken)}
               >
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? 'Logging in...' : 'Log in'}
               </button>
             </form>
             {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
@@ -223,6 +241,12 @@ export default function LoginPage() {
             >
               Forgot password?
             </button>
+            <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+              New to PareL?{' '}
+              <Link href={signupHref} className="text-blue-500 hover:text-blue-400 font-medium">
+                Create account
+              </Link>
+            </p>
           </>
         )}
       </div>

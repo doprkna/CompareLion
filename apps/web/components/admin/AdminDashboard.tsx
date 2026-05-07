@@ -7,6 +7,9 @@ import Link from "next/link";
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [seedRunning, setSeedRunning] = useState(false);
+  const [seedStatus, setSeedStatus] = useState<'idle' | 'running' | 'success' | 'error'>('idle');
+  const [seedStatusMessage, setSeedStatusMessage] = useState('');
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [showAuditLogs, setShowAuditLogs] = useState(false);
   const [visitStats, setVisitStats] = useState<{
@@ -53,6 +56,41 @@ export default function AdminDashboard() {
     }
   }
 
+  async function runFullSeed() {
+    if (seedRunning) return;
+    setSeedRunning(true);
+    setSeedStatus('running');
+    setSeedStatusMessage('Full seed is running. This may take a moment.');
+    setLogs((l) => [`⏳ Run Seeder 2.0: Started`, ...l].slice(0, 50));
+
+    try {
+      const wrap = await apiFetch('/api/admin/seed-db', { method: 'POST' });
+      const data = wrap.data as { success?: boolean; error?: string; message?: string } | undefined;
+      const errText = (wrap.error || data?.error || '').trim();
+      const safeErr = errText.length > 200 ? `${errText.slice(0, 200)}…` : errText;
+
+      const success = wrap.ok && data?.success !== false;
+      if (success) {
+        setSeedStatus('success');
+        setSeedStatusMessage('Seed completed. Refreshing data…');
+        setLogs((l) => [`✅ Run Seeder 2.0: Completed`, ...l].slice(0, 50));
+        await Promise.all([loadAuditLogs(), loadVisitStats()]);
+      } else {
+        setSeedStatus('error');
+        setSeedStatusMessage(`Seed failed: ${safeErr || 'Unknown error'}`);
+        setLogs((l) => [`❌ Run Seeder 2.0: Failed — ${safeErr || 'Unknown error'}`, ...l].slice(0, 50));
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const safeErr = msg.length > 200 ? `${msg.slice(0, 200)}…` : msg;
+      setSeedStatus('error');
+      setSeedStatusMessage(`Seed failed: ${safeErr || 'Network error'}`);
+      setLogs((l) => [`❌ Run Seeder 2.0: Error — ${safeErr || 'Network error'}`, ...l].slice(0, 50));
+    } finally {
+      setSeedRunning(false);
+    }
+  }
+
   async function loadAuditLogs() {
     try {
       const res = await apiFetch("/api/audit");
@@ -64,45 +102,25 @@ export default function AdminDashboard() {
     }
   }
 
-  useEffect(() => {
-    loadAuditLogs();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await apiFetch("/api/admin/visits");
-        if ((res as any).ok && (res as any).data) {
-          const d = (res as any).data;
-          setVisitStats({
-            totalVisits: d.totalVisits ?? 0,
-            visitsToday: d.visitsToday ?? 0,
-            uniqueUsersToday: d.uniqueUsersToday ?? 0,
-            activeUsers24h: d.activeUsers24h ?? 0,
-            activeLoggedUsers24h: d.activeLoggedUsers24h ?? 0,
-            anonymousVisits24h: d.anonymousVisits24h ?? 0,
-            activeUsers7d: d.activeUsers7d ?? 0,
-            activeLoggedUsers7d: d.activeLoggedUsers7d ?? 0,
-            anonymousUsers7d: d.anonymousUsers7d ?? 0,
-            returningUsers7d: d.returningUsers7d ?? 0,
-            returningUsersPct7d: d.returningUsersPct7d ?? 0,
-          });
-        } else {
-          setVisitStats({
-            totalVisits: 0,
-            visitsToday: 0,
-            uniqueUsersToday: 0,
-            activeUsers24h: 0,
-            activeLoggedUsers24h: 0,
-            anonymousVisits24h: 0,
-            activeUsers7d: 0,
-            activeLoggedUsers7d: 0,
-            anonymousUsers7d: 0,
-            returningUsers7d: 0,
-            returningUsersPct7d: 0,
-          });
-        }
-      } catch {
+  async function loadVisitStats() {
+    try {
+      const res = await apiFetch("/api/admin/visits");
+      if ((res as any).ok && (res as any).data) {
+        const d = (res as any).data;
+        setVisitStats({
+          totalVisits: d.totalVisits ?? 0,
+          visitsToday: d.visitsToday ?? 0,
+          uniqueUsersToday: d.uniqueUsersToday ?? 0,
+          activeUsers24h: d.activeUsers24h ?? 0,
+          activeLoggedUsers24h: d.activeLoggedUsers24h ?? 0,
+          anonymousVisits24h: d.anonymousVisits24h ?? 0,
+          activeUsers7d: d.activeUsers7d ?? 0,
+          activeLoggedUsers7d: d.activeLoggedUsers7d ?? 0,
+          anonymousUsers7d: d.anonymousUsers7d ?? 0,
+          returningUsers7d: d.returningUsers7d ?? 0,
+          returningUsersPct7d: d.returningUsersPct7d ?? 0,
+        });
+      } else {
         setVisitStats({
           totalVisits: 0,
           visitsToday: 0,
@@ -117,7 +135,29 @@ export default function AdminDashboard() {
           returningUsersPct7d: 0,
         });
       }
-    })();
+    } catch {
+      setVisitStats({
+        totalVisits: 0,
+        visitsToday: 0,
+        uniqueUsersToday: 0,
+        activeUsers24h: 0,
+        activeLoggedUsers24h: 0,
+        anonymousVisits24h: 0,
+        activeUsers7d: 0,
+        activeLoggedUsers7d: 0,
+        anonymousUsers7d: 0,
+        returningUsers7d: 0,
+        returningUsersPct7d: 0,
+      });
+    }
+  }
+
+  useEffect(() => {
+    loadAuditLogs();
+  }, []);
+
+  useEffect(() => {
+    void loadVisitStats();
   }, []);
 
   return (
@@ -275,15 +315,35 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-bold text-text mb-4">🌱 Seeder 2.0</h2>
             <div className="space-y-2">
               <button
-                onClick={() => trigger("seed-db", "Run Seeder 2.0")}
-                disabled={loading}
+                onClick={runFullSeed}
+                disabled={loading || seedRunning}
                 className="w-full bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 font-bold"
               >
-                🚀 Run Full Seed
+                {seedRunning ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-white/80 border-t-transparent animate-spin" />
+                    Seeding…
+                  </span>
+                ) : (
+                  '🚀 Run Full Seed'
+                )}
               </button>
               <p className="text-subtle text-xs mt-2">
                 Creates demo users, messages, questions, and badges in one go
               </p>
+              {seedStatus !== 'idle' ? (
+                <p className={`text-xs mt-1 ${
+                  seedStatus === 'running'
+                    ? 'text-subtle'
+                    : seedStatus === 'success'
+                      ? 'text-green-400'
+                      : 'text-destructive'
+                }`}>
+                  {seedStatusMessage}
+                </p>
+              ) : (
+                <p className="text-subtle text-xs mt-1">Ready</p>
+              )}
             </div>
           </div>
 
