@@ -507,48 +507,105 @@ model Question {
   text              String
   normalizedText    String?
   difficulty        String?
-  source            QuestionSource     @default(ai)
-  approved          Boolean            @default(false)
+  source            QuestionSource              @default(ai)
+  approved          Boolean                     @default(false)
   reviewNotes       String?
   createdByUserId   String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  id                String             @id @default(cuid())
+  createdAt         DateTime                    @default(now())
+  updatedAt         DateTime                    @updatedAt
+  id                String                      @id @default(cuid())
   categoryId        String
   subCategoryId     String?
   subSubCategoryId  String?
   relatedToId       String?
   metadata          Json?
-  currentVersionId  String?            @unique
+  currentVersionId  String?                     @unique
   ssscId            String
+  // Canonical import / lifecycle (Question SoT)
+  responseType      QuestionType?
+  outcome           String?
+  multiplication    Int?
+  ageCategory       String?
+  gender            String?
+  sourceAuthor      String?
+  isWildcard        Boolean                     @default(false)
+  wildcardLabel     String?
+  lifecycleStatus   QuestionLifecycleStatus     @default(DRAFT)
+  isSensitive       Boolean                     @default(false)
+  sensitivityLevel  QuestionSensitivityLevel    @default(NONE)
+  qualityScore      Float?
+  approvedAt        DateTime?
+  publishedAt       DateTime?
+  archivedAt        DateTime?
+  importedAt        DateTime?
+  sourceName        String?
+  sourceRowNumber   Int?
+  externalSourceLabel String?
   // Localization (v0.27.0 - Phase M)
   lang              Lang?
-  region            String?            @default("global")
-  isLocalized       Boolean            @default(false)
+  region            String?                     @default("global")
+  isLocalized       Boolean                     @default(false)
   // Locale code (v0.27.1)
-  localeCode        String?            @default("global")
+  localeCode        String?                     @default("global")
   // Moderation (v0.27.6)
-  isFlagged         Boolean            @default(false)
+  isFlagged         Boolean                     @default(false)
   flagReason        String?
-  visibility        ContentVisibility  @default(PUBLIC)
+  visibility        ContentVisibility           @default(PUBLIC)
   // Reactions (v0.27.3)
-  reactionsLike     Int                @default(0)
-  reactionsLaugh    Int                @default(0)
-  reactionsThink    Int                @default(0)
+  reactionsLike     Int                         @default(0)
+  reactionsLaugh    Int                         @default(0)
+  reactionsThink    Int                         @default(0)
   userQuestions     UserQuestion[]
-  versions          QuestionVersion[]  @relation("AllVersions")
-  currentVersion    QuestionVersion?   @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  relatedTo         Question?          @relation("RelatedTo", fields: [relatedToId], references: [id])
-  relatedQuestions  Question[]         @relation("RelatedTo")
-  sssc              SssCategory        @relation("SsscQuestions", fields: [ssscId], references: [id])
+  versions          QuestionVersion[]           @relation("AllVersions")
+  currentVersion    QuestionVersion?            @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  relatedTo         Question?                   @relation("RelatedTo", fields: [relatedToId], references: [id])
+  relatedQuestions  Question[]                  @relation("RelatedTo")
+  sssc              SssCategory                 @relation("SsscQuestions", fields: [ssscId], references: [id])
   trendingQuestions TrendingQuestion[]
+  stats             QuestionStats?
+  flowProjection    FlowQuestion?               @relation("QuestionFlowProjection")
+  flowServeEvents   FlowQuestionServeEvent[]
+  flowReports       QuestionReport[]
 
+  @@unique([sourceName, sourceRowNumber])
   @@index([ssscId, approved])
+  @@index([ssscId, lifecycleStatus])
+  @@index([lifecycleStatus])
   @@index([lang, region])
   @@index([localeCode])
   @@index([visibility])
   @@index([region, createdAt(sort: Desc)])
   @@map("questions")
+}
+
+model QuestionStats {
+  questionId   String   @id
+  usageCount   Int      @default(0)
+  answerCount  Int      @default(0)
+  reportCount  Int      @default(0)
+  updatedAt    DateTime @updatedAt
+  question     Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("question_stats")
+}
+
+model FlowQuestionServeEvent {
+  id               String        @id @default(cuid())
+  flowQuestionId   String
+  sourceQuestionId String?
+  userId           String?
+  sessionId        String?
+  context          String?       @default("flow")
+  metadata         Json?
+  servedAt         DateTime      @default(now())
+  flowQuestion     FlowQuestion  @relation(fields: [flowQuestionId], references: [id], onDelete: Cascade)
+  sourceQuestion   Question?     @relation(fields: [sourceQuestionId], references: [id], onDelete: SetNull)
+
+  @@index([flowQuestionId])
+  @@index([sourceQuestionId])
+  @@index([userId])
+  @@index([servedAt])
+  @@map("flow_question_serve_events")
 }
 
 model QuestionVersion {
@@ -617,6 +674,7 @@ model QuestionGeneration {
 model FlowQuestion {
   id              String               @id @default(cuid())
   categoryId      String?
+  sourceQuestionId String?             @unique
   locale          String               @default("en")
   tags            String[]             @default([]) // v0.47.13 - for distance rules / semantic clustering
   arcStep         String?              // v0.47.17 - entry|context|reflection|comparison|wildcard (C21)
@@ -632,13 +690,17 @@ model FlowQuestion {
   updatedAt       DateTime            @updatedAt
   options         FlowQuestionOption[]
   category        SssCategory?         @relation("FlowQuestions", fields: [categoryId], references: [id])
+  sourceQuestion  Question?            @relation("QuestionFlowProjection", fields: [sourceQuestionId], references: [id], onDelete: SetNull)
   responses       UserResponse[]
   bookmarks       QuestionBookmark[]
   challenges      QuestionChallenge[]
   reactions       QuestionReaction[]
+  serveEvents     FlowQuestionServeEvent[]
+  reports         QuestionReport[]
 
   @@index([categoryId, isActive])
   @@index([locale, isActive])
+  @@index([sourceQuestionId])
   @@map("flow_questions")
 }
 
@@ -663,6 +725,29 @@ model OpsRun {
   @@index([type])
   @@index([startedAt])
   @@map("ops_runs")
+}
+
+model QuestionPipelineRun {
+  id               String    @id @default(cuid())
+  jobType          String
+  status           String    @default("RUNNING")
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  durationMs       Int?
+  triggeredBy      String?
+  sourceName       String?
+  recordsProcessed Int       @default(0)
+  recordsCreated   Int       @default(0)
+  recordsUpdated   Int       @default(0)
+  recordsSkipped   Int       @default(0)
+  errorCount       Int       @default(0)
+  summaryJson      Json?
+  errorMessage     String?
+
+  @@index([jobType])
+  @@index([status])
+  @@index([startedAt])
+  @@map("question_pipeline_runs")
 }
 
 model FlowQuestionOption {
@@ -788,15 +873,25 @@ model QuestionChallenge {
   @@map("question_challenges")
 }
 
-// v0.45.3 - Flow question reports (minimal; no moderation yet)
+// v0.45.3 - Flow question reports (minimal; no moderation workflow yet)
 model QuestionReport {
-  id         String   @id @default(cuid())
-  userId     String?
-  questionId String
-  reason     String?
-  createdAt  DateTime @default(now())
+  id               String        @id @default(cuid())
+  userId           String?
+  questionId       String        // FlowQuestion.id
+  sourceQuestionId String?
+  reason           String?
+  details          String?
+  reviewNote       String?
+  status           String        @default("OPEN")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  flowQuestion     FlowQuestion  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  sourceQuestion   Question?     @relation(fields: [sourceQuestionId], references: [id], onDelete: SetNull)
 
   @@index([questionId])
+  @@index([sourceQuestionId])
+  @@index([status])
+  @@index([createdAt])
   @@map("question_reports")
 }
 
@@ -4539,29 +4634,37 @@ model Version {
 model Category {
   id              String           @id @default(cuid())
   name            String
+  externalCId     String?          @unique
   subCategories   SubCategory[]
   userSubmissions UserSubmission[]
 }
 
 model SubCategory {
-  id         String           @id @default(cuid())
-  name       String
-  categoryId String
-  category   Category         @relation(fields: [categoryId], references: [id])
-  subSubs    SubSubCategory[]
+  id            String           @id @default(cuid())
+  name          String
+  categoryId    String
+  externalScId  String?
+  category      Category         @relation(fields: [categoryId], references: [id])
+  subSubs       SubSubCategory[]
+
+  @@unique([categoryId, externalScId])
 }
 
 model SubSubCategory {
-  id            String        @id @default(cuid())
-  name          String
-  subCategoryId String
-  sssCategories SssCategory[]
-  subCategory   SubCategory   @relation(fields: [subCategoryId], references: [id])
+  id             String        @id @default(cuid())
+  name           String
+  subCategoryId  String
+  externalSscId  String?
+  sssCategories  SssCategory[]
+  subCategory    SubCategory   @relation(fields: [subCategoryId], references: [id])
+
+  @@unique([subCategoryId, externalSscId])
 }
 
 model SssCategory {
   id               String               @id @default(cuid())
   name             String
+  externalSssId    String?
   slug             String?              @unique // e.g. "starter" for canonical lookup
   isStarter        Boolean              @default(false)
   visibleInBrowse  Boolean              @default(true) // false = hidden until Level 3
@@ -4584,6 +4687,8 @@ model SssCategory {
   generationJobs   GenerationJob[]
   generationLogs   QuestionGeneration[] @relation("QuestionGenerationLogs")
   questions        Question[]           @relation("SsscQuestions")
+
+  @@unique([subSubCategoryId, externalSssId])
 }
 
 model UserQuestion {
@@ -6504,6 +6609,22 @@ enum QuestionSource {
   ai
   user
   import
+}
+
+enum QuestionLifecycleStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+  REJECTED
+}
+
+enum QuestionSensitivityLevel {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
 }
 
 // Tag type for humor/tone vs content sensitivity

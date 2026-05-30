@@ -5,6 +5,9 @@ import type { PrismaClient } from '@prisma/client';
 
 export type OpsRunType =
   | 'QUESTION_GEN'
+  | 'QUESTION_IMPORT'
+  | 'QUESTION_SYNC'
+  | 'QUESTION_ARCHIVE'
   | 'WIKI_ENRICH'
   | 'SEED'
   | 'API_ERROR'

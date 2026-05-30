@@ -20,11 +20,13 @@ import { ChevronDown, Lock, Settings } from "lucide-react";
 import { isAdmin } from '@/lib/auth/isAdmin';
 import { FeatureGate } from '@/components/FeatureGate';
 import { useFeatureGate } from '@/lib/hooks';
+import { AdminAttentionBadge, useAdminAttention } from '@/components/admin/AdminAttention';
 
 export default function NavLinks() {
   const { data: session, status } = useSession();
   const inviteGate = useFeatureGate('INVITE');
   const adminUser = isAdmin(session?.user);
+  const adminAttention = useAdminAttention();
 
   if (status === 'loading') {
     return (
@@ -240,8 +242,13 @@ export default function NavLinks() {
 
         {adminUser && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="text-destructive hover:text-destructive/80 font-bold transition-colors flex items-center gap-1">
+            <DropdownMenuTrigger className="text-destructive hover:text-destructive/80 font-bold transition-colors flex items-center gap-1.5">
               Admin
+              {adminAttention?.needsAttention ? (
+                <AdminAttentionBadge count={adminAttention.totalAttentionCount} />
+              ) : (
+                <span className="inline-block h-2 w-2 rounded-full bg-transparent" aria-hidden />
+              )}
               <ChevronDown className="h-4 w-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-card border-border">

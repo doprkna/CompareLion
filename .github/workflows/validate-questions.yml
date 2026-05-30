@@ -1,0 +1,55 @@
+name: Question Pipeline Validation
+
+# Manual only — requires a database. Uses ephemeral Postgres in CI (no repo secrets).
+# For dev Neon validation, run locally: pnpm validate:questions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  validate-questions:
+    name: validate:questions
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: parel_questions_validate
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      APP_ENV: dev
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/parel_questions_validate
+      DATABASE_URL_DEV: postgresql://postgres:postgres@localhost:5432/parel_questions_validate
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply migrations
+        run: pnpm prisma:migrate:deploy
+
+      - name: Run question pipeline validation
+        run: pnpm validate:questions

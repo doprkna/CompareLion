@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { AdminAttentionBadge, useAdminAttention } from '@/components/admin/AdminAttention';
 import {
   LayoutDashboard,
   Users,
@@ -13,6 +14,8 @@ import {
   Shield,
   Activity,
   MessageSquare,
+  Layers,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface SidebarNavProps {
@@ -36,6 +39,18 @@ const adminLinks = [
     name: 'Questions',
     href: '/admin/questions',
     icon: HelpCircle,
+    roles: ['ADMIN', 'MODERATOR'],
+  },
+  {
+    name: 'Question Pipeline',
+    href: '/admin/question-pipeline',
+    icon: Layers,
+    roles: ['ADMIN', 'MODERATOR'],
+  },
+  {
+    name: 'Question Reports',
+    href: '/admin/question-reports',
+    icon: AlertTriangle,
     roles: ['ADMIN', 'MODERATOR'],
   },
   {
@@ -78,6 +93,7 @@ const adminLinks = [
 
 export function SidebarNav({ userRole }: SidebarNavProps) {
   const pathname = usePathname();
+  const adminAttention = useAdminAttention();
 
   const filteredLinks = adminLinks.filter(link => 
     link.roles.includes(userRole)
@@ -99,6 +115,9 @@ export function SidebarNav({ userRole }: SidebarNavProps) {
         {filteredLinks.map((link) => {
           const Icon = link.icon;
           const isActive = pathname === link.href;
+          const showBadge =
+            adminAttention?.needsAttention &&
+            (link.href === '/admin' || link.href === '/admin/question-pipeline' || link.href === '/admin/question-reports');
           
           return (
             <Link
@@ -112,7 +131,10 @@ export function SidebarNav({ userRole }: SidebarNavProps) {
               )}
             >
               <Icon className="h-4 w-4" />
-              {link.name}
+              <span className="flex-1">{link.name}</span>
+              {showBadge ? (
+                <AdminAttentionBadge count={adminAttention!.totalAttentionCount} />
+              ) : null}
             </Link>
           );
         })}

@@ -8,6 +8,8 @@
  * pulling db/src into this package's rootDir and breaking tsc -b.
  */
 import { prisma } from '../../db';
+import { incrementQuestionStatsForFlowAnswer } from '../../db/src/questionSource/statsBackfill';
+import { recordFlowQuestionServe } from '../../db/src/questionSource/serveEvent';
 import {
   getRecentQuestionHistory,
   buildHistoryIndex,
@@ -184,7 +186,14 @@ export async function getNextQuestion(
   if (!flowQuestion) {
     return null;
   }
-  
+
+  void recordFlowQuestionServe(prisma, {
+    flowQuestionId: flowQuestion.id,
+    sourceQuestionId: flowQuestion.sourceQuestionId,
+    userId,
+    context: 'flow',
+  });
+
   return {
     id: flowQuestion.id,
     text: flowQuestion.text,
@@ -261,6 +270,7 @@ export async function answerQuestion(
       }
     })
     ]);
+    await incrementQuestionStatsForFlowAnswer(prisma, questionId);
   } catch (error) {
     // Transaction error handling with clearer message
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

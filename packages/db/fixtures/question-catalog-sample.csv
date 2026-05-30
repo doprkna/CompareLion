@@ -1,0 +1,6 @@
+N#,Category,C_ID,Subcategory,SC_ID,Subsubcategory,SSC_ID,ID relations,SSS Category,SSS_ID,Review,Final question text,ResponseType,Options,Outcome,Multiplication,Difficulty,AgeCategory,gender,Author,Wildcard,status,Source,IsSensitive,SensitivityLevel,QualityScore,UsageCount,AnswerCount,Reported Count,CreatedAt,UpdatedAt,ApprovedAt,PublishedAt,ArchivedAt
+1,Personal Life,C-PL,Relationships,SC-REL,Family,SSC-FAM,,Siblings,SSS-SIB,,Do you have any siblings?,SINGLE_CHOICE,,,medium,adult,,,false,draft,import,false,NONE,0.9,,,,,,,,
+2,Habits,C-HAB,Communication,SC-COM,Messages,SSC-MSG,,Reply Speed,SSS-RSP,,How would you rate your reply speed?,SINGLE_CHOICE,1|2|3|4|5,,medium,adult,,,false,draft,import,false,NONE,0.8,,,,,,,,
+3,Preferences,C-PREF,Food,SC-FOOD,Pizza,SSC-PIZ,,Toppings,SSS-TOP,,How often do you order pizza?,SINGLE_CHOICE,Never|Rarely|Sometimes|Often|Always,,easy,adult,,,false,draft,import,false,NONE,0.7,,,,,,,,
+4,Habits,C-HAB,Drinks,SC-DRK,Coffee,SSC-COF,,Daily Coffee,SSS-DCO,,Do you drink coffee daily?,SINGLE_CHOICE,,,medium,adult,,,false,draft,import,false,NONE,0.85,,,,,,,,
+5,Work,C-WORK,Focus,SC-FOC,Environment,SSC-ENV,,Silence,SSS-SIL,,Do you prefer working in silence?,SINGLE_CHOICE,,,medium,adult,,,false,draft,import,false,NONE,0.75,,,,,,,,

@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/apiBase";
 import Link from "next/link";
+import { QuestionPipelineFoundationPanel } from "@/components/admin/QuestionPipelineFoundationPanel";
+import { AdminNeedsAttentionPanel } from "@/components/admin/AdminAttention";
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
@@ -25,6 +27,127 @@ export default function AdminDashboard() {
     returningUsers7d: number;
     returningUsersPct7d: number;
   } | null>(null);
+
+  type QuestionPipelineStatus = {
+    totalQuestions: number;
+    byLifecycle: Record<string, number>;
+    bySourceName: { sourceName: string; count: number }[];
+    publishedQuestions: number;
+    activeFlowQuestions: number;
+    linkedFlowQuestions: number;
+    publishedWithoutProjection: number;
+    flowQuestionsZeroOptions: number;
+    flowQuestionsMissingCategory: number;
+    highSensitivityUnpublished: number;
+    openQuestionReports: number;
+    lastFailedPipelineRun: {
+      id: string;
+      jobType: string;
+      completedAt: string;
+      errorMessage: string | null;
+      sourceName: string | null;
+    } | null;
+    warnings: string[];
+  };
+
+  const [pipelineStatus, setPipelineStatus] = useState<QuestionPipelineStatus | null>(null);
+  const [pipelineLoading, setPipelineLoading] = useState(false);
+  const [pipelineSyncRunning, setPipelineSyncRunning] = useState(false);
+  const [pipelineActionMessage, setPipelineActionMessage] = useState('');
+  const [archiveQuestionId, setArchiveQuestionId] = useState('');
+  const [archiveRunning, setArchiveRunning] = useState(false);
+
+  async function loadQuestionPipeline() {
+    setPipelineLoading(true);
+    try {
+      const wrap = await apiFetch<{ success?: boolean; status?: QuestionPipelineStatus }>(
+        '/api/admin/questions'
+      );
+      if (wrap.ok && wrap.data?.status) {
+        setPipelineStatus(wrap.data.status);
+      }
+    } catch (err) {
+      console.error('Failed to load question pipeline status:', err);
+    } finally {
+      setPipelineLoading(false);
+    }
+  }
+
+  async function syncPublishedQuestions() {
+    if (pipelineSyncRunning) return;
+    setPipelineSyncRunning(true);
+    setPipelineActionMessage('Syncing published Questions → FlowQuestion…');
+    setLogs((l) => ['⏳ Question sync: Started', ...l].slice(0, 50));
+
+    try {
+      const wrap = await apiFetch<{
+        success?: boolean;
+        error?: string;
+        sync?: { flowUpserted?: number; flowSkipped?: number; flowDeactivated?: number };
+        status?: QuestionPipelineStatus;
+      }>('/api/admin/questions', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'sync' }),
+      });
+      const data = wrap.data;
+      const errText = (wrap.error || data?.error || '').trim();
+
+      if (wrap.ok && data?.success !== false) {
+        if (data?.status) setPipelineStatus(data.status);
+        const upserted = data?.sync?.flowUpserted ?? 0;
+        const skipped = data?.sync?.flowSkipped ?? 0;
+        setPipelineActionMessage(`Sync OK — upserted ${upserted}, skipped ${skipped}`);
+        setLogs((l) => [`✅ Question sync: upserted ${upserted}, skipped ${skipped}`, ...l].slice(0, 50));
+      } else {
+        setPipelineActionMessage(`Sync failed: ${errText || 'Unknown error'}`);
+        setLogs((l) => [`❌ Question sync: ${errText || 'Failed'}`, ...l].slice(0, 50));
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setPipelineActionMessage(`Sync failed: ${msg}`);
+      setLogs((l) => [`❌ Question sync: ${msg}`, ...l].slice(0, 50));
+    } finally {
+      setPipelineSyncRunning(false);
+    }
+  }
+
+  async function archiveQuestionById() {
+    const id = archiveQuestionId.trim();
+    if (!id || archiveRunning) return;
+    setArchiveRunning(true);
+    setPipelineActionMessage(`Archiving question ${id}…`);
+
+    try {
+      const wrap = await apiFetch<{
+        success?: boolean;
+        error?: string;
+        archive?: { archived?: number; flowDeactivated?: number };
+        status?: QuestionPipelineStatus;
+      }>('/api/admin/questions', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'archive', questionId: id }),
+      });
+      const data = wrap.data;
+      const errText = (wrap.error || data?.error || '').trim();
+
+      if (wrap.ok && data?.success !== false) {
+        if (data?.status) setPipelineStatus(data.status);
+        const archived = data?.archive?.archived ?? 0;
+        const deactivated = data?.archive?.flowDeactivated ?? 0;
+        setPipelineActionMessage(`Archive OK — archived ${archived}, flow deactivated ${deactivated}`);
+        setLogs((l) => [`✅ Question archive: ${id}`, ...l].slice(0, 50));
+        setArchiveQuestionId('');
+      } else {
+        setPipelineActionMessage(`Archive failed: ${errText || 'Unknown error'}`);
+        setLogs((l) => [`❌ Question archive: ${errText || 'Failed'}`, ...l].slice(0, 50));
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setPipelineActionMessage(`Archive failed: ${msg}`);
+    } finally {
+      setArchiveRunning(false);
+    }
+  }
 
   async function trigger(path: string, label: string) {
     setLoading(true);
@@ -158,6 +281,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     void loadVisitStats();
+    void loadQuestionPipeline();
   }, []);
 
   return (
@@ -169,6 +293,8 @@ export default function AdminDashboard() {
             Manage users, data, and system operations
           </p>
         </div>
+
+        <AdminNeedsAttentionPanel />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* App visits (internal counter) */}
@@ -280,7 +406,127 @@ export default function AdminDashboard() {
           {/* Questions Card */}
           <div className="bg-card border-2 border-border rounded-xl p-6">
             <h2 className="text-xl font-bold text-text mb-4">❓ Questions / Flows</h2>
+
+            <div className="mb-4">
+              <QuestionPipelineFoundationPanel compact showNavLinks={false} />
+            </div>
+
+            <div className="mb-4 p-3 border border-border rounded-lg bg-bg/50 text-sm space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-semibold text-text">Live pipeline counts</span>
+                <Link
+                  href="/admin/question-pipeline"
+                  className="text-xs text-accent hover:underline"
+                >
+                  Full panel →
+                </Link>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs text-subtle">Counts &amp; warnings</span>
+                <button
+                  type="button"
+                  onClick={() => void loadQuestionPipeline()}
+                  disabled={pipelineLoading || pipelineSyncRunning}
+                  className="text-xs text-accent hover:underline disabled:opacity-50"
+                >
+                  {pipelineLoading ? 'Refreshing…' : 'Refresh'}
+                </button>
+              </div>
+              {pipelineStatus ? (
+                <>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-subtle">
+                    <span>Questions total: {pipelineStatus.totalQuestions}</span>
+                    <span>Published: {pipelineStatus.publishedQuestions}</span>
+                    <span>Active FlowQ: {pipelineStatus.activeFlowQuestions}</span>
+                    <span>Linked FlowQ: {pipelineStatus.linkedFlowQuestions}</span>
+                    <span>No projection: {pipelineStatus.publishedWithoutProjection}</span>
+                    <span>Zero options: {pipelineStatus.flowQuestionsZeroOptions}</span>
+                    <span>Missing category: {pipelineStatus.flowQuestionsMissingCategory}</span>
+                    <span>High sens. (unpub.): {pipelineStatus.highSensitivityUnpublished}</span>
+                    <span>Open reports: {pipelineStatus.openQuestionReports}</span>
+                  </div>
+                  <div className="text-xs text-subtle">
+                    Lifecycle:{' '}
+                    {Object.entries(pipelineStatus.byLifecycle)
+                      .map(([k, v]) => `${k}=${v}`)
+                      .join(', ') || 'none'}
+                  </div>
+                  {pipelineStatus.bySourceName.length > 0 ? (
+                    <div className="text-xs text-subtle">
+                      Sources:{' '}
+                      {pipelineStatus.bySourceName
+                        .slice(0, 5)
+                        .map((s) => `${s.sourceName}(${s.count})`)
+                        .join(', ')}
+                    </div>
+                  ) : null}
+                  {pipelineStatus.warnings.length > 0 ? (
+                    <ul className="text-xs text-amber-400 list-disc pl-4 space-y-0.5">
+                      {pipelineStatus.warnings.map((w) => (
+                        <li key={w}>{w}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-xs text-green-400">No pipeline warnings</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-subtle">
+                  {pipelineLoading ? 'Loading pipeline status…' : 'Pipeline status unavailable'}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => void syncPublishedQuestions()}
+                disabled={loading || pipelineSyncRunning}
+                className="w-full bg-card border-2 border-accent text-accent px-3 py-2 rounded-lg hover:bg-accent/10 transition disabled:opacity-50 text-sm"
+              >
+                {pipelineSyncRunning ? 'Syncing…' : 'Sync Published Questions'}
+              </button>
+              {pipelineActionMessage ? (
+                <p className="text-xs text-subtle">{pipelineActionMessage}</p>
+              ) : null}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={archiveQuestionId}
+                  onChange={(e) => setArchiveQuestionId(e.target.value)}
+                  placeholder="Question ID to archive"
+                  className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-border rounded bg-bg text-text"
+                />
+                <button
+                  type="button"
+                  onClick={() => void archiveQuestionById()}
+                  disabled={loading || archiveRunning || !archiveQuestionId.trim()}
+                  className="shrink-0 px-2 py-1.5 text-xs border border-destructive text-destructive rounded hover:bg-destructive/10 disabled:opacity-50"
+                >
+                  {archiveRunning ? '…' : 'Archive'}
+                </button>
+              </div>
+              <p className="text-[11px] text-subtle">
+                CLI: pnpm db:questions:import · publish · archive
+              </p>
+              <p className="text-[11px] text-subtle">
+                Local validation gate: <code className="font-mono">pnpm validate:questions</code>
+              </p>
+            </div>
+
             <div className="space-y-2">
+              <Link
+                href="/admin/question-pipeline"
+                className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center text-sm font-medium"
+              >
+                Question Pipeline hub
+              </Link>
+              <Link
+                href="/admin/question-reports"
+                className="block w-full bg-card border-2 border-amber-500/60 text-amber-400 px-4 py-2 rounded-lg hover:bg-amber-500/10 transition text-center text-sm"
+              >
+                Review Question Reports
+                {pipelineStatus && pipelineStatus.openQuestionReports > 0
+                  ? ` (${pipelineStatus.openQuestionReports} open)`
+                  : ''}
+              </Link>
               <Link
                 href="/admin/questions"
                 className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center"
