@@ -1,3 +1,5 @@
+import type { Prisma } from '@prisma/client';
+
 export interface ImportOption {
   label: string;
   value: string;
@@ -53,19 +55,41 @@ export function getImportOptionsFromMetadata(metadata: unknown): ImportOption[] 
   return parsed.length ? parsed.sort((a, b) => a.order - b.order) : null;
 }
 
+function existingMetadataToInputRecord(
+  existingMetadata: unknown
+): Record<string, Prisma.InputJsonValue> {
+  if (
+    !existingMetadata ||
+    typeof existingMetadata !== 'object' ||
+    Array.isArray(existingMetadata)
+  ) {
+    return {};
+  }
+  const base: Record<string, Prisma.InputJsonValue> = {};
+  for (const [key, value] of Object.entries(existingMetadata)) {
+    if (value !== undefined) {
+      base[key] = value as Prisma.InputJsonValue;
+    }
+  }
+  return base;
+}
+
 export function buildQuestionImportMetadata(
   normalized: { relatedToId?: string; importOptions?: ImportOption[] },
   existingMetadata?: unknown
-): Record<string, unknown> | undefined {
-  const base =
-    existingMetadata && typeof existingMetadata === 'object' && !Array.isArray(existingMetadata)
-      ? { ...(existingMetadata as Record<string, unknown>) }
-      : {};
+): Prisma.InputJsonValue | undefined {
+  const base = existingMetadataToInputRecord(existingMetadata);
 
-  if (normalized.relatedToId) base.relatedToId = normalized.relatedToId;
+  if (normalized.relatedToId) {
+    base.relatedToId = normalized.relatedToId;
+  }
   if (normalized.importOptions?.length) {
-    base.importOptions = normalized.importOptions;
+    base.importOptions = normalized.importOptions.map((opt) => ({
+      label: opt.label,
+      value: opt.value,
+      order: opt.order,
+    }));
   }
 
-  return Object.keys(base).length ? base : undefined;
+  return Object.keys(base).length > 0 ? base : undefined;
 }

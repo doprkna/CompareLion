@@ -104,7 +104,11 @@ export const RunScalarFieldEnumSchema = z.enum(['id','taskId','workflowId','stat
 
 export const IntegrationScalarFieldEnumSchema = z.enum(['id','orgId','type','config','isActive','createdAt','updatedAt']);
 
-export const QuestionScalarFieldEnumSchema = z.enum(['text','normalizedText','difficulty','source','approved','reviewNotes','createdByUserId','createdAt','updatedAt','id','categoryId','subCategoryId','subSubCategoryId','relatedToId','metadata','currentVersionId','ssscId','lang','region','isLocalized','localeCode','isFlagged','flagReason','visibility','reactionsLike','reactionsLaugh','reactionsThink']);
+export const QuestionScalarFieldEnumSchema = z.enum(['text','normalizedText','difficulty','source','approved','reviewNotes','createdByUserId','createdAt','updatedAt','id','categoryId','subCategoryId','subSubCategoryId','relatedToId','metadata','currentVersionId','ssscId','responseType','outcome','multiplication','ageCategory','gender','sourceAuthor','isWildcard','wildcardLabel','lifecycleStatus','isSensitive','sensitivityLevel','qualityScore','approvedAt','publishedAt','archivedAt','importedAt','sourceName','sourceRowNumber','externalSourceLabel','lang','region','isLocalized','localeCode','isFlagged','flagReason','visibility','reactionsLike','reactionsLaugh','reactionsThink']);
+
+export const QuestionStatsScalarFieldEnumSchema = z.enum(['questionId','usageCount','answerCount','reportCount','updatedAt']);
+
+export const FlowQuestionServeEventScalarFieldEnumSchema = z.enum(['id','flowQuestionId','sourceQuestionId','userId','sessionId','context','metadata','servedAt']);
 
 export const QuestionVersionScalarFieldEnumSchema = z.enum(['id','questionId','text','displayText','type','options','metadata','createdAt','version']);
 
@@ -114,9 +118,11 @@ export const QuestionVersionTagScalarFieldEnumSchema = z.enum(['id','questionVer
 
 export const QuestionGenerationScalarFieldEnumSchema = z.enum(['id','ssscId','targetCount','status','prompt','insertedCount','rawResponse','finishedAt','createdAt','updatedAt']);
 
-export const FlowQuestionScalarFieldEnumSchema = z.enum(['id','categoryId','locale','tags','arcStep','text','type','isActive','challengeEnabled','wikiFillCandidate','worldContextKey','worldContextRegionPolicy','worldContextLabel','createdAt','updatedAt']);
+export const FlowQuestionScalarFieldEnumSchema = z.enum(['id','categoryId','sourceQuestionId','locale','tags','arcStep','text','type','isActive','challengeEnabled','wikiFillCandidate','worldContextKey','worldContextRegionPolicy','worldContextLabel','createdAt','updatedAt']);
 
 export const OpsRunScalarFieldEnumSchema = z.enum(['id','type','status','startedAt','finishedAt','durationMs','counts','message','reportPath','triggeredBy','entityType','entityId','entityLabel','params','warnings','errorStack']);
+
+export const QuestionPipelineRunScalarFieldEnumSchema = z.enum(['id','jobType','status','startedAt','completedAt','durationMs','triggeredBy','sourceName','recordsProcessed','recordsCreated','recordsUpdated','recordsSkipped','errorCount','summaryJson','errorMessage']);
 
 export const FlowQuestionOptionScalarFieldEnumSchema = z.enum(['id','questionId','label','value','order']);
 
@@ -132,7 +138,7 @@ export const UserFollowScalarFieldEnumSchema = z.enum(['id','followerId','follow
 
 export const QuestionChallengeScalarFieldEnumSchema = z.enum(['id','questionId','challengerId','challengedId','status','challengerAnswerId','challengedAnswerId','xpGranted','createdAt','completedAt']);
 
-export const QuestionReportScalarFieldEnumSchema = z.enum(['id','userId','questionId','reason','createdAt']);
+export const QuestionReportScalarFieldEnumSchema = z.enum(['id','userId','questionId','sourceQuestionId','reason','details','reviewNote','status','createdAt','updatedAt']);
 
 export const SynchTestScalarFieldEnumSchema = z.enum(['id','key','title','description','region','questions','resultTextTemplates','rewardXP','rewardKarma','isActive','createdAt']);
 
@@ -514,13 +520,13 @@ export const LanguageScalarFieldEnumSchema = z.enum(['id','code','name']);
 
 export const VersionScalarFieldEnumSchema = z.enum(['id','name','value','createdAt']);
 
-export const CategoryScalarFieldEnumSchema = z.enum(['id','name']);
+export const CategoryScalarFieldEnumSchema = z.enum(['id','name','externalCId']);
 
-export const SubCategoryScalarFieldEnumSchema = z.enum(['id','name','categoryId']);
+export const SubCategoryScalarFieldEnumSchema = z.enum(['id','name','categoryId','externalScId']);
 
-export const SubSubCategoryScalarFieldEnumSchema = z.enum(['id','name','subCategoryId']);
+export const SubSubCategoryScalarFieldEnumSchema = z.enum(['id','name','subCategoryId','externalSscId']);
 
-export const SssCategoryScalarFieldEnumSchema = z.enum(['id','name','slug','isStarter','visibleInBrowse','subSubCategoryId','status','generatedAt','error','review','finalText','responseType','outcome','multiplication','difficulty','ageCategory','gender','author','wildcard']);
+export const SssCategoryScalarFieldEnumSchema = z.enum(['id','name','externalSssId','slug','isStarter','visibleInBrowse','subSubCategoryId','status','generatedAt','error','review','finalText','responseType','outcome','multiplication','difficulty','ageCategory','gender','author','wildcard']);
 
 export const UserQuestionScalarFieldEnumSchema = z.enum(['id','userId','questionId','questionTemplateId','status','servedAt','answeredAt','archetypeContext','moodContext','seasonId','createdAt','updatedAt']);
 
@@ -885,6 +891,14 @@ export type IntegrationTypeType = `${z.infer<typeof IntegrationTypeSchema>}`
 export const QuestionSourceSchema = z.enum(['ai','user','import']);
 
 export type QuestionSourceType = `${z.infer<typeof QuestionSourceSchema>}`
+
+export const QuestionLifecycleStatusSchema = z.enum(['DRAFT','REVIEW','APPROVED','PUBLISHED','ARCHIVED','REJECTED']);
+
+export type QuestionLifecycleStatusType = `${z.infer<typeof QuestionLifecycleStatusSchema>}`
+
+export const QuestionSensitivityLevelSchema = z.enum(['NONE','LOW','MEDIUM','HIGH']);
+
+export type QuestionSensitivityLevelType = `${z.infer<typeof QuestionSensitivityLevelSchema>}`
 
 export const TagTypeSchema = z.enum(['tone','content']);
 
@@ -1463,6 +1477,9 @@ export type Integration = z.infer<typeof IntegrationSchema>
 
 export const QuestionSchema = z.object({
   source: QuestionSourceSchema,
+  responseType: QuestionTypeSchema.nullable(),
+  lifecycleStatus: QuestionLifecycleStatusSchema,
+  sensitivityLevel: QuestionSensitivityLevelSchema,
   lang: LangSchema.nullable(),
   visibility: ContentVisibilitySchema,
   text: z.string(),
@@ -1481,6 +1498,22 @@ export const QuestionSchema = z.object({
   metadata: JsonValueSchema.nullable(),
   currentVersionId: z.string().nullable(),
   ssscId: z.string(),
+  outcome: z.string().nullable(),
+  multiplication: z.number().int().nullable(),
+  ageCategory: z.string().nullable(),
+  gender: z.string().nullable(),
+  sourceAuthor: z.string().nullable(),
+  isWildcard: z.boolean(),
+  wildcardLabel: z.string().nullable(),
+  isSensitive: z.boolean(),
+  qualityScore: z.number().nullable(),
+  approvedAt: z.coerce.date().nullable(),
+  publishedAt: z.coerce.date().nullable(),
+  archivedAt: z.coerce.date().nullable(),
+  importedAt: z.coerce.date().nullable(),
+  sourceName: z.string().nullable(),
+  sourceRowNumber: z.number().int().nullable(),
+  externalSourceLabel: z.string().nullable(),
   region: z.string().nullable(),
   isLocalized: z.boolean(),
   localeCode: z.string().nullable(),
@@ -1492,6 +1525,37 @@ export const QuestionSchema = z.object({
 })
 
 export type Question = z.infer<typeof QuestionSchema>
+
+/////////////////////////////////////////
+// QUESTION STATS SCHEMA
+/////////////////////////////////////////
+
+export const QuestionStatsSchema = z.object({
+  questionId: z.string(),
+  usageCount: z.number().int(),
+  answerCount: z.number().int(),
+  reportCount: z.number().int(),
+  updatedAt: z.coerce.date(),
+})
+
+export type QuestionStats = z.infer<typeof QuestionStatsSchema>
+
+/////////////////////////////////////////
+// FLOW QUESTION SERVE EVENT SCHEMA
+/////////////////////////////////////////
+
+export const FlowQuestionServeEventSchema = z.object({
+  id: z.cuid(),
+  flowQuestionId: z.string(),
+  sourceQuestionId: z.string().nullable(),
+  userId: z.string().nullable(),
+  sessionId: z.string().nullable(),
+  context: z.string().nullable(),
+  metadata: JsonValueSchema.nullable(),
+  servedAt: z.coerce.date(),
+})
+
+export type FlowQuestionServeEvent = z.infer<typeof FlowQuestionServeEventSchema>
 
 /////////////////////////////////////////
 // QUESTION VERSION SCHEMA
@@ -1564,6 +1628,7 @@ export const FlowQuestionSchema = z.object({
   type: QuestionTypeSchema,
   id: z.cuid(),
   categoryId: z.string().nullable(),
+  sourceQuestionId: z.string().nullable(),
   locale: z.string(),
   tags: z.string().array(),
   arcStep: z.string().nullable(),
@@ -1604,6 +1669,30 @@ export const OpsRunSchema = z.object({
 })
 
 export type OpsRun = z.infer<typeof OpsRunSchema>
+
+/////////////////////////////////////////
+// QUESTION PIPELINE RUN SCHEMA
+/////////////////////////////////////////
+
+export const QuestionPipelineRunSchema = z.object({
+  id: z.cuid(),
+  jobType: z.string(),
+  status: z.string(),
+  startedAt: z.coerce.date(),
+  completedAt: z.coerce.date().nullable(),
+  durationMs: z.number().int().nullable(),
+  triggeredBy: z.string().nullable(),
+  sourceName: z.string().nullable(),
+  recordsProcessed: z.number().int(),
+  recordsCreated: z.number().int(),
+  recordsUpdated: z.number().int(),
+  recordsSkipped: z.number().int(),
+  errorCount: z.number().int(),
+  summaryJson: JsonValueSchema.nullable(),
+  errorMessage: z.string().nullable(),
+})
+
+export type QuestionPipelineRun = z.infer<typeof QuestionPipelineRunSchema>
 
 /////////////////////////////////////////
 // FLOW QUESTION OPTION SCHEMA
@@ -1718,8 +1807,13 @@ export const QuestionReportSchema = z.object({
   id: z.cuid(),
   userId: z.string().nullable(),
   questionId: z.string(),
+  sourceQuestionId: z.string().nullable(),
   reason: z.string().nullable(),
+  details: z.string().nullable(),
+  reviewNote: z.string().nullable(),
+  status: z.string(),
   createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 })
 
 export type QuestionReport = z.infer<typeof QuestionReportSchema>
@@ -5583,6 +5677,7 @@ export type Version = z.infer<typeof VersionSchema>
 export const CategorySchema = z.object({
   id: z.cuid(),
   name: z.string(),
+  externalCId: z.string().nullable(),
 })
 
 export type Category = z.infer<typeof CategorySchema>
@@ -5595,6 +5690,7 @@ export const SubCategorySchema = z.object({
   id: z.cuid(),
   name: z.string(),
   categoryId: z.string(),
+  externalScId: z.string().nullable(),
 })
 
 export type SubCategory = z.infer<typeof SubCategorySchema>
@@ -5607,6 +5703,7 @@ export const SubSubCategorySchema = z.object({
   id: z.cuid(),
   name: z.string(),
   subCategoryId: z.string(),
+  externalSscId: z.string().nullable(),
 })
 
 export type SubSubCategory = z.infer<typeof SubSubCategorySchema>
@@ -5618,6 +5715,7 @@ export type SubSubCategory = z.infer<typeof SubSubCategorySchema>
 export const SssCategorySchema = z.object({
   id: z.cuid(),
   name: z.string(),
+  externalSssId: z.string().nullable(),
   slug: z.string().nullable(),
   isStarter: z.boolean(),
   visibleInBrowse: z.boolean(),

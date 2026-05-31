@@ -1,9 +1,11 @@
 ﻿'use client';
 
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import NavLinks from "@/components/NavLinks";
-import AuthStatus from '@/app/components/AuthStatus';
 import { AuthenticatedXpBar } from "@/components/AuthenticatedXpBar";
+import { NavLocaleSelector } from "@/components/NavLocaleSelector";
+import { NavAccountMenu } from "@/components/NavAccountMenu";
 
 /**
  * ConditionalNav - Only renders the global navigation on appropriate pages
@@ -15,6 +17,8 @@ import { AuthenticatedXpBar } from "@/components/AuthenticatedXpBar";
  */
 export function ConditionalNav() {
   const pathname = usePathname();
+  const { status } = useSession();
+  const isAuthenticated = status === 'authenticated';
   
   // Pages that have their own navigation and should NOT show the global nav
   const pagesWithoutGlobalNav = [
@@ -38,9 +42,15 @@ export function ConditionalNav() {
         <div className="min-w-0 flex-1">
           <NavLinks />
         </div>
-        <div className="flex items-center gap-4">
-          <AuthenticatedXpBar />
-          <AuthStatus />
+        <div className="flex items-center gap-3 shrink-0">
+          {isAuthenticated ? (
+            <>
+              <AuthenticatedXpBar />
+              <NavAccountMenu />
+            </>
+          ) : (
+            <NavLocaleSelector />
+          )}
         </div>
       </div>
     </nav>

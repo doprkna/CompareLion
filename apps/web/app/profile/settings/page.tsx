@@ -10,8 +10,10 @@ import {
   Settings, 
   Home, 
   Loader2,
-  Info
+  Info,
+  Globe
 } from 'lucide-react';
+import { ProfileLanguageSettings } from '@/components/profile/ProfileLanguageSettings';
 import { RoastMeterSlider } from '@/components/roast/RoastMeterSlider';
 import { RoastPreview } from '@/components/roast/RoastPreview';
 import { useRoastLevel, useSetRoastLevel } from '@parel/core/hooks/useRoastLevel';
@@ -76,6 +78,19 @@ export default function ProfileSettingsPage() {
         </div>
         <p className="text-subtle">Customize your PareL experience</p>
       </div>
+
+      {/* Language */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            Language
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ProfileLanguageSettings />
+        </CardContent>
+      </Card>
 
       {/* Preferences Section */}
       <Card className="mb-6">

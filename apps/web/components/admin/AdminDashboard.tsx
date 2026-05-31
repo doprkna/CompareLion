@@ -1,10 +1,31 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { apiFetch } from "@/lib/apiBase";
-import Link from "next/link";
-import { QuestionPipelineFoundationPanel } from "@/components/admin/QuestionPipelineFoundationPanel";
-import { AdminNeedsAttentionPanel } from "@/components/admin/AdminAttention";
+import { useState, useEffect, type ReactNode } from 'react';
+import { apiFetch } from '@/lib/apiBase';
+import Link from 'next/link';
+import { QuestionPipelineFoundationPanel } from '@/components/admin/QuestionPipelineFoundationPanel';
+import { AdminNeedsAttentionPanel } from '@/components/admin/AdminAttention';
+
+function AdminCard({
+  title,
+  children,
+  className = '',
+  borderAccent = false,
+}: {
+  title: string;
+  children: ReactNode;
+  className?: string;
+  borderAccent?: boolean;
+}) {
+  return (
+    <div
+      className={`bg-card border-2 rounded-xl p-4 h-fit ${borderAccent ? 'border-accent' : 'border-border'} ${className}`}
+    >
+      <h2 className="text-base font-bold text-text mb-3">{title}</h2>
+      {children}
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
@@ -152,17 +173,17 @@ export default function AdminDashboard() {
   async function trigger(path: string, label: string) {
     setLoading(true);
     try {
-      const wrap = await apiFetch(`/api/admin/${path}`, { method: "POST" });
+      const wrap = await apiFetch(`/api/admin/${path}`, { method: 'POST' });
       const data = wrap.data as { success?: boolean; error?: string } | undefined;
-      const errText = (wrap.error || data?.error || "").trim();
+      const errText = (wrap.error || data?.error || '').trim();
       const truncated =
         errText.length > 280 ? `${errText.slice(0, 280)}…` : errText;
 
       let line: string;
       if (!wrap.ok) {
-        line = `❌ ${label}: Fail — ${truncated || "HTTP error"}`;
+        line = `❌ ${label}: Fail — ${truncated || 'HTTP error'}`;
       } else if (data?.success === false) {
-        line = `❌ ${label}: Fail — ${truncated || "Unknown error"}`;
+        line = `❌ ${label}: Fail — ${truncated || 'Unknown error'}`;
       } else {
         line = `✅ ${label}: OK`;
       }
@@ -216,18 +237,18 @@ export default function AdminDashboard() {
 
   async function loadAuditLogs() {
     try {
-      const res = await apiFetch("/api/audit");
+      const res = await apiFetch('/api/audit');
       if ((res as any).ok && (res as any).data) {
         setAuditLogs((res as any).data.logs || []);
       }
     } catch (err) {
-      console.error("Failed to load audit logs:", err);
+      console.error('Failed to load audit logs:', err);
     }
   }
 
   async function loadVisitStats() {
     try {
-      const res = await apiFetch("/api/admin/visits");
+      const res = await apiFetch('/api/admin/visits');
       if ((res as any).ok && (res as any).data) {
         const d = (res as any).data;
         setVisitStats({
@@ -244,34 +265,10 @@ export default function AdminDashboard() {
           returningUsersPct7d: d.returningUsersPct7d ?? 0,
         });
       } else {
-        setVisitStats({
-          totalVisits: 0,
-          visitsToday: 0,
-          uniqueUsersToday: 0,
-          activeUsers24h: 0,
-          activeLoggedUsers24h: 0,
-          anonymousVisits24h: 0,
-          activeUsers7d: 0,
-          activeLoggedUsers7d: 0,
-          anonymousUsers7d: 0,
-          returningUsers7d: 0,
-          returningUsersPct7d: 0,
-        });
+        setVisitStats(emptyVisitStats());
       }
     } catch {
-      setVisitStats({
-        totalVisits: 0,
-        visitsToday: 0,
-        uniqueUsersToday: 0,
-        activeUsers24h: 0,
-        activeLoggedUsers24h: 0,
-        anonymousVisits24h: 0,
-        activeUsers7d: 0,
-        activeLoggedUsers7d: 0,
-        anonymousUsers7d: 0,
-        returningUsers7d: 0,
-        returningUsersPct7d: 0,
-      });
+      setVisitStats(emptyVisitStats());
     }
   }
 
@@ -284,405 +281,401 @@ export default function AdminDashboard() {
     void loadQuestionPipeline();
   }, []);
 
-  return (
-    <div className="min-h-screen bg-bg p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-text mb-2">Admin Dashboard 🔧</h1>
-          <p className="text-subtle">
-            Manage users, data, and system operations
-          </p>
-        </div>
+  const btnPrimary =
+    'w-full bg-accent text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition disabled:opacity-50 text-sm';
+  const btnOutline =
+    'w-full bg-card border-2 border-accent text-accent px-3 py-1.5 rounded-lg hover:bg-accent/10 transition disabled:opacity-50 text-sm';
+  const btnDanger =
+    'w-full bg-card border-2 border-destructive text-destructive px-3 py-1.5 rounded-lg hover:bg-destructive/10 transition disabled:opacity-50 text-sm';
+  const linkBtn =
+    'block w-full bg-card border-2 border-accent text-accent px-3 py-1.5 rounded-lg hover:bg-accent/10 transition text-center text-sm';
 
+  return (
+    <div className="min-h-screen bg-bg p-4 md:p-6">
+      <div className="max-w-6xl mx-auto space-y-4">
+        <header className="mb-2">
+          <h1 className="text-2xl font-bold text-text">Admin Dashboard</h1>
+          <p className="text-subtle text-sm">Manage users, data, and system operations</p>
+        </header>
+
+        {/* A — Needs attention */}
         <AdminNeedsAttentionPanel />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* App visits (internal counter) */}
-          <div className="bg-card border-2 border-border rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">📊 App Visits</h2>
+        {/* B — Compact stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+          <AdminCard title="📊 App Visits">
             {visitStats ? (
-              <ul className="space-y-2 text-sm text-text">
-                <li>
-                  <span className="text-subtle">Total visits:</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.totalVisits}</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Today (UTC):</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.visitsToday}</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Unique users today:</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.uniqueUsersToday}</span>
-                </li>
-                <li className="pt-2 border-t border-border mt-2">
-                  <span className="text-subtle">Active users (24h):</span>{' '}
-                  <span className="font-mono font-semibold text-accent">{visitStats.activeUsers24h}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">visit rows in rolling 24h window</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Logged users (24h):</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.activeLoggedUsers24h}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">distinct userIds</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Anonymous (24h):</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.anonymousVisits24h}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">sessions without login</span>
-                </li>
-                <li className="pt-2 border-t border-border mt-2">
-                  <span className="text-subtle">Active users (7d):</span>{' '}
-                  <span className="font-mono font-semibold text-accent">{visitStats.activeUsers7d}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">visit rows in rolling 7d window</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Logged users (7d):</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.activeLoggedUsers7d}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">distinct userIds</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Anonymous (7d):</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.anonymousUsers7d}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">sessions without login</span>
-                </li>
-                <li className="pt-2 border-t border-border mt-2">
-                  <span className="text-subtle">Returning users (7d):</span>{' '}
-                  <span className="font-mono font-semibold text-accent">{visitStats.returningUsers7d}</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">logged-in users with &gt;1 visit in window</span>
-                </li>
-                <li>
-                  <span className="text-subtle">Returning % (7d):</span>{' '}
-                  <span className="font-mono font-semibold">{visitStats.returningUsersPct7d}%</span>
-                  <span className="block text-[11px] text-subtle mt-0.5">of logged users (7d); 0% if none</span>
-                </li>
-              </ul>
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-text">
+                <div>
+                  <dt className="text-subtle">Total</dt>
+                  <dd className="font-mono font-semibold">{visitStats.totalVisits}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Today (UTC)</dt>
+                  <dd className="font-mono font-semibold">{visitStats.visitsToday}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Unique today</dt>
+                  <dd className="font-mono font-semibold">{visitStats.uniqueUsersToday}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Active 24h</dt>
+                  <dd className="font-mono font-semibold text-accent">{visitStats.activeUsers24h}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Logged 24h</dt>
+                  <dd className="font-mono font-semibold">{visitStats.activeLoggedUsers24h}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Anon 24h</dt>
+                  <dd className="font-mono font-semibold">{visitStats.anonymousVisits24h}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Active 7d</dt>
+                  <dd className="font-mono font-semibold text-accent">{visitStats.activeUsers7d}</dd>
+                </div>
+                <div>
+                  <dt className="text-subtle">Returning 7d</dt>
+                  <dd className="font-mono font-semibold">
+                    {visitStats.returningUsers7d} ({visitStats.returningUsersPct7d}%)
+                  </dd>
+                </div>
+              </dl>
             ) : (
-              <p className="text-subtle text-sm">Loading…</p>
+              <p className="text-subtle text-xs">Loading…</p>
             )}
-            <p className="text-subtle text-xs mt-3">One log per browser session; 24h/7d = rolling windows. Not full analytics.</p>
-          </div>
+            <p className="text-subtle text-[11px] mt-2 leading-snug">
+              Session counter; rolling 24h/7d windows. Not full analytics.
+            </p>
+          </AdminCard>
 
-          {/* Users Card */}
-          <div className="bg-card border-2 border-border rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">👥 Users</h2>
+          <AdminCard title="👥 Users">
             <div className="space-y-2">
               <button
-                onClick={() => trigger("generate-users", "Generate Demo Users")}
+                type="button"
+                onClick={() => trigger('generate-users', 'Generate Demo Users')}
                 disabled={loading}
-                className="w-full bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50"
+                className={btnPrimary}
               >
                 Generate Demo Users
               </button>
               <button
-                onClick={() => trigger("wipe-users", "Wipe Users")}
+                type="button"
+                onClick={() => trigger('wipe-users', 'Wipe Users')}
                 disabled={loading}
-                className="w-full bg-card border-2 border-destructive text-destructive px-4 py-2 rounded-lg hover:bg-destructive/10 transition disabled:opacity-50"
+                className={btnDanger}
               >
                 Wipe Users
               </button>
             </div>
-          </div>
+          </AdminCard>
 
-          {/* Messages Card */}
-          <div className="bg-card border-2 border-border rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">💬 Messages</h2>
+          <AdminCard title="💬 Messages">
             <div className="space-y-2">
               <button
-                onClick={() => trigger("generate-messages", "Generate Demo Messages")}
+                type="button"
+                onClick={() => trigger('generate-messages', 'Generate Demo Messages')}
                 disabled={loading}
-                className="w-full bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50"
+                className={btnPrimary}
               >
                 Generate Messages
               </button>
               <button
-                onClick={() => trigger("wipe-messages", "Wipe Messages")}
+                type="button"
+                onClick={() => trigger('wipe-messages', 'Wipe Messages')}
                 disabled={loading}
-                className="w-full bg-card border-2 border-destructive text-destructive px-4 py-2 rounded-lg hover:bg-destructive/10 transition disabled:opacity-50"
+                className={btnDanger}
               >
                 Wipe Messages
               </button>
             </div>
-          </div>
+          </AdminCard>
+        </div>
 
-          {/* Questions Card */}
-          <div className="bg-card border-2 border-border rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">❓ Questions / Flows</h2>
-
-            <div className="mb-4">
-              <QuestionPipelineFoundationPanel compact showNavLinks={false} />
-            </div>
-
-            <div className="mb-4 p-3 border border-border rounded-lg bg-bg/50 text-sm space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-text">Live pipeline counts</span>
-                <Link
-                  href="/admin/question-pipeline"
-                  className="text-xs text-accent hover:underline"
-                >
-                  Full panel →
-                </Link>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-xs text-subtle">Counts &amp; warnings</span>
-                <button
-                  type="button"
-                  onClick={() => void loadQuestionPipeline()}
-                  disabled={pipelineLoading || pipelineSyncRunning}
-                  className="text-xs text-accent hover:underline disabled:opacity-50"
-                >
-                  {pipelineLoading ? 'Refreshing…' : 'Refresh'}
-                </button>
-              </div>
-              {pipelineStatus ? (
-                <>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-subtle">
-                    <span>Questions total: {pipelineStatus.totalQuestions}</span>
-                    <span>Published: {pipelineStatus.publishedQuestions}</span>
-                    <span>Active FlowQ: {pipelineStatus.activeFlowQuestions}</span>
-                    <span>Linked FlowQ: {pipelineStatus.linkedFlowQuestions}</span>
-                    <span>No projection: {pipelineStatus.publishedWithoutProjection}</span>
-                    <span>Zero options: {pipelineStatus.flowQuestionsZeroOptions}</span>
-                    <span>Missing category: {pipelineStatus.flowQuestionsMissingCategory}</span>
-                    <span>High sens. (unpub.): {pipelineStatus.highSensitivityUnpublished}</span>
-                    <span>Open reports: {pipelineStatus.openQuestionReports}</span>
-                  </div>
-                  <div className="text-xs text-subtle">
-                    Lifecycle:{' '}
-                    {Object.entries(pipelineStatus.byLifecycle)
-                      .map(([k, v]) => `${k}=${v}`)
-                      .join(', ') || 'none'}
-                  </div>
-                  {pipelineStatus.bySourceName.length > 0 ? (
-                    <div className="text-xs text-subtle">
-                      Sources:{' '}
-                      {pipelineStatus.bySourceName
-                        .slice(0, 5)
-                        .map((s) => `${s.sourceName}(${s.count})`)
-                        .join(', ')}
-                    </div>
-                  ) : null}
-                  {pipelineStatus.warnings.length > 0 ? (
-                    <ul className="text-xs text-amber-400 list-disc pl-4 space-y-0.5">
-                      {pipelineStatus.warnings.map((w) => (
-                        <li key={w}>{w}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-xs text-green-400">No pipeline warnings</p>
-                  )}
-                </>
-              ) : (
-                <p className="text-xs text-subtle">
-                  {pipelineLoading ? 'Loading pipeline status…' : 'Pipeline status unavailable'}
-                </p>
-              )}
+        {/* C — Operational row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+          <AdminCard title="🌱 Seeder 2.0" borderAccent>
+            <div className="space-y-2">
               <button
                 type="button"
-                onClick={() => void syncPublishedQuestions()}
-                disabled={loading || pipelineSyncRunning}
-                className="w-full bg-card border-2 border-accent text-accent px-3 py-2 rounded-lg hover:bg-accent/10 transition disabled:opacity-50 text-sm"
-              >
-                {pipelineSyncRunning ? 'Syncing…' : 'Sync Published Questions'}
-              </button>
-              {pipelineActionMessage ? (
-                <p className="text-xs text-subtle">{pipelineActionMessage}</p>
-              ) : null}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={archiveQuestionId}
-                  onChange={(e) => setArchiveQuestionId(e.target.value)}
-                  placeholder="Question ID to archive"
-                  className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-border rounded bg-bg text-text"
-                />
-                <button
-                  type="button"
-                  onClick={() => void archiveQuestionById()}
-                  disabled={loading || archiveRunning || !archiveQuestionId.trim()}
-                  className="shrink-0 px-2 py-1.5 text-xs border border-destructive text-destructive rounded hover:bg-destructive/10 disabled:opacity-50"
-                >
-                  {archiveRunning ? '…' : 'Archive'}
-                </button>
-              </div>
-              <p className="text-[11px] text-subtle">
-                CLI: pnpm db:questions:import · publish · archive
-              </p>
-              <p className="text-[11px] text-subtle">
-                Local validation gate: <code className="font-mono">pnpm validate:questions</code>
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Link
-                href="/admin/question-pipeline"
-                className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center text-sm font-medium"
-              >
-                Question Pipeline hub
-              </Link>
-              <Link
-                href="/admin/question-reports"
-                className="block w-full bg-card border-2 border-amber-500/60 text-amber-400 px-4 py-2 rounded-lg hover:bg-amber-500/10 transition text-center text-sm"
-              >
-                Review Question Reports
-                {pipelineStatus && pipelineStatus.openQuestionReports > 0
-                  ? ` (${pipelineStatus.openQuestionReports} open)`
-                  : ''}
-              </Link>
-              <Link
-                href="/admin/questions"
-                className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center"
-              >
-                Manage Tags
-              </Link>
-              <Link
-                href="/admin/translation"
-                className="block w-full bg-card border-2 border-border text-text px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center text-sm"
-              >
-                🌍 Translation suggestions
-              </Link>
-              <button
-                onClick={() => trigger("generate-questions", "Generate Questions")}
-                disabled={loading}
-                className="w-full bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50"
-              >
-                Generate Questions
-              </button>
-              <button
-                onClick={() => trigger("wipe-questions", "Wipe Questions")}
-                disabled={loading}
-                className="w-full bg-card border-2 border-destructive text-destructive px-4 py-2 rounded-lg hover:bg-destructive/10 transition disabled:opacity-50"
-              >
-                Wipe Questions
-              </button>
-            </div>
-          </div>
-
-          {/* Seeder 2.0 Card */}
-          <div className="bg-card border-2 border-accent rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">🌱 Seeder 2.0</h2>
-            <div className="space-y-2">
-              <button
                 onClick={runFullSeed}
                 disabled={loading || seedRunning}
-                className="w-full bg-accent text-white px-4 py-2 rounded-lg hover:opacity-90 transition disabled:opacity-50 font-bold"
+                className={`${btnPrimary} font-semibold`}
               >
                 {seedRunning ? (
-                  <span className="inline-flex items-center gap-2">
-                    <span className="h-4 w-4 rounded-full border-2 border-white/80 border-t-transparent animate-spin" />
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <span className="h-3.5 w-3.5 rounded-full border-2 border-white/80 border-t-transparent animate-spin" />
                     Seeding…
                   </span>
                 ) : (
-                  '🚀 Run Full Seed'
+                  'Run Full Seed'
                 )}
               </button>
-              <p className="text-subtle text-xs mt-2">
-                Creates demo users, messages, questions, and badges in one go
+              <p className="text-subtle text-[11px] leading-snug">
+                Demo users, messages, questions, and badges in one run.
               </p>
               {seedStatus !== 'idle' ? (
-                <p className={`text-xs mt-1 ${
-                  seedStatus === 'running'
-                    ? 'text-subtle'
-                    : seedStatus === 'success'
-                      ? 'text-green-400'
-                      : 'text-destructive'
-                }`}>
+                <p
+                  className={`text-xs ${
+                    seedStatus === 'running'
+                      ? 'text-subtle'
+                      : seedStatus === 'success'
+                        ? 'text-green-400'
+                        : 'text-destructive'
+                  }`}
+                >
                   {seedStatusMessage}
                 </p>
               ) : (
-                <p className="text-subtle text-xs mt-1">Ready</p>
+                <p className="text-subtle text-xs">Ready</p>
               )}
             </div>
-          </div>
+          </AdminCard>
 
-          {/* Ops Runs Card */}
-          <div className="bg-card border-2 border-border rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">⚙️ Ops Runs</h2>
-            <div className="space-y-2">
-              <Link
-                href="/admin/ops"
-                className="block w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition text-center"
-              >
-                View bot runs (QuestionGen, Wiki enrich)
-              </Link>
-            </div>
-          </div>
+          <AdminCard title="⚙️ Ops Runs">
+            <Link href="/admin/ops" className={linkBtn}>
+              View bot runs (QuestionGen, Wiki enrich)
+            </Link>
+          </AdminCard>
 
-          {/* Audit Logs Card */}
-          <div className="bg-card border-2 border-border rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">📋 Audit Logs</h2>
+          <AdminCard title="📋 Audit Logs">
             <div className="space-y-2">
               <button
+                type="button"
                 onClick={() => {
                   setShowAuditLogs(!showAuditLogs);
                   if (!showAuditLogs) loadAuditLogs();
                 }}
-                className="w-full bg-card border-2 border-accent text-accent px-4 py-2 rounded-lg hover:bg-accent/10 transition"
+                className={btnOutline}
               >
-                {showAuditLogs ? "Hide Logs" : "View Audit Logs"}
+                {showAuditLogs ? 'Hide Logs' : 'View Audit Logs'}
               </button>
-              <p className="text-subtle text-xs">
-                {auditLogs.length} system events recorded
-              </p>
+              <p className="text-subtle text-xs">{auditLogs.length} system events recorded</p>
             </div>
-          </div>
+          </AdminCard>
         </div>
 
-        {/* Audit Logs Panel */}
-        {showAuditLogs && (
-          <div className="bg-card border-2 border-accent rounded-xl p-6">
-            <h2 className="text-xl font-bold text-text mb-4">🔍 System Audit Logs</h2>
-            <div className="bg-bg border border-border rounded-lg p-4 max-h-96 overflow-y-auto space-y-2">
+        {showAuditLogs ? (
+          <div className="bg-card border-2 border-accent rounded-xl p-4">
+            <h2 className="text-base font-bold text-text mb-3">System audit logs</h2>
+            <div className="bg-bg border border-border rounded-lg p-3 max-h-72 overflow-y-auto space-y-2">
               {auditLogs.length === 0 ? (
-                <p className="text-subtle text-sm">No audit logs yet...</p>
+                <p className="text-subtle text-xs">No audit logs yet…</p>
               ) : (
                 auditLogs.map((log, i) => (
-                  <div key={log.id || i} className="text-sm border-b border-border pb-2 last:border-b-0">
-                    <div className="flex items-center justify-between mb-1">
+                  <div key={log.id || i} className="text-xs border-b border-border pb-2 last:border-b-0">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
                       <span className="font-bold text-accent">{log.action}</span>
-                      <span className="text-subtle text-xs">
+                      <span className="text-subtle shrink-0">
                         {new Date(log.createdAt).toLocaleString()}
                       </span>
                     </div>
-                    {log.user && (
-                      <div className="text-subtle text-xs mb-1">
+                    {log.user ? (
+                      <div className="text-subtle">
                         By: {log.user.name || log.user.email}
                       </div>
-                    )}
-                    {log.meta && (
-                      <div className="bg-bg/50 rounded p-2 font-mono text-xs text-text mt-1">
+                    ) : null}
+                    {log.meta ? (
+                      <pre className="bg-bg/50 rounded p-1.5 font-mono text-[10px] text-text mt-1 overflow-x-auto">
                         {JSON.stringify(log.meta, null, 2)}
-                      </div>
-                    )}
+                      </pre>
+                    ) : null}
                   </div>
                 ))
               )}
             </div>
           </div>
-        )}
+        ) : null}
 
-        {/* Action Log */}
-        <div className="bg-card border-2 border-border rounded-xl p-6">
-          <h2 className="text-xl font-bold text-text mb-4">📋 Action Log</h2>
-          <div className="bg-bg border border-border rounded-lg p-4 max-h-64 overflow-y-auto space-y-1">
+        {/* D — Question Pipeline (full width, two columns) */}
+        <div className="bg-card border-2 border-border rounded-xl p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h2 className="text-base font-bold text-text">❓ Question Pipeline</h2>
+            <Link href="/admin/question-pipeline" className="text-xs text-accent hover:underline">
+              Full panel →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+            {/* Summary */}
+            <div className="space-y-3 min-w-0">
+              <h3 className="text-sm font-semibold text-text">Summary</h3>
+              <QuestionPipelineFoundationPanel compact showNavLinks={false} />
+
+              <section className="border border-border rounded-lg p-3 bg-bg/50 text-xs space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-text">Live pipeline counts</span>
+                  <button
+                    type="button"
+                    onClick={() => void loadQuestionPipeline()}
+                    disabled={pipelineLoading || pipelineSyncRunning}
+                    className="text-accent hover:underline disabled:opacity-50"
+                  >
+                    {pipelineLoading ? 'Refreshing…' : 'Refresh'}
+                  </button>
+                </div>
+                {pipelineStatus ? (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-1 text-subtle">
+                      <span>Total: {pipelineStatus.totalQuestions}</span>
+                      <span>Published: {pipelineStatus.publishedQuestions}</span>
+                      <span>Active FlowQ: {pipelineStatus.activeFlowQuestions}</span>
+                      <span>Linked: {pipelineStatus.linkedFlowQuestions}</span>
+                      <span>No projection: {pipelineStatus.publishedWithoutProjection}</span>
+                      <span>Zero opts: {pipelineStatus.flowQuestionsZeroOptions}</span>
+                      <span>No category: {pipelineStatus.flowQuestionsMissingCategory}</span>
+                      <span>High sens.: {pipelineStatus.highSensitivityUnpublished}</span>
+                      <span>Open reports: {pipelineStatus.openQuestionReports}</span>
+                    </div>
+                    <p className="text-subtle">
+                      Lifecycle:{' '}
+                      {Object.entries(pipelineStatus.byLifecycle)
+                        .map(([k, v]) => `${k}=${v}`)
+                        .join(', ') || 'none'}
+                    </p>
+                    {pipelineStatus.bySourceName.length > 0 ? (
+                      <p className="text-subtle">
+                        Sources:{' '}
+                        {pipelineStatus.bySourceName
+                          .slice(0, 5)
+                          .map((s) => `${s.sourceName}(${s.count})`)
+                          .join(', ')}
+                      </p>
+                    ) : null}
+                    {pipelineStatus.warnings.length > 0 ? (
+                      <ul className="text-amber-400 list-disc pl-4 space-y-0.5 max-h-24 overflow-y-auto">
+                        {pipelineStatus.warnings.map((w) => (
+                          <li key={w}>{w}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-green-400">No pipeline warnings</p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-subtle">
+                    {pipelineLoading ? 'Loading…' : 'Pipeline status unavailable'}
+                  </p>
+                )}
+              </section>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-3 min-w-0">
+              <h3 className="text-sm font-semibold text-text">Actions</h3>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => void syncPublishedQuestions()}
+                  disabled={loading || pipelineSyncRunning}
+                  className={btnOutline}
+                >
+                  {pipelineSyncRunning ? 'Syncing…' : 'Sync Published Questions'}
+                </button>
+                {pipelineActionMessage ? (
+                  <p className="text-xs text-subtle">{pipelineActionMessage}</p>
+                ) : null}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={archiveQuestionId}
+                    onChange={(e) => setArchiveQuestionId(e.target.value)}
+                    placeholder="Question ID to archive"
+                    className="flex-1 min-w-0 px-2 py-1.5 text-xs border border-border rounded bg-bg text-text"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void archiveQuestionById()}
+                    disabled={loading || archiveRunning || !archiveQuestionId.trim()}
+                    className="shrink-0 px-2 py-1.5 text-xs border border-destructive text-destructive rounded hover:bg-destructive/10 disabled:opacity-50"
+                  >
+                    {archiveRunning ? '…' : 'Archive'}
+                  </button>
+                </div>
+                <p className="text-[11px] text-subtle leading-snug">
+                  CLI: pnpm db:questions:import · publish · archive ·{' '}
+                  <code className="font-mono">pnpm validate:questions</code>
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1 border-t border-border">
+                <Link href="/admin/question-pipeline" className={linkBtn}>
+                  Question Pipeline hub
+                </Link>
+                <Link
+                  href="/admin/question-reports"
+                  className="block w-full bg-card border-2 border-amber-500/60 text-amber-400 px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition text-center text-sm"
+                >
+                  Review Question Reports
+                  {pipelineStatus && pipelineStatus.openQuestionReports > 0
+                    ? ` (${pipelineStatus.openQuestionReports} open)`
+                    : ''}
+                </Link>
+                <Link href="/admin/questions" className={linkBtn}>
+                  Manage Tags
+                </Link>
+                <Link
+                  href="/admin/translation"
+                  className="block w-full bg-card border-2 border-border text-text px-3 py-1.5 rounded-lg hover:bg-accent/10 transition text-center text-sm"
+                >
+                  Translation suggestions
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => trigger('generate-questions', 'Generate Questions')}
+                  disabled={loading}
+                  className={btnPrimary}
+                >
+                  Generate Questions
+                </button>
+                <button
+                  type="button"
+                  onClick={() => trigger('wipe-questions', 'Wipe Questions')}
+                  disabled={loading}
+                  className={btnDanger}
+                >
+                  Wipe Questions
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* E — Action log */}
+        <AdminCard title="📋 Action Log" className="w-full">
+          <div className="bg-bg border border-border rounded-lg p-3 max-h-48 overflow-y-auto space-y-0.5">
             {logs.length === 0 ? (
-              <p className="text-subtle text-sm">No actions yet...</p>
+              <p className="text-subtle text-xs">No actions yet…</p>
             ) : (
               logs.map((log, i) => (
-                <div key={i} className="text-sm text-text font-mono">
+                <div key={i} className="text-xs text-text font-mono leading-relaxed">
                   {log}
                 </div>
               ))
             )}
           </div>
-        </div>
+        </AdminCard>
 
-        {/* Status Info */}
-        <div className="bg-card border border-border rounded-lg p-4">
-          <p className="text-subtle text-sm text-center">
-            🔒 Admin-only section - Regular users cannot access this page
-          </p>
-        </div>
+        <p className="text-subtle text-xs text-center py-1">
+          Admin-only — regular users cannot access this page
+        </p>
       </div>
     </div>
   );
 }
 
+function emptyVisitStats() {
+  return {
+    totalVisits: 0,
+    visitsToday: 0,
+    uniqueUsersToday: 0,
+    activeUsers24h: 0,
+    activeLoggedUsers24h: 0,
+    anonymousVisits24h: 0,
+    activeUsers7d: 0,
+    activeLoggedUsers7d: 0,
+    anonymousUsers7d: 0,
+    returningUsers7d: 0,
+    returningUsersPct7d: 0,
+  };
+}

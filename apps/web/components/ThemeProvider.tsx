@@ -107,14 +107,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <ThemeContext.Provider value={{ theme, themeKey, setTheme, applyTheme, loading }}>
-      <ThemeManager themeId={theme} />
+      {mounted ? <ThemeManager themeId={theme} /> : null}
       {children}
     </ThemeContext.Provider>
   );

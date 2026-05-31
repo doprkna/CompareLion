@@ -25,7 +25,6 @@ import { RitualToast } from "@/components/rituals/RitualToast";
 import { useRituals, useCompleteRitual } from '@parel/core/hooks/useRituals';
 import { ClanBuffBadge } from "@/components/micro-clans/ClanBuffBadge";
 import { useClanBuff } from '@parel/core/hooks/useMicroClans';
-import FooterLocaleToggle from '@/components/FooterLocaleToggle';
 
 const Icon = ({ name, className }: { name: string; className?: string; size?: string }) => <span className={'icon-' + name + ' ' + (className || '')} />;
 
@@ -103,11 +102,6 @@ export default function MainPage() {
       />
 
       <div className="min-h-screen bg-bg p-6">
-        {/* Region/Language Selector - FooterLocaleToggle from @/components/FooterLocaleToggle */}
-        <div className="fixed top-2 right-2 z-50">
-          <FooterLocaleToggle />
-        </div>
-
         <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Hero Section */}

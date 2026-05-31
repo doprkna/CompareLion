@@ -27,8 +27,14 @@
   - **Question pipeline validation gate:** `pnpm validate:questions` runs Prisma validate/generate, smoke, and stats backfill; manual CI workflow `.github/workflows/validate-questions.yml` (ephemeral Postgres, no PR gate).
   - **Question Pipeline foundation panel:** `/admin/question-pipeline` and dashboard embed show foundation status, known limits, and next safe actions (no new docs).
   - **Admin attention signals:** `GET /api/admin/attention` drives needs-attention panel, Admin nav badge, and sidebar dots for question pipeline review items.
+  - **Top nav simplification:** single Admin dropdown (with attention badge), account menu (profile / settings / notifications / logout); locale removed from authenticated navbar (Profile → Settings → Language); DEV stamp moved to bottom-left (`DEV • v{version}`); guests keep footer/header locale controls.
 
 ### Fixed
+  - **Blank page at runtime:** `ThemeProvider` returned `null` until mount (hiding the entire layout tree); `AuthProvider` used `dynamic(..., { ssr: false })` so page content never SSR’d. Theme CSS now defers only `ThemeManager`; `SessionProvider` mounts in `providers.tsx` without SSR skip; `RouteProgress` wrapped in `Suspense`.
+  - **Admin dashboard layout:** restructured `/admin` into attention → compact stats (visits/users/messages) → ops row (seeder/ops/audit) → full-width Question Pipeline (summary + actions columns) → action log; `items-start` / `h-fit` cards to avoid empty vertical stretch; denser visit metrics.
+  - **Floating locale widget on `/main`:** removed legacy `FooterLocaleToggle` mounted at `fixed top-2 right-2 z-50` on the dashboard; authenticated users change language via Profile → Settings only; guests keep `NavLocaleSelector` (navbar) and `FooterLocaleSection` (footer).
+  - **Logout redirect to wrong dev port:** NextAuth resolved `callbackUrl: '/'` against `NEXTAUTH_URL` (default `localhost:3000`) while the web app runs on `3001`; added `signOutToPath()` (client redirect on current origin), `trustHost: true`, and dev URL defaults/examples updated to port `3001`.
+  - **Question import metadata typing:** `buildQuestionImportMetadata()` returns `Prisma.InputJsonValue` for `Question.metadata` create/update (fixes `Record<string, unknown>` vs `InputJsonValue` build error).
   - **Projected FlowQuestion Yes/No options:** `syncPublishedQuestionsToFlow()` now seeds default `FlowQuestionOption` rows (Yes/no) for `SINGLE_CHOICE` questions when none exist; idempotent on re-sync (skips when options already present).
 
 ### Validated

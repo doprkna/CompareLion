@@ -1,6 +1,6 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
+import { signOutToPath } from '@/lib/auth/signOutClient';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -87,7 +87,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
-                onClick={() => signOut({ callbackUrl: '/' })}
+                onClick={() => void signOutToPath('/')}
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>

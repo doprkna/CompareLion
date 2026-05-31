@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Home, Zap, User, MessageCircle, Settings, LogOut, Bell } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { signOutToPath } from '@/lib/auth/signOutClient';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function MobileNav() {
@@ -38,7 +39,7 @@ export function MobileNav() {
   ];
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
+    await signOutToPath('/');
   };
 
   if (!session) {

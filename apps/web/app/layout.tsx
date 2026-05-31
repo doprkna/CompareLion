@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 export const dynamic = 'force-dynamic';
+import { Suspense } from 'react';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -19,9 +20,8 @@ import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { MobileNav } from '@/components/MobileNav';
 import { MusicPlayerProvider } from '@/contexts/MusicPlayerContext';
 import MiniPlayer from '@/components/media/MiniPlayer';
-import { LocaleProvider, useLocale } from '@/lib/i18n/useLocale';
-import FooterLocaleToggle from '@/components/FooterLocaleToggle';
-import LocaleHeaderChip from '@/components/LocaleHeaderChip';
+import { LocaleProvider } from '@/lib/i18n/useLocale';
+import { FooterLocaleSection } from '@/components/FooterLocaleSection';
 import { ConditionalNav } from '@/components/ConditionalNav';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -102,8 +102,9 @@ export default function RootLayout({
               <PWAProvider>
                 <MusicPlayerProvider>
                   <ErrorBoundary>
-                    <LocaleHeaderChip />
-                    <RouteProgress />
+                    <Suspense fallback={null}>
+                      <RouteProgress />
+                    </Suspense>
                     <MobileNav />
                     <ConditionalNav />
                     {children}
@@ -111,7 +112,7 @@ export default function RootLayout({
                     <div className="border-t">
                       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
                         <Footer />
-                        <FooterLocaleToggle />
+                        <FooterLocaleSection />
                       </div>
                     </div>
                     <DevBar />

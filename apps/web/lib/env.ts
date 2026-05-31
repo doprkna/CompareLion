@@ -44,7 +44,7 @@ export const env = {
   
   // Auth
   NEXTAUTH_SECRET: safeEnv("NEXTAUTH_SECRET", "dummy_secret_for_dev_only"),
-  NEXTAUTH_URL: safeEnv("NEXTAUTH_URL", "http://localhost:3000"),
+  NEXTAUTH_URL: safeEnv("NEXTAUTH_URL", "http://localhost:3001"),
   
   // Email
   RESEND_API_KEY: safeEnv("RESEND_API_KEY", "dummy_resend_key"),
@@ -53,7 +53,7 @@ export const env = {
   OPENAI_API_KEY: safeEnv("OPENAI_API_KEY", ""),
   
   // App Config
-  APP_URL: safeEnv("APP_URL", "http://localhost:3000"),
+  APP_URL: safeEnv("APP_URL", "http://localhost:3001"),
 };
 
 // Environment status helpers

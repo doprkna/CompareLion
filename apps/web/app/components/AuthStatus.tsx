@@ -1,5 +1,6 @@
 'use client';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
+import { signOutToPath } from '@/lib/auth/signOutClient';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { isAdmin } from '@/lib/auth/isAdmin';
@@ -24,7 +25,7 @@ export default function AuthStatus() {
       description: "See you soon, adventurer!",
     });
     setTimeout(() => {
-      signOut({ callbackUrl: "/" });
+      void signOutToPath('/');
     }, 500);
   };
 

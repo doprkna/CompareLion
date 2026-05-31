@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from 'next-themes';
 import { useRealtime } from '@parel/core/hooks/useRealtime';
 import { usePresence } from '@parel/core/hooks/usePresence';
@@ -24,8 +25,6 @@ if (typeof ensureUnifiedConfigInitialized === 'function') {
   console.warn('[UnifiedConfig] ensureUnifiedConfigInitialized missing from @parel/core');
 }
 
-// Dynamic import of AuthProvider to prevent server-side next-auth/react issues
-const AuthProvider = dynamic(() => import('./auth-provider'), { ssr: false });
 const VisitLogger = dynamic(() => import('@/components/VisitLogger').then((m) => m.VisitLogger), { ssr: false });
 
 function RealtimeProvider({ children }: { children: React.ReactNode }) {
@@ -41,13 +40,13 @@ function RealtimeProvider({ children }: { children: React.ReactNode }) {
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <AuthProvider>
+      <SessionProvider>
         <VisitLogger />
         <UnifiedConfigBoot />
         <RealtimeProvider>
           {children}
         </RealtimeProvider>
-      </AuthProvider>
+      </SessionProvider>
     </ThemeProvider>
   );
 }

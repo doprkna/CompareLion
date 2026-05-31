@@ -42,8 +42,8 @@ export function QuestionPipelineFoundationPanel({
   showNavLinks = true,
 }: Props) {
   return (
-    <div className={`space-y-4 ${compact ? 'text-xs' : 'text-sm'}`}>
-      <section className="border border-border rounded-lg p-3 bg-bg/40 space-y-2">
+    <div className={`${compact ? 'space-y-2 text-xs' : 'space-y-4 text-sm'}`}>
+      <section className={`border border-border rounded-lg bg-bg/40 space-y-2 ${compact ? 'p-2' : 'p-3'}`}>
         <h3 className="font-semibold text-text">Foundation status</h3>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
           {FOUNDATION_ITEMS.map((item) => (
@@ -63,7 +63,7 @@ export function QuestionPipelineFoundationPanel({
         </dl>
       </section>
 
-      <section className="border border-border rounded-lg p-3 bg-bg/40 space-y-2">
+      <section className={`border border-border rounded-lg bg-bg/40 space-y-2 ${compact ? 'p-2' : 'p-3'}`}>
         <h3 className="font-semibold text-text">Known limits</h3>
         <ul className="text-subtle list-disc pl-4 space-y-0.5">
           {KNOWN_LIMITS.map((line) => (
@@ -72,7 +72,7 @@ export function QuestionPipelineFoundationPanel({
         </ul>
       </section>
 
-      <section className="border border-border rounded-lg p-3 bg-bg/40 space-y-2">
+      <section className={`border border-border rounded-lg bg-bg/40 space-y-2 ${compact ? 'p-2' : 'p-3'}`}>
         <h3 className="font-semibold text-text">Next safe actions</h3>
         <ol className="text-subtle list-decimal pl-4 space-y-1">
           {NEXT_ACTIONS.map((line) => (

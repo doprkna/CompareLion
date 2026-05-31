@@ -21,6 +21,7 @@ if (!prisma || typeof prisma?.user?.findUnique !== 'function') {
 }
 
 export const authOptions: NextAuthOptions = {
+  trustHost: true,
   // NOTE: PrismaAdapter works for OAuth/Email providers but NOT for CredentialsProvider
   // Using JWT strategy for credentials login, adapter for OAuth/Email
   adapter: PrismaAdapter(prisma),
